@@ -1,0 +1,5 @@
+{
+  "name": "langfuse",
+  "description": "General-purpose Langfuse integration — data exploration, dashboard/widget management, prompt versioning, dataset/experiment management, and more via conversational interface",
+  "version": "0.1.1"
+}

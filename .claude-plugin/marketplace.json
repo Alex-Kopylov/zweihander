@@ -1,0 +1,26 @@
+{
+  "name": "my-plugins",
+  "owner": {
+    "name": "jhonsmith"
+  },
+  "metadata": {
+    "description": "A collection of Claude Code plugins for LLM observability and API exploration",
+    "pluginRoot": "./plugins"
+  },
+  "plugins": [
+    {
+      "name": "langfuse",
+      "source": "langfuse",
+      "description": "General-purpose Langfuse integration — data exploration, dashboard/widget management, prompt versioning, dataset/experiment management, and more via conversational interface",
+      "category": "observability",
+      "tags": ["langfuse", "llm", "observability", "dashboards", "datasets", "experiments"]
+    },
+    {
+      "name": "openapi-tools",
+      "source": "openapi-tools",
+      "description": "Skills for listing and inspecting OpenAPI endpoints on running services",
+      "category": "api",
+      "tags": ["openapi", "api", "endpoints", "swagger"]
+    }
+  ]
+}
