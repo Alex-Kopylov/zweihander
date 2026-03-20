@@ -1,5 +1,5 @@
 {
   "name": "python-dev-workflow",
-  "description": "Python development workflow — pytest test execution & review agents, conventional commits, PR creation, branch management, unit testing guide, task management & background agent orchestration, and contradiction hunting for specs/requirements",
+  "description": "Python development workflow — pytest test execution & review agents, conventional commits, PR creation, branch management, unit testing guide, task management & background agent orchestration, contradiction hunting for specs/requirements, and version bumping across config files",
   "version": "0.4.0"
 }

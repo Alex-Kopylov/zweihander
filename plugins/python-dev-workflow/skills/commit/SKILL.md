@@ -30,7 +30,7 @@ Single line only. No body, no footer, no multiline.
 | `revert` | Reverts a previous commit |
 | `style` | Formatting, whitespace, semicolons (no code change) |
 | `test` | Adding or correcting tests |
-| `bump` | Version bump |
+| `bump` | Version bump (include old → new version in description) |
 
 ## Breaking Changes
 
@@ -81,7 +81,8 @@ docs: update API changelog
 test: add unit tests for order service
 chore: update ruff config
 feat!: drop support for python 3.11
-bump: upgrade pydantic to 2.10.0
+bump: v0.4.0 → v0.5.0
+bump(deps): upgrade pydantic to 2.10.0
 build: migrate from pip to uv
 ci: add staging deployment step
 perf(queries): optimize merchant lookup query
