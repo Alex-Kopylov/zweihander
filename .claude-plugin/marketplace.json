@@ -4,23 +4,29 @@
     "name": "jhonsmith"
   },
   "metadata": {
-    "description": "A collection of Claude Code plugins for LLM observability and API exploration",
-    "pluginRoot": "./plugins"
+    "description": "A collection of Claude Code plugins for LLM observability, API exploration, and Python development workflows"
   },
   "plugins": [
     {
       "name": "langfuse",
-      "source": "langfuse",
+      "source": "./plugins/langfuse",
       "description": "General-purpose Langfuse integration — data exploration, dashboard/widget management, prompt versioning, dataset/experiment management, and more via conversational interface",
       "category": "observability",
       "tags": ["langfuse", "llm", "observability", "dashboards", "datasets", "experiments"]
     },
     {
       "name": "openapi-tools",
-      "source": "openapi-tools",
-      "description": "Skills for listing and inspecting OpenAPI endpoints on running services",
+      "source": "./plugins/openapi-tools",
+      "description": "Skills for listing and inspecting OpenAPI endpoints on running services (FastAPI, etc.)",
       "category": "api",
-      "tags": ["openapi", "api", "endpoints", "swagger"]
+      "tags": ["openapi", "api", "endpoints", "swagger", "fastapi"]
+    },
+    {
+      "name": "python-dev-workflow",
+      "source": "./plugins/python-dev-workflow",
+      "description": "Python development workflow — pytest test execution & review agents, conventional commits, PR creation, branch management, unit testing guide, and task management with background agent orchestration",
+      "category": "development",
+      "tags": ["python", "pytest", "testing", "git", "workflow", "commits", "pull-requests", "tasks", "agents"]
     }
   ]
 }
