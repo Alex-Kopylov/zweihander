@@ -37,9 +37,9 @@ Skip private 1:1 chats by default. Group chats are included only if they match t
 
 ### Microsoft Teams
 
-- **NCAI > General** — @pm-lead: "Sprint review moved to Thursday 3pm, updated the calendar invite" (2 replies)
-- **NCAI > Dev** — @jhon: "Merged the executive risk summary PR, deploying to QA now"
-- **NCAI > Dev** — @alice: "QA environment is having Redis connectivity issues, investigating"
+- **ProjectX > General** — @pm-lead: "Sprint review moved to Thursday 3pm, updated the calendar invite" (2 replies)
+- **ProjectX > Dev** — @dev: "Merged the auth refactor PR, deploying to QA now"
+- **ProjectX > Dev** — @alice: "QA environment is having Redis connectivity issues, investigating"
 ```
 
 ## Notes

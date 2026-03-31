@@ -45,9 +45,9 @@ For each worktree beyond the main one:
 This is particularly useful for projects with heavy parallel development. Example output:
 
 ```
-/repos/ai-ssp-generation                                   d57022e [develop]
-/repos/ai-ssp-generation.6731-executive-risk-summary       0c1cd32 [6731-executive-risk-summary]
-/repos/ai-ssp-generation.feat-cached-oscal-control-lookup  12a4792 [feat/cached-oscal-control-lookup]
+/repos/my-app                                   d57022e [develop]
+/repos/my-app.101-user-dashboard                0c1cd32 [101-user-dashboard]
+/repos/my-app.feat-add-caching-layer            12a4792 [feat/add-caching-layer]
 ```
 
 ### Recent branch activity

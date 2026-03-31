@@ -73,7 +73,7 @@ Present the results as a formatted table combining widget metadata and dashboard
 ```
 | ID | Name | View | Chart Type | Dashboards |
 |----|------|------|------------|------------|
-| cmm66r6xu... | Avg Latency by Model | OBSERVATIONS | HORIZONTAL_BAR | Main Dashboard, Ops |
+| clxxxxxxxx... | Avg Latency by Model | OBSERVATIONS | HORIZONTAL_BAR | Main Dashboard, Ops |
 | cmm77s7yv... | Score Trend | SCORES_NUMERIC | LINE_TIME_SERIES | Main Dashboard |
 | cmm88t8zw... | Orphaned Widget | TRACES | PIE | (none) |
 ```

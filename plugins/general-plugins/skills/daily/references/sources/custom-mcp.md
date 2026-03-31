@@ -43,7 +43,7 @@ For each custom source:
 ### Jira
 - **SSP-142** Implement catalog caching: In Progress → Code Review
 - **SSP-138** Fix Redis connection pooling: Code Review → Done
-- **SSP-145** Add OpenTelemetry spans to LLM calls: Backlog → In Progress (assigned to @jhon)
+- **SSP-145** Add OpenTelemetry spans to LLM calls: Backlog → In Progress (assigned to @dev)
 ```
 
 ## Example: Grafana MCP

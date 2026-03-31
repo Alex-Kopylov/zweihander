@@ -76,7 +76,7 @@ Ask the user for the following credentials if not already provided. Validate wit
 | `HOST`          | `http://localhost:3000`              | Langfuse base URL          |
 | `PUBLIC_KEY`    | `pk-lf-...`                         | API Basic Auth username    |
 | `SECRET_KEY`    | `sk-lf-...`                         | API Basic Auth password    |
-| `PROJECT_ID`    | `cmm66r6xu008up207601fgvpe`         | Multi-tenancy project ID   |
+| `PROJECT_ID`    | `clxxxxxxxxxxxxxxxxxxxxxxxxx`         | Multi-tenancy project ID   |
 | `DB_CONN`       | `postgresql://user:pass@host:5432/db`| Direct DB connection       |
 
 If DB connection is via Docker, also ask for the container name.

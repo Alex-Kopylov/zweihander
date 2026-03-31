@@ -22,7 +22,7 @@ Before executing any requests, ensure the following credentials are available (a
 | `HOST`          | `http://localhost:3000`              | Langfuse base URL          |
 | `PUBLIC_KEY`    | `pk-lf-...`                         | API Basic Auth username    |
 | `SECRET_KEY`    | `sk-lf-...`                         | API Basic Auth password    |
-| `PROJECT_ID`    | `cmm66r6xu008up207601fgvpe`         | Multi-tenancy project ID   |
+| `PROJECT_ID`    | `clxxxxxxxxxxxxxxxxxxxxxxxxx`         | Multi-tenancy project ID   |
 | `DB_CONN`       | `postgresql://user:pass@host:5432/db`| Direct DB fallback (optional) |
 
 Validate credentials before proceeding by running:

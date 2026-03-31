@@ -24,7 +24,7 @@ Ensure the following are available before proceeding:
 | `HOST`          | `http://localhost:3000`              | Langfuse base URL          |
 | `PUBLIC_KEY`    | `pk-lf-...`                         | API Basic Auth username    |
 | `SECRET_KEY`    | `sk-lf-...`                         | API Basic Auth password    |
-| `PROJECT_ID`    | `cmm66r6xu008up207601fgvpe`         | Multi-tenancy project ID   |
+| `PROJECT_ID`    | `clxxxxxxxxxxxxxxxxxxxxxxxxx`         | Multi-tenancy project ID   |
 | `DB_CONN`       | `postgresql://user:pass@host:5432/db`| Direct DB connection       |
 
 ---
@@ -91,7 +91,7 @@ Present the template configuration in a structured format:
 ```
 ## Evaluator: factuality (v3)
 
-**Template ID**: cmm66r6xu008up207601fgvpe
+**Template ID**: clxxxxxxxxxxxxxxxxxxxxxxxxx
 **Model**: gpt-4o (azure)
 **Model Params**: {"temperature": 0, "max_tokens": 500}
 **Variables**: input, output

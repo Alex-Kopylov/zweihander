@@ -1,7 +1,7 @@
 {
   "name": "my-plugins",
   "owner": {
-    "name": "jhonsmith"
+    "name": "alex-kopylov"
   },
   "metadata": {
     "description": "A collection of Claude Code plugins for LLM observability, API exploration, and Python development workflows"

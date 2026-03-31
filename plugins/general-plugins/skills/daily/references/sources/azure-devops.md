@@ -62,35 +62,43 @@ az boards work-item show --org https://dev.azure.com/{org} --id {item-id} --expa
 
 ### Pipeline Runs
 
-Fetch pipeline runs from the last 24h:
+Fetch pipeline runs from the last 24h, **scoped to the current repository only**.
 
+Step 1 — List pipelines that belong to this repository:
 ```bash
-az pipelines runs list --org https://dev.azure.com/{org} --project {project} --top 10
+az pipelines list --org https://dev.azure.com/{org} --project {project} --repository {repo} --repository-type tfsgit
 ```
+
+Step 2 — For each pipeline ID returned, fetch recent runs:
+```bash
+az pipelines runs list --org https://dev.azure.com/{org} --project {project} --pipeline-ids {pipeline-id} --top 5
+```
+
+Only include runs from pipelines associated with the current repository. Pipelines from other repos in the same project (e.g. `other-service` when generating a note for `my-app`) must be excluded — they create noise and confuse the reader about what actually happened in their project.
 
 Capture: pipeline name, run number, result (succeeded/failed/canceled), branch, timestamp.
 
 ## Example output
 
-From the `ai-ssp-generation` repo in the `Cybertorch/NCAI` project:
+From the `my-app` repo in the `Acme-Corp/ProjectX` project:
 
 ```markdown
 ## Pull Requests
 
 ### Completed
-- **PR #769** feat(pipeline): enhance Azure pipeline for beta tag handling → `develop`
-- **PR #762** feat(langfuse): add reusable CLI tool for applying tags to prompts → `develop`
+- **PR #42** feat(auth): add OAuth2 support → `develop`
+- **PR #38** feat(api): add pagination to list endpoints → `develop`
 
 ### Active
-- **PR #867** feat(rag): RAG components integration — 2 new comments from @reviewer
+- **PR #51** feat(search): full-text search integration — 2 new comments from @reviewer
 
 ## Work Items
 
 ### Status changes
-- **#6731** Executive risk summary: Active → Resolved
-- **#6877** Risk technical summary generation: New → Active
+- **#101** Implement user dashboard: Active → Resolved
+- **#108** Add export functionality: New → Active
 
 ### Assigned to me
-- **#6852** AI assistant SRCM controls generation (Active)
-- **#5799** Benchmarking pipeline (Active)
+- **#105** API rate limiting (Active)
+- **#99** Monitoring dashboard (Active)
 ```

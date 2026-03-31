@@ -49,7 +49,7 @@ widget_id = cuid_generator()
 ```
 
 The generated CUID follows Langfuse's native ID format (e.g.,
-`cmm66r6xu008up207601fgvpe`).
+`clxxxxxxxxxxxxxxxxxxxxxxxxx`).
 
 ### 3. Build the Widget Configuration
 

@@ -25,14 +25,14 @@ Scan the project root to determine which sources are available. Check each signa
 
 Given this remote:
 ```
-origin  git@ssh.dev.azure.com:v3/Cybertorch/NCAI/ai-ssp-generation (fetch)
+origin  git@ssh.dev.azure.com:v3/Acme-Corp/ProjectX/my-app (fetch)
 ```
 
 And this `.mcp.json`:
 ```json
 {
   "mcpServers": {
-    "azure-devops": { "command": "npx", "args": ["-y", "@azure-devops/mcp", "Cybertorch"] },
+    "azure-devops": { "command": "npx", "args": ["-y", "@azure-devops/mcp", "Acme-Corp"] },
     "azure": { "command": "npx", "args": ["-y", "@azure/mcp", "server", "start"] }
   }
 }
@@ -41,9 +41,9 @@ And this `.mcp.json`:
 Detected sources: `git`, `azure-devops`
 
 **Extracted context from remote URL:**
-- Organization: `Cybertorch`
-- Project: `NCAI`
-- Repository: `ai-ssp-generation`
+- Organization: `Acme-Corp`
+- Project: `ProjectX`
+- Repository: `my-app`
 
 These values are passed to the Azure DevOps source for API/MCP calls.
 

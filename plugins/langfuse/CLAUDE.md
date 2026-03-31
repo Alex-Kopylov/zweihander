@@ -22,7 +22,7 @@ Session 1---* Trace 1---* Observation
 
 `traces`, `observations`, `scores`, `trace_sessions`, `models`, `dashboards`, `dashboard_widgets`, `prompts`, `datasets`, `dataset_items`, `dataset_runs`, `dataset_run_items`, `eval_templates`, `job_configurations`
 
-- ID format: CUID (e.g., `cmm66r6xu008up207601fgvpe`). Langfuse uses CUID v1 (`@default(cuid())` in Prisma). This plugin generates IDs with `cuid2`. Both formats are compatible.
+- ID format: CUID (e.g., `clxxxxxxxxxxxxxxxxxxxxxxxxx`). Langfuse uses CUID v1 (`@default(cuid())` in Prisma). This plugin generates IDs with `cuid2`. Both formats are compatible.
 - Some IDs (e.g., `dataset_runs`, `dataset_run_items`) use UUID v4 format — both CUID and UUID are accepted.
 - All tables have `project_id` column for multi-tenancy
 

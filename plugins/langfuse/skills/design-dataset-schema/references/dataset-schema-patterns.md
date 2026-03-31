@@ -26,8 +26,8 @@ Endpoint: `POST /api/v1/ssp/catalogs/{catalog_id}/{control_id}/generate`
   "control_id": "ac-1",
   "request": {
     "system_characteristics": {
-      "system_name": "Arazuq Secure Platform",
-      "description": "Cloud-native SaaS solution for government contractors",
+      "system_name": "Example Cloud Platform",
+      "description": "Cloud-native SaaS platform for enterprise customers",
       "components": [
         { "type": "software", "title": "Frontend Web Application", "description": "React + Next.js" },
         { "type": "software", "title": "Backend Services", "description": "FastAPI microservices" },
