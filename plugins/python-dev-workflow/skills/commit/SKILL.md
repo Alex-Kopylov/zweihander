@@ -1,6 +1,6 @@
 ---
 name: commit
-description: Commit staged changes following Conventional Commits v1.0.0. Activate when user asks to commit, create a commit, or says /commit.
+description: Commit staged changes following Conventional Commits v1.0.0. Activate when user asks to commit, create a commit, or says /commit. Commits: Conventional Commits (feat|fix|refactor|build|ci|chore|docs|style|perf|test).
 ---
 
 # Commit (Conventional Commits v1.0.0)
@@ -62,13 +62,11 @@ feat(auth): add oauth2 support
 2. Determine the appropriate **type** from the table above
 3. Optionally determine a **scope** (component/module affected)
 4. Write a concise description of what was done
-5. Commit with single-line message:
+5. Keep commits atomic: stage and commit specific paths explicitly.
    ```bash
-   git commit -m "type: description"
-   # or with scope:
-   git commit -m "type(scope): description"
+   git add path/to/file1 path/to/file2 && git commit -m "<scoped message>"
    ```
-6. **Never** include body or footer — single line only
+6. **Never** include body or footer — single line only. No `Co-Authored-By` trailers.
 7. **Never** mention claude or claude code in commit message
 
 ## After Commit
