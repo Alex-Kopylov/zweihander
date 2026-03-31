@@ -71,6 +71,10 @@ feat(auth): add oauth2 support
 6. **Never** include body or footer — single line only
 7. **Never** mention claude or claude code in commit message
 
+## After Commit
+
+Ask whether to push via `AskUserQuestion`. Preview = actual output of `git log @{u}..HEAD --oneline`. If no upstream, show only the new commit and note that push will require `--set-upstream`.
+
 ## Examples
 
 ```
