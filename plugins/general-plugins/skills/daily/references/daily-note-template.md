@@ -30,6 +30,16 @@ Build the base URLs from context extracted during source detection (org, project
 
 > Window: {DD-MM-YYYY} 06:00 — {DD-MM-YYYY} {HH:MM}
 
+## TL;DR
+
+**Yesterday:** {1-3 bullet points — what was actually accomplished, derived from commits, merged PRs, and resolved work items in the window}
+
+**Today:** {1-3 bullet points — what's planned next, derived from active PRs needing attention, in-progress work items, and dirty worktrees with pending work}
+
+**Blockers / Concerns:** {bullet points if any, otherwise "None"}
+
+---
+
 ## Summary
 
 {2-3 sentence high-level summary of the day's activity. What was the main focus? Any blockers or highlights?}
@@ -77,9 +87,9 @@ Build the base URLs from context extracted during source detection (org, project
 
 ## CI/CD
 
-{Only if pipeline/workflow runs happened within the window}
+{Only if pipeline/workflow runs happened within the window. Only include pipelines associated with the current repository — exclude builds from other repos in the same project/org.}
 
-- [**{pipeline-name}** run #{number}]({link}) — {result: succeeded/failed} (`{branch}`)
+- [**{pipeline-name}** #{number}]({link}) — {result: succeeded/failed} (`{branch}`) {start}–{end} UTC
 
 ## Messages
 
@@ -95,6 +105,7 @@ Build the base URLs from context extracted during source detection (org, project
 
 ## Guidelines
 
+- The **TL;DR section** is the first thing people read — it follows classical standup structure. "Yesterday" is synthesized from actual completed work in the window (not just a list of commits). "Today" is inferred from what's in-progress or next up. "Blockers" captures failed pipelines, stale PRs, or anything that might need escalation.
 - Every PR, issue, work item, commit, and pipeline run must be a clickable markdown link
 - Keep it factual, not narrative — this is a reference document, not a story
 - Use the DD-MM-YYYY date format everywhere in the note
