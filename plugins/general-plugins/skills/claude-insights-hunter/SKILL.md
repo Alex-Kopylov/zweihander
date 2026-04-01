@@ -8,6 +8,10 @@ allowed-tools: AskUserQuestion, Read, Write, Agent, TaskCreate, TaskGet, TaskLis
 
 Extract valuable, reusable knowledge from a Claude Code conversation log and store it in the right places so future Claude sessions start smarter.
 
+## References
+
+- `references/writing-conventions.md` — diff format, inline command style, pre-write checklist. Read when writing to files.
+
 ## Agent specs
 
 Read these files before spawning the corresponding agents:
@@ -176,33 +180,46 @@ AskUserQuestion({
 - **Skip**: mark task `skipped`
 
 **Writing rules:**
-- For `CLAUDE.md` files: append to an existing relevant section or add a new one. One insight = 1–3 lines max.
-- For `~/.claude/memory/*.md`: use the memory frontmatter format (name, description, type), add pointer to `MEMORY.md`.
-- Never create a file for a single sentence — group related insights.
-- Prefer editing existing files over creating new ones.
+
+For **CLAUDE.md files** — follow the `revise-claude-md` pattern: show a diff block first, explain why in one line, then apply only after the user confirms "Store":
+
+```
+### Update: {file path}
+**Why:** [one-line reason this helps future sessions]
+
+\`\`\`diff
++ [the addition — keep it brief, one concept per line]
+\`\`\`
+```
+
+For **`~/.claude/memory/*.md`** — use the memory frontmatter format (name, description, type), add a pointer line to `~/.claude/MEMORY.md`. Show the full content in the `preview` before writing.
+
+General: prefer editing existing files over creating new ones. Group related insights into the same file rather than scattering them.
+
+Avoid writing:
+- Generic best practices ("always write tests", "use meaningful names") — universal advice, not session-specific
+- One-off fixes unlikely to recur
+- Verbose explanations — if a one-liner suffices, use it
 
 **Digressions are fine.** If the user wants to explore an item, ask questions, or revisit a decision — go with it. After any side conversation, use `TaskList` to re-orient and resume from where you left off.
 
 ---
 
-## Step 7 — Audit Only What Was Changed
+## Step 7 — Targeted Quality Check on Modified Files
 
-By the end of the interview you have an exact list of files written to. Run a targeted audit scoped to those files only — not the full setup.
+By the end of the interview you have an exact list of files written to. Use `claude-md-management:claude-md-improver` — but scope it mentally to only those files. Do not let it expand into a full repo audit.
 
-For each file that was modified or created:
-1. Read the file
-2. Check whether the new content (the lines you just added) conflicts with, duplicates, or contradicts anything already present in that same file
-3. If the file is `~/.claude/CLAUDE.md` or a project `CLAUDE.md`, also check against the other CLAUDE.md in the same chain (global → project → subdir) for cross-file conflicts
-
-Then invoke the Skill tool to run the full audit only if conflicts were found — pass context to focus on the affected files:
+Invoke it via the Skill tool:
 
 ```
-Skill({ skill: "general-plugins:ai-setup-audit" })
+Skill({ skill: "claude-md-management:claude-md-improver" })
 ```
 
-If no conflicts were found, skip invoking the skill and just report: "No conflicts detected in modified files."
+Before it runs, tell it explicitly: "Focus only on these files that were just modified: [list]. Do not audit pre-existing content — only check whether the new additions conflict with, duplicate, or contradict what was already there."
 
-The point is to catch problems introduced *right now*, not to fix pre-existing issues that were there before this session ran.
+The `claude-md-improver` skill will read the files, score the additions, and flag any issues. Its quality criteria (conciseness, actionability, no obvious info) apply directly to what we just wrote.
+
+If no issues are found, it will say so — no further action needed.
 
 ---
 
@@ -225,5 +242,5 @@ Stored [n] insights, skipped [n].
 ## Hard rules
 
 - Never store secrets, credentials, tokens, or API keys.
-- Keep stored content concise — every word costs future context tokens.
-- The Step 7 conflict check is mandatory. It audits only files touched during this session — never pre-existing issues.
+- Keep it concise — one line per concept.
+- Step 7 (`claude-md-management:claude-md-improver`) is mandatory and must be scoped to only files modified during this session — never a full repo audit of pre-existing content.
