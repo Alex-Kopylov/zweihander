@@ -34,6 +34,13 @@
       "description": "General-purpose utilities for Claude Code setup auditing, configuration management, and workflow optimization",
       "category": "utilities",
       "tags": ["audit", "claude-md", "setup", "configuration", "utilities"]
+    },
+    {
+      "name": "job-hunt-toolkit",
+      "source": "./plugins/job-hunt-toolkit",
+      "description": "Version-controlled job application workspace: tailored CVs with HTML source + PDF export, per-company folders, HR-safe file naming, PDF metadata scrubbing, pre-send checklist, and integrated resume tailoring",
+      "category": "productivity",
+      "tags": ["resume", "cv", "job-hunt", "job-application", "resume-tailoring", "pdf", "exiftool", "workflow"]
     }
   ]
 }

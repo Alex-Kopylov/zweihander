@@ -1,0 +1,5 @@
+{
+  "name": "job-hunt-toolkit",
+  "description": "Version-controlled job application workspace: tailored CVs with HTML source + PDF export, per-company folders, HR-safe file naming, PDF metadata scrubbing, pre-send checklist, and integrated resume tailoring",
+  "version": "0.1.0"
+}

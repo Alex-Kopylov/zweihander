@@ -1,0 +1,85 @@
+---
+company: {{COMPANY}}
+role: {{ROLE}}
+applied: null
+status: drafting
+recruiter: null
+portal: {{PORTAL}}
+comp_band: null
+referral: null
+deadline: null
+priority: medium
+created: {{DATE}}
+---
+
+# {{COMPANY}} — {{ROLE}}
+
+## Status
+
+- **{{DATE}}**: started application
+
+## Company snapshot
+
+- **Mission**:
+- **Stack**:
+- **Size / stage**:
+- **HQ / remote policy**:
+- **Recent news** (last 90 days):
+
+## Why them (angle)
+
+Why are YOU interested? What resonates with the mission, stack, or team?
+
+-
+
+## Why me (pitch)
+
+What's the 30-second elevator pitch that matches YOUR background to THIS role?
+
+-
+
+## Key JD requirements
+
+Pull from `job_description.md`. Split into:
+
+**Must-have:**
+-
+
+**Nice-to-have:**
+-
+
+**Red flags (if any):**
+-
+
+## Gaps to address
+
+Skills/experience the JD calls for that you don't have directly. Plan: reframe, cover in letter, or acknowledge.
+
+-
+
+## Tailoring plan
+
+What sections of the master CV need to shift emphasis? Which bullets get reordered / dropped / rewritten?
+
+-
+
+## Interview prep (fill after recruiter screen)
+
+- **Format**:
+- **Rounds**:
+- **Interviewers**:
+- **Topics to prep**:
+
+## Questions to ask them
+
+-
+
+## Followups
+
+| Date | Channel | What |
+|---|---|---|
+|  |  |  |
+
+## Notes
+
+Freeform. Anything that doesn't fit above.

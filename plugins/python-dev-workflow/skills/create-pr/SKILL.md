@@ -1,6 +1,6 @@
 ---
 name: create-pr
-description: ""
+description: Create a pull request from the current branch. Activate when user asks to create a PR, open a pull request, submit for review, or says /create-pr.
 ---
 
 # Create Pull Request
@@ -54,3 +54,4 @@ description: ""
 - PR body is always empty
 - Never mention claude in PR title
 - Ticket number is required unless user explicitly says there is none
+- After creating the PR, display a clickable hyperlink to the PR URL in the final message
