@@ -6,7 +6,7 @@ Rules Claude follows when this plugin is active and the user is working on job a
 
 Default workspace path: `~/Documents/job_seaking`. Override via env var `JOB_HUNT_WORKSPACE`.
 
-If the user is inside a detected workspace (has `CLAUDE.md` referencing this plugin OR a master `Aleksei_Kopylov_*_CV.html` at the root), apply the rules below automatically. Otherwise, offer to run `init-workspace` first.
+If the user is inside a detected workspace (has `CLAUDE.md` referencing this plugin OR a master `*_CV.html` at the root matching `<First>_<Last>_<Role>_CV.html`), apply the rules below automatically. Otherwise, offer to run `init-workspace` first.
 
 ## Hard rules
 

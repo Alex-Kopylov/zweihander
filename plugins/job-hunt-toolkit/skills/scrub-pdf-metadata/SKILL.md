@@ -20,7 +20,7 @@ This skill strips all of it with `exiftool` and resets a clean Author.
 ## Inputs
 
 - **PDF file** (argument, required): absolute path preferred.
-- **Author** (optional `--author=`): name to set as the clean Author. Defaults to what Claude can infer from memory/context (e.g. "Aleksei Kopylov"). Ask if unsure.
+- **Author** (optional `--author=`): name to set as the clean Author. Claude infers from memory/context (user's name as it appears on the CV). If unclear, ask the user via AskUserQuestion before proceeding.
 
 ## Preconditions
 
@@ -134,7 +134,7 @@ Ready for sending. Run /job-hunt-toolkit:prepare-to-send for the full pre-send c
 
 ## Why this matters
 
-Recruiters and hiring managers sometimes open `File → Properties` on a PDF. ATS tools routinely parse PDF metadata. If your `Title` says "Aleksei_Kopylov_CV_Tailored_for_OpenAI_v3" and you apply to Anthropic, that's a rejection waiting to happen.
+Recruiters and hiring managers sometimes open `File → Properties` on a PDF. ATS tools routinely parse PDF metadata. If your `Title` says "<First>_<Last>_CV_Tailored_for_OpenAI_v3" and you apply to Anthropic, that's a rejection waiting to happen.
 
 ## References
 

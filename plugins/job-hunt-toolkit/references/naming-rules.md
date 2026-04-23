@@ -25,8 +25,8 @@ HR recruiters and ATS systems often see only the filename. A good filename makes
 ### Master (at workspace root) — HTML + PDF pair, same stem
 
 ```
-Aleksei_Kopylov_AI_LLM_ML_Engineer_CV.html
-Aleksei_Kopylov_AI_LLM_ML_Engineer_CV.pdf
+<First>_<Last>_<Role>_CV.html
+<First>_<Last>_<Role>_CV.pdf
 ```
 
 ### Tailored (inside company folder)
@@ -34,18 +34,18 @@ Aleksei_Kopylov_AI_LLM_ML_Engineer_CV.pdf
 Same filename shape as master — the role may shift to match the JD, but no company tag:
 
 ```
-openai/Aleksei_Kopylov_LLM_Engineer_CV.html
-openai/Aleksei_Kopylov_LLM_Engineer_CV.pdf
-anthropic/Aleksei_Kopylov_AI_Engineer_CV.html
-anthropic/Aleksei_Kopylov_AI_Engineer_CV.pdf
-acme_robotics/Aleksei_Kopylov_Senior_ML_Engineer_CV.html
-acme_robotics/Aleksei_Kopylov_Senior_ML_Engineer_CV.pdf
+openai/<First>_<Last>_LLM_Engineer_CV.html
+openai/<First>_<Last>_LLM_Engineer_CV.pdf
+anthropic/<First>_<Last>_AI_Engineer_CV.html
+anthropic/<First>_<Last>_AI_Engineer_CV.pdf
+acme_robotics/<First>_<Last>_Senior_ML_Engineer_CV.html
+acme_robotics/<First>_<Last>_Senior_ML_Engineer_CV.pdf
 ```
 
 ### Cover letters
 
 ```
-Aleksei_Kopylov_LLM_Engineer_Cover_Letter.pdf
+<First>_<Last>_<Role>_Cover_Letter.pdf
 ```
 
 ## Anti-patterns — DO NOT
@@ -54,11 +54,11 @@ Aleksei_Kopylov_LLM_Engineer_Cover_Letter.pdf
 |---|---|
 | `cv.pdf` | Invisible in a recruiter's Downloads folder |
 | `resume-final-v2-ACTUAL-FINAL.pdf` | Signals chaos and poor attention to detail |
-| `Kopylov Aleksei CV AI \| LLM \| ML Engineer.pdf` | Pipes break ATS parsers; spaces break URLs |
-| `Kopylov Aleksei CV AI, LLM, Machine Learning Engineer, Data Scienetist.pdf` | Typo, commas, too long |
-| `Aleksei_Kopylov_LLM_Engineer_CV_OpenAI.pdf` | Company name in filename screams "tailored for you" |
+| `Lastname Firstname CV AI \| LLM \| ML Engineer.pdf` | Pipes break ATS parsers; spaces break URLs |
+| `Lastname Firstname CV AI, LLM, Machine Learning Engineer, Data Scienetist.pdf` | Typo, commas, too long |
+| `<First>_<Last>_LLM_Engineer_CV_OpenAI.pdf` | Company name in filename screams "tailored for you" |
 | `resume_openai.pdf` | Can't identify candidate from filename alone |
-| `AlekseiKopylov-CV.pdf` | Hyphens inconsistent; no role; CamelCase with hyphen is a mess |
+| `FirstnameLastname-CV.pdf` | Hyphens inconsistent; no role; CamelCase with hyphen is a mess |
 
 ## Company folder naming
 
@@ -78,7 +78,7 @@ hugging_face/
 
 Three reasons:
 
-1. **Tailoring tell.** HR sees `Aleksei_Kopylov_CV_OpenAI.pdf` and knows immediately you reworked this for OpenAI. That signals lower confidence in your fit.
+1. **Tailoring tell.** HR sees `<First>_<Last>_CV_OpenAI.pdf` and knows immediately you reworked this for OpenAI. That signals lower confidence in your fit.
 2. **Forwarding hazard.** Recruiters forward CVs internally. `..._OpenAI.pdf` landing in an Anthropic recruiter's inbox — awkward.
 3. **ATS behavior.** Some ATS systems store original filenames in their search index. If you apply to Company A and later to Company B with a CV still carrying A's name in the filename, it can surface in unexpected ways.
 
