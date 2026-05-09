@@ -1,5 +1,24 @@
 #!/bin/bash
-# Sync document and utility skills from anthropic/skills repository
+# Sync specific skills from anthropics/skills (github.com/anthropics/skills)
+#
+# This script synchronizes a curated set of document processing and utility skills
+# from Anthropic's official Agent Skills repository into the local marketplace.
+#
+# Synced skills:
+#   - pdf, pptx, xlsx, docx → plugins/file-manager/ (document processing)
+#   - skill-creator → plugins/general-plugins/ (skill creation utilities)
+#
+# Strategy:
+#   - Uses git sparse-checkout for selective sync (only needed folders)
+#   - Maintains a shallow clone in .upstream/ for efficient updates
+#   - Replaces skill folders entirely (no merging or conflict resolution)
+#   - Preserves original LICENSE.txt and all supporting files
+#
+# Licensing:
+#   - Document skills (pdf, pptx, xlsx, docx): Anthropic source-available
+#   - skill-creator: Apache 2.0 open source
+#
+# See: bin/README.md for full documentation
 
 set -e
 
