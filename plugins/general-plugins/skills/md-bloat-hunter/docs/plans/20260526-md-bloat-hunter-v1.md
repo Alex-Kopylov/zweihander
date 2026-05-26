@@ -104,10 +104,12 @@ Per-detector taxonomy lives **inside** each agent file (taxonomy, examples, what
 
 ### Task 1: Review and refine references/schema.json
 
-- [ ] Re-read existing `references/schema.json` against the SPEC's `Finding schema` section and confirm: SGR ordering reflected in property order, all 4 specialist enum values present, `justification` requirement noted (vocab swaps must defend equivalence), absent fields (id, estimated_token_delta, scanned_at, specialist_version) deliberately omitted
-- [ ] Hand-author one valid sample `SpecialistOutput` JSON covering all 4 detector types and run `jsonschema -i sample.json references/schema.json` — must validate
-- [ ] Hand-author a deliberately invalid sample (missing required field, wrong enum) and confirm `jsonschema` rejects it
-- [ ] Patch schema.json if gaps surface; otherwise leave it untouched and note "no changes needed" in the task notes
+- [x] Re-read existing `references/schema.json` against the SPEC's `Finding schema` section and confirm: SGR ordering reflected in property order, all 4 specialist enum values present, `justification` requirement noted (vocab swaps must defend equivalence), absent fields (id, estimated_token_delta, scanned_at, specialist_version) deliberately omitted
+- [x] Hand-author one valid sample `SpecialistOutput` JSON covering all 4 detector types and run `jsonschema -i sample.json references/schema.json` — must validate
+- [x] Hand-author a deliberately invalid sample (missing required field, wrong enum) and confirm `jsonschema` rejects it
+- [x] Patch schema.json if gaps surface; otherwise leave it untouched and note "no changes needed" in the task notes
+
+Task notes: patched `schema.json` to enforce non-empty `justification` for vocab findings, allow nullable context/justification fields per SPEC, and enforce `new_text: null` for delete actions.
 
 ### Task 2: Add references/calibrate-hunger.md (shared intensity rubric)
 

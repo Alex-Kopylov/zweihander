@@ -58,17 +58,53 @@
         "semantic_risk",
         "confidence"
       ],
+      "allOf": [
+        {
+          "if": {
+            "properties": { "type": { "const": "vocab" } },
+            "required": ["type"]
+          },
+          "then": {
+            "required": ["justification"],
+            "properties": {
+              "justification": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "action": { "const": "delete" } },
+            "required": ["action"]
+          },
+          "then": {
+            "properties": {
+              "new_text": { "type": "null" }
+            }
+          },
+          "else": {
+            "properties": {
+              "new_text": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        }
+      ],
       "properties": {
         "excerpt": {
           "type": "string",
           "description": "preliminary_analysis (SGR phase 1): verbatim quote from file"
         },
         "context_before": {
-          "type": "string",
+          "type": ["string", "null"],
           "description": "preliminary_analysis: ~30 chars before, only if excerpt is not unique in the file"
         },
         "context_after": {
-          "type": "string",
+          "type": ["string", "null"],
           "description": "preliminary_analysis: ~30 chars after, same condition"
         },
         "type": {
@@ -95,8 +131,8 @@
           "description": "proposal: null when action='delete'; otherwise the replacement text"
         },
         "justification": {
-          "type": "string",
-          "description": "proposal: required when type='vocab' (defend equivalence)"
+          "type": ["string", "null"],
+          "description": "proposal: required and non-empty when type='vocab' (defend equivalence); optional otherwise"
         },
         "semantic_risk": {
           "type": "string",
