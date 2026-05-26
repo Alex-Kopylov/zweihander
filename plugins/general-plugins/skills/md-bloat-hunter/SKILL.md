@@ -43,6 +43,7 @@ Before dispatching, read:
 - `SPEC.md`
 - `agents/file-orchestrator.md`
 - `references/schema.json`
+- `references/reduced-schema.json`
 
 Read detector agent files only when you need to debug a file-orchestrator
 failure. The file orchestrator owns detector dispatch.
@@ -82,17 +83,28 @@ any file orchestrators:
 uv tool install jsonschema
 ```
 
-Create one `run_id` for the whole audit and pass it to every file
-orchestrator.
+Create one `run_id` for the whole audit. Then create one private run output
+directory and pass both values to every file orchestrator:
+
+```sh
+umask 077
+mktemp -d "${TMPDIR:-/tmp}/md-bloat-hunter.${run_id}.XXXXXX"
+```
+
+The run output directory contains detector JSON with audited file excerpts, so
+it must be mode `700` and must not use a shared predictable path. Keep the
+directory for post-run debugging and include it in the final report; the user may
+remove it after reviewing the run.
 
 Before any write, verify every target file is tracked in a git worktree and clean.
+Quote every shell path argument in these checks.
 For each target file:
 
-1. Resolve the git root with `git -C <file-directory> rev-parse --show-toplevel`.
+1. Resolve the git root with `git -C "<file-directory>" rev-parse --show-toplevel`.
 2. Confirm the file is tracked with
-   `git -C <repo-root> ls-files --error-unmatch -- <file>`.
+   `git -C "<repo-root>" ls-files --error-unmatch -- "<file>"`.
 3. Confirm the file has no staged or unstaged changes with
-   `git -C <repo-root> status --porcelain -- <file>`.
+   `git -C "<repo-root>" status --porcelain -- "<file>"`.
 4. Record a preflight content hash for each target file after the clean check.
 
 If any target file is outside a git worktree, untracked, staged, or dirty, stop
@@ -114,6 +126,7 @@ For each worker, provide:
 
 - The absolute markdown file path.
 - The shared `run_id`.
+- The private run output directory.
 - The absolute path to the `md-bloat-hunter` skill directory.
 - Provide the absolute path to `agents/file-orchestrator.md`.
 - The instruction to read and follow that absolute file-orchestrator path
@@ -126,6 +139,17 @@ file orchestrator to finish before aggregating results.
 
 If a file orchestrator returns malformed JSON, record that file as failed and
 continue aggregating the other files.
+
+For every parsed file-orchestrator result, write the object to a validation file
+inside the private run output directory and validate it before aggregation:
+
+```sh
+jsonschema -i "<reduced-output-path>" "references/reduced-schema.json"
+```
+
+Run validation from the `md-bloat-hunter` skill directory. Quote every shell path
+argument. If reduced-output validation fails, record that file orchestrator as
+failed and do not write findings from that file.
 
 ## Aggregation
 
@@ -277,6 +301,7 @@ After writer execution, report:
 - file paths touched
 - file paths with file-orchestrator failures
 - any writer failure messages
+- private run output directory
 
 If no findings are approved, report that no files were changed.
 

@@ -16,6 +16,10 @@
     "capabilities": [
       "Read",
       "Write"
+    ],
+    "defaultPrompt": [
+      "Audit a markdown file for bloat",
+      "Trim verbosity in these docs"
     ]
   }
 }

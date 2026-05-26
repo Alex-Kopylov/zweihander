@@ -66,7 +66,9 @@ Cross-file redundancy is **not** in v1.
 
 **Output validation loop (each detector)**:
 1. Generate JSON output for the audited file.
-2. Write to `/tmp/md-bloat-hunter/<run_id>/<file_hash>/<detector>.json`.
+2. Write to `<run_output_dir>/<file_hash>/<detector>.json`, where
+   `run_output_dir` is a per-run private directory created with `umask 077` and
+   `mktemp -d "${TMPDIR:-/tmp}/md-bloat-hunter.${run_id}.XXXXXX"`.
 3. Run `jsonschema -i <output_path> references/schema.json`.
 4. If validation fails, read the error and retry with self-correction.
 5. Repeat steps 2–4 up to **3 attempts total**.
@@ -84,7 +86,7 @@ Cross-file redundancy is **not** in v1.
 
 **Top orchestrator gating**: partition findings by `semantic_risk` — `none` / `low` / `medium` auto-apply; `high` triggers AskUserQuestion per finding with AI-recommended option. Specialists are instructed: when in doubt about risk, round up.
 
-**Writer**: read file → string-match `excerpt` (with `context_before` / `context_after` if present) → replace with `new_text` or delete the span if `action == "delete"` → write file back. Hard error on excerpt-not-found (no partial application, no silent fallback). Findings within a file apply in source order; if applying finding N invalidates finding M's excerpt, finding M fails loudly and user re-runs.
+**Writer**: read file → string-match `excerpt` (with `context_before` / `context_after` if present) → replace with `new_text` or delete the span if `action == "delete"` → write file back. Hard error on excerpt-not-found: the failed finding is not written, later findings in that file are not applied, and earlier successful findings remain applied and reported. Findings within a file apply in source order; if applying finding N invalidates finding M's excerpt, finding M fails loudly and user re-runs.
 
 **On-disk layout** (target state at end of plan):
 
@@ -100,6 +102,7 @@ Cross-file redundancy is **not** in v1.
 │   └── vocab-compressor.md
 └── references/
     ├── schema.json                   # already present; reviewed in Task 1
+    ├── reduced-schema.json           # file-orchestrator reduced output schema
     └── calibrate-hunger.md           # intensity rubric (shared)
 ```
 

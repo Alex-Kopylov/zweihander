@@ -156,13 +156,16 @@ calibration threshold.
 Validate your output before returning it.
 
 1. Generate the JSON output.
-2. Write it to `/tmp/md-bloat-hunter/<run_id>/<file_hash>/redundancy-detector.json`.
-   Use a short deterministic hash of the absolute file path for `file_hash`
-   when possible.
+2. Write it to `<run_output_dir>/<file_hash>/redundancy-detector.json`.
+   Use the private run output directory provided by the file orchestrator. If it
+   was not provided, create it with `umask 077` and
+   `mktemp -d "${TMPDIR:-/tmp}/md-bloat-hunter.${run_id}.XXXXXX"`. Require the
+   run output directory to be mode `700`. Use a short deterministic hash of the
+   absolute file path for `file_hash` when possible.
 3. Run:
 
    ```sh
-   jsonschema -i /tmp/md-bloat-hunter/<run_id>/<file_hash>/redundancy-detector.json references/schema.json
+   jsonschema -i "<run_output_dir>/<file_hash>/redundancy-detector.json" "references/schema.json"
    ```
 
    Run it from the `md-bloat-hunter` skill directory so the schema path
@@ -179,7 +182,7 @@ Output only the path to the JSON file you wrote, followed by one validation
 status line:
 
 ```text
-/tmp/md-bloat-hunter/<run_id>/<file_hash>/redundancy-detector.json
+<run_output_dir>/<file_hash>/redundancy-detector.json
 validation: passed
 ```
 

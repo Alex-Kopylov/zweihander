@@ -94,7 +94,9 @@ Finding:
 Each detector validates its own output against `references/schema.json` before returning. Protocol:
 
 1. Generate JSON output for the audited file.
-2. Write to `/tmp/md-bloat-hunter/<run_id>/<file_hash>/<detector>.json`.
+2. Write to `<run_output_dir>/<file_hash>/<detector>.json`, where
+   `run_output_dir` is a per-run private directory created with `umask 077` and
+   `mktemp -d "${TMPDIR:-/tmp}/md-bloat-hunter.${run_id}.XXXXXX"`.
 3. Run `jsonschema -i <output_path> references/schema.json`.
 4. If validation fails, read the error and retry with self-correction.
 5. Repeat steps 2–4 up to **3 attempts total**.
@@ -154,7 +156,11 @@ For each finding, applied per file:
 3. Replace match with `proposal.new_text`, or delete the span if `proposal.action == "delete"`.
 4. Write file back.
 
-**Failure mode is hard error.** If excerpt is not found verbatim, the writer stops on that finding and reports. No partial application, no silent fallback. An unfindable excerpt is a hallucination, not a recoverable state.
+**Failure mode is hard error.** If excerpt is not found verbatim, the writer
+stops on that finding and reports. It does not write the failed finding, does
+not continue to later findings in that file, and does not use silent fallback.
+Earlier successful findings in that file remain applied and are reported. An
+unfindable excerpt is a hallucination, not a recoverable state.
 
 **Finding ordering within a file:** apply in source order. If applying finding N invalidates finding M's excerpt (its quoted text changed), finding M fails loudly. The user re-runs to pick up shifted findings. No retry logic in v1.
 
@@ -174,6 +180,7 @@ For each finding, applied per file:
 │   └── vocab-compressor.md
 └── references/
     ├── schema.json                   # JSON Schema (draft 2020-12) — source of truth, used by jsonschema CLI
+    ├── reduced-schema.json           # file-orchestrator reduced output schema
     └── calibrate-hunger.md           # intensity rubric (shared)
 ```
 

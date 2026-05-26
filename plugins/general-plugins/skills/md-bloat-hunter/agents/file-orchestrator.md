@@ -11,14 +11,19 @@ best reduced list for this one file.
 ## Input
 
 You receive one absolute markdown file path from the top orchestrator. You may
-also receive a `run_id`, the absolute `md-bloat-hunter` skill directory, and
-the absolute path to this file. If no `run_id` is provided, create a short one
-from the current timestamp and pass the same value to every detector.
+also receive a `run_id`, a private run output directory, the absolute
+`md-bloat-hunter` skill directory, and the absolute path to this file. If no
+`run_id` is provided, create a short one from the current timestamp and pass the
+same value to every detector. If no run output directory is provided, create one
+with `umask 077` and `mktemp -d "${TMPDIR:-/tmp}/md-bloat-hunter.${run_id}.XXXXXX"`.
+Require the run output directory to be mode `700`.
 
 Before dispatching, read:
 
 - The target markdown file.
 - `references/schema.json`, from the absolute `md-bloat-hunter` skill directory.
+- `references/reduced-schema.json`, from the absolute `md-bloat-hunter` skill
+  directory.
 - These detector agent files, resolved from that same absolute directory:
   - `agents/redundancy-detector.md`
   - `agents/verbosity-pruner.md`
@@ -36,7 +41,7 @@ file, the detector agent files, and the top-orchestrator input.
 
 Spawn the four detector agents in parallel with the Agent tool. Treat Agent as
 Claude Code's Task tool for this workflow. Give each agent the same absolute
-file path and the same `run_id`. Pass the absolute skill directory and the absolute detector agent file path.
+file path, the same `run_id`, and the same private run output directory. Pass the absolute skill directory and the absolute detector agent file path.
 Instruct each detector to read and follow that path rather than inferring a
 relative location.
 
@@ -56,7 +61,7 @@ queue the detectors or run them one after another.
 For each detector result:
 
 1. Parse only the first non-empty line as the detector output path.
-2. Resolve the path and require it to stay under `/tmp/md-bloat-hunter/<run_id>/`.
+2. Resolve the path and require it to stay under the private run output directory.
    Reject paths outside that run directory, paths whose basename is not the
    expected `<detector>.json`, and paths returned by the wrong detector.
 3. Read the resolved JSON file path.
@@ -207,7 +212,7 @@ Allowed `detector_status[].status` values are `"included"`, `"partial"`, and
     {
       "specialist": "redundancy-detector",
       "status": "included",
-      "output_path": "/tmp/md-bloat-hunter/<run_id>/<file_hash>/redundancy-detector.json",
+      "output_path": "<run_output_dir>/<file_hash>/redundancy-detector.json",
       "findings_included": 0,
       "notes": "short status note"
     }
@@ -256,6 +261,16 @@ for the top orchestrator's risk gate. The top orchestrator still decides
 whether to auto-apply or ask the user based on `semantic_risk`.
 
 ## Final Response
+
+Before returning, write the reduced JSON object to a temporary file inside the
+private run output directory and validate it:
+
+```sh
+jsonschema -i "<reduced-output-path>" "references/reduced-schema.json"
+```
+
+Run validation from the `md-bloat-hunter` skill directory and quote every shell
+path argument. If validation fails, correct the reduced JSON before returning it.
 
 Output only the reduced JSON object. Do not include markdown fences, preamble,
 or a summary.
