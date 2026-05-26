@@ -141,11 +141,13 @@ Task notes: added `agents/verbosity-pruner.md`; smoke fixture `/tmp/md-bloat-hun
 
 ### Task 5: Build agents/filler-eliminator.md
 
-- [ ] Write the agent file: detector role (pure deletes — span contributes nothing), finding shape (1 span, delete-only — `action: "delete"`, `new_text: null`)
-- [ ] Embed filler taxonomy inline: empty connectives ("As we discussed above"), restated headings (heading text repeated as opening sentence), "designed to help you…" intros, transitional filler
-- [ ] Embed what-NOT-to-flag examples (clarifying context that looks like filler but isn't; bridging sentences that aid flow)
-- [ ] Reference `references/calibrate-hunger.md`; embed SGR output protocol, "round up on risk", and 3-attempt validation loop
-- [ ] Smoke run: fixture MD file with one obvious filler span; verify a valid `SpecialistOutput` with `action: "delete"`
+- [x] Write the agent file: detector role (pure deletes — span contributes nothing), finding shape (1 span, delete-only — `action: "delete"`, `new_text: null`)
+- [x] Embed filler taxonomy inline: empty connectives ("As we discussed above"), restated headings (heading text repeated as opening sentence), "designed to help you…" intros, transitional filler
+- [x] Embed what-NOT-to-flag examples (clarifying context that looks like filler but isn't; bridging sentences that aid flow)
+- [x] Reference `references/calibrate-hunger.md`; embed SGR output protocol, "round up on risk", and 3-attempt validation loop
+- [x] Smoke run: fixture MD file with one obvious filler span; verify a valid `SpecialistOutput` with `action: "delete"`
+
+Task notes: added `agents/filler-eliminator.md`; smoke fixture `/tmp/md-bloat-hunter-task5-fixture.md` produced `/tmp/md-bloat-hunter/task5-smoke/89461dffe4c0/filler-eliminator.json`, which validates against `references/schema.json` and contains filler findings with `action: "delete"` and `new_text: null`.
 
 ### Task 6: Build agents/vocab-compressor.md
 
