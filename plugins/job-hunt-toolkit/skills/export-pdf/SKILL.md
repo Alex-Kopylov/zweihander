@@ -1,6 +1,6 @@
 ---
 name: export-pdf
-description: Use when the user asks to "export the PDF", "regenerate PDF", "build PDF from HTML", "convert HTML CV to PDF", "refresh the PDF", "HTML to PDF", or after editing a CV HTML and needs a fresh PDF. Converts an HTML CV into a PDF using headless Chromium, ensuring consistent rendering across all applications.
+description: Use when the user asks to "export the PDF", "regenerate PDF", "build PDF from HTML", "convert HTML CV to PDF", "refresh the PDF", "HTML to PDF", "render CV to PDF", "produce PDF from HTML", "generate PDF", or after editing a CV HTML and needs a fresh PDF. Converts an HTML CV into a PDF using headless Chromium, ensuring consistent rendering across all applications.
 argument-hint: [html-file] (optional; defaults to the current file context or detected CV)
 allowed-tools: Read, Bash, Glob, AskUserQuestion
 ---
@@ -14,7 +14,7 @@ Convert an HTML CV to PDF using headless Chromium. Every PDF in the workspace co
 - After any edit to a CV HTML file
 - When regenerating the master PDF after the master HTML changes
 - When initial scaffolding needs a PDF export
-- Called internally by `new-application` (NO — actually NOT called there; HTML gets tailored first) and by `prepare-to-send` (checks PDF is fresh).
+- Invoked manually by the user after editing HTML. Also called by `prepare-to-send` to verify PDF freshness. NOT called by `new-application` (user tailors HTML first, then runs export-pdf).
 
 ## Inputs
 
@@ -62,10 +62,10 @@ Fail fast if not.
 Use `scripts/html-to-pdf.sh` which wraps the browser invocation. Call it with absolute paths:
 
 ```bash
-bash <plugin-root>/skills/export-pdf/scripts/html-to-pdf.sh <html-absolute-path> <pdf-absolute-path>
+bash ${CLAUDE_PLUGIN_ROOT}/skills/export-pdf/scripts/html-to-pdf.sh <html-absolute-path> <pdf-absolute-path>
 ```
 
-Where `<plugin-root>` resolves to the plugin's root directory.
+Where `${CLAUDE_PLUGIN_ROOT}` resolves to the plugin's root directory.
 
 ### 3. Verify output
 
@@ -73,19 +73,47 @@ Where `<plugin-root>` resolves to the plugin's root directory.
 - File size > 1KB (anything smaller is a failed render)
 - If `exiftool` is installed, print a quick summary of PDF metadata so the user sees what leaked in
 
-### 4. Report
+### 3b. Sanity-check PDF content
+
+Use the Read tool to read the produced PDF and inspect its text content. If the content contains any of the following strings, the render almost certainly captured a browser error page rather than the CV:
+
+- `This page isn't working`
+- `ERR_CONNECTION_REFUSED`
+- `chrome-error://`
+- `This site can't be reached`
+- `HTTP ERROR`
+
+If any such string is found, fail immediately:
+
+```
+ERROR: PDF content suggests render failure; re-run export-pdf or inspect HTML.
+```
+
+Do NOT report success or proceed to scrubbing if this check fails.
+
+### 4. Scrub metadata
+
+Auto-invoke `scrub-pdf-metadata` on the produced PDF as the final step:
+
+```
+/job-hunt-toolkit:scrub-pdf-metadata <pdf-absolute-path>
+```
+
+Every exported PDF is scrubbed, even when attached directly without `prepare-to-send`.
+
+### 5. Report
 
 ```
 ✓ Exported: <html-filename> → <pdf-filename>
   Size: <bytes>
-  Note: PDF metadata has not been scrubbed. Run /job-hunt-toolkit:prepare-to-send before attaching.
+  Metadata scrubbed.
 ```
 
 ## Hard rules
 
 - **Use the same tool (Chromium) every time.** Cross-application rendering consistency matters. Never fall back to weasyprint or wkhtmltopdf even if Chromium is missing — prompt the user to install it.
 - **Use absolute paths.** Chromium's `--print-to-pdf` writes to CWD otherwise, which is unpredictable across tool calls.
-- **Do NOT scrub metadata in this skill.** Scrubbing is the responsibility of `scrub-pdf-metadata`, called by `prepare-to-send`. Separation of concerns: this skill only produces the PDF.
+- **Always scrub metadata after export.** This skill auto-invokes `scrub-pdf-metadata` as its final step. `prepare-to-send` still verifies scrubbing as a gate, but scrubbing can no longer be bypassed by exporting and attaching directly.
 - **Warn if the HTML has never-rendered markers** like `TODO`, `<!-- draft -->`, `[placeholder]` — these will appear in the PDF unless scrubbed at HTML level.
 
 ## Error handling
@@ -101,5 +129,10 @@ Where `<plugin-root>` resolves to the plugin's root directory.
 ## After export
 
 Remind user:
-1. Visual review the PDF (open it, check layout)
-2. Run `/job-hunt-toolkit:prepare-to-send` before attaching to any application
+1. Visually review the PDF (open it, check layout)
+2. Metadata has already been scrubbed by this skill
+3. Run `/job-hunt-toolkit:prepare-to-send` before attaching to any application for a final freshness and content check
+
+## Gotchas
+
+- Chromium's `--print-to-pdf` writes to CWD unless given an absolute path. `html-to-pdf.sh` handles this by building absolute paths — always pass absolute paths to it.

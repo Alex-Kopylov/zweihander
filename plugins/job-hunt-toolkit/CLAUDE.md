@@ -4,22 +4,19 @@ Rules Claude follows when this plugin is active and the user is working on job a
 
 ## Workspace
 
-Default workspace path: `~/Documents/job_seaking`. Override via env var `JOB_HUNT_WORKSPACE`.
+Default workspace path: `~/Documents/job_seeking`. Override via env var `JOB_HUNT_WORKSPACE`.
 
 If the user is inside a detected workspace (has `CLAUDE.md` referencing this plugin OR a master `*_CV.html` at the root matching `<First>_<Last>_<Role>_CV.html`), apply the rules below automatically. Otherwise, offer to run `init-workspace` first.
 
 ## Hard rules
 
 - **HTML is the source, PDF is the export.** Never hand-edit PDFs. Edit HTML → regenerate PDF via `export-pdf` skill.
-- **Master is sacred.** `<workspace-root>/<name>_CV.html` / `.pdf` at the workspace root is canonical and read-only in Claude's view. Tailored variants live in `<workspace-root>/<company>/`.
-- **File naming is strict.** Follow `references/naming-rules.md`. Summary:
-  - `<First>_<Last>_<Role>_<DocType>.<ext>` — underscores only, ASCII only, no spaces, no pipes, no commas
-  - **NEVER embed the company name in a filename.** That's the #1 tailoring tell.
-- **Company folder naming.** lowercase with underscores (`acme_robotics/`, never `Acme Robotics/` or `acme-robotics/`).
-- **Atomic commits.** HTML + PDF always commit together. Never one without the other. Commit message: `add: <company> — <role>` or `update: <company> — <reason>`.
+- **Master HTML is edit-guarded.** Master HTML at workspace root is canonical. Claude MUST call AskUserQuestion for explicit user confirmation before modifying the master HTML. The master PDF is a build artifact and may be overwritten freely. Tailored variants live in `<workspace-root>/<company>/`.
+- **File naming is strict.** See `references/naming-rules.md` for the canonical naming rules.
+- **Company folder naming.** See `references/naming-rules.md` for the canonical naming rules.
 - **Metadata scrubbing is mandatory before any PDF leaves the workspace.** Always run `scrub-pdf-metadata` before reporting a CV as "ready to send". No exceptions.
 - **Never fabricate experience.** Only rephrase / re-order / emphasize what the master CV already contains. If the JD requires something absent, flag it to the user — do not invent.
-- **Never leak secrets.** Salary offers, recruiter private contacts, passport numbers, home addresses — never commit without explicit user confirmation.
+- **Never leak secrets.** Salary offers, recruiter private contacts, passport numbers, home addresses — never include in shared artifacts without explicit user confirmation.
 
 ## Tool expectations
 
@@ -27,7 +24,6 @@ If the user is inside a detected workspace (has `CLAUDE.md` referencing this plu
 |---|---|---|
 | PDF metadata inspect/strip | `exiftool` | `brew install exiftool` |
 | HTML → PDF | Chromium / Chrome headless | Any Chromium browser on `PATH` |
-| Version tracking | `git` | comes with macOS CLT |
 
 If a required tool is missing, say so loudly. Do NOT silently fall back to a worse tool — inconsistent PDFs across applications are a red flag. One tool, always the same tool.
 
@@ -47,7 +43,8 @@ Match user intent to the right skill:
 ## Skill chaining
 
 - `new-application` should copy master HTML, then hand off to `resume-tailoring`.
-- `prepare-to-send` should call `scrub-pdf-metadata` internally before declaring the file ready.
+- `export-pdf` auto-invokes `scrub-pdf-metadata` as its final step. Every exported PDF is scrubbed.
+- `prepare-to-send` verifies scrubbing as a gate before declaring the file ready.
 - `export-pdf` is a utility any skill can call after HTML edits.
 
 ## Reference docs
@@ -58,9 +55,3 @@ Shared across skills — read these when a skill asks you to:
 - `references/workspace-layout.md` — directory structure
 - `references/application-lifecycle.md` — end-to-end flow
 
-## Gotchas
-
-- PDFs diff as opaque binaries in git. HTML diffs cleanly — that's where the real version history lives.
-- Stripping metadata with `exiftool -all=` removes EVERYTHING including the author. After stripping, set a clean `Author` back. Example in `skills/scrub-pdf-metadata/references/exiftool-commands.md`.
-- Chromium's `--print-to-pdf` writes to the current working directory unless given an absolute path. Use absolute paths always.
-- Some HTML templates embed the source file path in headers/footers via `@page`. That leaks into the PDF. Scan PDF text for path-like strings during pre-send checklist.

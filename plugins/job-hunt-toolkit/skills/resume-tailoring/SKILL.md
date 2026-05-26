@@ -1,7 +1,7 @@
 ---
 name: resume-tailoring
 version: 1.0.0
-description: This skill should be used when the user asks to "tailor my resume", "create a resume for this job", "optimize my resume for a role", "update my resume for a position", "rewrite my resume for", "generate a targeted resume", "apply to this job", "help me with my job application", "tailor resume for JD", "batch resumes for multiple jobs", "multi-job resume", or provides a job description and wants a resume customized for it. Builds tailored resumes from a resume library using research, experience discovery, and confidence-scored matching while preserving factual integrity.
+description: "Tailor my resume, customize CV for a job, optimize resume for a role, update resume for a position, rewrite resume for this JD, generate a targeted CV, fit my resume to this posting, tailor CV for job description, batch resumes for multiple jobs, multi-job resume tailoring."
 argument-hint: <job description text or URL>
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch, AskUserQuestion, Skill, Agent
 ---
@@ -25,12 +25,10 @@ Consult these files for detailed procedures at each phase:
 
 **From user:**
 1. Job description (text or URL)
-2. Resume library location (defaults to `resumes/` in current directory)
+2. Resume library location (defaults to `<workspace>/library/` where workspace = `${JOB_HUNT_WORKSPACE:-$HOME/Documents/job_seeking}`)
 
-**Sub-skill dependencies (optional):**
-- `document-skills:docx` - DOCX generation
-- `document-skills:pdf` - PDF generation
-- If document-skills are unavailable, generate markdown only and inform user
+**Sub-skill dependencies:**
+- `export-pdf` - HTML → PDF export via `${CLAUDE_PLUGIN_ROOT}/skills/export-pdf/scripts/html-to-pdf.sh`
 
 ## Workflow
 
@@ -40,8 +38,8 @@ Before starting, check if the user provides 2+ JDs, mentions "multiple jobs", "b
 
 ### Phase 0: Library Initialization
 
-1. Locate resume directory (user-provided or `./resumes/`)
-2. Scan for markdown files using Glob (`*.md`)
+1. Locate resume library directory (user-provided or `${JOB_HUNT_WORKSPACE:-$HOME/Documents/job_seeking}/library/`)
+2. Scan for HTML and markdown files using Glob
 3. Parse each resume: extract roles, bullets, skills, education
 4. Build in-memory experience database - tag each bullet with themes, metrics, keywords, and source resume
 5. Announce library size to user
@@ -93,10 +91,20 @@ Follow scoring from `references/matching-strategies.md`.
 
 ### Phase 5: Generation
 
-1. **Markdown:** Compile mapped content into clean resume following user's formatting preferences from library analysis. Save as `{Name}_{Company}_{Role}_Resume.md`
-2. **DOCX:** Use `document-skills:docx` sub-skill (Calibri 11pt, proper margins, bullet config). Save as `{Name}_{Company}_{Role}_Resume.docx`
-3. **PDF (optional):** Use `document-skills:pdf` if requested. Save as `{Name}_{Company}_{Role}_Resume.pdf`
-4. **Report:** Generate metadata file with coverage stats, reframings, source resumes, gap analysis before/after, interview prep recommendations. Save as `{Name}_{Company}_{Role}_Resume_Report.md`
+Output directory: `${JOB_HUNT_WORKSPACE:-$HOME/Documents/job_seeking}/<company>/`
+Filename format: `<First>_<Last>_<Role>_CV.<ext>` — NO company name in the filename.
+
+**Edit-guard:** If this skill needs to modify the master HTML at `${JOB_HUNT_WORKSPACE:-$HOME/Documents/job_seeking}/<First>_<Last>_<Role>_CV.html`, call `AskUserQuestion` for explicit confirmation before doing so.
+
+1. **HTML:** Compile mapped content into a tailored HTML file following the master CV's template. Save as `<First>_<Last>_<Role>_CV.html` inside the company subfolder.
+2. **PDF:** Run the export-pdf skill:
+   ```
+   bash "${CLAUDE_PLUGIN_ROOT}/skills/export-pdf/scripts/html-to-pdf.sh" \
+     "<workspace>/<company>/<First>_<Last>_<Role>_CV.html" \
+     "<workspace>/<company>/<First>_<Last>_<Role>_CV.pdf"
+   ```
+   Always use absolute paths for both arguments.
+3. **Report:** Generate metadata file with coverage stats, reframings, source resumes, gap analysis before/after, interview prep recommendations. Save as `<First>_<Last>_<Role>_CV_Report.md` inside the company subfolder.
 
 Present files and quality metrics to user.
 
@@ -116,7 +124,7 @@ Present three options:
 | Research failures (WebSearch unavailable, sparse results) | Fall back to JD-only analysis; ask user for additional context |
 | Vague JD | Flag missing areas; ask user for context; proceed with best-effort |
 | Content exceeds page limit | Rank bullets by relevance; suggest pruning lowest-scored; let user decide |
-| Generation failures (DOCX/PDF) | Fall back to markdown-only with error details |
+| PDF export failure (html-to-pdf.sh non-zero exit) | HTML is still saved; report error with exit code; user can re-run export-pdf separately |
 
 ## Hard Rules
 

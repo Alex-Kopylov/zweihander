@@ -32,7 +32,7 @@ Assign job IDs: "job-1", "job-2", etc.
 **Batch Directory Structure:**
 
 ```
-resumes/batches/batch-{YYYY-MM-DD}-{slug}/
+${JOB_HUNT_WORKSPACE:-$HOME/Documents/job_seeking}/batches/batch-{YYYY-MM-DD}-{slug}/
 ├── _batch_state.json
 ├── _aggregate_gaps.md
 ├── _discovered_experiences.md
@@ -131,9 +131,9 @@ For each pending job:
 
 **3C: Content Matching** - same as single-job Phase 3, using enriched library. Save `content_mapping.md`. Checkpoint if INTERACTIVE.
 
-**3D: Generation** - produce MD + DOCX + Report. No checkpoint, just generate.
+**3D: Generation** - produce HTML + PDF (via export-pdf skill) + Report. Output to `${JOB_HUNT_WORKSPACE:-$HOME/Documents/job_seeking}/<company>/`. Filename: `<First>_<Last>_<Role>_CV.*` — no company name in filename. No checkpoint, just generate.
 
-Job directory structure: `job-{N}-{company-slug}/`
+Job directory structure: `job-{N}-{company-slug}/` (working scratch only; final outputs go to company subfolder in workspace root)
 
 ### Progress Tracking
 

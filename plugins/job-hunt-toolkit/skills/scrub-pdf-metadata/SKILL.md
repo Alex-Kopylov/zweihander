@@ -1,6 +1,6 @@
 ---
 name: scrub-pdf-metadata
-description: Use when the user asks to "scrub PDF metadata", "clean the PDF", "strip CV metadata", "remove author from PDF", "clean up before sending", "remove creation date", or after exporting a PDF that will be sent to a recruiter. Strips Author, Title, Producer, Creator, CreationDate, ModifyDate, XMP, and custom metadata fields using exiftool, then sets a clean Author field back. Called automatically by prepare-to-send before any PDF is declared ready.
+description: Use when the user asks to "scrub PDF metadata", "clean the PDF", "strip CV metadata", "remove author from PDF", "sanitize PDF", "wipe PDF info", "clear PDF properties", "clean up before sending", "remove creation date", or after exporting a PDF that will be sent to a recruiter. Strips Author, Title, Producer, Creator, CreationDate, ModifyDate, XMP, and custom metadata fields using exiftool, then sets a clean Author field back. Called automatically by export-pdf as its final step.
 argument-hint: <pdf-file> [--author="Full Name"]
 allowed-tools: Read, Bash, AskUserQuestion
 ---
@@ -70,7 +70,7 @@ Specifically highlight any of these that are non-empty:
 exiftool -all= -overwrite_original "$pdf"
 ```
 
-`-all=` removes ALL metadata. This also removes Author, which we re-set next. `-overwrite_original` skips creating a `.pdf_original` backup (we rely on git for history).
+`-all=` removes ALL metadata. This also removes Author, which we re-set next. `-overwrite_original` skips creating a `.pdf_original` backup file alongside the PDF.
 
 ### 3. Set clean Author + Title
 
@@ -102,14 +102,17 @@ exiftool -CreateDate= -ModifyDate= -MetadataDate= -overwrite_original "$pdf"
 
 ### 5. Scan PDF text for leaks
 
-Even after metadata scrub, the PDF *content* can leak:
+Even after metadata scrub, the PDF *content* can leak. Use the Read tool on the PDF file, then scan the extracted text for these patterns:
 
-```bash
-# Check for file paths in visible text
-pdftotext "$pdf" - 2>/dev/null | grep -Ei 'file://|/Users/|/home/|Documents|job_seaking' | head
-```
+- `file:`
+- `/Users/`
+- `/home/`
+- `C:\`
+- `Documents`
+- the workspace basename (computed at runtime: `$(basename "${JOB_HUNT_WORKSPACE:-$HOME/Documents/job_seeking}")`)
+- `.html`
 
-If any hits: the HTML template probably renders a path in a header/footer. Fix the HTML, re-export, re-scrub. Do NOT send the PDF.
+If any hits: the HTML template probably renders a path in a header/footer via `@page` CSS. Fix the HTML, re-export, re-scrub. Do NOT send the PDF.
 
 ### 6. Report
 
@@ -135,6 +138,11 @@ Ready for sending. Run /job-hunt-toolkit:prepare-to-send for the full pre-send c
 ## Why this matters
 
 Recruiters and hiring managers sometimes open `File → Properties` on a PDF. ATS tools routinely parse PDF metadata. If your `Title` says "<First>_<Last>_CV_Tailored_for_OpenAI_v3" and you apply to Anthropic, that's a rejection waiting to happen.
+
+## Gotchas
+
+- **exiftool -all= strips EVERYTHING including Author — always restore a clean Author after.** Running `-all=` clears Author along with everything else. Step 3 (Set clean Author + Title) is mandatory, not optional. See `references/exiftool-commands.md` for commands.
+- **HTML @page CSS paths render INTO the PDF as text, surviving exiftool metadata strip.** If a template uses `@page` rules that reference file paths or URLs in headers/footers, those strings end up in the visible PDF content — exiftool cannot touch them because they are not metadata fields. Always scan PDF text for leaks (Step 5) even after a clean exiftool report.
 
 ## References
 

@@ -1,6 +1,6 @@
 ---
 name: new-application
-description: Use when the user asks to "apply to <company>", "start a new application", "new company folder", "scaffold application for", "I'm applying to", or provides a JD and wants to set up a tracked application. Creates a per-company folder in the workspace, scaffolds company.md with YAML frontmatter, saves the job description, copies the master HTML for tailoring, and optionally hands off to the resume-tailoring skill.
+description: Use when the user asks to "apply to <company>", "start a new application", "new company folder", "scaffold application for", "I'm applying to", "track this job", "set up application for", "create folder for", or provides a JD and wants to set up a tracked application. Creates a per-company folder in the workspace, scaffolds company.md with YAML frontmatter, saves the job description, copies the master HTML for tailoring, and optionally hands off to the resume-tailoring skill.
 argument-hint: <company-slug> [role]
 allowed-tools: Read, Write, Edit, Bash, WebFetch, AskUserQuestion, Skill
 ---
@@ -17,7 +17,7 @@ Scaffold a per-company application folder inside the workspace and set up everyt
 
 ## Inputs
 
-- **Company slug** (argument, required): lowercase with underscores, no legal suffixes. Examples: `openai`, `acme_robotics`, `hugging_face`. If the user provides something non-compliant, normalize it and confirm.
+- **Company slug** (argument, required): lowercase with underscores. Examples: `openai`, `acme_robotics`, `hugging_face`. Whatever the user passes becomes the folder name verbatim (after deny-list validation). If the user provides something with denied characters (spaces, pipes, commas, slashes, emojis, non-ASCII), reject it and ask for a corrected slug.
 - **Role** (argument, optional): role the user is targeting. Default to the master's role.
 - **JD source** (ask): text paste, file path, or URL.
 
@@ -25,15 +25,15 @@ Scaffold a per-company application folder inside the workspace and set up everyt
 
 ### 1. Locate workspace
 
-Read `JOB_HUNT_WORKSPACE` env var; fall back to `~/Documents/job_seaking`. Resolve `~`.
+Read `JOB_HUNT_WORKSPACE` env var; fall back to `~/Documents/job_seeking`. Resolve `~`.
 
 If the workspace doesn't exist or lacks a master CV, stop and direct user to run `/job-hunt-toolkit:init-workspace` first.
 
 ### 2. Validate company slug
 
-- Lowercase only
-- Underscores, not hyphens, not spaces
-- No legal suffixes (strip `_inc`, `_ltd`, `_gmbh`, `_llc`)
+- Deny-list: spaces, pipes `|`, commas, slashes, emojis, non-ASCII characters
+- If the slug contains any denied character, reject it and ask the user for a corrected slug
+- The slug is used verbatim as the folder name — no normalisation, no suffix stripping
 - Check `<workspace>/<slug>/` doesn't already exist. If it does, ask:
   - **Resume existing** — work inside the existing folder
   - **New variant** — append `_2` (or ask user for a distinguisher)
@@ -55,8 +55,8 @@ mkdir -p <workspace>/<slug>
 
 Ask user how they'll provide the JD:
 - **Paste text** → write to `<slug>/job_description.md` (wrap with a header noting source and date)
-- **File path** → copy into `<slug>/job_description.<ext>`
-- **URL** → use WebFetch to grab the content, save as `<slug>/job_description.md` with a `> Source: <url>` header and fetch date
+- **URL** → use WebFetch to grab the content; write to `<slug>/job_description.md` with a `> Source: <url>` line and fetch date at the top; preserve the URL as reference
+- **File path** → copy into `<slug>/job_description.<original-ext>`, preserving the original file extension as-is (`.pdf` stays `.pdf`, `.txt` stays `.txt`, `.md` stays `.md`). Do NOT convert the format.
 
 ### 6. Scaffold company.md
 
@@ -97,7 +97,7 @@ Next:
 
 ## Hard rules
 
-- **Validate company slug** against naming rules before creating the folder. Garbage in = garbage in git forever.
+- **Validate company slug** against the deny-list before creating the folder. Reject slugs containing spaces, pipes, commas, slashes, emojis, or non-ASCII characters.
 - **Never overwrite an existing company folder** without explicit confirmation.
 - **Never copy the master PDF** — only HTML. The PDF will be regenerated after tailoring.
 - **Never include the company name in the CV filename** (see `references/naming-rules.md` in the plugin).
@@ -110,5 +110,5 @@ Next:
 | Workspace doesn't exist | Stop; direct user to `init-workspace` |
 | Master HTML not found | Stop; ask user to create one or run `init-workspace` |
 | WebFetch fails on JD URL | Ask user to paste the JD text instead |
-| Slug normalization changes the input | Confirm with user before proceeding |
+| Slug contains denied characters | Reject; show deny-list; ask user for corrected slug |
 | Role label contains invalid characters | Reject; show naming rules; ask again |

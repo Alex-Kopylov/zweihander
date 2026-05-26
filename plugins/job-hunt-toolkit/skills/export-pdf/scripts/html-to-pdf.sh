@@ -72,25 +72,28 @@ trap 'rm -rf "$tmp_profile"' EXIT
 "$browser" \
   --headless=new \
   --disable-gpu \
-  --no-sandbox \
   --user-data-dir="$tmp_profile" \
   --no-pdf-header-footer \
-  --virtual-time-budget=5000 \
+  --virtual-time-budget="${JOB_HUNT_RENDER_TIMEOUT:-15000}" \
   --print-to-pdf="$pdf" \
   --print-to-pdf-no-header \
   "file://$html" \
   2>&1 | sed 's/^/[chrome] /' >&2
+browser_exit=${PIPESTATUS[0]}
+if (( browser_exit != 0 )); then
+  echo "error: Chromium exited with status $browser_exit — rendering failed" >&2
+  exit 6
+fi
 
 # Verify output.
-if [[ ! -f "$pdf" ]]; then
-  echo "error: chrome did not produce a PDF at $pdf" >&2
+if [[ ! -r "$pdf" ]]; then
+  echo "error: PDF not readable at $pdf" >&2
   exit 4
 fi
 
-size=$(stat -f%z "$pdf" 2>/dev/null || stat -c%s "$pdf" 2>/dev/null || echo 0)
+size=$(stat -f%z "$pdf" 2>/dev/null || stat -c%s "$pdf")
 if (( size < 1024 )); then
-  echo "error: produced PDF is suspiciously small (${size} bytes). Deleting partial file." >&2
-  rm -f "$pdf"
+  echo "error: rendered PDF is suspiciously small ($size bytes)" >&2
   exit 5
 fi
 

@@ -6,10 +6,9 @@ End-to-end flow from spotting a JD to signing an offer.
 
 Run once. Never again unless you wipe and restart.
 
-- `/job-hunt-toolkit:init-workspace` — creates folder structure, generates docs, initializes git.
+- `/job-hunt-toolkit:init-workspace` — creates folder structure and generates docs.
 - Drop your master HTML CV in the root.
 - Run `/job-hunt-toolkit:export-pdf` to create the master PDF.
-- Commit: `chore: initialize workspace with master CV`.
 
 ## Stage 1: New application
 
@@ -52,14 +51,11 @@ Capture findings in `company.md`. This context drives tailoring decisions.
   2. `scrub-pdf-metadata` — strip Title/Author/Producer/CreationDate.
   3. Visible content scan (stray drafts, wrong company names in body, placeholders).
   4. HTML ↔ PDF parity.
-  5. Git hygiene (both files staged, no secrets).
 
 If any step fails, it fails loudly. Nothing goes out with warnings.
 
 ## Stage 6: Ship
 
-- `git add <company>/<name>_<role>_CV.{html,pdf} <company>/company.md`
-- `git commit -m "add: <company> — <role>"`
 - Update `company.md` frontmatter: `status: applied`, `applied: <today>`.
 - Attach the PDF to the application / email.
 
@@ -73,12 +69,10 @@ As the process moves, update `company.md`:
 - Add `questions_to_ask.md` for interviewers
 - Add `followups.md` for thank-you drafts
 
-Commit each update: `update: <company> — <what changed>`.
-
 ## Stage 8: Outcome
 
 ### Offer
-- Capture comp + terms in `company.md` (commit only if user confirms it's safe to track).
+- Capture comp + terms in `company.md`.
 - Update frontmatter: `status: offer`.
 - If negotiating, keep `salary_notes.md` LOCAL (not committed unless user insists).
 
@@ -91,12 +85,12 @@ Commit each update: `update: <company> — <what changed>`.
 - Update `status: withdrew`, note why.
 
 ### Signed
-- Update `status: signed`. Consider archiving the folder or tagging the repo.
+- Update `status: signed`. Consider archiving the folder.
 
 ## Anti-patterns
 
 - **Don't tailor without researching first.** Generic tailoring is nearly as bad as no tailoring.
 - **Don't send before running `prepare-to-send`.** Metadata leaks have killed callbacks.
 - **Don't edit PDFs.** Edit HTML, regenerate.
-- **Don't commit WIP per-company folders with half-filled `company.md`.** Either fill it or don't start the folder.
+- **Don't start a per-company folder with a half-filled `company.md`.** Either fill it or don't start the folder.
 - **Don't apply to 50 places at once with the same CV.** Focus beats volume.

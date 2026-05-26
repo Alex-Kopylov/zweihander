@@ -1,43 +1,5 @@
-# Naming — Quick Reference
+# Naming conventions
 
-> **Authoritative version:** `job-hunt-toolkit/references/naming-rules.md` in the plugin.
-> This file is an intentionally minimal pointer. Re-read the plugin reference when in doubt.
+See the plugin's `references/naming-rules.md` for authoritative naming rules.
 
-## The rule
-
-```
-<FirstName>_<LastName>_<Role>_<DocType>.<ext>
-```
-
-Concrete examples:
-
-```
-# Master (at workspace root) — HTML + PDF pair
-{{FIRST}}_{{LAST}}_{{ROLE}}_CV.html
-{{FIRST}}_{{LAST}}_{{ROLE}}_CV.pdf
-
-# Tailored (inside a company folder)
-<company>/{{FIRST}}_{{LAST}}_<Role>_CV.html
-<company>/{{FIRST}}_{{LAST}}_<Role>_CV.pdf
-```
-
-## Top 3 rules to never break
-
-1. **No company name in the filename.** That's the #1 tailoring tell.
-2. **Underscores only** — no spaces, hyphens, pipes, commas, or non-ASCII.
-3. **HTML + PDF share the same stem** — different extensions.
-
-## Company folder names
-
-Lowercase with underscores. Always. No hyphens, no spaces, no legal suffixes.
-
-```
-acme_robotics/   ✓
-Acme Robotics/   ✗
-acme-robotics/   ✗
-acme_robotics_inc/ ✗
-```
-
----
-
-Full anti-pattern table, segment rules, and rationale are in the plugin's `references/naming-rules.md`. This template will drift — go to the source.
+This file exists as a pointer only; it will never be updated with rules directly.
