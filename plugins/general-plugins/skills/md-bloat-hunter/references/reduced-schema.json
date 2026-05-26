@@ -120,6 +120,7 @@
       ],
       "allOf": [
         { "$ref": "#/$defs/editConsistency" },
+        { "$ref": "#/$defs/reducedSourceContract" },
         {
           "if": {
             "properties": { "resolution": { "enum": ["single", "merged"] } },
@@ -272,7 +273,8 @@
         "confidence"
       ],
       "allOf": [
-        { "$ref": "#/$defs/editConsistency" }
+        { "$ref": "#/$defs/editConsistency" },
+        { "$ref": "#/$defs/alternativeSourceContract" }
       ],
       "properties": {
         "source_specialist": {
@@ -343,6 +345,45 @@
         },
         {
           "if": {
+            "properties": { "type": { "const": "filler" } },
+            "required": ["type"]
+          },
+          "then": {
+            "properties": {
+              "action": {
+                "const": "delete"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "type": { "const": "verbosity" } },
+            "required": ["type"]
+          },
+          "then": {
+            "properties": {
+              "action": {
+                "enum": ["replace", "restructure"]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "type": { "const": "vocab" } },
+            "required": ["type"]
+          },
+          "then": {
+            "properties": {
+              "action": {
+                "enum": ["replace", "restructure"]
+              }
+            }
+          }
+        },
+        {
+          "if": {
             "properties": { "action": { "const": "delete" } },
             "required": ["action"]
           },
@@ -359,6 +400,130 @@
                 "type": "string",
                 "minLength": 1
               }
+            }
+          }
+        }
+      ]
+    },
+    "reducedSourceContract": {
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "source_specialists": {
+                "maxItems": 1,
+                "contains": { "const": "redundancy-detector" }
+              }
+            },
+            "required": ["source_specialists"]
+          },
+          "then": {
+            "properties": {
+              "type": { "const": "redundancy" },
+              "action": { "enum": ["delete", "replace", "restructure"] }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "source_specialists": {
+                "maxItems": 1,
+                "contains": { "const": "verbosity-pruner" }
+              }
+            },
+            "required": ["source_specialists"]
+          },
+          "then": {
+            "properties": {
+              "type": { "const": "verbosity" },
+              "action": { "enum": ["replace", "restructure"] }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "source_specialists": {
+                "maxItems": 1,
+                "contains": { "const": "filler-eliminator" }
+              }
+            },
+            "required": ["source_specialists"]
+          },
+          "then": {
+            "properties": {
+              "type": { "const": "filler" },
+              "action": { "const": "delete" }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "source_specialists": {
+                "maxItems": 1,
+                "contains": { "const": "vocab-compressor" }
+              }
+            },
+            "required": ["source_specialists"]
+          },
+          "then": {
+            "properties": {
+              "type": { "const": "vocab" },
+              "action": { "enum": ["replace", "restructure"] }
+            }
+          }
+        }
+      ]
+    },
+    "alternativeSourceContract": {
+      "allOf": [
+        {
+          "if": {
+            "properties": { "source_specialist": { "const": "redundancy-detector" } },
+            "required": ["source_specialist"]
+          },
+          "then": {
+            "properties": {
+              "type": { "const": "redundancy" },
+              "action": { "enum": ["delete", "replace", "restructure"] }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "source_specialist": { "const": "verbosity-pruner" } },
+            "required": ["source_specialist"]
+          },
+          "then": {
+            "properties": {
+              "type": { "const": "verbosity" },
+              "action": { "enum": ["replace", "restructure"] }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "source_specialist": { "const": "filler-eliminator" } },
+            "required": ["source_specialist"]
+          },
+          "then": {
+            "properties": {
+              "type": { "const": "filler" },
+              "action": { "const": "delete" }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "source_specialist": { "const": "vocab-compressor" } },
+            "required": ["source_specialist"]
+          },
+          "then": {
+            "properties": {
+              "type": { "const": "vocab" },
+              "action": { "enum": ["replace", "restructure"] }
             }
           }
         }

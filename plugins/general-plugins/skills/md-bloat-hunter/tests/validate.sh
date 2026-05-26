@@ -437,6 +437,60 @@ reduced_schema_passes "$TMP_DIR/valid-reduced-output.json"
 recommended_indexes_in_range "$TMP_DIR/valid-reduced-output.json" \
   || fail "valid reduced output has an out-of-range recommended index"
 
+jq '.findings[0] += {
+  "source_specialists": ["filler-eliminator"],
+  "type": "filler",
+  "action": "replace",
+  "new_text": "Use this guide."
+}' "$TMP_DIR/valid-reduced-output.json" >"$TMP_DIR/reduced-filler-wrong-action.json"
+
+reduced_schema_fails "$TMP_DIR/reduced-filler-wrong-action.json"
+
+jq '.findings[0] += {
+  "type": "verbosity",
+  "action": "delete",
+  "new_text": null
+}' "$TMP_DIR/valid-reduced-output.json" >"$TMP_DIR/reduced-verbosity-delete-action.json"
+
+reduced_schema_fails "$TMP_DIR/reduced-verbosity-delete-action.json"
+
+jq '.findings[0] += {
+  "source_specialists": ["filler-eliminator"],
+  "type": "vocab",
+  "action": "replace",
+  "new_text": "idempotent",
+  "justification": "Idempotent means repeated runs produce the same result."
+}' "$TMP_DIR/valid-reduced-output.json" >"$TMP_DIR/reduced-single-specialist-type-mismatch.json"
+
+reduced_schema_fails "$TMP_DIR/reduced-single-specialist-type-mismatch.json"
+
+jq '.findings[0] += {
+  "resolution": "alternatives",
+  "recommendation": "apply-recommended",
+  "recommended_alternative_index": 0,
+  "alternatives": [
+    {
+      "source_specialist": "filler-eliminator",
+      "source_index": 0,
+      "source_order": 42,
+      "excerpt": "This guide is designed to help you.",
+      "context_before": null,
+      "context_after": null,
+      "type": "filler",
+      "rationale": "The sentence repeats the heading.",
+      "severity": "major",
+      "action": "replace",
+      "new_text": "Use this guide.",
+      "justification": null,
+      "semantic_risk": "none",
+      "confidence": "high"
+    }
+  ],
+  "resolution_notes": "invalid filler alternative"
+}' "$TMP_DIR/valid-reduced-output.json" >"$TMP_DIR/reduced-alternative-filler-wrong-action.json"
+
+reduced_schema_fails "$TMP_DIR/reduced-alternative-filler-wrong-action.json"
+
 cat >"$TMP_DIR/reduced-missing-detector-status.json" <<'JSON'
 {
   "file_path": "/tmp/example.md",
@@ -728,6 +782,8 @@ require_contains "$SKILL_DIR/SKILL.md" "Offer \`Apply recommended\` only when \`
 require_contains "$SKILL_DIR/SKILL.md" "recommended_alternative_index\` points to an existing"
 require_contains "$SKILL_DIR/SKILL.md" "recommended_alternative_index\`, require that zero-based index to be less than"
 require_contains "$SKILL_DIR/SKILL.md" "exact verbatim adjacent substrings"
+require_contains "$SKILL_DIR/SKILL.md" "Confirm each parsed file-orchestrator result's \`file_path\` matches the absolute markdown file path originally dispatched to that worker."
+require_contains "$SKILL_DIR/SKILL.md" "Reject any approved finding whose \`file_path\` is not in the preflight target map before writer grouping."
 
 for detector in \
   "$SKILL_DIR/agents/redundancy-detector.md" \

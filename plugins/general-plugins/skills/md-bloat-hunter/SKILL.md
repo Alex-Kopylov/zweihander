@@ -161,8 +161,13 @@ file orchestrator to finish before aggregating results.
 If a file orchestrator returns malformed JSON, record that file as failed and
 continue aggregating the other files.
 
-For every parsed file-orchestrator result, write the object to a validation file
-inside the private run output directory and validate it before aggregation:
+For every parsed file-orchestrator result, confirm the result belongs to the
+worker that produced it before aggregation. Confirm each parsed file-orchestrator result's `file_path` matches the absolute markdown file path originally dispatched to that worker.
+Compare realpath-normalized paths, reject the whole file-orchestrator result on
+mismatch, and do not write findings from that result.
+
+Then write the object to a validation file inside the private run output
+directory and validate it before aggregation:
 
 ```sh
 jsonschema -i "<reduced-output-path>" "references/reduced-schema.json"
@@ -249,6 +254,9 @@ as skipped and continue.
 After gating, group approved findings by `file_path`. Within each file, apply
 findings in the source order returned by the file orchestrator, not the global
 ranked-review order.
+
+Reject any approved finding whose `file_path` is not in the preflight target map before writer grouping.
+Do not create a new preflight entry from reducer output.
 
 Hand each approved finding to the writer with these fields:
 
