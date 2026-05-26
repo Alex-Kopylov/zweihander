@@ -175,12 +175,62 @@ Hand each approved finding to the writer with these fields:
 - `rationale`
 
 The writer implementation is the mutation step defined in `SPEC.md` and owned
-by the writer section of this skill. If that section is not present yet, stop
-after producing the approved queue and report that mutation is deferred until
-the writer is implemented. Do not improvise a second writer.
+by the writer section of this skill.
 
 Do not commit changes. Reversibility comes from the user's git diff and clean
 working tree.
+
+## Writer
+
+The writer is the only part of this skill that mutates audited files. It
+performs exact, atomic string edits from approved findings. Do not summarize,
+reinterpret, normalize whitespace, use regex matching, or apply fuzzy fallback
+matches.
+
+Process one file at a time:
+
+1. Read the current file content once before applying the first finding for
+   that file. Keep this original snapshot for failure reporting only.
+2. Sort that file's approved findings by the source order returned by
+   `agents/file-orchestrator.md`.
+3. Apply findings one by one to the evolving file content.
+4. After each successful finding, write the updated content back to disk before
+   moving to the next finding.
+
+For each finding:
+
+1. Require a verbatim, non-empty `excerpt`.
+2. Locate the exact excerpt in the current in-memory content.
+3. If `context_before` or `context_after` is present, use it to disambiguate:
+   the accepted occurrence must have the provided `context_before`
+   immediately before the excerpt and the provided `context_after`
+   immediately after it. Missing context values are ignored.
+4. If there are zero accepted occurrences, stop applying later findings in
+   this file and report the failed finding. If the excerpt existed in the
+   original snapshot but is missing from the current content, report:
+   "excerpt changed by an earlier applied finding; re-run to pick up shifted
+   findings." Otherwise report: "excerpt not found verbatim."
+5. If there is more than one accepted occurrence, stop applying later findings
+   in this file and report: "excerpt is ambiguous; add context_before /
+   context_after and re-run."
+6. For `action: "delete"`, replace the accepted excerpt with an empty string.
+   `new_text` must be `null`.
+7. For `action: "replace"` or `action: "restructure"`, replace the accepted
+   excerpt with `new_text`. `new_text` must be a string.
+8. Any other action is a writer failure for that finding.
+
+Failure behavior is hard-error and per-file:
+
+- Do not write any change for the failed finding.
+- Do not roll back earlier successful findings in that file.
+- Do not continue with later findings in that same file after a writer failure.
+- Continue processing other files and include the failed file and finding in
+  the final report.
+- Never silently skip a failed approved finding.
+
+The writer does not commit, stage, stash, or create backups. The reversibility
+contract is: the user starts from a clean tree, reviews `git diff`, and uses
+git to undo changes if needed.
 
 ## Reporting
 

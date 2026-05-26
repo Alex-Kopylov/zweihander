@@ -188,12 +188,14 @@ Task notes: added `SKILL.md` top orchestrator with frontmatter, `/md-bloat-hunte
 
 ### Task 9: Implement the writer logic
 
-- [ ] Implement file mutation inline within SKILL.md (or as a small helper section the orchestrator delegates to): read file content → string-match `excerpt` (with `context_before` / `context_after` if present) → replace match with `new_text` or delete the span if `action == "delete"` → write file back
-- [ ] Apply findings within a file in source order
-- [ ] Hard-error on excerpt-not-found: stop on that finding, report which finding failed and why, do NOT continue with later findings in that same file (per SPEC's "no partial application, no silent fallback")
-- [ ] If applying finding N invalidates finding M's excerpt (M's quoted text changed), fail M loudly with a "re-run to pick up shifted findings" message
-- [ ] No commit step; rely on git for reversibility (writer assumes user started on a clean tree)
-- [ ] Smoke run: hand-craft a finding whose excerpt is not in the file and verify the writer fails loudly without touching anything; then hand-craft a valid finding and verify the edit lands correctly with `git diff` showing exactly the proposed change
+- [x] Implement file mutation inline within SKILL.md (or as a small helper section the orchestrator delegates to): read file content → string-match `excerpt` (with `context_before` / `context_after` if present) → replace match with `new_text` or delete the span if `action == "delete"` → write file back
+- [x] Apply findings within a file in source order
+- [x] Hard-error on excerpt-not-found: stop on that finding, report which finding failed and why, do NOT continue with later findings in that same file (per SPEC's "no partial application, no silent fallback")
+- [x] If applying finding N invalidates finding M's excerpt (M's quoted text changed), fail M loudly with a "re-run to pick up shifted findings" message
+- [x] No commit step; rely on git for reversibility (writer assumes user started on a clean tree)
+- [x] Smoke run: hand-craft a finding whose excerpt is not in the file and verify the writer fails loudly without touching anything; then hand-craft a valid finding and verify the edit lands correctly with `git diff` showing exactly the proposed change
+
+Task notes: added the `SKILL.md` Writer section with exact excerpt matching, context-based disambiguation, source-order application, delete/replace/restructure handling, hard per-file failure behavior, shifted-excerpt re-run reporting, and the explicit no-commit reversibility contract. Smoke harness under `/tmp` verified missing excerpts fail without touching the file, valid replace/delete findings produce the exact expected unified diff, and a later shifted excerpt fails loudly after one earlier source-order edit.
 
 ### Task 10: Register skill in plugin manifest and bump version
 
