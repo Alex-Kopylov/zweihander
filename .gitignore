@@ -3,3 +3,6 @@
 .claude/settings.json
 .claude/settings.local.json
 .plannotator/
+logs/
+.upstream
+
