@@ -174,15 +174,17 @@ Task notes: added `agents/file-orchestrator.md`; smoke fixture `/tmp/md-bloat-hu
 
 ### Task 8: Build SKILL.md (top orchestrator) — dispatch, gating, reporting
 
-- [ ] Write `SKILL.md` with skill frontmatter (name `md-bloat-hunter`, description matching the natural-language triggers, and any required allowed-tools)
-- [ ] Document the slash command form `/md-bloat-hunter [path]` and the natural-language trigger phrasing ("audit `<path>` for verbosity", "find bloat in `<file>`")
-- [ ] Implement path handling: if argument omitted, AskUserQuestion for path; accept either a single file or a directory; when given a directory, enumerate `*.md` files inside (do not recurse silently — confirm scope first if many files)
-- [ ] Verify `jsonschema` CLI is on PATH before dispatching; fail fast with install hint if missing
-- [ ] Dispatch one `file-orchestrator` per input file via the Task tool, all in parallel; collect every reduced finding list into one ranked queue
-- [ ] Gate findings by `semantic_risk`: `none` / `low` / `medium` route to auto-apply; `high` triggers AskUserQuestion per finding with the AI-recommended option labeled
-- [ ] Hand approved findings to the writer (Task 9) in source order per file
-- [ ] After writes finish, report applied / skipped / failed counts plus the file paths touched
-- [ ] Smoke run: dispatch on a fixture directory with 2 MD files; verify per-file findings show up, auto-apply runs without prompting on low risk, and a forced-high-risk fixture triggers the gate
+- [x] Write `SKILL.md` with skill frontmatter (name `md-bloat-hunter`, description matching the natural-language triggers, and any required allowed-tools)
+- [x] Document the slash command form `/md-bloat-hunter [path]` and the natural-language trigger phrasing ("audit `<path>` for verbosity", "find bloat in `<file>`")
+- [x] Implement path handling: if argument omitted, AskUserQuestion for path; accept either a single file or a directory; when given a directory, enumerate `*.md` files inside (do not recurse silently — confirm scope first if many files)
+- [x] Verify `jsonschema` CLI is on PATH before dispatching; fail fast with install hint if missing
+- [x] Dispatch one `file-orchestrator` per input file via the Task tool, all in parallel; collect every reduced finding list into one ranked queue
+- [x] Gate findings by `semantic_risk`: `none` / `low` / `medium` route to auto-apply; `high` triggers AskUserQuestion per finding with the AI-recommended option labeled
+- [x] Hand approved findings to the writer (Task 9) in source order per file
+- [x] After writes finish, report applied / skipped / failed counts plus the file paths touched
+- [x] Smoke run: dispatch on a fixture directory with 2 MD files; verify per-file findings show up, auto-apply runs without prompting on low risk, and a forced-high-risk fixture triggers the gate (skipped - external Claude CLI smoke requires login; local two-file fixture and reduced-output gating simulation passed)
+
+Task notes: added `SKILL.md` top orchestrator with frontmatter, `/md-bloat-hunter [path]` invocation, non-recursive path handling, `jsonschema` preflight with `uv tool install jsonschema` hint, parallel Agent/Task dispatch to `agents/file-orchestrator.md`, aggregation, semantic-risk gating, writer handoff, and reporting. Local validation confirmed frontmatter/contract coverage, `jsonschema` is on PATH (`4.26.0`), smoke reduced outputs in `/tmp/md-bloat-hunter/task8-smoke/` parse with `jq`, and the two-file fixture in `/tmp/md-bloat-hunter-task8-fixtures/` routes low-risk findings to auto-approve and high-risk findings to the user gate. Full Claude CLI smoke was attempted but could not run because the local CLI reported `Not logged in`.
 
 ### Task 9: Implement the writer logic
 
