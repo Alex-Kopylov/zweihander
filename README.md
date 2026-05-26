@@ -14,6 +14,7 @@ Then install individual plugins:
 /plugin install langfuse@my-plugins
 /plugin install openapi-tools@my-plugins
 /plugin install python-dev-workflow@my-plugins
+/plugin install general-plugins@my-plugins
 ```
 
 ## Plugins
@@ -39,6 +40,18 @@ Python development workflow — pytest test execution & review agents, conventio
 **Skills:** commit, create-pr, pr-checkout, ticket-branch, ticket-comment-status, version-bumper, writing-unit-tests, pytest-redis, task-management, contradiction-hunter
 
 **Agents:** test-runner, test-unit-reviewer
+
+### general-plugins
+
+General-purpose workflow and setup utilities.
+
+**Skills:** ai-setup-audit, claude-insights-hunter, daily, interview, loop_macos, md-bloat-hunter, mega-cmd, pr-address-comments, pr-comment, skill-creator, task-management
+
+`/md-bloat-hunter [path]` audits a markdown file or a non-recursive directory
+of direct child `*.md` files for redundancy, verbosity, filler, and vocabulary
+compression. It requires `jsonschema` on PATH; install it with
+`uv tool install jsonschema`. Approved findings mutate markdown files, so run it
+from a clean git tree and review changes with `git diff`.
 
 ## Updating
 

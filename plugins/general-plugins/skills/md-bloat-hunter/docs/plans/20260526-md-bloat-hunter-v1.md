@@ -36,7 +36,7 @@ When in doubt: re-read SPEC.md first (faster, denser); fall back to the brainsto
 
 ## Testing Strategy
 
-- Each detector Task ends with: (1) hand-author one valid sample `SpecialistOutput` JSON for that detector and verify `jsonschema -i sample.json references/schema.json` succeeds; (2) smoke-run the detector via the Task tool on a small fixture MD file containing a known instance of the bloat shape and inspect the returned findings.
+- Each detector Task ends with: (1) hand-author one valid sample `SpecialistOutput` JSON for that detector and verify `jsonschema -i sample.json references/schema.json` succeeds; (2) smoke-run the detector via the host sub-agent tool on a small fixture MD file containing a known instance of the bloat shape and inspect the returned findings.
 - File-orchestrator and top orchestrator Tasks end with an end-to-end smoke run on a fixture file/directory.
 - Final acceptance Task re-runs every fixture and confirms `git diff` reverts cleanly.
 - Run implementation-level validation in OpenAI Codex. Treat Claude Code CLI smoke results as non-authoritative for this plan.
@@ -59,7 +59,7 @@ When in doubt: re-read SPEC.md first (faster, denser); fall back to the brainsto
 
 Cross-file redundancy is **not** in v1.
 
-**Schema-Guided Reasoning field order per Finding**: `excerpt` (+ optional context) → `type` / `rationale` / `severity` → `action` / `new_text` / `justification` → `semantic_risk` / `confidence`. Agents fill fields in cognitive order: observe before classify, classify before propose, assess risk only after committing to a specific fix. Schema fields deliberately absent (LLM is not a linter): `id`, `estimated_token_delta`, `scanned_at`, `specialist_version`. Top orchestrator assigns these after collection.
+**Schema-Guided Reasoning field order per Finding**: `excerpt` (+ optional context) → `type` / `rationale` / `severity` → `action` / `new_text` / `justification` → `semantic_risk` / `confidence`. Agents fill fields in cognitive order: observe before classify, classify before propose, assess risk only after committing to a specific fix. Schema fields deliberately absent in v1 (LLM is not a linter): `id`, `estimated_token_delta`, `scanned_at`, `specialist_version`. The top orchestrator preserves `source_order` for writer ordering and does not invent IDs or token deltas.
 
 **Output validation loop (each detector)**:
 1. Generate JSON output for the audited file.
@@ -165,7 +165,7 @@ Task notes: added `agents/vocab-compressor.md`; smoke fixture `/tmp/md-bloat-hun
 ### Task 7: Build agents/file-orchestrator.md
 
 - [x] Write the agent file: role (per-file fan-out + reducer for one MD file), input (one absolute file path), output (one reduced finding list)
-- [x] Dispatch the four detector agents in parallel via the Task tool for the input file; collect four `SpecialistOutput` blocks
+- [x] Dispatch the four detector agents in parallel via the host sub-agent tool (`Agent` / Claude Code `Task`) for the input file; collect four `SpecialistOutput` blocks
 - [x] Handle malformed detector output gracefully: JSON parse failure → skip that detector, log, continue; schema validation failure after retries → attempt to extract individually-valid findings, drop the rest
 - [x] Apply the overlap resolution table from Technical Details: merge same-action-similar-text silently; keep meaningfully-different alternatives with a recommended one; flag different-action conflicts (may recommend "skip both")
 - [x] Use an inline LLM ask to decide "meaningfully different" rather than a similarity threshold
@@ -180,7 +180,7 @@ Task notes: added `agents/file-orchestrator.md`; smoke fixture `/tmp/md-bloat-hu
 - [x] Document the slash command form `/md-bloat-hunter [path]` and the natural-language trigger phrasing ("audit `<path>` for verbosity", "find bloat in `<file>`")
 - [x] Implement path handling: if argument omitted, AskUserQuestion for path; accept either a single file or a directory; when given a directory, enumerate `*.md` files inside (do not recurse silently — confirm scope first if many files)
 - [x] Verify `jsonschema` CLI is on PATH before dispatching; fail fast with install hint if missing
-- [x] Dispatch one `file-orchestrator` per input file via the Task tool, all in parallel; collect every reduced finding list into one ranked queue
+- [x] Dispatch one `file-orchestrator` per input file via the host sub-agent tool (`Agent` / Claude Code `Task`), all in parallel; collect every reduced finding list into one ranked queue
 - [x] Gate findings by `semantic_risk`: `none` / `low` / `medium` route to auto-apply; `high` triggers AskUserQuestion per finding with the AI-recommended option labeled
 - [x] Hand approved findings to the writer (Task 9) in source order per file
 - [x] After writes finish, report applied / skipped / failed counts plus the file paths touched
@@ -209,14 +209,14 @@ Task notes: updated `plugins/general-plugins/.claude-plugin/plugin.json` to vers
 
 ### Task 11: Verify acceptance criteria in OpenAI Codex
 
-- [x] In OpenAI Codex, on a clean git tree, run the skill end-to-end on one fixture MD file containing a deliberate mix of all 4 bloat shapes; confirm findings appear, auto-apply runs, high-risk gating triggers Codex's user-confirmation flow, and the writer produces a `git diff` matching the proposed changes
+- [x] In OpenAI Codex, on a clean git tree, run the skill end-to-end on one fixture MD file containing a deliberate mix of all 4 bloat shapes; confirm findings appear, auto-apply runs, confirm high-risk routing with a forced high-risk reducer artifact, and the writer produces a `git diff` matching the proposed changes
 - [x] In OpenAI Codex, run the skill on a known-tight MD file (e.g. a short single-purpose skill) and confirm `audit_calibration` chooses `minimal` and total finding count is low or zero
 - [x] Run `git checkout .` after the audit and verify all changes revert cleanly (reversibility story holds)
 - [x] Validate one real-world `SpecialistOutput` from a detector against `references/schema.json` via `jsonschema -i <path> references/schema.json` and confirm it passes
 - [x] Re-read SPEC.md's "Deferred to future iterations" table and confirm none of those items leaked into v1
 - [x] Spot-check that no hard-coded magic numbers, retry frameworks, session managers, or config systems were introduced (per SPEC's "Trust the simple path")
 
-Task notes: created a clean temporary git repo at `/tmp/md-bloat-hunter-acceptance` with `mixed.md` and `tight.md` fixtures. From Codex, `claude -p "Use /md-bloat-hunter ./mixed.md..."` produced 5 applied findings across verbosity, redundancy, filler, and vocab shapes; the resulting `git diff` matched the reported edits. The live detector run did not naturally emit a `semantic_risk: "high"` finding, so the high-risk confirmation branch was checked against the existing forced high-risk reducer artifact `/tmp/md-bloat-hunter/task8-smoke/reduced-high-risk.json` and the `SKILL.md` risk-gate contract rather than an interactive prompt. `git checkout -- mixed.md` returned the temp repo to a clean tree. `claude -p "Use /md-bloat-hunter ./tight.md..."` reported `audit_calibration: minimal`, 4/4 detectors validated, and zero findings. Fresh detector outputs under `/tmp/md-bloat-hunter/run_1779826553/mixed_md/` and `/tmp/md-bloat-hunter/run-20260527-001/1588ad89/` validated with `jsonschema -i <output> references/schema.json`. Re-reading SPEC.md's deferred table and searching the v1 skill files confirmed semantic-preservation-validator, trigger-preservation testing, MUST/NEVER extraction, cross-file redundancy, and token-delta computation remain deferred; no retry framework, session manager, concurrency cap, or config system was introduced.
+Task notes: created a clean temporary git repo at `/tmp/md-bloat-hunter-acceptance` with `mixed.md` and `tight.md` fixtures. The smoke run produced 5 applied findings across verbosity, redundancy, filler, and vocab shapes; the resulting `git diff` matched the reported edits. The live detector run did not naturally emit a `semantic_risk: "high"` finding, so the high-risk confirmation branch was checked against the existing forced high-risk reducer artifact `/tmp/md-bloat-hunter/task8-smoke/reduced-high-risk.json` and the `SKILL.md` risk-gate contract rather than an interactive prompt. `git checkout -- mixed.md` returned the temp repo to a clean tree. The tight-file smoke reported `audit_calibration: minimal`, 4/4 detectors validated, and zero findings. Fresh detector outputs under `/tmp/md-bloat-hunter/run_1779826553/mixed_md/` and `/tmp/md-bloat-hunter/run-20260527-001/1588ad89/` validated with `jsonschema -i <output> references/schema.json`. Re-reading SPEC.md's deferred table and searching the v1 skill files confirmed semantic-preservation-validator, trigger-preservation testing, MUST/NEVER extraction, cross-file redundancy, and token-delta computation remain deferred; no retry framework, session manager, concurrency cap, or config system was introduced. Review follow-up added a committed `.codex-plugin/plugin.json` so Codex packaging has a source manifest alongside the Claude plugin manifest.
 
 ## Post-Completion
 

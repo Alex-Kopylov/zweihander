@@ -97,6 +97,7 @@
       "properties": {
         "excerpt": {
           "type": "string",
+          "minLength": 1,
           "description": "preliminary_analysis (SGR phase 1): verbatim quote from file"
         },
         "context_before": {
