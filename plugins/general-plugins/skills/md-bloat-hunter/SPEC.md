@@ -132,6 +132,12 @@ After collecting four `SpecialistOutput` blocks for one file, the file-orchestra
 
 "Meaningfully different" is decided by an LLM ask inside the file-orchestrator ("are these two rewrites materially the same?") rather than a tuned similarity threshold.
 
+Before overlap resolution, the file-orchestrator locates each candidate finding
+with the same exact excerpt/context matching rule as the writer. A candidate is
+kept only when there is exactly one accepted occurrence. Zero-match and
+ambiguous findings are dropped and recorded in `detector_status.notes`; the top
+orchestrator must not receive findings with unreliable `source_order`.
+
 The file-orchestrator returns: one reduced finding list for its file.
 
 ## Top orchestrator: aggregation, gating, writing
@@ -141,7 +147,7 @@ After all file-orchestrators complete:
 1. **Aggregate** — collect every reduced finding list into one ranked queue.
 2. **Gate** — partition by `semantic_risk`:
    - `none` / `low` / `medium` → auto-apply
-   - `high` → AskUserQuestion per finding with AI-recommended option
+   - `high` → host user-question tool per finding with AI-recommended option
 3. **Write** — apply each approved finding via the writer (below).
 4. **Report** — summary of applied, skipped, and failed findings.
 
@@ -218,7 +224,7 @@ Honest uncertainties, not implementation blockers.
 2. **Excerpt collisions for short phrases.** A 5-word excerpt might appear
    multiple times in a long file. Exact adjacent `context_before` /
    `context_after` handle this when the specialist remembers to add them. The
-   writer fails loudly on ambiguity, but ambiguity should be caught earlier.
+   file-orchestrator drops ambiguous candidates before they reach the writer.
 
 3. **No undo built in.** v1 relies on git for reversibility. The user must audit on a clean tree.
 

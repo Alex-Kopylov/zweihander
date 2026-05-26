@@ -147,6 +147,61 @@ JSON
 
 schema_fails "$TMP_DIR/vocab-missing-justification.json"
 
+cat >"$TMP_DIR/missing-context-fields.json" <<'JSON'
+{
+  "specialist": "verbosity-pruner",
+  "file_path": "/tmp/example.md",
+  "audit_calibration": {
+    "observation": "short focused markdown file",
+    "chosen_intensity": "standard",
+    "reasoning": "normal pass"
+  },
+  "findings": [
+    {
+      "excerpt": "in order to",
+      "type": "verbosity",
+      "rationale": "The phrase can be shortened.",
+      "severity": "minor",
+      "action": "replace",
+      "new_text": "to",
+      "justification": null,
+      "semantic_risk": "none",
+      "confidence": "high"
+    }
+  ]
+}
+JSON
+
+schema_fails "$TMP_DIR/missing-context-fields.json"
+
+cat >"$TMP_DIR/non-vocab-missing-justification.json" <<'JSON'
+{
+  "specialist": "verbosity-pruner",
+  "file_path": "/tmp/example.md",
+  "audit_calibration": {
+    "observation": "short focused markdown file",
+    "chosen_intensity": "standard",
+    "reasoning": "normal pass"
+  },
+  "findings": [
+    {
+      "excerpt": "in order to",
+      "context_before": null,
+      "context_after": null,
+      "type": "verbosity",
+      "rationale": "The phrase can be shortened.",
+      "severity": "minor",
+      "action": "replace",
+      "new_text": "to",
+      "semantic_risk": "none",
+      "confidence": "high"
+    }
+  ]
+}
+JSON
+
+schema_fails "$TMP_DIR/non-vocab-missing-justification.json"
+
 cat >"$TMP_DIR/delete-with-text.json" <<'JSON'
 {
   "specialist": "filler-eliminator",
@@ -312,10 +367,31 @@ cat >"$TMP_DIR/valid-reduced-output.json" <<'JSON'
   "file_path": "/tmp/example.md",
   "detector_status": [
     {
+      "specialist": "redundancy-detector",
+      "status": "included",
+      "output_path": "/tmp/private-run/example/redundancy-detector.json",
+      "findings_included": 0,
+      "notes": "validated"
+    },
+    {
       "specialist": "verbosity-pruner",
       "status": "included",
       "output_path": "/tmp/private-run/example/verbosity-pruner.json",
       "findings_included": 1,
+      "notes": "validated"
+    },
+    {
+      "specialist": "filler-eliminator",
+      "status": "included",
+      "output_path": "/tmp/private-run/example/filler-eliminator.json",
+      "findings_included": 0,
+      "notes": "validated"
+    },
+    {
+      "specialist": "vocab-compressor",
+      "status": "included",
+      "output_path": "/tmp/private-run/example/vocab-compressor.json",
+      "findings_included": 0,
       "notes": "validated"
     }
   ],
@@ -346,10 +422,96 @@ JSON
 
 reduced_schema_passes "$TMP_DIR/valid-reduced-output.json"
 
+cat >"$TMP_DIR/reduced-missing-detector-status.json" <<'JSON'
+{
+  "file_path": "/tmp/example.md",
+  "detector_status": [
+    {
+      "specialist": "verbosity-pruner",
+      "status": "included",
+      "output_path": "/tmp/private-run/example/verbosity-pruner.json",
+      "findings_included": 0,
+      "notes": "validated"
+    }
+  ],
+  "findings": []
+}
+JSON
+
+reduced_schema_fails "$TMP_DIR/reduced-missing-detector-status.json"
+
+cat >"$TMP_DIR/reduced-duplicate-detector-status.json" <<'JSON'
+{
+  "file_path": "/tmp/example.md",
+  "detector_status": [
+    {
+      "specialist": "redundancy-detector",
+      "status": "included",
+      "output_path": "/tmp/private-run/example/redundancy-detector.json",
+      "findings_included": 0,
+      "notes": "validated"
+    },
+    {
+      "specialist": "verbosity-pruner",
+      "status": "included",
+      "output_path": "/tmp/private-run/example/verbosity-pruner.json",
+      "findings_included": 0,
+      "notes": "validated"
+    },
+    {
+      "specialist": "verbosity-pruner",
+      "status": "included",
+      "output_path": "/tmp/private-run/example/verbosity-pruner-second.json",
+      "findings_included": 0,
+      "notes": "duplicate"
+    },
+    {
+      "specialist": "vocab-compressor",
+      "status": "included",
+      "output_path": "/tmp/private-run/example/vocab-compressor.json",
+      "findings_included": 0,
+      "notes": "validated"
+    }
+  ],
+  "findings": []
+}
+JSON
+
+reduced_schema_fails "$TMP_DIR/reduced-duplicate-detector-status.json"
+
 cat >"$TMP_DIR/reduced-missing-source-order.json" <<'JSON'
 {
   "file_path": "/tmp/example.md",
-  "detector_status": [],
+  "detector_status": [
+    {
+      "specialist": "redundancy-detector",
+      "status": "included",
+      "output_path": "/tmp/private-run/example/redundancy-detector.json",
+      "findings_included": 0,
+      "notes": "validated"
+    },
+    {
+      "specialist": "verbosity-pruner",
+      "status": "included",
+      "output_path": "/tmp/private-run/example/verbosity-pruner.json",
+      "findings_included": 1,
+      "notes": "validated"
+    },
+    {
+      "specialist": "filler-eliminator",
+      "status": "included",
+      "output_path": "/tmp/private-run/example/filler-eliminator.json",
+      "findings_included": 0,
+      "notes": "validated"
+    },
+    {
+      "specialist": "vocab-compressor",
+      "status": "included",
+      "output_path": "/tmp/private-run/example/vocab-compressor.json",
+      "findings_included": 0,
+      "notes": "validated"
+    }
+  ],
   "findings": [
     {
       "resolution": "single",
@@ -379,7 +541,36 @@ reduced_schema_fails "$TMP_DIR/reduced-missing-source-order.json"
 cat >"$TMP_DIR/reduced-apply-recommended-without-index.json" <<'JSON'
 {
   "file_path": "/tmp/example.md",
-  "detector_status": [],
+  "detector_status": [
+    {
+      "specialist": "redundancy-detector",
+      "status": "included",
+      "output_path": "/tmp/private-run/example/redundancy-detector.json",
+      "findings_included": 0,
+      "notes": "validated"
+    },
+    {
+      "specialist": "verbosity-pruner",
+      "status": "included",
+      "output_path": "/tmp/private-run/example/verbosity-pruner.json",
+      "findings_included": 1,
+      "notes": "validated"
+    },
+    {
+      "specialist": "filler-eliminator",
+      "status": "included",
+      "output_path": "/tmp/private-run/example/filler-eliminator.json",
+      "findings_included": 0,
+      "notes": "validated"
+    },
+    {
+      "specialist": "vocab-compressor",
+      "status": "included",
+      "output_path": "/tmp/private-run/example/vocab-compressor.json",
+      "findings_included": 0,
+      "notes": "validated"
+    }
+  ],
   "findings": [
     {
       "resolution": "alternatives",
@@ -431,6 +622,11 @@ require_contains "$SKILL_DIR/SKILL.md" "Quote every shell path argument"
 require_contains "$SKILL_DIR/SKILL.md" "Before any write, verify every target file is tracked in a git worktree and clean."
 require_contains "$SKILL_DIR/SKILL.md" "Record a preflight content hash for each target file after the clean check."
 require_contains "$SKILL_DIR/SKILL.md" "Immediately before writer execution for each file, repeat the tracked-and-clean check"
+require_contains "$SKILL_DIR/SKILL.md" "Reject symbolic links"
+require_contains "$SKILL_DIR/SKILL.md" "real path stays inside the real git root"
+require_contains "$SKILL_DIR/SKILL.md" "OpenAI Codex"
+require_contains "$SKILL_DIR/SKILL.md" "multi_agent_v1.spawn_agent"
+require_contains "$SKILL_DIR/SKILL.md" "request_user_input"
 require_contains "$SKILL_DIR/SKILL.md" "Provide the absolute path to \`agents/file-orchestrator.md\`"
 require_contains "$SKILL_DIR/SKILL.md" "source_order"
 require_contains "$SKILL_DIR/SKILL.md" "Offer \`Apply recommended\` only when \`recommended_alternative_index\` is present."
@@ -450,6 +646,8 @@ do
 done
 
 require_contains "$SKILL_DIR/agents/file-orchestrator.md" "Spawn the four detector agents in parallel with the Agent tool."
+require_contains "$SKILL_DIR/agents/file-orchestrator.md" "OpenAI Codex"
+require_contains "$SKILL_DIR/agents/file-orchestrator.md" "multi_agent_v1.spawn_agent"
 require_contains "$SKILL_DIR/agents/file-orchestrator.md" "Pass the absolute skill directory and the absolute detector agent file path"
 require_contains "$SKILL_DIR/agents/file-orchestrator.md" "Parse only the first non-empty line as the detector output path."
 require_contains "$SKILL_DIR/agents/file-orchestrator.md" "Resolve the path and require it to stay under the private run output directory."
@@ -457,6 +655,9 @@ require_contains "$SKILL_DIR/agents/file-orchestrator.md" "references/reduced-sc
 require_contains "$SKILL_DIR/agents/file-orchestrator.md" "Quote every shell path argument."
 require_contains "$SKILL_DIR/agents/file-orchestrator.md" "source_order"
 require_contains "$SKILL_DIR/agents/file-orchestrator.md" "If a finding's excerpt cannot be located in the file, drop it"
+require_contains "$SKILL_DIR/agents/file-orchestrator.md" "exactly one accepted occurrence"
+require_contains "$SKILL_DIR/agents/file-orchestrator.md" "ambiguous"
+reject_contains "$SKILL_DIR/agents/file-orchestrator.md" "first verbatim occurrence"
 reject_contains "$SKILL_DIR/agents/file-orchestrator.md" "keep it only when the"
 
 require_contains "$REPO_ROOT/plugins/general-plugins/.codex-plugin/plugin.json" "\"skills\": \"./skills/\""

@@ -45,6 +45,12 @@ file path, the same `run_id`, and the same private run output directory. Pass th
 Instruct each detector to read and follow that path rather than inferring a
 relative location.
 
+In OpenAI Codex, use `tool_search` to expose multi-agent tools if needed, then
+issue all four `multi_agent_v1.spawn_agent` calls in one response and wait with
+`multi_agent_v1.wait_agent` on the full spawned set. The dispatch requirements
+are the same: all four detectors run in parallel and all four results are
+collected before reduction.
+
 Dispatch exactly these agents:
 
 - `redundancy-detector`
@@ -108,14 +114,20 @@ reduced output:
 
 - `source_specialist`: the detector that emitted it.
 - `source_index`: its index in that detector's `findings` array.
-- `source_order`: its order in the target file, based on the first verbatim
-  occurrence of `excerpt` with `context_before` / `context_after` when present.
+- `source_order`: its order in the target file, based on the exact matching
+  algorithm below.
 
+To locate a finding, inspect every verbatim occurrence of `excerpt` in the file.
+An accepted occurrence must have `context_before` immediately before the excerpt
+when `context_before` is non-null, and `context_after` immediately after the
+excerpt when `context_after` is non-null. Keep the finding only when there is
+exactly one accepted occurrence, and derive `source_order` from that occurrence.
 If a finding's excerpt cannot be located in the file, drop it from the reduced
-finding list and record the drop in that detector's `detector_status.notes`.
-Without a located occurrence there is no reliable `source_order`, and the top
-orchestrator must not receive findings that cannot be source ordered. Do not
-silently repair excerpts.
+finding list and record the drop in that detector's `detector_status.notes`. If
+more than one accepted occurrence remains, drop the finding as ambiguous and
+record that in `detector_status.notes`. Without a unique located occurrence
+there is no reliable `source_order`, and the top orchestrator must not receive
+findings that cannot be source ordered. Do not silently repair excerpts.
 
 Sort non-overlapping findings by `source_order`. When two findings have the
 same source order, use this stable detector order:
@@ -205,6 +217,9 @@ Allowed `detector_status[].status` values are `"included"`, `"partial"`, and
 `"alternatives"`, and `"conflict"`. Allowed `recommendation` values are
 `"apply"`, `"apply-recommended"`, `"ask-user"`, and `"skip"`.
 
+Return exactly one `detector_status` item for each of the four detector agents,
+even when a detector was skipped or contributed zero findings.
+
 ```json
 {
   "file_path": "/absolute/path/to/file.md",
@@ -213,6 +228,27 @@ Allowed `detector_status[].status` values are `"included"`, `"partial"`, and
       "specialist": "redundancy-detector",
       "status": "included",
       "output_path": "<run_output_dir>/<file_hash>/redundancy-detector.json",
+      "findings_included": 0,
+      "notes": "short status note"
+    },
+    {
+      "specialist": "verbosity-pruner",
+      "status": "included",
+      "output_path": "<run_output_dir>/<file_hash>/verbosity-pruner.json",
+      "findings_included": 1,
+      "notes": "short status note"
+    },
+    {
+      "specialist": "filler-eliminator",
+      "status": "included",
+      "output_path": "<run_output_dir>/<file_hash>/filler-eliminator.json",
+      "findings_included": 0,
+      "notes": "short status note"
+    },
+    {
+      "specialist": "vocab-compressor",
+      "status": "included",
+      "output_path": "<run_output_dir>/<file_hash>/vocab-compressor.json",
       "findings_included": 0,
       "notes": "short status note"
     }

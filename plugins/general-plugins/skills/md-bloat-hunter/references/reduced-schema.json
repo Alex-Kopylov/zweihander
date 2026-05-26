@@ -11,6 +11,54 @@
     },
     "detector_status": {
       "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "allOf": [
+        {
+          "contains": {
+            "type": "object",
+            "required": ["specialist"],
+            "properties": {
+              "specialist": { "const": "redundancy-detector" }
+            }
+          },
+          "minContains": 1,
+          "maxContains": 1
+        },
+        {
+          "contains": {
+            "type": "object",
+            "required": ["specialist"],
+            "properties": {
+              "specialist": { "const": "verbosity-pruner" }
+            }
+          },
+          "minContains": 1,
+          "maxContains": 1
+        },
+        {
+          "contains": {
+            "type": "object",
+            "required": ["specialist"],
+            "properties": {
+              "specialist": { "const": "filler-eliminator" }
+            }
+          },
+          "minContains": 1,
+          "maxContains": 1
+        },
+        {
+          "contains": {
+            "type": "object",
+            "required": ["specialist"],
+            "properties": {
+              "specialist": { "const": "vocab-compressor" }
+            }
+          },
+          "minContains": 1,
+          "maxContains": 1
+        }
+      ],
       "items": {
         "$ref": "#/$defs/detectorStatus"
       }

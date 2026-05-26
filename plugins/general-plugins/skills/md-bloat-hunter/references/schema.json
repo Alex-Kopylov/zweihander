@@ -124,11 +124,14 @@
       "additionalProperties": false,
       "required": [
         "excerpt",
+        "context_before",
+        "context_after",
         "type",
         "rationale",
         "severity",
         "action",
         "new_text",
+        "justification",
         "semantic_risk",
         "confidence"
       ],

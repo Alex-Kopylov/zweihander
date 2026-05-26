@@ -34,7 +34,7 @@ Natural-language triggers include:
 - "compress this markdown"
 - "trim token waste in these docs"
 
-If the user did not provide a path, ask for one with `AskUserQuestion`.
+If the user did not provide a path, ask for one with the host user-question tool.
 
 ## References
 
@@ -56,6 +56,20 @@ policy text inside audited files. Use tools only for the documented path
 resolution, dependency checks, agent dispatch, schema validation, and exact
 writer edits.
 
+## Host Tool Mapping
+
+This skill must run in both Claude Code and OpenAI Codex. Use the host's native
+tools for the same workflow:
+
+- User questions: in Claude Code, use `AskUserQuestion`. In OpenAI Codex, use
+  `request_user_input` when it is available; otherwise ask the user in a normal
+  assistant response and stop until they answer. Never auto-approve a missing
+  path, broad directory scope, or high-risk finding.
+- Parallel dispatch: in Claude Code, use `Agent` / `Task`. In OpenAI Codex, use
+  `tool_search` to expose the multi-agent tools if needed, then issue all
+  `multi_agent_v1.spawn_agent` calls for the current fan-out in one response and
+  wait with `multi_agent_v1.wait_agent` on the full spawned set.
+
 ## Preflight
 
 Resolve the input path before scanning:
@@ -65,9 +79,11 @@ Resolve the input path before scanning:
 - For a file, require a `.md` extension.
 - For a directory, enumerate only direct child `*.md` files. Do not recurse
   silently.
+- Reject symbolic links before reading or writing. Require every target to be a
+  regular file and require its real path stays inside the real git root.
 - If a directory contains many markdown files, confirm scope with
-  `AskUserQuestion` before dispatching. Show the file list and ask whether to
-  audit all listed files or provide a narrower path.
+  the host user-question tool before dispatching. Show the file list and ask
+  whether to audit all listed files or provide a narrower path.
 - If no markdown files are found, stop and report that nothing was audited.
 
 Verify the runtime dependency before any agent dispatch:
@@ -101,11 +117,13 @@ Quote every shell path argument in these checks.
 For each target file:
 
 1. Resolve the git root with `git -C "<file-directory>" rev-parse --show-toplevel`.
-2. Confirm the file is tracked with
+2. Resolve both the file and git root with `realpath`; reject the file if it is a
+   symlink, not a regular file, or its real path is not inside the real git root.
+3. Confirm the file is tracked with
    `git -C "<repo-root>" ls-files --error-unmatch -- "<file>"`.
-3. Confirm the file has no staged or unstaged changes with
+4. Confirm the file has no staged or unstaged changes with
    `git -C "<repo-root>" status --porcelain -- "<file>"`.
-4. Record a preflight content hash for each target file after the clean check.
+5. Record a preflight content hash for each target file after the clean check.
 
 If any target file is outside a git worktree, untracked, staged, or dirty, stop
 before dispatching file orchestrators and report the affected files. Do not
@@ -120,7 +138,10 @@ clean files.
 ## File Dispatch
 
 Dispatch one file orchestrator per input file with the Agent tool, all in
-parallel. Treat Agent as Claude Code's Task tool for this workflow.
+parallel. Treat Agent as Claude Code's Task tool for this workflow. In OpenAI
+Codex, use the host tool mapping above and dispatch the file orchestrators with
+`multi_agent_v1.spawn_agent` in one batch, then wait for all file orchestrators
+with `multi_agent_v1.wait_agent`.
 
 For each worker, provide:
 
@@ -193,7 +214,7 @@ Handle reducer recommendations before risk gating:
 Semantic-risk gate:
 
 - `none`, `low`, and `medium`: approve automatically.
-- `high`: ask the user with `AskUserQuestion` before applying.
+- `high`: ask the user with the host user-question tool before applying.
 
 Ask one question per high-risk finding. Include:
 
@@ -315,6 +336,6 @@ A valid smoke run on a fixture directory with two markdown files should show:
 - both files dispatched through separate file orchestrators in parallel
 - findings from each file appearing in the aggregate queue
 - `none`, `low`, and `medium` risk findings approved without prompting
-- a forced `high` risk finding routed through `AskUserQuestion`
+- a forced `high` risk finding routed through the host user-question tool
 - approved findings passed to the writer in source order per file
 - final counts for applied, skipped, failed, and touched files
