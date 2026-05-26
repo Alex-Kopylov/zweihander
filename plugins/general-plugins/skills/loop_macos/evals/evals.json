@@ -1,0 +1,45 @@
+{
+  "skill_name": "loop_macos",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "loop_macos each day run bash ~/.claude/my-marketplace/bin/sync-anthropic-skills.sh",
+      "expected_output": "Plist uses StartCalendarInterval (daily). Command runs the bash script. Label follows com.user.loop-macos.* format. Interval phrase 'each day' not leaked into command string.",
+      "files": [],
+      "assertions": [
+        {"name": "uses_StartCalendarInterval", "check": "output.plist contains '<key>StartCalendarInterval</key>'"},
+        {"name": "script_path_preserved", "check": "output.plist command contains 'sync-anthropic-skills.sh'"},
+        {"name": "label_format_correct", "check": "label starts with 'com.user.loop-macos.'"},
+        {"name": "no_interval_in_command", "check": "command string does not contain 'each day' or 'daily'"},
+        {"name": "valid_plist", "check": "plutil -lint output.plist exits 0"}
+      ]
+    },
+    {
+      "id": 1,
+      "prompt": "loop_macos 30m check if there are any new files in ~/Downloads and print their names to a log",
+      "expected_output": "Plist uses StartInterval of 1800 (30*60). Command is a shell one-liner (ls/find). Label correct format. Valid plist.",
+      "files": [],
+      "assertions": [
+        {"name": "uses_StartInterval", "check": "output.plist contains '<key>StartInterval</key>'"},
+        {"name": "interval_is_1800", "check": "output.plist contains '<integer>1800</integer>'"},
+        {"name": "label_format_correct", "check": "label starts with 'com.user.loop-macos.'"},
+        {"name": "task_not_in_interval", "check": "command string does not contain '30m'"},
+        {"name": "valid_plist", "check": "plutil -lint output.plist exits 0"}
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "schedule running python ~/scripts/cleanup_tmp.py every 2 hours",
+      "expected_output": "Natural language parsed. 'every 2 hours' stripped from task. StartInterval 7200. Command uses python. Label correct.",
+      "files": [],
+      "assertions": [
+        {"name": "uses_StartInterval", "check": "output.plist contains '<key>StartInterval</key>'"},
+        {"name": "interval_is_7200", "check": "output.plist contains '<integer>7200</integer>'"},
+        {"name": "python_script_in_command", "check": "command contains 'python' and 'cleanup_tmp.py'"},
+        {"name": "no_every_2h_in_command", "check": "command string does not contain 'every 2 hours'"},
+        {"name": "label_format_correct", "check": "label starts with 'com.user.loop-macos.'"},
+        {"name": "valid_plist", "check": "plutil -lint output.plist exits 0"}
+      ]
+    }
+  ]
+}

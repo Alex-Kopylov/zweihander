@@ -1,0 +1,31 @@
+{
+  "eval_id": 1,
+  "eval_name": "invoice-organization-workflow",
+  "prompt": "I have about 50 PDF invoices scattered across my Downloads folder from various vendors (Acme Corp, TechSupply Inc, etc.). I need to organize them in my MEGA encrypted vault by vendor name, then create a shareable link to the vendor folders so I can send them to my accountant. Walk me through the exact steps.",
+  "assertions": [
+    {
+      "name": "includes_mega_ls_or_find_command",
+      "description": "Response includes commands to search/list invoices in MEGA (mega-find or mega-ls)"
+    },
+    {
+      "name": "includes_folder_creation",
+      "description": "Response includes mega-mkdir command to create vendor folders"
+    },
+    {
+      "name": "includes_bulk_upload_mega_put",
+      "description": "Response mentions mega-put -c for efficient bulk upload"
+    },
+    {
+      "name": "includes_share_link_creation",
+      "description": "Response includes mega-export -a -f to create shareable links"
+    },
+    {
+      "name": "mentions_local_organization_first",
+      "description": "Response recommends organizing files locally before uploading (best practice)"
+    },
+    {
+      "name": "includes_verification_step",
+      "description": "Response includes verification that links work before sharing"
+    }
+  ]
+}

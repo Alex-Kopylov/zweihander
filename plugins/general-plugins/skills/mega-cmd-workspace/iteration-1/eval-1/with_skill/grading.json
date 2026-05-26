@@ -1,0 +1,36 @@
+{
+  "eval_id": 1,
+  "eval_name": "invoice-organization-workflow",
+  "expectations": [
+    {
+      "text": "includes_mega_ls_or_find_command",
+      "passed": true,
+      "evidence": "STEP 7 includes 'mega-ls -l /Invoices-2025/' to verify upload and check folder structure"
+    },
+    {
+      "text": "includes_folder_creation",
+      "passed": true,
+      "evidence": "STEP 4 explicitly shows 'mkdir -p ~/invoices-staging/Acme\\ Corp' and 'mkdir -p ~/invoices-staging/TechSupply\\ Inc'"
+    },
+    {
+      "text": "includes_bulk_upload_mega_put",
+      "passed": true,
+      "evidence": "STEP 6 recommends 'mega-put -c ~/invoices-staging/ /Invoices-2025/' with explanation of -c flag"
+    },
+    {
+      "text": "includes_share_link_creation",
+      "passed": true,
+      "evidence": "STEP 9 provides exact commands: 'mega-export -a -f /Invoices-2025/Acme\\ Corp/' with example output"
+    },
+    {
+      "text": "mentions_local_organization_first",
+      "passed": true,
+      "evidence": "STEP 2-5 emphasize local organization before uploading: 'Before uploading to MEGA, organize the invoices locally first (cleaner, faster)'"
+    },
+    {
+      "text": "includes_verification_step",
+      "passed": true,
+      "evidence": "STEP 7 and 8 include verification with mega-ls and optional restructuring to ensure clean final structure"
+    }
+  ]
+}

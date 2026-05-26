@@ -1,5 +1,5 @@
 {
   "name": "general-plugins",
-  "description": "General-purpose utilities for Claude Code setup auditing, configuration management, and workflow optimization",
-  "version": "0.9.0"
+  "description": "General-purpose utilities for Claude Code setup auditing, configuration management, workflow optimization, and task management & background agent orchestration",
+  "version": "0.10.0"
 }

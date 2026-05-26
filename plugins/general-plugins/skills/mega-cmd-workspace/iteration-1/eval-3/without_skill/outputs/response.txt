@@ -1,0 +1,411 @@
+SAFE PROCEDURE FOR CONTRACT MANAGEMENT IN MEGA
+================================================
+
+OBJECTIVE: Find contracts from the last 30 days, audit them locally, then safely delete older ones.
+
+PRE-REQUISITE SETUP
+===================
+
+1. Install MEGA CMD (MEGAcmd) if not already installed:
+   - macOS: brew install megatools or download from https://mega.io/cmd
+   - Linux: apt-get install megatools
+   - Windows: Download from https://mega.io/cmd
+
+2. Verify MEGA CMD is installed:
+   mega-cmd --version
+
+3. Log in to MEGA (one-time setup):
+   mega-login your_email@example.com
+   (You'll be prompted for password)
+
+4. Verify login status:
+   mega-whoami
+
+
+STEP 1: AUDIT PHASE - IDENTIFY CONTRACTS TO DOWNLOAD
+=====================================================
+
+Purpose: Safely identify what needs to be downloaded without deleting anything yet.
+
+Command to list all contracts with metadata:
+  mega-ls -l /Contracts > /tmp/mega_contracts_full_list.txt
+
+This creates a backup file with all contract details including:
+  - File sizes
+  - Modification dates
+  - Full paths
+
+Command to find contracts from last 30 days:
+  # First, determine the cutoff date (30 days ago from today)
+  # Today is 2026-05-01, so cutoff is approximately 2026-04-01
+
+  # List and filter contracts (requires manual review or scripting)
+  mega-ls -l /Contracts | grep -E "Apr|May"
+
+For a more reliable approach using a script:
+
+  CUTOFF_DATE=$(date -d "30 days ago" +%Y-%m-%d)
+  echo "Contracts from: $CUTOFF_DATE onwards will be downloaded"
+  mega-ls -R /Contracts > /tmp/mega_contracts_raw.txt
+
+  # Review the list before proceeding
+  cat /tmp/mega_contracts_raw.txt
+
+
+STEP 2: SAFE DOWNLOAD PHASE
+============================
+
+Purpose: Download recent contracts to local system for audit with verification.
+
+Create a safe local directory structure:
+  mkdir -p ~/contracts_audit/downloads
+  mkdir -p ~/contracts_audit/verified
+  mkdir -p ~/contracts_audit/to_delete
+  mkdir -p ~/contracts_audit/logs
+
+Download RECENT contracts (from last 30 days):
+  # Create a script for safer batch download
+
+  #!/bin/bash
+
+  CONTRACTS_DIR="/Contracts"
+  LOCAL_DIR="${HOME}/contracts_audit/downloads"
+  CUTOFF_DATE=$(date -d "30 days ago" +%s)
+  LOG_FILE="${HOME}/contracts_audit/logs/download_$(date +%Y%m%d_%H%M%S).log"
+
+  echo "Starting contract download - $(date)" > "$LOG_FILE"
+  echo "Cutoff date (30 days ago): $(date -d @$CUTOFF_DATE)" >> "$LOG_FILE"
+
+  # List contracts and filter by date
+  mega-ls -R "$CONTRACTS_DIR" | while read -r line; do
+    if [[ "$line" =~ \.pdf$ ]]; then
+      # Extract file path and check date
+      # This requires parsing mega-ls output
+      echo "Processing: $line" >> "$LOG_FILE"
+
+      # Download if within 30 days
+      mega-get "$CONTRACTS_DIR/$line" "$LOCAL_DIR/" 2>> "$LOG_FILE"
+
+      if [ $? -eq 0 ]; then
+        echo "SUCCESS: Downloaded $line" >> "$LOG_FILE"
+      else
+        echo "FAILED: Could not download $line" >> "$LOG_FILE"
+      fi
+    fi
+  done
+
+  echo "Download complete - $(date)" >> "$LOG_FILE"
+  echo "Check log: $LOG_FILE"
+
+Simplified approach - download with verification:
+  # Download all PDFs first
+  mkdir -p ~/contracts_audit/downloads
+  mega-get /Contracts ~/contracts_audit/downloads/ --ignore-quota-warn
+
+  # Verify downloads
+  ls -lah ~/contracts_audit/downloads/ | head -20
+  echo "Total PDFs downloaded: $(find ~/contracts_audit/downloads -name '*.pdf' | wc -l)"
+
+
+STEP 3: AUDIT PHASE - LOCAL REVIEW
+===================================
+
+Purpose: Examine contracts locally before making any deletions.
+
+Review downloaded contracts:
+  # Count and list recent files
+  find ~/contracts_audit/downloads -name "*.pdf" -type f | sort
+
+  # Check file modification times
+  find ~/contracts_audit/downloads -name "*.pdf" -type f -mtime -30
+
+  # Categorize by date
+  ls -lt ~/contracts_audit/downloads/*.pdf | head -50
+
+Organize for audit:
+  # Move verified contracts to separate folder
+  mv ~/contracts_audit/downloads/contract_xyz.pdf ~/contracts_audit/verified/
+
+  # Or create a checklist file
+  cat > ~/contracts_audit/audit_checklist.txt << 'EOF'
+  [ ] Contract 1 - REVIEWED - OK TO DELETE REMOTE
+  [ ] Contract 2 - REVIEWED - KEEP ON REMOTE
+  [ ] Contract 3 - PENDING REVIEW
+  EOF
+
+
+STEP 4: DELETE PHASE - SAFE REMOVAL FROM MEGA
+==============================================
+
+CRITICAL SAFETY CHECKLIST BEFORE DELETING:
+  ☐ All recent contracts (last 30 days) have been downloaded
+  ☐ Downloaded contracts have been locally verified
+  ☐ You have tested that downloads opened correctly
+  ☐ You have confirmed what needs to be deleted
+  ☐ You have a backup list of file names to delete
+  ☐ You understand MEGA deletion is permanent (no recycle bin)
+
+Option A: SAFEST - Manual deletion with confirmation
+
+  # First, create a manifest of what you're about to delete
+  cat > ~/contracts_audit/deletion_manifest.txt << 'EOF'
+  DELETION MANIFEST - Generated: $(date)
+
+  Files to delete from /Contracts (older than 30 days):
+  - /Contracts/old_contract_2024_01.pdf
+  - /Contracts/old_contract_2024_02.pdf
+  EOF
+
+  # Review the manifest carefully
+  cat ~/contracts_audit/deletion_manifest.txt
+
+  # Delete one at a time with confirmation
+  mega-rm /Contracts/old_contract_2024_01.pdf
+  echo "Deleted. Confirm in MEGA web interface before continuing."
+
+  # Wait and verify in MEGA web before deleting next
+
+Option B: SAFER - Batch deletion with backup list
+
+  # Create a list file with paths to delete
+  cat > ~/contracts_audit/files_to_delete.txt << 'EOF'
+  /Contracts/contract_old_001.pdf
+  /Contracts/contract_old_002.pdf
+  /Contracts/contract_old_003.pdf
+  EOF
+
+  # Review the list
+  echo "Total files to delete: $(wc -l < ~/contracts_audit/files_to_delete.txt)"
+  cat ~/contracts_audit/files_to_delete.txt
+
+  # Pause and confirm
+  read -p "Press ENTER to continue with deletion, or CTRL+C to abort..."
+
+  # Execute deletion with logging
+  while IFS= read -r filepath; do
+    echo "Deleting: $filepath"
+    mega-rm "$filepath"
+    sleep 1  # Brief pause between deletions
+    echo "Deleted: $filepath - $(date)" >> ~/contracts_audit/logs/deletion_log.txt
+  done < ~/contracts_audit/files_to_delete.txt
+
+Option C: LEAST RISKY - Move to archive folder instead of deleting
+
+  # Instead of permanent deletion, move old contracts to archive
+
+  mkdir -p /Contracts/Archive_2024_OLD
+
+  # Move old contracts (safer than deletion)
+  mega-get /Contracts/old_contract_001.pdf ~/temp/ && \
+  mega-put ~/temp/old_contract_001.pdf /Contracts/Archive_2024_OLD/ && \
+  mega-rm /Contracts/old_contract_001.pdf
+
+  # This way you can recover if needed
+
+
+STEP 5: VERIFICATION PHASE
+===========================
+
+Confirm deletions were successful:
+
+  # List remaining contracts
+  mega-ls -l /Contracts > ~/contracts_audit/logs/mega_contracts_after_deletion.txt
+
+  # Compare file counts
+  echo "Before: $(wc -l < /tmp/mega_contracts_full_list.txt)"
+  echo "After: $(wc -l < ~/contracts_audit/logs/mega_contracts_after_deletion.txt)"
+
+  # Verify specific contracts still exist
+  mega-ls /Contracts | grep "contract_important_2026"
+
+  # Check MEGA account storage
+  mega-df
+
+
+COMPLETE BASH SCRIPT (ALL-IN-ONE)
+==================================
+
+#!/bin/bash
+
+set -e  # Exit on error
+
+CONTRACTS_REMOTE="/Contracts"
+CONTRACTS_LOCAL="${HOME}/contracts_audit"
+CUTOFF_DAYS=30
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+echo -e "${GREEN}=== MEGA Contract Management Tool ===${NC}"
+echo "Today's date: $(date)"
+echo "Contracts older than $CUTOFF_DAYS days will be candidates for deletion"
+echo ""
+
+# Setup
+mkdir -p "$CONTRACTS_LOCAL"/{downloads,verified,to_delete,logs}
+
+# Phase 1: Verify MEGA login
+echo -e "${YELLOW}Phase 1: Verifying MEGA connection...${NC}"
+if ! mega-whoami > /dev/null 2>&1; then
+    echo -e "${RED}ERROR: Not logged into MEGA. Run 'mega-login' first.${NC}"
+    exit 1
+fi
+echo -e "${GREEN}✓ MEGA connection verified${NC}"
+echo ""
+
+# Phase 2: Download recent contracts
+echo -e "${YELLOW}Phase 2: Downloading contracts from last $CUTOFF_DAYS days...${NC}"
+mega-get "$CONTRACTS_REMOTE" "$CONTRACTS_LOCAL/downloads/" --ignore-quota-warn
+
+PDF_COUNT=$(find "$CONTRACTS_LOCAL/downloads" -name "*.pdf" | wc -l)
+echo -e "${GREEN}✓ Downloaded $PDF_COUNT PDF files${NC}"
+echo ""
+
+# Phase 3: Create audit checklist
+echo -e "${YELLOW}Phase 3: Creating audit checklist...${NC}"
+cat > "$CONTRACTS_LOCAL/AUDIT_CHECKLIST.md" << 'EOF'
+# Contract Audit Checklist
+
+## Pre-Deletion Review
+- [ ] All contracts opened correctly
+- [ ] No corrupted files
+- [ ] All important contracts identified
+- [ ] Backup list created of files to delete
+
+## Deletion Approval
+- [ ] Confirmed cutoff date is correct
+- [ ] Reviewed list of files to delete
+- [ ] Verified no important files in deletion list
+- [ ] Created deletion manifest
+
+## Post-Deletion Verification
+- [ ] Checked MEGA web interface
+- [ ] Confirmed correct file count reduction
+- [ ] Storage space reclaimed as expected
+EOF
+
+echo -e "${GREEN}✓ Audit checklist created: $CONTRACTS_LOCAL/AUDIT_CHECKLIST.md${NC}"
+echo ""
+
+# Phase 4: Summary and next steps
+echo -e "${YELLOW}=== NEXT STEPS ===${NC}"
+echo "1. Review downloaded contracts in: $CONTRACTS_LOCAL/downloads/"
+echo "2. Complete the audit checklist: $CONTRACTS_LOCAL/AUDIT_CHECKLIST.md"
+echo "3. Create deletion manifest when ready"
+echo "4. Review the manifest carefully"
+echo "5. Execute deletion commands from: $CONTRACTS_LOCAL/logs/"
+echo ""
+echo -e "${GREEN}✓ Setup complete. Ready for manual audit phase.${NC}"
+
+
+SAFETY RECOMMENDATIONS
+======================
+
+1. USE VERSION CONTROL FOR FILE LISTS
+   - Keep copies of deletion manifests
+   - Store in ~/contracts_audit/logs/ with timestamps
+   - Never delete the logs directory
+
+2. TEST WITH SMALL BATCH FIRST
+   - Delete 5-10 old contracts first
+   - Verify behavior in MEGA web interface
+   - Confirm storage space is freed
+   - Then proceed with remaining deletions
+
+3. MAINTAIN AN AUDIT TRAIL
+   - Log all deletions with timestamps
+   - Keep before/after file counts
+   - Document which contracts were removed
+
+4. SET UP RECURRING CLEANUP
+   - Run this procedure quarterly
+   - Schedule: first week of Jan/Apr/Jul/Oct
+   - Maintain 30-day rolling window of recent contracts
+
+5. BACKUP IMPORTANT METADATA
+   - Export contract metadata to CSV before cleanup
+   - Keep list of all deleted files for legal purposes
+   - Store backup in separate location (Google Drive, etc.)
+
+6. PERMISSIONS & ACCESS
+   - Ensure you have delete permissions in MEGA
+   - If shared folder, confirm with team before deleting
+   - Document who authorized the cleanup
+
+7. MEGA-SPECIFIC NOTES
+   - Deleted files are permanently gone (no trash/recycle bin)
+   - MEGA may have a brief cache lag (wait 1-5 min to verify)
+   - Check account before cleanup for any quota warnings
+   - Use --ignore-quota-warn carefully (only for this operation)
+
+
+TROUBLESHOOTING
+===============
+
+Issue: mega-get hangs or times out
+  → Check internet connection
+  → Try downloading fewer files at once
+  → Use --ignore-quota-warn flag
+
+Issue: Cannot delete files
+  → Check if folder is read-only: mega-ls -l /Contracts
+  → Verify you have delete permissions
+  → Try logging out and back in: mega-logout, then mega-login
+
+Issue: Quota warning despite having space
+  → MEGA may be under maintenance
+  → Wait 10-15 minutes and try again
+  → Use --ignore-quota-warn to bypass
+
+Issue: How to recover deleted files?
+  → MEGA has no recycle bin - deletions are permanent
+  → Check if files exist in MEGA's built-in versioning (if enabled)
+  → This is why the audit phase is critical!
+
+Issue: Want to move files instead of deleting?
+  → Create archive folder: mega-mkdir /Contracts/Archive_2024
+  → Use: mega-cp /Contracts/old.pdf /Contracts/Archive_2024/
+  → Then delete from original location
+  → Safer than permanent deletion
+
+
+LEGAL & COMPLIANCE NOTES
+========================
+
+- KEEP A DELETION MANIFEST for legal/audit purposes
+- Some contracts may be required to keep for X years
+- Consult legal/compliance team before deleting
+- Document the deletion approval process
+- Store deletion logs with timestamps indefinitely
+- Some jurisdictions have contract retention requirements
+
+
+QUICK REFERENCE
+===============
+
+Most important commands:
+
+  # Verify login
+  mega-whoami
+
+  # List all contracts
+  mega-ls -l /Contracts
+
+  # Download contracts
+  mega-get /Contracts ~/contracts_audit/downloads/
+
+  # Delete specific contract
+  mega-rm /Contracts/old_contract.pdf
+
+  # Create archive instead of deleting
+  mega-mkdir /Contracts/Archive_OLD
+  mega-cp /Contracts/old_contract.pdf /Contracts/Archive_OLD/
+
+  # Check account storage
+  mega-df
+
+  # View deletion logs
+  cat ~/contracts_audit/logs/deletion_log.txt

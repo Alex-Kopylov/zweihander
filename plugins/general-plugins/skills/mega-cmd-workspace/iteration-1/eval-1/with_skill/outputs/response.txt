@@ -1,0 +1,290 @@
+MEGA CMD INVOICE ORGANIZATION & SHARING WORKFLOW
+================================================================
+
+Complete step-by-step instructions to organize 50 PDF invoices by vendor in your
+MEGA encrypted vault and create shareable links for your accountant.
+
+PREREQUISITE
+================================================================
+Before starting, verify MEGA CMD is installed and you're logged in:
+
+mega-whoami
+
+Expected output: Your email address (e.g., alexkopylov123@gmail.com)
+If you see "Not logged in" error, login first:
+
+mega-login alexkopylov123@gmail.com
+(Enter your MEGA password when prompted)
+
+
+STEP 1: VERIFY YOUR DOWNLOADS FOLDER & IDENTIFY INVOICES
+================================================================
+
+List all PDF files in your Downloads folder to see what you're working with:
+
+ls -la ~/Downloads/*.pdf | head -20
+
+This shows you the filenames. Note the vendor names (Acme Corp, TechSupply Inc, etc.)
+embedded in the filenames.
+
+
+STEP 2: CREATE LOCAL STAGING FOLDER FOR ORGANIZATION
+================================================================
+
+Before uploading to MEGA, organize the invoices locally first (cleaner, faster):
+
+mkdir -p ~/invoices-staging
+
+This creates a staging area where you'll organize files by vendor before bulk uploading.
+
+
+STEP 3: IDENTIFY & PARSE VENDOR NAMES FROM FILENAMES
+================================================================
+
+See what vendor names are in your invoices. Run this to get a quick list:
+
+ls ~/Downloads/invoice*.pdf | sed 's|.*/||' | sort | uniq
+
+This helps you identify all unique vendor names. Common patterns:
+- invoice_acme_corp_2024.pdf
+- TechSupply_Inc_invoice.pdf
+- invoice-vendor-name-date.pdf
+
+Write down or copy the vendor names you see. These will become your folder names.
+
+
+STEP 4: CREATE VENDOR FOLDERS IN LOCAL STAGING
+================================================================
+
+Create local folders for each vendor. Example for common vendors:
+
+mkdir -p ~/invoices-staging/Acme\ Corp
+mkdir -p ~/invoices-staging/TechSupply\ Inc
+mkdir -p ~/invoices-staging/Other\ Vendors
+
+Add more vendor folders as needed based on your actual vendor list.
+
+(Note: Escape spaces with backslash or use quotes: "Vendor Name")
+
+
+STEP 5: SORT INVOICES INTO VENDOR FOLDERS
+================================================================
+
+Move invoices from Downloads into the appropriate vendor folder.
+
+For Acme Corp invoices:
+cp ~/Downloads/*acme*.pdf ~/invoices-staging/Acme\ Corp/
+
+For TechSupply Inc invoices:
+cp ~/Downloads/*techsupply*.pdf ~/invoices-staging/TechSupply\ Inc/
+
+For others (catch-all):
+cp ~/Downloads/invoice*.pdf ~/invoices-staging/Other\ Vendors/ 2>/dev/null
+
+(Using cp instead of mv preserves originals in Downloads as backup)
+
+Verify the organization:
+ls -la ~/invoices-staging/Acme\ Corp/
+ls -la ~/invoices-staging/TechSupply\ Inc/
+
+
+STEP 6: UPLOAD STAGED FOLDER TO MEGA (ONE-TIME BULK OPERATION)
+================================================================
+
+Now upload the entire organized folder to MEGA with one command:
+
+mega-put -c ~/invoices-staging/ /Invoices-2025/
+
+This creates: /Invoices-2025/invoices-staging/[vendor-folders]/[invoice-files]
+
+The -c flag uploads recursively (copies folder structure).
+
+
+STEP 7: VERIFY UPLOAD & CHECK MEGA STRUCTURE
+================================================================
+
+List what you uploaded to confirm everything arrived:
+
+mega-ls -l /Invoices-2025/
+
+Then check a vendor folder:
+
+mega-ls -l /Invoices-2025/invoices-staging/Acme\ Corp/
+
+Expected output: Your invoice PDFs listed with timestamps.
+
+
+STEP 8: (OPTIONAL) REORGANIZE MEGA STRUCTURE FOR CLEANER ACCESS
+================================================================
+
+If you want the folder structure to be /Invoices-2025/Acme Corp/ instead of
+/Invoices-2025/invoices-staging/Acme Corp/, reorganize by moving folders:
+
+mega-mv /Invoices-2025/invoices-staging/Acme\ Corp/ /Invoices-2025/Acme\ Corp/
+mega-mv /Invoices-2025/invoices-staging/TechSupply\ Inc/ /Invoices-2025/TechSupply\ Inc/
+mega-mv /Invoices-2025/invoices-staging/Other\ Vendors/ /Invoices-2025/Other\ Vendors/
+
+Then remove the empty staging folder:
+
+mega-rm -r -f /Invoices-2025/invoices-staging/
+
+After cleanup:
+mega-ls -l /Invoices-2025/
+
+Now you'll see vendor folders directly under /Invoices-2025/
+
+
+STEP 9: CREATE SHAREABLE LINKS FOR EACH VENDOR FOLDER
+================================================================
+
+For each vendor folder, create a public shareable link:
+
+mega-export -a -f /Invoices-2025/Acme\ Corp/
+mega-export -a -f /Invoices-2025/TechSupply\ Inc/
+mega-export -a -f /Invoices-2025/Other\ Vendors/
+
+Each command returns a MEGA link: https://mega.nz/folder/...
+
+Example output:
+Exported: https://mega.nz/folder/AbCdEfGh!1234567890abcdefghijk
+
+Copy these links and save them in a document (or send to accountant directly).
+
+
+STEP 10: CREATE A SINGLE PARENT LINK (OPTIONAL)
+================================================================
+
+Instead of multiple links, you can share the entire invoices folder:
+
+mega-export -a -f /Invoices-2025/
+
+This returns one link for the whole year's invoices, with all vendor subfolders visible.
+The accountant can browse vendors within the shared folder.
+
+
+STEP 11: SEND LINKS TO YOUR ACCOUNTANT
+================================================================
+
+Email the shareable links to your accountant. Example message:
+
+---
+Subject: 2025 Invoices - Organized by Vendor (Encrypted Storage)
+
+Hi [Accountant Name],
+
+I've organized all 50 invoices by vendor in MEGA encrypted storage.
+You can access them via these links:
+
+Acme Corp: https://mega.nz/folder/AbCdEfGh!1234567890abcdefghijk
+TechSupply Inc: https://mega.nz/folder/XyZaBcDe!abcdefghijk1234567890
+Other Vendors: https://mega.nz/folder/FgHiJkLm!1234567890abcdefghijk
+
+Or view all together: https://mega.nz/folder/MainFolder!masterkey
+
+Links are public but cryptographically secured. No password needed.
+Files are end-to-end encrypted — even MEGA cannot see them.
+
+---
+
+
+STEP 12: TEST LINK ACCESS (BEFORE SENDING)
+================================================================
+
+Before sending links to your accountant, verify they work:
+
+1. Copy the link you created from Step 9
+2. Open in incognito/private browser window
+3. Verify you can see the vendor folders and files
+4. (Optional) Download a test file to confirm it works
+
+If links work in incognito, they're ready to share.
+
+
+STEP 13: CLEANUP (OPTIONAL)
+================================================================
+
+Once accountant has accessed the files, you can optionally clean up local staging:
+
+rm -rf ~/invoices-staging/
+
+Your MEGA vault remains encrypted and secure regardless.
+
+
+ALTERNATIVE: IF YOU WANT TO ORGANIZE MEGA FIRST, THEN UPLOAD
+================================================================
+
+If you prefer to create the MEGA structure first without local staging:
+
+mega-mkdir -p /Invoices-2025/Acme\ Corp
+mega-mkdir -p /Invoices-2025/TechSupply\ Inc
+mega-mkdir -p /Invoices-2025/Other\ Vendors
+
+Then upload individual files:
+
+mega-put ~/Downloads/invoice_acme_2024.pdf /Invoices-2025/Acme\ Corp/
+mega-put ~/Downloads/invoice_techsupply_2024.pdf /Invoices-2025/TechSupply\ Inc/
+
+(This is slower for 50 files. Recommended: use the bulk upload workflow in Step 1-6.)
+
+
+TROUBLESHOOTING
+================================================================
+
+"Not logged in" error:
+  mega-login alexkopylov123@gmail.com
+
+Path not found:
+  mega-ls /Invoices-2025/
+  (Verify folder exists before moving files)
+
+Upload incomplete:
+  mega-transfers
+  (Check if transfer is still in progress)
+
+Can't create shared link:
+  mega-export /path/to/folder
+  (Without -f flag, shows if link already exists)
+
+Accidental file deletion:
+  mega-rm commands have no undo. Verify paths with mega-ls -l before using mega-rm -r -f
+
+
+KEY COMMANDS SUMMARY
+================================================================
+
+Check login:                mega-whoami
+List folders:              mega-ls -l /Invoices-2025/
+Create folder:             mega-mkdir -p /Invoices-2025/VendorName
+Upload folder:             mega-put -c ~/invoices-staging/ /Invoices-2025/
+Move file/folder:          mega-mv /source/ /dest/
+Create share link:         mega-export -a -f /path/to/folder/
+Remove link:               mega-export -d /path/to/folder/
+Check transfers:           mega-transfers
+
+
+SECURITY NOTES
+================================================================
+
+- Your files are encrypted with end-to-end encryption (E2EE)
+- Even MEGA cannot see your invoice contents
+- Shareable links are public but cryptographically signed
+- Links don't expire (free account feature)
+- Accountant can access without MEGA account
+- Encryption happens on YOUR device before upload
+
+
+ESTIMATED TIME FOR 50 INVOICES
+================================================================
+
+- Local organization: 5-10 minutes (copy files to vendor folders)
+- Bulk upload: 2-5 minutes (depends on file size & internet speed)
+- Creating links: 2 minutes (4-5 commands)
+- Testing & sending: 5 minutes
+
+Total: 15-25 minutes for complete workflow
+
+
+================================================================
+That's it! Your 50 invoices are now organized by vendor, encrypted in MEGA,
+and shareable with your accountant via secure links.
+================================================================

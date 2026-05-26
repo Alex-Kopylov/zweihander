@@ -1,0 +1,114 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SpecialistOutput",
+  "description": "Output produced by a single detector for a single file. Each finding is filled in SGR order: preliminary_analysis (observe) -> identified_problem (classify) -> proposal (commit to fix) -> estimated_risk (assess). SGR phases are guidance only; the Finding schema is flat.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["specialist", "file_path", "audit_calibration", "findings"],
+  "properties": {
+    "specialist": {
+      "type": "string",
+      "enum": [
+        "redundancy-detector",
+        "verbosity-pruner",
+        "filler-eliminator",
+        "vocab-compressor"
+      ]
+    },
+    "file_path": {
+      "type": "string",
+      "description": "Absolute path of the audited file"
+    },
+    "audit_calibration": {
+      "type": "object",
+      "description": "Outer SGR: characterize the file before scanning. Distinct from per-finding SGR.",
+      "additionalProperties": false,
+      "required": ["observation", "chosen_intensity", "reasoning"],
+      "properties": {
+        "observation": {
+          "type": "string",
+          "description": "1-line file characterization"
+        },
+        "chosen_intensity": {
+          "type": "string",
+          "enum": ["minimal", "standard", "aggressive"]
+        },
+        "reasoning": {
+          "type": "string",
+          "description": "Connects observation to intensity choice"
+        }
+      }
+    },
+    "findings": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/Finding" }
+    }
+  },
+  "$defs": {
+    "Finding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "excerpt",
+        "type",
+        "rationale",
+        "severity",
+        "action",
+        "new_text",
+        "semantic_risk",
+        "confidence"
+      ],
+      "properties": {
+        "excerpt": {
+          "type": "string",
+          "description": "preliminary_analysis (SGR phase 1): verbatim quote from file"
+        },
+        "context_before": {
+          "type": "string",
+          "description": "preliminary_analysis: ~30 chars before, only if excerpt is not unique in the file"
+        },
+        "context_after": {
+          "type": "string",
+          "description": "preliminary_analysis: ~30 chars after, same condition"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["redundancy", "verbosity", "filler", "vocab"],
+          "description": "identified_problem (SGR phase 2)"
+        },
+        "rationale": {
+          "type": "string",
+          "description": "identified_problem: one-line WHY"
+        },
+        "severity": {
+          "type": "string",
+          "enum": ["critical", "major", "minor"],
+          "description": "identified_problem"
+        },
+        "action": {
+          "type": "string",
+          "enum": ["delete", "replace", "restructure"],
+          "description": "proposal (SGR phase 3): commit to a fix"
+        },
+        "new_text": {
+          "type": ["string", "null"],
+          "description": "proposal: null when action='delete'; otherwise the replacement text"
+        },
+        "justification": {
+          "type": "string",
+          "description": "proposal: required when type='vocab' (defend equivalence)"
+        },
+        "semantic_risk": {
+          "type": "string",
+          "enum": ["none", "low", "medium", "high"],
+          "description": "estimated_risk (SGR phase 4): assess the proposal, not the original problem"
+        },
+        "confidence": {
+          "type": "string",
+          "enum": ["high", "medium", "low"],
+          "description": "estimated_risk"
+        }
+      }
+    }
+  }
+}

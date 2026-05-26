@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.user.downloads-new-files-check</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>-c</string>
+        <string>
+LOG="$HOME/Library/Logs/downloads-new-files.log"
+STAMP="$HOME/.downloads_last_check"
+
+# Ensure log directory exists
+mkdir -p "$(dirname "$LOG")"
+
+NOW=$(date +%s)
+WINDOW=1800  # 30 minutes in seconds
+
+if [ -f "$STAMP" ]; then
+    LAST=$(cat "$STAMP")
+else
+    LAST=$(( NOW - WINDOW ))
+fi
+
+echo "$(date '+%Y-%m-%d %H:%M:%S') — checking Downloads for files newer than $(date -r "$LAST" '+%Y-%m-%d %H:%M:%S')" >> "$LOG"
+
+NEW_FILES=$(find "$HOME/Downloads" -maxdepth 1 -newer "$STAMP" -not -name '.*' -print 2>/dev/null)
+
+if [ -n "$NEW_FILES" ]; then
+    echo "$NEW_FILES" | while IFS= read -r f; do
+        echo "  NEW: $(basename "$f")" >> "$LOG"
+    done
+else
+    echo "  (no new files)" >> "$LOG"
+fi
+
+# Update the timestamp file so the next run compares from now
+date +%s > "$STAMP"
+        </string>
+    </array>
+
+    <key>StartInterval</key>
+    <integer>1800</integer>
+
+    <key>RunAtLoad</key>
+    <true/>
+
+    <key>StandardOutPath</key>
+    <string>/dev/null</string>
+
+    <key>StandardErrorPath</key>
+    <string>/Users/jhonsmith/Library/Logs/downloads-new-files-errors.log</string>
+
+</dict>
+</plist>

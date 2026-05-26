@@ -1,0 +1,262 @@
+STEP-BY-STEP GUIDE: ORGANIZING PDF INVOICES IN MEGA ENCRYPTED VAULT
+
+================================================================================
+PHASE 1: PREPARATION
+================================================================================
+
+Step 1: Verify MEGA Account Setup
+- Ensure you have a MEGA account (https://mega.nz)
+- Log in to confirm you have access to your encrypted vault
+- Note: MEGA provides 20GB free encrypted storage
+
+Step 2: Check Your Downloads Folder
+- Open Finder and navigate to ~/Downloads
+- List all PDF invoices to identify unique vendor names
+- Create a mental note of all vendors (e.g., Acme Corp, TechSupply Inc, etc.)
+- Recommended: Sort files by name to group invoices by vendor
+
+
+================================================================================
+PHASE 2: CREATING FOLDER STRUCTURE IN MEGA
+================================================================================
+
+Step 3: Create Main Invoices Directory
+- Log into MEGA Web (https://mega.nz)
+- In your Cloud Drive, create a new folder named "Invoices" or "Vendor Invoices"
+- This will be your parent directory for all organized invoices
+
+Step 4: Create Vendor Subfolders
+For each unique vendor, create a subfolder:
+- Right-click in "Invoices" folder → Select "New folder"
+- Name the folder exactly as the vendor name (e.g., "Acme Corp", "TechSupply Inc")
+- Create separate folders for EACH vendor identified from your Downloads
+- Example structure:
+  Invoices/
+  ├── Acme Corp/
+  ├── TechSupply Inc/
+  ├── [Other Vendor 1]/
+  ├── [Other Vendor 2]/
+  └── [Other Vendor N]/
+
+
+================================================================================
+PHASE 3: UPLOADING INVOICES TO MEGA
+================================================================================
+
+Step 5: Upload Invoices by Vendor
+Option A - Using MEGA Web Interface (Recommended for small batches):
+1. Open Finder to your Downloads folder
+2. Identify the first vendor's invoices
+3. Go to MEGA Web → Open the corresponding vendor folder
+4. Click "Upload" or drag-and-drop PDF files
+5. Wait for upload to complete (shows green checkmark)
+6. Repeat for each vendor folder
+
+Option B - Batch Upload (More efficient):
+1. Open Finder
+2. Create temporary folders on your computer matching vendor names
+3. Organize PDFs from Downloads into these vendor folders
+4. In MEGA, select the parent "Invoices" folder
+5. Drag-and-drop all vendor folders into MEGA at once
+6. Wait for all uploads to complete
+
+Step 6: Verify All Files Uploaded
+- Go to each vendor folder in MEGA
+- Confirm all invoices for that vendor are present
+- Check file sizes appear normal (not corrupted during upload)
+
+
+================================================================================
+PHASE 4: CREATING SHAREABLE LINKS
+================================================================================
+
+Step 7: Generate Share Links for Vendor Folders
+For EACH vendor folder, you have two options:
+
+Option A - Individual Vendor Links (Most Common):
+1. Right-click on first vendor folder → "Share"
+2. Select "Get link"
+3. Configure sharing settings:
+   - Choose "Link requires password" (recommended for security)
+   - Set a password your accountant can use
+   - Optionally set expiration date (e.g., 30 days for security)
+   - Uncheck "Allow downloads" if you want view-only access
+4. Click "Copy link"
+5. Save this link with the vendor name for your records
+6. Repeat for each vendor folder
+
+Option B - Create Master Folder Link (If accountant accesses all):
+1. Instead of sharing individual folders, share the parent "Invoices" folder
+2. This gives accountant access to all vendor folders at once
+3. Same configuration as above (password, expiration, permissions)
+4. Send ONE link instead of multiple links
+
+Step 8: Set Appropriate Permissions
+Recommended settings for accountant sharing:
+- Password protect: YES (strong, unique password)
+- Expiration date: YES (recommend 30-90 days)
+- Allow download: YES (accountant needs to download for processing)
+- Allow preview: YES (accountant can see PDFs)
+- NOT allow edit/delete (prevent accidental modifications)
+- NOT allow share (prevent them from resharing)
+
+
+================================================================================
+PHASE 5: DELIVERY & DOCUMENTATION
+================================================================================
+
+Step 9: Communicate with Your Accountant
+Email template:
+---
+Subject: Vendor Invoice Access - MEGA Encrypted Vault Links
+
+Hi [Accountant Name],
+
+I've organized all vendor invoices in my MEGA encrypted vault for the [period].
+All files are sorted by vendor in separate folders.
+
+Access Details:
+- Share Link: [Paste the link from Step 7]
+- Password: [Provide password separately via phone/secure channel]
+- Expiration: [Date]
+- Files included: [List of vendors]
+
+Please note: This link will expire on [date]. Let me know if you need extended access.
+
+Best regards,
+[Your Name]
+---
+
+Step 10: Create Local Documentation
+- Create a text file listing all vendor folder names
+- Note which invoices are included for each vendor
+- Save password hints (without actual passwords) for your records
+- Store in a secure location with your accounting files
+
+
+================================================================================
+PHASE 6: SECURITY & MAINTENANCE
+================================================================================
+
+Step 11: Password Management
+- Generate strong passwords: use a mix of uppercase, lowercase, numbers, symbols
+- DO NOT email passwords with links
+- Share passwords via:
+  * Phone call
+  * Separate encrypted message
+  * Password manager shared access
+  * In-person conversation
+
+Step 12: Access Monitoring
+- Periodically check MEGA to see if files were accessed
+- Note: MEGA shows "Last modified" dates
+- Confirm accountant downloaded all necessary files
+
+Step 13: Link Management & Rotation
+- Track when you created each share link
+- Set reminders to disable/recreate links quarterly
+- If accountant no longer needs access:
+  1. Go to vendor folder → "Manage link"
+  2. Click "Remove link" to revoke access
+  3. Confirm removal is complete
+
+Step 14: Backup Considerations
+- MEGA automatically encrypts and backs up files end-to-end
+- Keep local backup of original PDFs in Downloads for 1-2 months
+- After accountant confirms receipt, can safely delete local copies
+
+
+================================================================================
+TROUBLESHOOTING COMMON ISSUES
+================================================================================
+
+Issue: Some files won't upload
+- Ensure PDFs aren't locked/corrupted
+- Check file naming (avoid special characters: @, *, /, \)
+- Try uploading one file at a time to identify problematic files
+- Solution: Rename file with simpler name, retry
+
+Issue: Link expires before accountant finishes
+- Simply regenerate new link for affected vendor folder
+- Update password and resend to accountant
+- You can have multiple active links per folder
+
+Issue: File sizes appear smaller in MEGA
+- MEGA may compress for preview display
+- Check actual file size by clicking file details
+- Full-size PDF still available for download
+
+Issue: Accountant can't access link
+- Confirm password is entered correctly (case-sensitive)
+- Verify link hasn't expired
+- Check if they're using correct browser
+- Try generating new link as backup
+
+Issue: Need to add more invoices later
+- Simply upload new files to appropriate vendor folder
+- All existing share links remain valid
+- Accountant will see new files if link isn't expired
+
+
+================================================================================
+BEST PRACTICES SUMMARY
+================================================================================
+
+✓ Use consistent vendor naming (exact spelling across all folders)
+✓ Keep passwords 12+ characters with mixed case and symbols
+✓ Set reasonable expiration dates (30-90 days recommended)
+✓ Use password protection on all shares
+✓ Communicate password separately from link
+✓ Create folder structure before uploading large batches
+✓ Verify uploads complete before sharing links
+✓ Keep local backup until accountant confirms receipt
+✓ Document which invoices are in each folder
+✓ Review access logs periodically for security
+
+
+================================================================================
+ESTIMATED TIME REQUIREMENTS
+================================================================================
+
+- Folder creation: 5-10 minutes
+- File organization: 15-30 minutes (depending on 50 files)
+- Uploading all files: 20-60 minutes (depending on connection speed)
+- Creating share links: 10-15 minutes
+- Communication setup: 5 minutes
+
+TOTAL ESTIMATED TIME: 60-120 minutes for complete process
+
+
+================================================================================
+SECURITY NOTES
+================================================================================
+
+MEGA Encryption Benefits:
+- End-to-end encryption (MEGA cannot access files, neither can hackers)
+- 2FA available for your account (enable for extra security)
+- Share links are secure with password protection
+- Automatic deletion of share links on expiration date
+
+Accountant Data Protection:
+- Password-protected links prevent unauthorized access
+- Expiration dates limit exposure window
+- Download logs available in MEGA for audit trail
+- Can revoke access immediately if needed
+
+Your Privacy:
+- MEGA servers cannot see file contents
+- Even MEGA staff cannot decrypt your files
+- Accountant access limited to specific folders only
+- No metadata about file contents shared
+
+
+================================================================================
+NEXT STEPS AFTER SHARING
+================================================================================
+
+1. Wait for accountant confirmation of link receipt
+2. Follow up after 1-2 weeks to ensure all files accessed
+3. Plan to disable links 30-60 days after sharing (or per your agreement)
+4. Keep this guide handy for future vendor invoices
+5. Consider automating this process for recurring invoices
+

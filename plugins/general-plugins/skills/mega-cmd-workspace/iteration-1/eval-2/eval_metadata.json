@@ -1,0 +1,31 @@
+{
+  "eval_id": 2,
+  "eval_name": "large-folder-backup-strategy",
+  "prompt": "I need to back up my entire ~/Documents folder (about 2GB with nested folders) to MEGA encrypted storage. What's the fastest and cleanest way to do this? I want to be able to verify the backup worked.",
+  "assertions": [
+    {
+      "name": "recommends_mega_put_c",
+      "description": "Response recommends mega-put -c for recursive folder upload"
+    },
+    {
+      "name": "includes_verification_commands",
+      "description": "Response includes commands to verify backup (mega-ls, file counts, sizes)"
+    },
+    {
+      "name": "mentions_encryption",
+      "description": "Response explains zero-knowledge encryption or that MEGA handles encryption automatically"
+    },
+    {
+      "name": "provides_time_estimate",
+      "description": "Response gives realistic time estimate for upload and verification"
+    },
+    {
+      "name": "addresses_nested_folders",
+      "description": "Response explicitly handles nested folder structure preservation"
+    },
+    {
+      "name": "is_practical_and_complete",
+      "description": "Response is production-ready with step-by-step instructions"
+    }
+  ]
+}

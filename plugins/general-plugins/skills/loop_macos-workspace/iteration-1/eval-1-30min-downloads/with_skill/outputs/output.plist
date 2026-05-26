@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.user.loop-macos.check-if-there-are-any-new-fi</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>-lc</string>
+        <string>claude -p 'check if there are any new files in ~/Downloads and print their names to a log'</string>
+    </array>
+
+    <key>StartInterval</key>
+    <integer>1800</integer>
+
+    <key>StandardOutPath</key>
+    <string>/Users/jhonsmith/Library/Logs/loop-macos/com.user.loop-macos.check-if-there-are-any-new-fi.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/jhonsmith/Library/Logs/loop-macos/com.user.loop-macos.check-if-there-are-any-new-fi.log</string>
+
+    <key>RunAtLoad</key>
+    <false/>
+</dict>
+</plist>

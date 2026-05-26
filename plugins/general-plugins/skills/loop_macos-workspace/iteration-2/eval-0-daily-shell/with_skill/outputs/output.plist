@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.user.loop-macos.sync-anthropic-skills-sh</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>-lc</string>
+        <string>bash /Users/jhonsmith/.claude/my-marketplace/bin/sync-anthropic-skills.sh</string>
+    </array>
+
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Hour</key><integer>9</integer>
+        <key>Minute</key><integer>7</integer>
+    </dict>
+
+    <key>StandardOutPath</key>
+    <string>/Users/jhonsmith/Library/Logs/loop-macos/com.user.loop-macos.sync-anthropic-skills-sh.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/jhonsmith/Library/Logs/loop-macos/com.user.loop-macos.sync-anthropic-skills-sh.log</string>
+
+    <key>RunAtLoad</key>
+    <false/>
+</dict>
+</plist>

@@ -1,0 +1,366 @@
+SAFE PROCEDURE: MEGA CONTRACT MANAGEMENT (Find, Download, Audit, Delete)
+========================================================================
+
+TASK OVERVIEW
+- Find all contracts from last 30 days in /Contracts (200+ PDFs from 3 years)
+- Download them locally for audit
+- Delete older contracts from MEGA to save space
+- Execute safely with verification at each step
+
+CRITICAL SAFETY RULES
+1. NEVER delete files without first downloading and verifying them locally
+2. NEVER use batch delete without listing what will be deleted first
+3. Always verify counts match before and after each operation
+4. Use -f (force) flag only for delete/export commands; no other commands support it
+5. All deletions are PERMANENT - MEGA has no trash/recycle bin
+
+═══════════════════════════════════════════════════════════════════════════════
+
+STEP 1: VERIFY LOGIN & CHECK STORAGE
+────────────────────────────────────
+
+Command:
+  mega-whoami
+
+Expected Output:
+  Account email should display
+
+This confirms you're logged in. If error 57 appears, run: mega-login <your-email>
+
+Command:
+  mega-df -h
+
+This shows current storage usage and available space. Note baseline before cleanup.
+
+
+STEP 2: LIST ALL CONTRACTS & VERIFY STRUCTURE
+──────────────────────────────────────────────
+
+Command:
+  mega-ls -l /Contracts
+
+This shows:
+  - Folder structure (how PDFs are organized)
+  - Total file count
+  - Approximate storage used
+
+Expected output format:
+  drwx... /Contracts/2024/
+  drwx... /Contracts/2025/
+  -rw-... contract1.pdf  [size] [date]
+  -rw-... contract2.pdf  [size] [date]
+
+Document the folder structure for reference.
+
+
+STEP 3: FIND CONTRACTS FROM LAST 30 DAYS
+─────────────────────────────────────────
+
+Command:
+  mega-find /Contracts --pattern="*.pdf" --mtime=-30d -l
+
+This finds ALL PDFs modified in the last 30 days with timestamps.
+
+Output format shows:
+  /Contracts/2025/contract_may_2025.pdf  [size] [date]
+  /Contracts/2025/contract_april_2025.pdf  [size] [date]
+  ...
+
+ACTION:
+- Save this output to a local file for reference:
+  mega-find /Contracts --pattern="*.pdf" --mtime=-30d -l > recent_contracts.txt
+
+- Count the files:
+  mega-find /Contracts --pattern="*.pdf" --mtime=-30d -l | wc -l
+
+- Note the count (you'll verify it matches the download count later)
+
+
+STEP 4: DOWNLOAD RECENT CONTRACTS LOCALLY
+──────────────────────────────────────────
+
+WARNING: Check file count from STEP 3 and estimate total size with mega-ls.
+If > 5GB, consider downloading in batches by date range or folder.
+
+Create local audit folder:
+  mkdir -p ./contracts-audit-recent
+
+Download all recent contracts (from Step 3 list):
+
+If contracts are in yearly folders:
+  mega-get /Contracts/2025/ ./contracts-audit-recent/
+
+If contracts are mixed across years, download by file:
+  mega-get /Contracts/ ./contracts-audit-recent/
+
+This creates:
+  ./contracts-audit-recent/
+    ├── 2025/
+    │   ├── contract_may.pdf
+    │   ├── contract_april.pdf
+    └── 2024/
+        ├── (older contracts)
+
+VERIFY DOWNLOAD:
+  ls -lR ./contracts-audit-recent/ | wc -l
+
+Compare file count to Step 3. They should match.
+
+
+STEP 5: LOCAL AUDIT
+───────────────────
+
+Your local workflow:
+  1. Review all PDFs in ./contracts-audit-recent/
+  2. Check for:
+     - Valid signatures
+     - No corrupted files
+     - Correct terms
+     - Proper archival format
+  3. Move files to permanent archive if needed:
+     mv ./contracts-audit-recent/* /path/to/permanent/archive/
+
+Only after confirming ALL files are valid, proceed to Step 6.
+
+
+STEP 6: IDENTIFY FILES TO DELETE (OLDER THAN 30 DAYS)
+──────────────────────────────────────────────────────
+
+First, list contracts OLDER than 30 days:
+
+Command:
+  mega-find /Contracts --pattern="*.pdf" --mtime=+30d -l
+
+This shows PDFs NOT modified in the last 30 days (older files).
+
+Save this list:
+  mega-find /Contracts --pattern="*.pdf" --mtime=+30d -l > old_contracts.txt
+
+Count them:
+  mega-find /Contracts --pattern="*.pdf" --mtime=+30d | wc -l
+
+ACTION: Open old_contracts.txt and manually verify:
+  - These are truly files you audited and confirmed are safe to delete
+  - No recent critical contracts appear in the list
+  - File dates match your expectations
+
+EXAMPLE old_contracts.txt output:
+  /Contracts/2023/contract_dec_2023.pdf  15.2 MB  2023-12-15
+  /Contracts/2023/contract_nov_2023.pdf  12.8 MB  2023-11-20
+  /Contracts/2022/contract_oct_2022.pdf   8.4 MB  2022-10-05
+
+
+STEP 7: DOWNLOAD OLDER CONTRACTS (BACKUP BEFORE DELETE)
+────────────────────────────────────────────────────────
+
+This is your final safeguard. Even though you're deleting from MEGA,
+keep a local backup of deleted files for 30-60 days before purging locally.
+
+Create backup folder:
+  mkdir -p ./contracts-backup-deleted
+
+Download older contracts:
+  mega-get /Contracts/2023/ ./contracts-backup-deleted/
+  mega-get /Contracts/2022/ ./contracts-backup-deleted/
+  (adjust paths based on your folder structure)
+
+Verify backup:
+  du -sh ./contracts-backup-deleted/
+
+Note the size (you'll expect MEGA storage to decrease by this amount after delete).
+
+
+STEP 8: DELETE OLDER CONTRACTS FROM MEGA
+─────────────────────────────────────────
+
+DANGER ZONE - Do NOT skip previous steps.
+
+Option A: Delete by year (safest approach)
+──────────────────────────────────────────
+
+Command:
+  mega-ls -l /Contracts/2023/
+
+Verify this folder contains ONLY files you want to delete.
+
+Then delete:
+  mega-rm -r -f /Contracts/2023/
+
+Verify deletion:
+  mega-ls /Contracts/
+
+The 2023 folder should be gone.
+
+Repeat for each year you want to delete:
+  mega-rm -r -f /Contracts/2022/
+  mega-rm -r -f /Contracts/2021/
+
+Option B: Delete specific files (if contracts are not organized by year)
+────────────────────────────────────────────────────────────────────────
+
+For each file in old_contracts.txt:
+  mega-rm -r -f /Contracts/path/to/old_contract_1.pdf
+  mega-rm -r -f /Contracts/path/to/old_contract_2.pdf
+
+Or in a script loop (after confirming the list is correct):
+  while read line; do
+    file=$(echo "$line" | awk '{print $1}')
+    mega-rm -r -f "$file"
+  done < old_contracts.txt
+
+
+STEP 9: VERIFY DELETION & STORAGE SAVINGS
+──────────────────────────────────────────
+
+Command:
+  mega-ls -l /Contracts
+
+Confirm:
+  - Only recent contracts remain (from Step 4)
+  - Deleted folders/files are gone
+  - Structure is correct
+
+Command:
+  mega-df -h
+
+Compare to Step 1 baseline:
+  Storage freed should approximately equal ./contracts-backup-deleted/ size
+
+Example:
+  Before: 85 GB used / 200 GB available
+  After:  42 GB used / 243 GB available
+  Freed:  ~43 GB (matches backup folder size)
+
+
+STEP 10: FINAL SAFETY CHECK & CLEANUP
+──────────────────────────────────────
+
+Checklist:
+  ☐ All recent contracts (last 30 days) are in ./contracts-audit-recent/
+  ☐ All recent contracts have been audited locally
+  ☐ Backup of deleted files exists in ./contracts-backup-deleted/
+  ☐ Old contracts have been deleted from MEGA
+  ☐ MEGA storage shows expected decrease
+  ☐ MEGA /Contracts folder still has correct structure
+
+After 30-60 days, once confirmed everything is fine:
+  rm -rf ./contracts-backup-deleted/
+  rm -rf ./contracts-audit-recent/  (or archive permanently)
+
+═══════════════════════════════════════════════════════════════════════════════
+
+REFERENCE: MEGA COMMAND SUMMARY
+────────────────────────────────
+
+Navigation & Verification:
+  mega-whoami                                     Check login status
+  mega-df -h                                      Show storage usage
+  mega-ls -l /path                                List files with details
+  mega-find /path --pattern="*.pdf" -l            Find PDFs with timestamps
+
+Download & Backup:
+  mega-get /remote/path ./local/path/             Download file/folder recursively
+
+Delete (PERMANENT):
+  mega-rm -r -f /path/to/file                     Delete file/folder (no prompt)
+  mega-rm -r -f /path/to/folder/                  Delete folder recursively
+
+Flags:
+  -l          Long format (shows size, date, owner)
+  -r          Recursive (for folders)
+  -f          Force (no confirmation prompt) - ONLY for mega-rm and mega-export
+  --pattern   File pattern matching (*.pdf, *.jpg, invoice*)
+  --mtime     Modification time filter
+    -30d      Within last 30 days
+    +30d      Older than 30 days
+
+
+ERROR HANDLING
+──────────────
+
+Exit Code  Meaning                  Action
+0          Success                  Continue
+1          Generic error            Check path/syntax
+2          File not found           Verify path with mega-ls
+3          Access denied            Check permissions
+57         Not logged in            Run mega-login <email>
+
+Common Issues:
+
+1. "Path not found" error
+   → Run mega-ls /Contracts first to verify structure
+
+2. "Permission denied"
+   → Ensure /Contracts folder is yours (not shared read-only)
+
+3. "MEGA-ERROR: EAGAIN"
+   → Network timeout; retry command
+
+4. Download stalls
+   → Check mega-transfers to monitor progress
+   → Press Ctrl+C to cancel and retry
+
+
+AUTOMATION (OPTIONAL - ADVANCED)
+─────────────────────────────────
+
+Once you've done this once and verified it's safe, you can automate monthly:
+
+#!/bin/bash
+# monthly-contract-cleanup.sh
+
+AUDIT_DIR="./contracts-audit-monthly"
+BACKUP_DIR="./contracts-backup-monthly"
+CUTOFF_DAYS=30
+
+# Step 1: List old files
+echo "Finding contracts older than ${CUTOFF_DAYS} days..."
+mega-find /Contracts --pattern="*.pdf" --mtime=+${CUTOFF_DAYS}d -l > old_contracts.txt
+
+# Step 2: Backup
+echo "Backing up old contracts..."
+mkdir -p "$BACKUP_DIR"
+mega-get /Contracts/ "$BACKUP_DIR/"
+
+# Step 3: Delete (ONLY after manual review of old_contracts.txt!)
+echo "Ready to delete. Review old_contracts.txt first."
+echo "Then uncomment the deletion commands and re-run this script."
+
+# mega-rm -r -f /Contracts/2023/
+# mega-rm -r -f /Contracts/2022/
+
+echo "Done. Cleanup script ready."
+
+Run this manually, review the old_contracts.txt output, then uncomment the delete lines.
+
+
+═══════════════════════════════════════════════════════════════════════════════
+
+KEY TAKEAWAYS
+─────────────
+
+1. DOWNLOAD FIRST, DELETE SECOND
+   - Always have a local backup before deleting from MEGA
+   - Keep backup for 30+ days for safety
+
+2. VERIFY AT EACH STEP
+   - Count files before/after
+   - Check file sizes
+   - Confirm deletion actually happened
+
+3. USE MEGA-FIND WITH -l AND --mtime FLAGS
+   - Shows timestamps to accurately identify recent files
+   - -30d = last 30 days
+   - +30d = older than 30 days
+
+4. DESTRUCTIVE OPERATIONS NEED -f FLAG
+   - mega-rm -r -f is permanent
+   - No confirmation, no undo
+   - Double-check paths before running
+
+5. ORGANIZE BY YEAR/DATE IF POSSIBLE
+   - Easier to delete entire folders at once
+   - Reduces risk of accidental file deletion
+   - Backup and restore become simpler
+
+═══════════════════════════════════════════════════════════════════════════════
