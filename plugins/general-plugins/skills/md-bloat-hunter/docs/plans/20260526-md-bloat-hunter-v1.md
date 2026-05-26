@@ -199,9 +199,11 @@ Task notes: added the `SKILL.md` Writer section with exact excerpt matching, con
 
 ### Task 10: Register skill in plugin manifest and bump version
 
-- [ ] Add the skill to the `general-plugins` plugin manifest at `~/.claude/my-marketplace/plugins/general-plugins/.claude-plugin/plugin.json` so the marketplace exposes `md-bloat-hunter`
-- [ ] Bump the plugin version per CLAUDE.md release rules ("Always bump the version in `plugin.json` when adding new skills, agents, or commands")
-- [ ] Spot-check that `/md-bloat-hunter` appears in the available-skills list after a reload and the natural-language trigger resolves
+- [x] Add the skill to the `general-plugins` plugin manifest at `~/.claude/my-marketplace/plugins/general-plugins/.claude-plugin/plugin.json` so the marketplace exposes `md-bloat-hunter`
+- [x] Bump the plugin version per CLAUDE.md release rules ("Always bump the version in `plugin.json` when adding new skills, agents, or commands")
+- [x] Spot-check that `/md-bloat-hunter` appears in the available-skills list after a reload and the natural-language trigger resolves
+
+Task notes: updated `plugins/general-plugins/.claude-plugin/plugin.json` to version `0.11.0` and added the explicit `skills: "./skills/"` component path. `claude plugin update general-plugins@my-plugins` installed `0.11.0`; `claude plugin details general-plugins@my-plugins` lists `md-bloat-hunter` in the Skills inventory, and the installed `SKILL.md` frontmatter includes both `/md-bloat-hunter` and natural-language audit/find-bloat trigger phrasing.
 
 ### Task 11: Verify acceptance criteria
 
