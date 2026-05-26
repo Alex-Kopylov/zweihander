@@ -37,7 +37,7 @@ if [ ! -d "$UPSTREAM_DIR" ]; then
     echo "📦 Cloning upstream repository..."
     git clone --filter=blob:none --sparse "$UPSTREAM_URL" "$UPSTREAM_DIR"
     cd "$UPSTREAM_DIR"
-    git sparse-checkout set --no-cone "example-skills/skills/"
+    git sparse-checkout set --no-cone "skills/"
 else
     echo "📦 Updating upstream repository..."
     cd "$UPSTREAM_DIR"
@@ -51,7 +51,7 @@ cd "$MARKETPLACE_ROOT"
 echo "📋 Syncing skills..."
 
 for skill in "${SKILLS_TO_SYNC[@]}"; do
-    SOURCE="$UPSTREAM_DIR/example-skills/skills/$skill"
+    SOURCE="$UPSTREAM_DIR/skills/$skill"
 
     if [ ! -d "$SOURCE" ]; then
         echo "⚠️  Skill '$skill' not found in upstream"
