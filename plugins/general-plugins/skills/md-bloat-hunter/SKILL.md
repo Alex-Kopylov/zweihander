@@ -93,10 +93,17 @@ For each target file:
    `git -C <repo-root> ls-files --error-unmatch -- <file>`.
 3. Confirm the file has no staged or unstaged changes with
    `git -C <repo-root> status --porcelain -- <file>`.
+4. Record a preflight content hash for each target file after the clean check.
 
 If any target file is outside a git worktree, untracked, staged, or dirty, stop
 before dispatching file orchestrators and report the affected files. Do not
 auto-apply edits without the clean-tree rollback path.
+
+Immediately before writer execution for each file, repeat the tracked-and-clean check.
+Also compare the current file content hash to the preflight hash. If the file is
+dirty, untracked, or no longer matches the preflight hash, do not write that
+file; report it as a concurrent or external modification and continue with other
+clean files.
 
 ## File Dispatch
 
@@ -107,7 +114,10 @@ For each worker, provide:
 
 - The absolute markdown file path.
 - The shared `run_id`.
-- The instruction to follow `agents/file-orchestrator.md` exactly.
+- The absolute path to the `md-bloat-hunter` skill directory.
+- Provide the absolute path to `agents/file-orchestrator.md`.
+- The instruction to read and follow that absolute file-orchestrator path
+  exactly.
 - The instruction to return only the reduced JSON object described by the
   file orchestrator.
 
@@ -171,14 +181,15 @@ Ask one question per high-risk finding. Include:
 - semantic risk and confidence
 - alternatives when present
 
-Label the AI-recommended option clearly. Offer at least:
+Offer `Apply recommended` only when `recommended_alternative_index` is present.
+Label the AI-recommended option clearly in that case. Always offer:
 
-- Apply recommended
 - Skip
 
-When alternatives exist, include an option to apply a specific alternative if
-one is clearly safe to expose. If the user skips a finding, record it as
-skipped and continue.
+When there is no recommended alternative, do not present any option as
+recommended. When alternatives exist, include explicit options to apply specific
+alternatives if they are safe to expose. If the user skips a finding, record it
+as skipped and continue.
 
 ## Writer Handoff
 
@@ -225,10 +236,10 @@ For each finding:
 
 1. Require a verbatim, non-empty `excerpt`.
 2. Locate the exact excerpt in the current in-memory content.
-3. If `context_before` or `context_after` is present, use it to disambiguate:
-   the accepted occurrence must have the provided `context_before`
-   immediately before the excerpt and the provided `context_after`
-   immediately after it. Missing context values are ignored.
+3. If `context_before` or `context_after` is present, use exact verbatim adjacent substrings.
+   To disambiguate, the accepted occurrence must have the provided
+   `context_before` immediately before the excerpt and the provided
+   `context_after` immediately after it. Missing context values are ignored.
 4. If there are zero accepted occurrences, stop applying later findings in
    this file and report the failed finding. If the excerpt existed in the
    original snapshot but is missing from the current content, report:

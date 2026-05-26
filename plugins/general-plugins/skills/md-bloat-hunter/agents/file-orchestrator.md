@@ -11,14 +11,15 @@ best reduced list for this one file.
 ## Input
 
 You receive one absolute markdown file path from the top orchestrator. You may
-also receive a `run_id`. If no `run_id` is provided, create a short one from
-the current timestamp and pass the same value to every detector.
+also receive a `run_id`, the absolute `md-bloat-hunter` skill directory, and
+the absolute path to this file. If no `run_id` is provided, create a short one
+from the current timestamp and pass the same value to every detector.
 
 Before dispatching, read:
 
 - The target markdown file.
-- `references/schema.json`, relative to the `md-bloat-hunter` skill directory.
-- These detector agent files, relative to the same directory:
+- `references/schema.json`, from the absolute `md-bloat-hunter` skill directory.
+- These detector agent files, resolved from that same absolute directory:
   - `agents/redundancy-detector.md`
   - `agents/verbosity-pruner.md`
   - `agents/filler-eliminator.md`
@@ -35,7 +36,9 @@ file, the detector agent files, and the top-orchestrator input.
 
 Spawn the four detector agents in parallel with the Agent tool. Treat Agent as
 Claude Code's Task tool for this workflow. Give each agent the same absolute
-file path and the same `run_id`.
+file path and the same `run_id`. Pass the absolute skill directory and the absolute detector agent file path.
+Instruct each detector to read and follow that path rather than inferring a
+relative location.
 
 Dispatch exactly these agents:
 
@@ -103,10 +106,11 @@ reduced output:
 - `source_order`: its order in the target file, based on the first verbatim
   occurrence of `excerpt` with `context_before` / `context_after` when present.
 
-If a finding's excerpt cannot be located in the file, keep it only when the
-detector already provided enough context for the writer to fail loudly later.
-Set the reduced finding's `resolution_notes` to mention the location problem.
-Do not silently repair excerpts.
+If a finding's excerpt cannot be located in the file, drop it from the reduced
+finding list and record the drop in that detector's `detector_status.notes`.
+Without a located occurrence there is no reliable `source_order`, and the top
+orchestrator must not receive findings that cannot be source ordered. Do not
+silently repair excerpts.
 
 Sort non-overlapping findings by `source_order`. When two findings have the
 same source order, use this stable detector order:

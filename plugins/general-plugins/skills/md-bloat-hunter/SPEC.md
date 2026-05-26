@@ -65,8 +65,8 @@ Finding:
 
   # --- SGR phase 1: preliminary_analysis (observe before judging) ---
   excerpt: str                      # verbatim quote from file
-  context_before: str | null        # ~30 chars before, ONLY if excerpt isn't unique in file
-  context_after: str | null         # ~30 chars after, same condition
+  context_before: str | null        # exact adjacent text before, ONLY if excerpt isn't unique in file
+  context_after: str | null         # exact adjacent text after, same condition
 
   # --- SGR phase 2: identified_problem (classify the observation) ---
   type: enum                        # "redundancy" | "verbosity" | "filler" | "vocab"
@@ -149,7 +149,8 @@ After all file-orchestrators complete:
 
 For each finding, applied per file:
 1. Read file content.
-2. String-match `preliminary_analysis.excerpt` (with `context_before` / `context_after` if present) against the file.
+2. String-match `preliminary_analysis.excerpt` (with exact adjacent
+   `context_before` / `context_after` if present) against the file.
 3. Replace match with `proposal.new_text`, or delete the span if `proposal.action == "delete"`.
 4. Write file back.
 
@@ -207,7 +208,10 @@ Honest uncertainties, not implementation blockers.
 
 1. **Specialists may under-report `semantic_risk`.** If specialists mark medium-risk findings as low, those auto-apply with no gate. Mitigation: explicit "round up when in doubt" instruction in every detector's system prompt. Future mitigation: validator agent (see deferred slots).
 
-2. **Excerpt collisions for short phrases.** A 5-word excerpt might appear multiple times in a long file. `context_before` / `context_after` handle this when the specialist remembers to add them. The writer fails loudly on ambiguity, but ambiguity should be caught earlier.
+2. **Excerpt collisions for short phrases.** A 5-word excerpt might appear
+   multiple times in a long file. Exact adjacent `context_before` /
+   `context_after` handle this when the specialist remembers to add them. The
+   writer fails loudly on ambiguity, but ambiguity should be caught earlier.
 
 3. **No undo built in.** v1 relies on git for reversibility. The user must audit on a clean tree.
 

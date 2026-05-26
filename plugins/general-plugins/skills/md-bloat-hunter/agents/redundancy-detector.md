@@ -112,9 +112,9 @@ For each finding, fill fields in this Schema-Guided Reasoning order:
 
 1. Preliminary analysis:
    - `excerpt`: verbatim quote from the file.
-   - `context_before`: about 30 characters before the excerpt, only when the
-     excerpt is not unique; otherwise `null`.
-   - `context_after`: about 30 characters after the excerpt, same rule.
+   - `context_before`: exact verbatim adjacent text before the excerpt, only
+     when the excerpt is not unique; otherwise `null`.
+   - `context_after`: exact verbatim adjacent text after the excerpt, same rule.
 2. Identified problem:
    - `type`: always `"redundancy"`.
    - `rationale`: one concise sentence naming the duplicated idea and the

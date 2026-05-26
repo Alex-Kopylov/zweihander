@@ -23,9 +23,12 @@ Each detector follows Schema-Guided Reasoning order (observe → classify → pr
 When a task description is unclear or under-specified, consult these source materials before guessing — they encode the reasoning this plan compresses away:
 
 1. **Original design spec**: `~/.claude/my-marketplace/plugins/general-plugins/skills/md-bloat-hunter/SPEC.md` — the artifact this plan was derived from. Authoritative for architecture, taxonomy, schema shape, failure modes, and what's deliberately out of v1.
-2. **Brainstorm conversation log**: `~/.claude/projects/-Users-jhonsmith/d1b3887a-115b-43e3-b816-41362bb9a527.jsonl` — the full conversation where this skill was brainstormed. SPEC.md is its resulting artifact; the log captures the reasoning, rejected alternatives, and tradeoffs that the SPEC condenses. Read with `jq -r 'select(.type=="user" or .type=="assistant") | .message.content[]?.text // .message.content' <path>` or similar to extract human-readable content.
+2. **Brainstorm conversation log**: local-only design history was used to create
+   `SPEC.md` but is not part of this portable plan. Treat `SPEC.md` as the
+   committed source for reasoning, rejected alternatives, and tradeoffs.
 
-When in doubt: re-read SPEC.md first (faster, denser); fall back to the brainstorm log only when SPEC.md is silent on the specific decision. Do not invent design choices these two artifacts already settled.
+When in doubt: re-read SPEC.md first (faster, denser). If SPEC.md is silent on
+the specific decision, ask rather than inventing a design choice.
 
 ## Development Approach
 

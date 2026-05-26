@@ -57,8 +57,8 @@ configuration flags, or auto-detection heuristics.
 A vocabulary finding is one phrase or short sentence where a precise term can
 replace a multi-word definition without meaning loss. Use `excerpt` for the
 replaceable phrase and `new_text` for the precise term. If the phrase is too
-short to be unique, include `context_before` and `context_after` so the writer
-can identify the exact occurrence.
+short to be unique, include exact verbatim adjacent text in `context_before` and
+`context_after` so the writer can identify the exact occurrence.
 
 Flag these shapes:
 
@@ -126,9 +126,9 @@ For each finding, fill fields in this Schema-Guided Reasoning order:
 
 1. Preliminary analysis:
    - `excerpt`: verbatim quote from the file.
-   - `context_before`: about 30 characters before the excerpt, only when the
-     excerpt is not unique; otherwise `null`.
-   - `context_after`: about 30 characters after the excerpt, same rule.
+   - `context_before`: exact verbatim adjacent text before the excerpt, only
+     when the excerpt is not unique; otherwise `null`.
+   - `context_after`: exact verbatim adjacent text after the excerpt, same rule.
 2. Identified problem:
    - `type`: always `"vocab"`.
    - `rationale`: one concise sentence naming the multi-word definition and

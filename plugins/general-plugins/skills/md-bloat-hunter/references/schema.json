@@ -5,6 +5,80 @@
   "type": "object",
   "additionalProperties": false,
   "required": ["specialist", "file_path", "audit_calibration", "findings"],
+  "allOf": [
+    {
+      "if": {
+        "properties": { "specialist": { "const": "redundancy-detector" } },
+        "required": ["specialist"]
+      },
+      "then": {
+        "properties": {
+          "findings": {
+            "items": {
+              "properties": {
+                "type": { "const": "redundancy" },
+                "action": { "enum": ["delete", "replace", "restructure"] }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": { "specialist": { "const": "verbosity-pruner" } },
+        "required": ["specialist"]
+      },
+      "then": {
+        "properties": {
+          "findings": {
+            "items": {
+              "properties": {
+                "type": { "const": "verbosity" },
+                "action": { "enum": ["replace", "restructure"] }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": { "specialist": { "const": "filler-eliminator" } },
+        "required": ["specialist"]
+      },
+      "then": {
+        "properties": {
+          "findings": {
+            "items": {
+              "properties": {
+                "type": { "const": "filler" },
+                "action": { "const": "delete" }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": { "specialist": { "const": "vocab-compressor" } },
+        "required": ["specialist"]
+      },
+      "then": {
+        "properties": {
+          "findings": {
+            "items": {
+              "properties": {
+                "type": { "const": "vocab" },
+                "action": { "enum": ["replace", "restructure"] }
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
   "properties": {
     "specialist": {
       "type": "string",
@@ -102,11 +176,13 @@
         },
         "context_before": {
           "type": ["string", "null"],
-          "description": "preliminary_analysis: ~30 chars before, only if excerpt is not unique in the file"
+          "minLength": 1,
+          "description": "preliminary_analysis: exact verbatim adjacent text before the excerpt, only if excerpt is not unique in the file"
         },
         "context_after": {
           "type": ["string", "null"],
-          "description": "preliminary_analysis: ~30 chars after, same condition"
+          "minLength": 1,
+          "description": "preliminary_analysis: exact verbatim adjacent text after the excerpt, same condition"
         },
         "type": {
           "type": "string",
