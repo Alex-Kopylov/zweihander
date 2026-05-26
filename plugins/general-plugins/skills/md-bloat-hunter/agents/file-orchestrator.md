@@ -292,6 +292,14 @@ alternative only so the finding remains inspectable, set
 Every object in `alternatives` must include the full finding fields plus
 `source_specialist`, `source_index`, and `source_order`.
 
+For every reduced finding, verify that any non-null
+`recommended_alternative_index` is less than `alternatives.length`. This is a
+procedural invariant because the schema cannot express the cross-field array
+bound. If the index is out of range, correct the index, change the finding to
+`recommendation: "ask-user"` with a valid inspectable top-level alternative, or
+drop the finding before final validation. Never return a reduced finding whose
+recommended index points outside `alternatives`.
+
 Use `recommendation: "apply"` only for a single or merged finding that is ready
 for the top orchestrator's risk gate. The top orchestrator still decides
 whether to auto-apply or ask the user based on `semantic_risk`.

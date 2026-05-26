@@ -172,6 +172,12 @@ Run validation from the `md-bloat-hunter` skill directory. Quote every shell pat
 argument. If reduced-output validation fails, record that file orchestrator as
 failed and do not write findings from that file.
 
+After schema validation, perform procedural reduced-output validation for
+cross-field rules that JSON Schema cannot express. If any finding has a non-null
+`recommended_alternative_index`, require that zero-based index to be less than
+`alternatives.length`. If the index is out of range, mark that file orchestrator
+as failed and do not write findings from that file.
+
 ## Aggregation
 
 Each valid file-orchestrator result has this shape:
@@ -209,7 +215,9 @@ Handle reducer recommendations before risk gating:
 - `ask-user`: ask the user even when semantic risk is not high.
 - `apply`: send the finding through the semantic-risk gate.
 - `apply-recommended`: send the recommended alternative through the
-  semantic-risk gate and keep alternatives available for the prompt.
+  semantic-risk gate and keep alternatives available for the prompt. Before
+  using it, verify that `recommended_alternative_index` points to an existing
+  item in `alternatives`.
 
 Semantic-risk gate:
 

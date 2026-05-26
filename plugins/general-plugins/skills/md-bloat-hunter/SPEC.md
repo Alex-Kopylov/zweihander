@@ -139,6 +139,10 @@ ambiguous findings are dropped and recorded in `detector_status.notes`; the top
 orchestrator must not receive findings with unreliable `source_order`.
 
 The file-orchestrator returns: one reduced finding list for its file.
+When a reduced finding carries `recommended_alternative_index`, that zero-based
+index must point to an existing entry in `alternatives`. This is checked
+procedurally in the file-orchestrator and again by the top orchestrator because
+JSON Schema cannot express the cross-field array bound.
 
 ## Top orchestrator: aggregation, gating, writing
 
