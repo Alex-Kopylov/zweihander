@@ -151,12 +151,14 @@ Task notes: added `agents/filler-eliminator.md`; smoke fixture `/tmp/md-bloat-hu
 
 ### Task 6: Build agents/vocab-compressor.md
 
-- [ ] Write the agent file: detector role (multi-word phrase → precise term), finding shape (1 phrase, before → after + equivalence justification)
-- [ ] Embed vocab examples inline: "can be run multiple times safely with the same result" → "idempotent"; "doesn't depend on any external state" → "pure"; "happens at the same time as" → "concurrent"
-- [ ] Embed what-NOT-to-flag examples (domain readers may not know the term; the multi-word form clarifies on purpose)
-- [ ] Embed the **`justification` is REQUIRED** rule for every vocab finding — the agent must defend equivalence in writing
-- [ ] Reference `references/calibrate-hunger.md`; embed SGR output protocol, "round up on risk" (vocab is highest-risk specialist — calibrate accordingly), and 3-attempt validation loop
-- [ ] Smoke run: fixture MD file with one obvious multi-word definition of a known single word; verify a valid `SpecialistOutput` with a non-null `justification`
+- [x] Write the agent file: detector role (multi-word phrase → precise term), finding shape (1 phrase, before → after + equivalence justification)
+- [x] Embed vocab examples inline: "can be run multiple times safely with the same result" → "idempotent"; "doesn't depend on any external state" → "pure"; "happens at the same time as" → "concurrent"
+- [x] Embed what-NOT-to-flag examples (domain readers may not know the term; the multi-word form clarifies on purpose)
+- [x] Embed the **`justification` is REQUIRED** rule for every vocab finding — the agent must defend equivalence in writing
+- [x] Reference `references/calibrate-hunger.md`; embed SGR output protocol, "round up on risk" (vocab is highest-risk specialist — calibrate accordingly), and 3-attempt validation loop
+- [x] Smoke run: fixture MD file with one obvious multi-word definition of a known single word; verify a valid `SpecialistOutput` with a non-null `justification`
+
+Task notes: added `agents/vocab-compressor.md`; smoke fixture `/tmp/md-bloat-hunter-task6-fixture.md` produced `/tmp/md-bloat-hunter/task6-smoke/2e773b995069/vocab-compressor.json`, which validates against `references/schema.json` and contains one vocab finding with a non-empty `justification`.
 
 ### Task 7: Build agents/file-orchestrator.md
 
