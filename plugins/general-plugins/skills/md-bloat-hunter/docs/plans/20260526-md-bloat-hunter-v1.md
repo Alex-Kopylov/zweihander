@@ -113,9 +113,9 @@ Task notes: patched `schema.json` to enforce non-empty `justification` for vocab
 
 ### Task 2: Add references/calibrate-hunger.md (shared intensity rubric)
 
-- [ ] Write `references/calibrate-hunger.md` defining the three intensity levels per SPEC: `minimal` (tight focused files — flag only `critical` severity, don't touch clarifying examples, don't restructure), `standard` (mid-sized adaptable files — full passes, normal severity threshold), `aggressive` (sprawling files with many trigger paths — flag aggressively, hunt cross-section duplication)
-- [ ] Include the "trust the agent's characterization; no frontmatter opt-ins, no auto-detection heuristics" framing
-- [ ] Spot-check that the file reads as a rubric a detector can apply per-file, not as prose
+- [x] Write `references/calibrate-hunger.md` defining the three intensity levels per SPEC: `minimal` (tight focused files — flag only `critical` severity, don't touch clarifying examples, don't restructure), `standard` (mid-sized adaptable files — full passes, normal severity threshold), `aggressive` (sprawling files with many trigger paths — flag aggressively, hunt cross-section duplication)
+- [x] Include the "trust the agent's characterization; no frontmatter opt-ins, no auto-detection heuristics" framing
+- [x] Spot-check that the file reads as a rubric a detector can apply per-file, not as prose
 
 ### Task 3: Build agents/redundancy-detector.md
 
