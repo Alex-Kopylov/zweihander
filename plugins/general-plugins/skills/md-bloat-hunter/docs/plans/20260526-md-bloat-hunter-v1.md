@@ -162,13 +162,15 @@ Task notes: added `agents/vocab-compressor.md`; smoke fixture `/tmp/md-bloat-hun
 
 ### Task 7: Build agents/file-orchestrator.md
 
-- [ ] Write the agent file: role (per-file fan-out + reducer for one MD file), input (one absolute file path), output (one reduced finding list)
-- [ ] Dispatch the four detector agents in parallel via the Task tool for the input file; collect four `SpecialistOutput` blocks
-- [ ] Handle malformed detector output gracefully: JSON parse failure → skip that detector, log, continue; schema validation failure after retries → attempt to extract individually-valid findings, drop the rest
-- [ ] Apply the overlap resolution table from Technical Details: merge same-action-similar-text silently; keep meaningfully-different alternatives with a recommended one; flag different-action conflicts (may recommend "skip both")
-- [ ] Use an inline LLM ask to decide "meaningfully different" rather than a similarity threshold
-- [ ] Return one reduced finding list to caller (the top orchestrator)
-- [ ] Smoke run: feed a fixture MD file containing one redundancy + one verbosity + one filler instance; verify all three findings come through the reducer with sensible severity/risk
+- [x] Write the agent file: role (per-file fan-out + reducer for one MD file), input (one absolute file path), output (one reduced finding list)
+- [x] Dispatch the four detector agents in parallel via the Task tool for the input file; collect four `SpecialistOutput` blocks
+- [x] Handle malformed detector output gracefully: JSON parse failure → skip that detector, log, continue; schema validation failure after retries → attempt to extract individually-valid findings, drop the rest
+- [x] Apply the overlap resolution table from Technical Details: merge same-action-similar-text silently; keep meaningfully-different alternatives with a recommended one; flag different-action conflicts (may recommend "skip both")
+- [x] Use an inline LLM ask to decide "meaningfully different" rather than a similarity threshold
+- [x] Return one reduced finding list to caller (the top orchestrator)
+- [x] Smoke run: feed a fixture MD file containing one redundancy + one verbosity + one filler instance; verify all three findings come through the reducer with sensible severity/risk
+
+Task notes: added `agents/file-orchestrator.md`; smoke fixture `/tmp/md-bloat-hunter-task7-fixture.md` produced detector outputs under `/tmp/md-bloat-hunter/task7-smoke/`, all four validate against `references/schema.json`. Reducer artifact `/tmp/md-bloat-hunter/task7-smoke/file-orchestrator-reduced.json` preserves verbosity, filler, and redundancy findings and records the overlapping intro sentence as a different-action conflict with an ask-user recommendation.
 
 ### Task 8: Build SKILL.md (top orchestrator) — dispatch, gating, reporting
 
