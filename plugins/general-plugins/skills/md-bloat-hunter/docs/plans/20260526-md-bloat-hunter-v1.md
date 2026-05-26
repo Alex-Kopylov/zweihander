@@ -131,11 +131,13 @@ Task notes: added `agents/redundancy-detector.md`; smoke fixture `/tmp/md-bloat-
 
 ### Task 4: Build agents/verbosity-pruner.md
 
-- [ ] Write the agent file: detector role (wordiness in a span — fewer words for the same idea), finding shape (1 span, before → after)
-- [ ] Embed verbosity taxonomy inline: preambles ("It is important to note that…"), passive voice where active is clearer, hedging ("might possibly"), padding clauses
-- [ ] Embed what-NOT-to-flag examples (load-bearing hedging where the uncertainty matters; deliberate passive where the actor is irrelevant)
-- [ ] Reference `references/calibrate-hunger.md`; embed SGR output protocol, "round up on risk", and 3-attempt validation loop
-- [ ] Smoke run: fixture MD file with one obvious wordy span; verify a valid `SpecialistOutput` is produced
+- [x] Write the agent file: detector role (wordiness in a span — fewer words for the same idea), finding shape (1 span, before → after)
+- [x] Embed verbosity taxonomy inline: preambles ("It is important to note that…"), passive voice where active is clearer, hedging ("might possibly"), padding clauses
+- [x] Embed what-NOT-to-flag examples (load-bearing hedging where the uncertainty matters; deliberate passive where the actor is irrelevant)
+- [x] Reference `references/calibrate-hunger.md`; embed SGR output protocol, "round up on risk", and 3-attempt validation loop
+- [x] Smoke run: fixture MD file with one obvious wordy span; verify a valid `SpecialistOutput` is produced
+
+Task notes: added `agents/verbosity-pruner.md`; smoke fixture `/tmp/md-bloat-hunter-task4-fixture.md` produced `/tmp/md-bloat-hunter/task4-smoke/c45476672b5e/verbosity-pruner.json`, which validates against `references/schema.json` and contains one verbosity finding.
 
 ### Task 5: Build agents/filler-eliminator.md
 
