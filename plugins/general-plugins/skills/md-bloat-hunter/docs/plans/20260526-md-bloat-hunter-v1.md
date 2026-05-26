@@ -119,13 +119,15 @@ Task notes: patched `schema.json` to enforce non-empty `justification` for vocab
 
 ### Task 3: Build agents/redundancy-detector.md
 
-- [ ] Write the agent file: detector role (hunt within-file duplication; restated content where rule → example → summary all say the same thing), finding shape (2+ locations + canonical form)
-- [ ] Embed redundancy taxonomy inline (restated rules, duplicated examples, summary-of-summary) with what-NOT-to-flag examples (legitimate emphasis, contrasting examples that look similar but differ)
-- [ ] Reference `references/calibrate-hunger.md` for intensity selection via the `audit_calibration` block
-- [ ] Embed the SGR-ordered output protocol: fill `audit_calibration` first; then for each finding, fill phase-1 (excerpt + optional context), phase-2 (type/rationale/severity), phase-3 (action/new_text), phase-4 (semantic_risk/confidence)
-- [ ] Embed the "when in doubt about risk, round up" instruction
-- [ ] Embed the output validation loop (3-attempt cap, write to /tmp path, jsonschema check, do not fail task after attempt 3)
-- [ ] Smoke run: prepare a fixture MD file containing a clear restated rule and verify the detector emits a valid `SpecialistOutput` with at least one redundancy finding
+- [x] Write the agent file: detector role (hunt within-file duplication; restated content where rule → example → summary all say the same thing), finding shape (2+ locations + canonical form)
+- [x] Embed redundancy taxonomy inline (restated rules, duplicated examples, summary-of-summary) with what-NOT-to-flag examples (legitimate emphasis, contrasting examples that look similar but differ)
+- [x] Reference `references/calibrate-hunger.md` for intensity selection via the `audit_calibration` block
+- [x] Embed the SGR-ordered output protocol: fill `audit_calibration` first; then for each finding, fill phase-1 (excerpt + optional context), phase-2 (type/rationale/severity), phase-3 (action/new_text), phase-4 (semantic_risk/confidence)
+- [x] Embed the "when in doubt about risk, round up" instruction
+- [x] Embed the output validation loop (3-attempt cap, write to /tmp path, jsonschema check, do not fail task after attempt 3)
+- [x] Smoke run: prepare a fixture MD file containing a clear restated rule and verify the detector emits a valid `SpecialistOutput` with at least one redundancy finding
+
+Task notes: added `agents/redundancy-detector.md`; smoke fixture `/tmp/md-bloat-hunter-task3-fixture.md` produced `/tmp/md-bloat-hunter/task3-smoke/0168b65de6b6/redundancy-detector.json`, which validates against `references/schema.json` and contains one redundancy finding.
 
 ### Task 4: Build agents/verbosity-pruner.md
 
