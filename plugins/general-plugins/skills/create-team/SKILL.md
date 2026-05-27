@@ -2,13 +2,13 @@
 name: create-team
 description: Use when the user wants to design a multi-agent team with clear roles, dependencies, handoffs, and review steps.
 metadata:
-  ai-harness-codex: reference/codex.md
-  ai-harness-claude-code: reference/claude-code.md
+  codex-read-it: reference/codex.md
+  claude-code-read-it: reference/claude-code.md
 ---
 
 # Create Team
 
-Design a multi-agent team blueprint with clear role separation and interaction patterns. If harness-specific tool mapping is needed, load exactly one matching reference from `metadata.ai-harness-*`. If no exact AI harness match exists, do not load a harness reference.
+Design a multi-agent team blueprint with clear role separation and interaction patterns. If harness-specific tool mapping is needed, load exactly one matching `metadata.*-read-it` reference. If no exact AI harness match exists, do not load a harness reference.
 
 ## Process
 
