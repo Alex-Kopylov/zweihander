@@ -3,7 +3,7 @@
   "evals": [
     {
       "id": 0,
-      "prompt": "loop_macos each day run bash ~/.claude/my-marketplace/bin/sync-anthropic-skills.sh",
+      "prompt": "loop_macos each day run bash ~/my-marketplace/bin/sync-anthropic-skills.sh",
       "expected_output": "Plist uses StartCalendarInterval (daily). Command runs the bash script. Label follows com.user.loop-macos.* format. Interval phrase 'each day' not leaked into command string.",
       "files": [],
       "assertions": [

@@ -1,0 +1,26 @@
+{
+  "name": "langfuse",
+  "version": "0.1.1",
+  "description": "General-purpose Langfuse integration for data exploration, dashboard management, prompt versioning, datasets, and experiments",
+  "author": {
+    "name": "Alex Kopylov"
+  },
+  "license": "UNLICENSED",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Langfuse",
+    "shortDescription": "Explore and manage Langfuse data",
+    "longDescription": "General-purpose Langfuse integration for data exploration, dashboard and widget management, prompt versioning, dataset management, and experiment workflows.",
+    "developerName": "Alex Kopylov",
+    "category": "Observability",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Find recent Langfuse traces with errors.",
+      "Create a dashboard widget for latency."
+    ]
+  }
+}

@@ -5,4 +5,4 @@
 .plannotator/
 logs/
 .upstream
-
+**/workspaces/

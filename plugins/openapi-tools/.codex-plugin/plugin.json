@@ -1,0 +1,24 @@
+{
+  "name": "openapi-tools",
+  "version": "0.2.0",
+  "description": "Skills for listing and inspecting OpenAPI endpoints on running services",
+  "author": {
+    "name": "Alex Kopylov"
+  },
+  "license": "UNLICENSED",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "OpenAPI Tools",
+    "shortDescription": "List and inspect OpenAPI endpoints",
+    "longDescription": "Skills for listing and inspecting OpenAPI endpoints on running services such as FastAPI applications.",
+    "developerName": "Alex Kopylov",
+    "category": "API",
+    "capabilities": [
+      "Read"
+    ],
+    "defaultPrompt": [
+      "List endpoints exposed by this service.",
+      "Inspect this OpenAPI operation."
+    ]
+  }
+}

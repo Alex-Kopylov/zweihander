@@ -121,7 +121,7 @@ Write a JSON file with this structure:
       "evidence": "No spreadsheet was created. The output was a text file."
     },
     {
-      "text": "The assistant used the skill's OCR script",
+      "text": "The AI Assistant used the skill's OCR script",
       "passed": true,
       "evidence": "Transcript Step 2 shows: 'Tool: Bash - python ocr_script.py image.png'"
     }

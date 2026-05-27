@@ -28,7 +28,7 @@ Consult these files for detailed procedures at each phase:
 2. Resume library location (defaults to `<workspace>/library/` where workspace = `${JOB_HUNT_WORKSPACE:-$HOME/Documents/job_seeking}`)
 
 **Sub-skill dependencies:**
-- `export-pdf` - HTML → PDF export via `${CLAUDE_PLUGIN_ROOT}/skills/export-pdf/scripts/html-to-pdf.sh`
+- `export-pdf` - HTML → PDF export via `${PLUGIN_ROOT}/skills/export-pdf/scripts/html-to-pdf.sh`
 
 ## Workflow
 
@@ -99,7 +99,7 @@ Filename format: `<First>_<Last>_<Role>_CV.<ext>` — NO company name in the fil
 1. **HTML:** Compile mapped content into a tailored HTML file following the master CV's template. Save as `<First>_<Last>_<Role>_CV.html` inside the company subfolder.
 2. **PDF:** Run the export-pdf skill:
    ```
-   bash "${CLAUDE_PLUGIN_ROOT}/skills/export-pdf/scripts/html-to-pdf.sh" \
+   bash "${PLUGIN_ROOT}/skills/export-pdf/scripts/html-to-pdf.sh" \
      "<workspace>/<company>/<First>_<Last>_<Role>_CV.html" \
      "<workspace>/<company>/<First>_<Last>_<Role>_CV.pdf"
    ```

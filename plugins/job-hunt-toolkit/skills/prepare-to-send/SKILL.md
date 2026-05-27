@@ -1,7 +1,7 @@
 ---
 name: prepare-to-send
 description: Use when the user asks to "prepare to send", "final check", "ready to send", "pre-send checklist", "is this ready", "is this clean", "can I attach this", "run the checklist", "verify the CV", or "check before sending". Runs the complete pre-send audit — filename sanity, HTML↔PDF parity, metadata scrub, visible content scan, sensitive file presence, content correctness, final sanity — and fails loudly on any issue. Nothing ships with warnings.
-argument-hint: [pdf-file] (optional; defaults to most recently modified CV PDF in current company folder)
+argument-hint: "[pdf-file] (optional; defaults to most recently modified CV PDF in current company folder)"
 allowed-tools: Read, Bash, Glob, Grep, Skill, AskUserQuestion
 ---
 
@@ -51,7 +51,7 @@ Run each section top to bottom and record PASS/FAIL. ANY fail = stop, report the
 
 ## Section 1 — Filename sanity
 
-Validate the PDF filename against `${CLAUDE_PLUGIN_ROOT}/references/naming-rules.md`.
+Validate the PDF filename against `${PLUGIN_ROOT}/references/naming-rules.md`.
 
 **Checklist:**
 
@@ -83,7 +83,7 @@ fi
 
 **Invoke the `scrub-pdf-metadata` skill** on the PDF; do not inline exiftool commands here.
 
-If, for some reason, the skill cannot be invoked as a skill, fall back to the exact commands from `${CLAUDE_PLUGIN_ROOT}/skills/scrub-pdf-metadata/references/exiftool-commands.md` under "One-liner: scrub + set + verify" — never improvise.
+If, for some reason, the skill cannot be invoked as a skill, fall back to the exact commands from `${PLUGIN_ROOT}/skills/scrub-pdf-metadata/references/exiftool-commands.md` under "One-liner: scrub + set + verify" — never improvise.
 
 After scrub, verify with:
 
@@ -189,7 +189,7 @@ Threshold: minimum 200 characters of extracted text (already checked in Section 
 
 ## Section 7 — Content correctness
 
-The highest-value gate. Claude MUST read the PDF text AND the accompanying `company.md` / `job_description.*` and verify:
+The highest-value gate. The assistant must read the PDF text AND the accompanying `company.md` / `job_description.*` and verify:
 
 - [ ] Name spelling correct
 - [ ] Dates consistent (no contradictions between roles)
@@ -198,7 +198,7 @@ The highest-value gate. Claude MUST read the PDF text AND the accompanying `comp
 - [ ] Role title on the CV sensibly matches / reframes the target JD's role
 - [ ] Key must-have JD requirements are visibly addressed in the CV text
 
-Claude does this by reading the PDF text (from Section 4a), the master HTML, the `<company>/company.md`, and `<company>/job_description.*`. Any discrepancy = fail with a specific line-level finding.
+The assistant does this by reading the PDF text (from Section 4a), the master HTML, the `<company>/company.md`, and `<company>/job_description.*`. Any discrepancy = fail with a specific line-level finding.
 
 ---
 
@@ -222,7 +222,7 @@ If `status` is still `drafting`, note it as informational — the user may be pr
 
 ## Section 9 — Final sanity
 
-Claude surfaces these as judgment calls for the user to confirm, not automated gates. Ask via `AskUserQuestion`.
+The assistant surfaces these as judgment calls for the user to confirm, not automated gates. Ask via `AskUserQuestion`.
 
 - [ ] Open PDF in a different renderer than the one that made it (Preview if exported via Chrome; vice-versa) to catch tool-specific bugs
 - [ ] Re-read the first sentence of the first bullet — does it instantly signal fit for THIS role?

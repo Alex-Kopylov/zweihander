@@ -19,7 +19,7 @@ Turns your chaotic Downloads folder into a disciplined, structured workspace:
 
 | Skill | Trigger | Purpose |
 |---|---|---|
-| `init-workspace` | slash command | One-time setup: scaffolds `~/Documents/job_seeking/` (or configured path) with README, CLAUDE.md, and NAMING.md |
+| `init-workspace` | slash command | One-time setup: scaffolds `~/Documents/job_seeking/` (or configured path) with README, AGENTS.md, and NAMING.md |
 | `new-application` | slash command | Start a new company application: create folder, scaffold `company.md`, copy master HTML, invoke tailoring |
 | `resume-tailoring` | conversational | Tailor the CV against a JD. Research → template → discovery → assembly → export. Moved from general-plugins. |
 | `export-pdf` | slash command or auto | HTML → PDF via headless Chromium. Consistent rendering across applications. |
@@ -28,7 +28,7 @@ Turns your chaotic Downloads folder into a disciplined, structured workspace:
 
 ### Natural-language triggers
 
-You can invoke skills conversationally — Claude recognises these phrases and routes to the right skill automatically:
+You can invoke skills conversationally — The assistant recognizes these phrases and routes to the right skill automatically:
 
 | If you say… | Skill invoked |
 |---|---|
@@ -76,17 +76,16 @@ or set `JOB_HUNT_WORKSPACE=~/Documents/job_seaking` in your shell rc to preserve
 
 ## Install
 
-From this marketplace (`~/.claude/my-marketplace`):
+From this marketplace:
 
 ```bash
-# in Claude Code
 /plugin install job-hunt-toolkit
 ```
 
-Or point Claude Code at a local path:
+Or point the active runtime at a local path:
 
 ```bash
-cc --plugin-dir /path/to/job-hunt-toolkit
+<agent-cli> --plugin-dir /path/to/job-hunt-toolkit
 ```
 
 ## Typical flow

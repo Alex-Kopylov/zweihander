@@ -20,7 +20,7 @@ This skill strips all of it with `exiftool` and resets a clean Author.
 ## Inputs
 
 - **PDF file** (argument, required): absolute path preferred.
-- **Author** (optional `--author=`): name to set as the clean Author. Claude infers from memory/context (user's name as it appears on the CV). If unclear, ask the user via AskUserQuestion before proceeding.
+- **Author** (optional `--author=`): name to set as the clean Author. Infer from memory/context (user's name as it appears on the CV). If unclear, ask the user via AskUserQuestion before proceeding.
 
 ## Preconditions
 

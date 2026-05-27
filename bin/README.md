@@ -1,6 +1,6 @@
 # Marketplace Tools
 
-Utility scripts for managing the local Claude Code skills marketplace.
+Utility scripts for managing the local skills marketplace.
 
 ## sync-anthropic-skills.sh
 
@@ -40,7 +40,7 @@ This script maintains an efficient sync channel for 5 curated skills from Anthro
 
 ```bash
 # From anywhere, run:
-~/.claude/my-marketplace/bin/sync-anthropic-skills.sh
+~/my-marketplace/bin/sync-anthropic-skills.sh
 ```
 
 Or from the marketplace root:
@@ -54,11 +54,11 @@ Or from the marketplace root:
 🔄 Syncing skills from https://github.com/anthropics/skills.git
 📦 Updating upstream repository...
 📋 Syncing skills...
-  ✓ pdf -> ~/.claude/my-marketplace/plugins/file-manager/skills/pdf
-  ✓ pptx -> ~/.claude/my-marketplace/plugins/file-manager/skills/pptx
-  ✓ xlsx -> ~/.claude/my-marketplace/plugins/file-manager/skills/xlsx
-  ✓ docx -> ~/.claude/my-marketplace/plugins/file-manager/skills/docx
-  ✓ skill-creator -> ~/.claude/my-marketplace/plugins/general-plugins/skills/skill-creator
+  ✓ pdf -> ~/my-marketplace/plugins/file-manager/skills/pdf
+  ✓ pptx -> ~/my-marketplace/plugins/file-manager/skills/pptx
+  ✓ xlsx -> ~/my-marketplace/plugins/file-manager/skills/xlsx
+  ✓ docx -> ~/my-marketplace/plugins/file-manager/skills/docx
+  ✓ skill-creator -> ~/my-marketplace/plugins/general-plugins/skills/skill-creator
 
 ✅ Sync complete!
 
@@ -72,13 +72,13 @@ Next steps:
 
 ```bash
 # Review what changed
-git -C ~/.claude/my-marketplace status
+git -C ~/my-marketplace status
 
 # Stage the skill updates
-git -C ~/.claude/my-marketplace add plugins/
+git -C ~/my-marketplace add plugins/
 
 # Commit with conventional format
-git -C ~/.claude/my-marketplace commit -m "sync: update skills from anthropics/skills"
+git -C ~/my-marketplace commit -m "sync: update skills from anthropics/skills"
 ```
 
 ### Design choices

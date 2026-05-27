@@ -1,0 +1,27 @@
+{
+  "name": "job-hunt-toolkit",
+  "version": "0.1.0",
+  "description": "Version-controlled job application workspace with resume tailoring, PDF export, metadata scrubbing, and pre-send checks",
+  "author": {
+    "name": "Alex Kopylov",
+    "email": "alexkopylov123@gmail.com"
+  },
+  "license": "UNLICENSED",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Job Hunt Toolkit",
+    "shortDescription": "Job application workspace and resume tooling",
+    "longDescription": "Version-controlled job application workspace with resume tailoring, PDF export, metadata scrubbing, and pre-send checks.",
+    "developerName": "Alex Kopylov",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Set up a job application workspace.",
+      "Tailor this resume for the target role."
+    ]
+  }
+}
