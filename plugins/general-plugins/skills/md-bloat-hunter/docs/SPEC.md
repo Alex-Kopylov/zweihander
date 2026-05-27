@@ -188,7 +188,8 @@ unfindable excerpt is a hallucination, not a recoverable state.
 ```
 ~/.claude/my-marketplace/plugins/general-plugins/skills/md-bloat-hunter/
 ├── SKILL.md                          # top orchestrator entry point
-├── SPEC.md                           # this file
+├── docs/
+│   └── SPEC.md                       # this file
 ├── agents/
 │   ├── file-orchestrator.md          # per-file fan-out + reducer
 │   ├── redundancy-detector.md

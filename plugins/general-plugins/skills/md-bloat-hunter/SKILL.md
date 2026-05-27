@@ -33,9 +33,8 @@ Read these during normal invocation:
 
 Detector agents read `references/detector-output.schema.json` themselves.
 
-Do not read or follow `SPEC.md`, `docs/`, or `tests/` during normal invocation.
-Those are development artifacts. Use them only when the user is developing this
-skill.
+Do not read or follow `docs/` or `tests/` during normal invocation. Those are
+development artifacts. Use them only when the user is developing this skill.
 
 ## Safety
 

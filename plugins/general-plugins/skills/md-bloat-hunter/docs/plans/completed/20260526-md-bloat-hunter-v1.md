@@ -11,23 +11,23 @@ Each detector follows Schema-Guided Reasoning order (observe → classify → pr
 - Skill location: `~/.claude/my-marketplace/plugins/general-plugins/skills/md-bloat-hunter/`
 - Codex compatibility note: although this skill lives under the Claude Code marketplace directory, it is also intended for OpenAI Codex. For this implementation, validate and smoke-test behavior against Codex, not the Claude Code CLI.
 - Pre-existing artifacts:
-  - `SPEC.md` — design spec, source of truth for this build
+  - `docs/SPEC.md` — design spec, source of truth for this build
   - `references/detector-output.schema.json` — JSON Schema (draft 2020-12) for `SpecialistOutput`, already in place; reviewed and refined as Task 1 of this plan
 - Runtime dependency: `jsonschema` CLI on PATH (e.g. `uv tool install jsonschema`). The top orchestrator fails fast if missing.
 - Reversibility model: writer does not commit; relies on a clean git tree + `git diff` for review and `git checkout` for undo.
 - Out of v1 scope (per SPEC): cross-file redundancy, separate semantic-preservation-validator, trigger-preservation test, MUST/NEVER-rule extractor, token-delta computation. These have hook points reserved but no Task in this plan.
-- Adopted from `SPEC.md` (free-form design spec, no source task-list).
+- Adopted from `docs/SPEC.md` (free-form design spec, no source task-list).
 
 ### Reference materials (consult when this plan is ambiguous)
 
 When a task description is unclear or under-specified, consult these source materials before guessing — they encode the reasoning this plan compresses away:
 
-1. **Original design spec**: `~/.claude/my-marketplace/plugins/general-plugins/skills/md-bloat-hunter/SPEC.md` — the artifact this plan was derived from. Authoritative for architecture, taxonomy, schema shape, failure modes, and what's deliberately out of v1.
+1. **Original design spec**: `~/.claude/my-marketplace/plugins/general-plugins/skills/md-bloat-hunter/docs/SPEC.md` — the artifact this plan was derived from. Authoritative for architecture, taxonomy, schema shape, failure modes, and what's deliberately out of v1.
 2. **Brainstorm conversation log**: local-only design history was used to create
-   `SPEC.md` but is not part of this portable plan. Treat `SPEC.md` as the
+   `docs/SPEC.md` but is not part of this portable plan. Treat `docs/SPEC.md` as the
    committed source for reasoning, rejected alternatives, and tradeoffs.
 
-When in doubt: re-read SPEC.md first (faster, denser). If SPEC.md is silent on
+When in doubt: re-read docs/SPEC.md first (faster, denser). If docs/SPEC.md is silent on
 the specific decision, ask rather than inventing a design choice.
 
 ## Development Approach
@@ -35,7 +35,7 @@ the specific decision, ask rather than inventing a design choice.
 - Testing approach: regular. Agent prompts are not unit-testable in the conventional sense; each Task uses schema validation + smoke runs on fixture MD files instead of a test suite.
 - Complete each task fully before moving to the next.
 - Update this plan when scope changes during implementation.
-- **When a Task is ambiguous, do not guess.** Re-read `SPEC.md` and, if still unclear, the brainstorm log linked in Context above. Both were settled before this plan was written.
+- **When a Task is ambiguous, do not guess.** Re-read `docs/SPEC.md` and, if still unclear, the brainstorm log linked in Context above. Both were settled before this plan was written.
 
 ## Testing Strategy
 
@@ -93,7 +93,8 @@ Cross-file redundancy is **not** in v1.
 ```
 ~/.claude/my-marketplace/plugins/general-plugins/skills/md-bloat-hunter/
 ├── SKILL.md                          # top orchestrator entry point
-├── SPEC.md                           # already present
+├── docs/
+│   └── SPEC.md                       # already present
 ├── agents/
 │   ├── file-orchestrator.md          # per-file fan-out + reducer
 │   ├── redundancy-detector.md
@@ -101,8 +102,8 @@ Cross-file redundancy is **not** in v1.
 │   ├── filler-eliminator.md
 │   └── vocab-compressor.md
 └── references/
-    ├── schema.json                   # already present; reviewed in Task 1
-    ├── reduced-schema.json           # file-orchestrator reduced output schema
+    ├── detector-output.schema.json   # already present; reviewed in Task 1
+    ├── file-reduction.schema.json    # file-level reduced output schema
     └── calibrate-hunger.md           # intensity rubric (shared)
 ```
 
@@ -219,10 +220,10 @@ Task notes: updated `plugins/general-plugins/.claude-plugin/plugin.json` to vers
 - [x] In OpenAI Codex, run the skill on a known-tight MD file (e.g. a short single-purpose skill) and confirm `audit_calibration` chooses `minimal` and total finding count is low or zero
 - [x] Run `git checkout .` after the audit and verify all changes revert cleanly (reversibility story holds)
 - [x] Validate one real-world `SpecialistOutput` from a detector against `references/detector-output.schema.json` via `jsonschema -i <path> references/detector-output.schema.json` and confirm it passes
-- [x] Re-read SPEC.md's "Deferred to future iterations" table and confirm none of those items leaked into v1
+- [x] Re-read docs/SPEC.md's "Deferred to future iterations" table and confirm none of those items leaked into v1
 - [x] Spot-check that no hard-coded magic numbers, retry frameworks, session managers, or config systems were introduced (per SPEC's "Trust the simple path")
 
-Task notes: created a clean temporary git repo at `/tmp/md-bloat-hunter-acceptance` with `mixed.md` and `tight.md` fixtures. The smoke run produced 5 applied findings across verbosity, redundancy, filler, and vocab shapes; the resulting `git diff` matched the reported edits. The live detector run did not naturally emit a `semantic_risk: "high"` finding, so the high-risk confirmation branch was checked against the existing forced high-risk reducer artifact `/tmp/md-bloat-hunter/task8-smoke/reduced-high-risk.json` and the `SKILL.md` risk-gate contract rather than an interactive prompt. `git checkout -- mixed.md` returned the temp repo to a clean tree. The tight-file smoke reported `audit_calibration: minimal`, 4/4 detectors validated, and zero findings. Fresh detector outputs under `/tmp/md-bloat-hunter/run_1779826553/mixed_md/` and `/tmp/md-bloat-hunter/run-20260527-001/1588ad89/` validated with `jsonschema -i <output> references/detector-output.schema.json`. Re-reading SPEC.md's deferred table and searching the v1 skill files confirmed semantic-preservation-validator, trigger-preservation testing, MUST/NEVER extraction, cross-file redundancy, and token-delta computation remain deferred; no retry framework, session manager, concurrency cap, or config system was introduced. Review follow-up added a committed `.codex-plugin/plugin.json` so Codex packaging has a source manifest alongside the Claude plugin manifest.
+Task notes: created a clean temporary git repo at `/tmp/md-bloat-hunter-acceptance` with `mixed.md` and `tight.md` fixtures. The smoke run produced 5 applied findings across verbosity, redundancy, filler, and vocab shapes; the resulting `git diff` matched the reported edits. The live detector run did not naturally emit a `semantic_risk: "high"` finding, so the high-risk confirmation branch was checked against the existing forced high-risk reducer artifact `/tmp/md-bloat-hunter/task8-smoke/reduced-high-risk.json` and the `SKILL.md` risk-gate contract rather than an interactive prompt. `git checkout -- mixed.md` returned the temp repo to a clean tree. The tight-file smoke reported `audit_calibration: minimal`, 4/4 detectors validated, and zero findings. Fresh detector outputs under `/tmp/md-bloat-hunter/run_1779826553/mixed_md/` and `/tmp/md-bloat-hunter/run-20260527-001/1588ad89/` validated with `jsonschema -i <output> references/detector-output.schema.json`. Re-reading docs/SPEC.md's deferred table and searching the v1 skill files confirmed semantic-preservation-validator, trigger-preservation testing, MUST/NEVER extraction, cross-file redundancy, and token-delta computation remain deferred; no retry framework, session manager, concurrency cap, or config system was introduced. Review follow-up added a committed `.codex-plugin/plugin.json` so Codex packaging has a source manifest alongside the Claude plugin manifest.
 
 ## Post-Completion
 
@@ -230,4 +231,4 @@ Task notes: created a clean temporary git repo at `/tmp/md-bloat-hunter-acceptan
 
 - Commit and push are deliberately out of scope for this plan. Run them manually once acceptance criteria are met.
 - If new bloat shapes surface during real-world use that don't fit the 4-detector taxonomy, add a new agent file under `agents/` rather than bending an existing one (per SPEC's DOTADIW principle).
-- Future work hook points already documented in SPEC.md's "Deferred to future iterations" table — do not start any of them as part of this plan.
+- Future work hook points already documented in docs/SPEC.md's "Deferred to future iterations" table — do not start any of them as part of this plan.
