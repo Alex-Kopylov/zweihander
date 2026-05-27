@@ -1,5 +1,9 @@
 {
   "name": "python-dev-workflow",
-  "description": "Python development workflow — pytest test execution & review agents, conventional commits, PR creation, branch management, unit testing guide, contradiction hunting for specs/requirements, Celery expert (Redis broker), Schema-Guided Reasoning (SGR) for Pydantic structured output, and version bumping across config files",
-  "version": "0.11.0"
+  "description": "Python development workflow skills for testing, commits, PRs, branch management, contradiction checks, Celery, Redis, and versioning",
+  "version": "0.11.0",
+  "author": {
+    "name": "Alex Kopylov"
+  },
+  "skills": "./skills/"
 }

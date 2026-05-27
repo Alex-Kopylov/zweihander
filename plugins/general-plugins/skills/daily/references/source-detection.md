@@ -10,7 +10,7 @@ Scan the project root to determine which sources are available. Check each signa
 | **azure-devops** | Git remote contains `dev.azure.com` or `visualstudio.com` | Run `git remote -v` and match the URL pattern |
 | **github** | Git remote contains `github.com` | Run `git remote -v` and match the URL pattern |
 | **gitlab** | Git remote contains `gitlab.com` or `gitlab.` (self-hosted) | Run `git remote -v` and match the URL pattern |
-| **slack** | MCP server named `slack` in `.mcp.json` or `.claude/settings.json` | Check MCP config files |
+| **slack** | MCP server named `slack` in `.mcp.json`, runtime settings files, or AI Assistant settings files | Check MCP config files |
 | **microsoft-teams** | MCP server named `teams` or `microsoft-teams` in MCP config | Check MCP config files |
 | **telegram** | MCP server named `telegram` in MCP config | Check MCP config files |
 | **custom-mcp** | Any other MCP server that looks like a data/project source | Check MCP config, read `references/sources/custom-mcp.md` for guidance |

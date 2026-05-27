@@ -1,6 +1,6 @@
 # Writing Conventions
 
-Conventions from Anthropic's `claude-md-management` plugin, adapted for use here.
+Instruction-file conventions adapted for use here.
 
 ## Diff block header
 
@@ -8,7 +8,7 @@ Use `**Why this helps:**` (not just `**Why:**`) — the longer form is clearer w
 someone reads the file cold and needs context on why a line was added.
 
 ```
-### Update: ./CLAUDE.md
+### Update: ./AGENTS.md
 **Why this helps:** [one-line reason a future session benefits from this]
 
 \`\`\`diff
@@ -18,7 +18,7 @@ someone reads the file cold and needs context on why a line was added.
 
 ## Inline command format
 
-When storing bash commands or CLI workflows in a CLAUDE.md, prefer:
+When storing bash commands or CLI workflows in an instruction file, prefer:
 
 ```
 `<command>` - <brief description>
@@ -37,6 +37,6 @@ One command per line. Description after the dash, lowercase, no period.
 Before finalising what gets written, verify each addition:
 
 - Is it project-specific? (not generic advice)
-- Would a new Claude session actually find this useful?
+- Would a new AI Assistant session actually find this useful?
 - Is this the most concise way to say it?
 - Are file paths and commands accurate?

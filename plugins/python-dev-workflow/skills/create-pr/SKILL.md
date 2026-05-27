@@ -52,6 +52,6 @@ description: Create a pull request from the current branch. Activate when user a
 ## Notes
 
 - PR body is always empty
-- Never mention claude in PR title
+- Never mention the assistant runtime in the PR title
 - Ticket number is required unless user explicitly says there is none
 - After creating the PR, display a clickable hyperlink to the PR URL in the final message

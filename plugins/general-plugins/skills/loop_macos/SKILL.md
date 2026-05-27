@@ -1,7 +1,7 @@
 ---
 name: loop_macos
 description: >
-  Schedule a recurring shell command or Claude prompt using macOS launchd — persistent, no expiry,
+  Schedule a recurring shell command or AI Assistant prompt using macOS launchd — persistent, no expiry,
   survives reboots, and catches up missed runs after sleep. Use this instead of /loop whenever the
   user wants a task to keep running permanently (not just 7 days), mentions launchd, says "run this
   every day", "schedule this on macOS", "make this persistent", "set this up for good", "keep this
@@ -10,8 +10,8 @@ description: >
 
 # loop_macos
 
-Schedule a recurring task using macOS launchd — the system daemon manager. Unlike Claude Code's
-built-in `/loop` (7-day expiry, session-tied), launchd jobs run permanently, survive reboots, and
+Schedule a recurring task using macOS launchd — the system daemon manager. Unlike a
+session-tied loop command, launchd jobs run permanently, survive reboots, and
 when scheduled by calendar time, catch up any runs missed while the Mac was asleep.
 
 ## Step 1 — Parse the input
@@ -62,15 +62,15 @@ Default time when the user doesn't specify: **9:07 AM** (off the :00 mark to avo
 
 ## Step 3 — Identify task type and expand paths
 
-**Shell command** — use a shell command (not `claude -p`) when the task:
+**Shell command** — use a shell command when the task:
 - starts with `bash`, `python`, `node`, `ruby`, a path (`/`, `~`), or ends with `.sh`, `.py`, `.rb`, `.js`
 - describes a deterministic system operation (file listing, backup, sync, cleanup, copy, move, log rotation) that a one-liner or short script handles cleanly
 
-**Claude prompt** — use `claude -p '…'` when the task requires reasoning, summarising, deciding, or acting on ambiguous output (e.g. "summarise my emails", "review logs and flag issues").
+**AI Assistant prompt** — use the user's configured non-interactive AI Assistant command when the task requires reasoning, summarising, deciding, or acting on ambiguous output (e.g. "summarise my emails", "review logs and flag issues").
 
 When in doubt between the two, prefer shell — it's cheaper, faster, and more reliable in a daemon context.
 
-Use `/bin/bash -lc '…'` as the shell so PATH includes Homebrew (`/opt/homebrew/bin`) and user installs (`~/.local/bin`), where both `claude` and custom tools typically live.
+Use `/bin/bash -lc '…'` as the shell so PATH includes Homebrew (`/opt/homebrew/bin`) and user installs (`~/.local/bin`), where AI Assistant CLIs and custom tools typically live.
 
 If the task string contains single quotes, escape them as `'\''` inside the shell string, or write a tiny wrapper script.
 
@@ -78,7 +78,7 @@ If the task string contains single quotes, escape them as `'\''` inside the shel
 ```bash
 echo "$HOME"
 ```
-Then substitute: `~/.claude/…` → `/Users/jhonsmith/.claude/…`. This applies to both shell commands and Claude prompt strings.
+Then substitute: `~/…` → the absolute path returned by `echo "$HOME"` (for example, `/Users/<username>/…`). This applies to both shell commands and AI Assistant prompt strings.
 
 ## Step 4 — Generate a label
 
@@ -87,7 +87,7 @@ Format: `com.user.loop-macos.<slug>`
 Derive the slug from the task: lowercase, keep alphanumeric and hyphens, collapse everything else to a single hyphen, trim to 30 chars.
 
 Examples:
-- `bash ~/.claude/my-marketplace/bin/sync.sh` → `com.user.loop-macos.sync-sh`
+- `bash ~/my-marketplace/bin/sync.sh` → `com.user.loop-macos.sync-sh`
 - `check the deploy log` → `com.user.loop-macos.check-the-deploy-log`
 
 ## Step 5 — Write and load the plist

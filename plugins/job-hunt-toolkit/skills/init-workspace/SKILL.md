@@ -1,7 +1,7 @@
 ---
 name: init-workspace
-description: Use when the user asks to "initialize job hunt workspace", "set up job seeking folder", "create CV workspace", "bootstrap resume folder", "prepare job search folder", "start job hunt setup", "create application tracking workspace", "first time setup for job applications", or is starting the job-hunt-toolkit for the first time. Creates the workspace directory structure, generates README/CLAUDE.md/NAMING.md from plugin templates, copies master HTML CV into workspace, and primes the workspace for per-company folders.
-argument-hint: [workspace-path] (optional, defaults to ~/Documents/job_seeking)
+description: Use when the user asks to "initialize job hunt workspace", "set up job seeking folder", "create CV workspace", "bootstrap resume folder", "prepare job search folder", "start job hunt setup", "create application tracking workspace", "first time setup for job applications", or is starting the job-hunt-toolkit for the first time. Creates the workspace directory structure, generates README/AGENTS.md/NAMING.md from plugin templates, copies master HTML CV into workspace, and primes the workspace for per-company folders.
+argument-hint: "[workspace-path] (optional, defaults to ~/Documents/job_seeking)"
 allowed-tools: Read, Write, Edit, Bash, AskUserQuestion
 ---
 
@@ -26,8 +26,8 @@ One-time setup for a job-hunt workspace. Creates folder structure, generates doc
 ### 1. Check preconditions
 
 - Resolve target path.
-- If the directory already exists AND contains `CLAUDE.md`, ask the user:
-  - **Overwrite docs** — regenerate README, CLAUDE.md, NAMING.md from plugin templates (fresh source of truth)
+- If the directory already exists AND contains `AGENTS.md`, ask the user:
+  - **Overwrite docs** — regenerate README, AGENTS.md, NAMING.md from plugin templates (fresh source of truth)
   - **Abort** — do nothing
   - **New path** — pick a different location
 - If the directory exists but is empty, proceed (treat as greenfield).
@@ -57,10 +57,10 @@ Use `AskUserQuestion` to ask the user for the absolute path to their existing ma
 
 ### 4. Scaffold files
 
-Write these files using the plugin's reference docs as source of truth. **Do not copy-paste from stale snapshots.** Always read from `${CLAUDE_PLUGIN_ROOT}/references/` at generation time.
+Write these files using the plugin's reference docs as source of truth. **Do not copy-paste from stale snapshots.** Always read from this plugin's `references/` directory at generation time.
 
 - `README.md` — workspace overview. Use `templates/README.md.template`, substituting `<First>`, `<Last>`, `<Role>`.
-- `CLAUDE.md` — workspace-local Claude rules. Use `templates/CLAUDE.md.template`. Reference the plugin CLAUDE.md for authoritative rules.
+- `AGENTS.md` — workspace-local agent rules. Use `templates/AGENTS.md.template`. Reference the plugin `AGENTS.md` for authoritative rules.
 - `NAMING.md` — quick reference. Use `templates/NAMING.md.template`, but prefer linking back to the plugin's `references/naming-rules.md` rather than duplicating content that will drift.
 - `.gitignore` — Write with standard ignore patterns for local notes, editor artifacts, and sensitive files:
   ```

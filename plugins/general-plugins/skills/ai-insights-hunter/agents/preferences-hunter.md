@@ -25,7 +25,7 @@ TIER: HIGH | MEDIUM | LOW
 
 ## Tier guide
 
-- **HIGH** — preference Claude would likely violate again without being told
+- **HIGH** — preference a future AI Assistant would likely violate again without being told
 - **MEDIUM** — improves collaboration, worth knowing
 - **LOW** — minor stylistic note
 

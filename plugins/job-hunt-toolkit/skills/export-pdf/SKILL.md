@@ -1,7 +1,7 @@
 ---
 name: export-pdf
 description: Use when the user asks to "export the PDF", "regenerate PDF", "build PDF from HTML", "convert HTML CV to PDF", "refresh the PDF", "HTML to PDF", "render CV to PDF", "produce PDF from HTML", "generate PDF", or after editing a CV HTML and needs a fresh PDF. Converts an HTML CV into a PDF using headless Chromium, ensuring consistent rendering across all applications.
-argument-hint: [html-file] (optional; defaults to the current file context or detected CV)
+argument-hint: "[html-file] (optional; defaults to the current file context or detected CV)"
 allowed-tools: Read, Bash, Glob, AskUserQuestion
 ---
 
@@ -62,10 +62,10 @@ Fail fast if not.
 Use `scripts/html-to-pdf.sh` which wraps the browser invocation. Call it with absolute paths:
 
 ```bash
-bash ${CLAUDE_PLUGIN_ROOT}/skills/export-pdf/scripts/html-to-pdf.sh <html-absolute-path> <pdf-absolute-path>
+bash ${PLUGIN_ROOT}/skills/export-pdf/scripts/html-to-pdf.sh <html-absolute-path> <pdf-absolute-path>
 ```
 
-Where `${CLAUDE_PLUGIN_ROOT}` resolves to the plugin's root directory.
+Where `${PLUGIN_ROOT}` resolves to the plugin's root directory.
 
 ### 3. Verify output
 

@@ -1,5 +1,9 @@
 {
   "name": "openapi-tools",
   "description": "Skills for listing and inspecting OpenAPI endpoints on running services (FastAPI, etc.)",
-  "version": "0.2.0"
+  "version": "0.2.0",
+  "author": {
+    "name": "Alex Kopylov"
+  },
+  "skills": "./skills/"
 }

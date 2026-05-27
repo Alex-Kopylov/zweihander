@@ -1,10 +1,10 @@
 {
-  "name": "my-plugins",
+  "name": "my-marketplace",
   "owner": {
-    "name": "alex-kopylov"
+    "name": "Alex Kopylov"
   },
   "metadata": {
-    "description": "A collection of Claude Code plugins for LLM observability, API exploration, and Python development workflows"
+    "description": "A collection of agent plugins for LLM observability, API exploration, and development workflows"
   },
   "plugins": [
     {
@@ -12,35 +12,75 @@
       "source": "./plugins/langfuse",
       "description": "General-purpose Langfuse integration — data exploration, dashboard/widget management, prompt versioning, dataset/experiment management, and more via conversational interface",
       "category": "observability",
-      "tags": ["langfuse", "llm", "observability", "dashboards", "datasets", "experiments"]
+      "tags": [
+        "langfuse",
+        "llm",
+        "observability",
+        "dashboards",
+        "datasets",
+        "experiments"
+      ]
     },
     {
       "name": "openapi-tools",
       "source": "./plugins/openapi-tools",
       "description": "Skills for listing and inspecting OpenAPI endpoints on running services (FastAPI, etc.)",
       "category": "api",
-      "tags": ["openapi", "api", "endpoints", "swagger", "fastapi"]
+      "tags": [
+        "openapi",
+        "api",
+        "endpoints",
+        "swagger",
+        "fastapi"
+      ]
     },
     {
       "name": "python-dev-workflow",
       "source": "./plugins/python-dev-workflow",
-      "description": "Python development workflow — pytest test execution & review agents, conventional commits, PR creation, branch management, unit testing guide, task management & background agent orchestration, contradiction hunting for specs/requirements, Celery expert (Redis broker), and version bumping across config files",
+      "description": "Python development workflow — pytest execution and review helpers, conventional commits, PR creation, branch management, unit testing guidance, contradiction hunting, Celery support, and version bumping",
       "category": "development",
-      "tags": ["python", "pytest", "testing", "git", "workflow", "commits", "pull-requests", "tasks", "agents", "celery", "redis"]
+      "tags": [
+        "python",
+        "pytest",
+        "testing",
+        "git",
+        "workflow",
+        "commits",
+        "pull-requests",
+        "tasks",
+        "agents",
+        "celery",
+        "redis"
+      ]
     },
     {
       "name": "general-plugins",
       "source": "./plugins/general-plugins",
-      "description": "General-purpose utilities for Claude Code setup auditing, configuration management, and workflow optimization",
+      "description": "General-purpose utilities for setup auditing, configuration management, workflow optimization, and task orchestration",
       "category": "utilities",
-      "tags": ["audit", "claude-md", "setup", "configuration", "utilities"]
+      "tags": [
+        "audit",
+        "agents-md",
+        "setup",
+        "configuration",
+        "utilities"
+      ]
     },
     {
       "name": "job-hunt-toolkit",
       "source": "./plugins/job-hunt-toolkit",
       "description": "Version-controlled job application workspace: tailored CVs with HTML source + PDF export, per-company folders, HR-safe file naming, PDF metadata scrubbing, pre-send checklist, and integrated resume tailoring",
       "category": "productivity",
-      "tags": ["resume", "cv", "job-hunt", "job-application", "resume-tailoring", "pdf", "exiftool", "workflow"]
+      "tags": [
+        "resume",
+        "cv",
+        "job-hunt",
+        "job-application",
+        "resume-tailoring",
+        "pdf",
+        "exiftool",
+        "workflow"
+      ]
     }
   ]
 }

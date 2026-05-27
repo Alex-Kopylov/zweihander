@@ -24,7 +24,7 @@ TIER: HIGH | MEDIUM | LOW
 
 ## Tier guide
 
-- **HIGH** — non-obvious decision that future Claude would likely get wrong without this context
+- **HIGH** — non-obvious decision that a future AI Assistant would likely get wrong without this context
 - **MEDIUM** — useful context that saves time but isn't critical
 - **LOW** — minor preference or nice-to-know
 

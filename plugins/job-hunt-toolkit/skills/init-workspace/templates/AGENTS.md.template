@@ -4,8 +4,8 @@ This is a job-hunt-toolkit workspace.
 
 All rules, naming conventions, and workflow details live in the plugin (authoritative source):
 
-- Plugin rules: see the job-hunt-toolkit plugin's CLAUDE.md
+- Plugin rules: see the job-hunt-toolkit plugin's AGENTS.md
 - Naming conventions: see the plugin's `references/naming-rules.md`
 - Workspace layout: see the plugin's `references/workspace-layout.md`
 
-This file exists only so Claude Code recognizes this directory as a job-hunt-toolkit workspace. Do not duplicate plugin rules here — they will drift. Update the plugin instead.
+This file exists so supported agents recognize this directory as a job-hunt-toolkit workspace. Do not duplicate plugin rules here — they will drift. Update the plugin instead.

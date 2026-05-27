@@ -1,20 +1,40 @@
-# Claude Code Plugin Marketplace
+# My Marketplace
 
-A collection of Claude Code plugins for LLM observability, API exploration, and Python development workflows.
+A collection of agent plugins for LLM observability, API exploration, and development workflows.
 
 ## Installation
 
-```shell
-/plugin marketplace add Alex-Kopylov/claude-marketplace
+This repository publishes marketplace metadata for both supported plugin runtimes:
+
+- `.claude-plugin/marketplace.json`
+- `.agents/plugins/marketplace.json`
+
+## Shared Instructions
+
+Use `AGENTS.md` as the shared instruction file when a plugin needs runtime
+context. Runtimes that read `AGENTS.md` can consume it directly.
+
+For runtimes that read `CLAUDE.md`, keep a sibling `CLAUDE.md` next to every
+`AGENTS.md` and import the shared file:
+
+```md
+@AGENTS.md
 ```
+
+This keeps both supported runtimes on the same instructions without copying
+content between files.
+
+```shell
+/plugin marketplace add Alex-Kopylov/my-marketplace
+```
+
+Use the equivalent marketplace add command if your runtime uses a CLI command
+instead of slash commands.
 
 Then install individual plugins:
 
 ```shell
-/plugin install langfuse@my-plugins
-/plugin install openapi-tools@my-plugins
-/plugin install python-dev-workflow@my-plugins
-/plugin install general-plugins@my-plugins
+/plugin install langfuse@my-marketplace
 ```
 
 ## Plugins
@@ -35,7 +55,7 @@ Skills for listing and inspecting OpenAPI endpoints on running services (FastAPI
 
 ### python-dev-workflow
 
-Python development workflow — pytest test execution & review agents, conventional commits, PR creation, branch management, unit testing guide, and task management with background agent orchestration.
+Python development workflow — pytest execution and review helpers, conventional commits, PR creation, branch management, unit testing guidance, contradiction hunting, Celery support, and version bumping.
 
 **Skills:** commit, create-pr, pr-checkout, ticket-branch, ticket-comment-status, version-bumper, writing-unit-tests, pytest-redis, task-management, contradiction-hunter
 
@@ -45,7 +65,7 @@ Python development workflow — pytest test execution & review agents, conventio
 
 General-purpose workflow and setup utilities.
 
-**Skills:** ai-setup-audit, claude-insights-hunter, daily, interview, loop_macos, md-bloat-hunter, mega-cmd, pr-address-comments, pr-comment, task-management
+**Skills:** ai-setup-audit, ai-insights-hunter, daily, interview, loop_macos, md-bloat-hunter, mega-cmd, pr-address-comments, pr-comment, task-management
 
 `/md-bloat-hunter [path]` audits a markdown file or a non-recursive directory
 of direct child `*.md` files for redundancy, verbosity, filler, and vocabulary
@@ -56,5 +76,5 @@ from a clean git tree and review changes with `git diff`.
 ## Updating
 
 ```shell
-/plugin marketplace update my-plugins
+/plugin marketplace update my-marketplace
 ```

@@ -9,7 +9,7 @@ Use Slack MCP tools to access channel messages and threads.
 ### Relevant channels
 
 Determine which channels matter by checking:
-1. Channels explicitly mentioned in project docs (README, CLAUDE.md)
+1. Channels explicitly mentioned in README.md, CLAUDE.md, AGENTS.md, other project docs, or instruction files
 2. Channels whose name matches the project or repo name
 3. Channels the user points to when asked
 

@@ -197,7 +197,7 @@ Based on your data from the last 30 days, here are recommended widgets:
     (3 numeric scores found: accuracy, relevance, completeness)
 
  2. Cost by Model -- Horizontal bar chart comparing total cost across models
-    (4 models found: gpt-4o, gpt-4o-mini, claude-3-opus, claude-3-sonnet)
+    (4 models found: gpt-4o, gpt-4o-mini, model-a, model-b)
 
  3. Latency P95 Over Time -- Line chart tracking 95th percentile latency daily
 

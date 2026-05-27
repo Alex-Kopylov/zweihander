@@ -1,6 +1,6 @@
 ---
 name: test-unit-reviewer
-description: Review unit tests for pattern compliance, correctness, case coverage, and DRY helpers. Use when user asks to review tests, check test quality, or audit test files. Reads test + source files, scans existing helpers, and produces structured report — no edits.
+description: "Review unit tests for pattern compliance, correctness, case coverage, and DRY helpers. Use when user asks to review tests, check test quality, or audit test files. Reads test and source files, scans existing helpers, and produces a structured report without edits."
 skills:
   - pytest-redis
 
