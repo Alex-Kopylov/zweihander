@@ -4,7 +4,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
 
-def test_every_agents_file_has_claude_import() -> None:
+def test_every_agents_file_has_claude_bridge() -> None:
     agents_files = sorted(
         path
         for path in REPO_ROOT.rglob("AGENTS.md")
@@ -20,14 +20,17 @@ def test_every_agents_file_has_claude_import() -> None:
             missing_or_invalid.append(f"{claude_file.relative_to(REPO_ROOT)} missing")
             continue
 
-        import_lines = [
+        if claude_file.is_symlink() and claude_file.readlink() == Path("AGENTS.md"):
+            continue
+
+        non_empty_lines = [
             line.strip()
             for line in claude_file.read_text(encoding="utf-8").splitlines()
             if line.strip()
         ]
-        if "@AGENTS.md" not in import_lines:
+        if "@AGENTS.md" not in non_empty_lines:
             missing_or_invalid.append(
-                f"{claude_file.relative_to(REPO_ROOT)} missing @AGENTS.md import"
+                f"{claude_file.relative_to(REPO_ROOT)} missing AGENTS.md symlink or @AGENTS.md import"
             )
 
     assert not missing_or_invalid, "\n".join(missing_or_invalid)
