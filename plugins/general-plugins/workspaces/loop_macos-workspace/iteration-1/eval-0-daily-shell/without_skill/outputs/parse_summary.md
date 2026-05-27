@@ -4,10 +4,10 @@
 
 | Field | Value |
 |---|---|
-| Raw prompt | `loop_macos each day run bash ~/.claude/my-marketplace/bin/refresh-local-cache.sh` |
+| Raw prompt | `loop_macos each day run /usr/bin/true` |
 | Recurrence | Daily |
 | Trigger time | 09:00 local time (chosen default — no time was specified) |
-| Command | `/bin/bash /Users/jhonsmith/.claude/my-marketplace/bin/refresh-local-cache.sh` |
+| Command | `/usr/bin/true` |
 
 The phrase "each day" maps unambiguously to a once-per-day schedule. No specific clock time was given, so 09:00 was chosen as a sensible working-hours default that fires after the machine is likely already awake.
 
@@ -20,19 +20,17 @@ The phrase "each day" maps unambiguously to a once-per-day schedule. No specific
 - `StartCalendarInterval` with only `Hour`/`Minute` set fires at that time every day of every week of every month, which is exactly the intended behavior.
 - `StartInterval` with 86400 seconds would drift and not honour DST transitions cleanly.
 
-### 2. Absolute path for the script
+### 2. Absolute command path
 
-`~` is not expanded by launchd because it runs without a shell. The tilde in the user's prompt was expanded to the full absolute path `/Users/jhonsmith/.claude/my-marketplace/bin/refresh-local-cache.sh`.
+The command is already an absolute path, so no `~` or `$HOME` expansion is required.
 
 ### 3. Explicit bash invocation
 
-`ProgramArguments` uses `["/bin/bash", "<script>"]` rather than pointing directly at the script as `Program`. This ensures:
-- The shebang line inside the script is irrelevant — bash is guaranteed.
-- The script does not need to be chmod +x.
+`ProgramArguments` preserves the command under `/bin/bash`. This is part of the without-skill baseline output, not a recommended launchd template.
 
 ### 4. RunAtLoad = false
 
-`RunAtLoad` is set to `false` (and is included explicitly for clarity). The user asked for a daily cadence, not "also run immediately when the agent is loaded". Firing at load could cause an unexpected sync run during a launchctl bootstrap.
+`RunAtLoad` is set to `false` (and is included explicitly for clarity). The user asked for a daily cadence, not "also run immediately when the agent is loaded".
 
 ### 5. Log files
 
@@ -64,13 +62,13 @@ To activate (do this manually when ready):
 mkdir -p ~/.claude/my-marketplace/logs
 
 # 2. Copy the plist to the user LaunchAgents directory
-cp output.plist ~/Library/LaunchAgents/com.user.claude.refresh-local-cache.plist
+cp output.plist ~/Library/LaunchAgents/com.user.claude.true.plist
 
 # 3. Load it into launchd
-launchctl load ~/Library/LaunchAgents/com.user.claude.refresh-local-cache.plist
+launchctl load ~/Library/LaunchAgents/com.user.claude.true.plist
 
 # 4. Verify it is registered
-launchctl list | grep refresh-local-cache
+launchctl list | grep true
 ```
 
 To change the firing time, edit `Hour`/`Minute` in the plist and reload.

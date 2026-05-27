@@ -29,7 +29,7 @@ run_eval() {
   case "$name" in
     eval-0-*)
       check "uses_StartCalendarInterval"  "$(plist_contains "$plist" '<key>StartCalendarInterval</key>')"
-      check "script_path_preserved"       "$(plist_contains "$plist" 'refresh-local-cache.sh')"
+      check "command_preserved"       "$(plist_contains "$plist" '/usr/bin/true')"
       check "label_com.user.loop-macos"   "$(plist_contains "$plist" 'com.user.loop-macos.')"
       check "no_each_day_in_command"      "$(plist_not_contains "$plist" 'each day')"
       check "valid_plist"                 "$(plist_valid "$plist")"

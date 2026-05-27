@@ -2,14 +2,14 @@
 
 ## Input prompt
 ```
-loop_macos each day run bash ~/.claude/my-marketplace/bin/refresh-local-cache.sh
+loop_macos each day run /usr/bin/true
 ```
 
 ## Step 1 — Interval parsed
 - Trigger phrase: **"each day"** (matches rule 3: calendar phrase)
 - Resolved interval: **daily**
 - No explicit clock time in prompt → defaulted to **9:07 AM**
-- Task string after stripping interval phrase: `bash ~/.claude/my-marketplace/bin/refresh-local-cache.sh`
+- Task string after stripping interval phrase: `/usr/bin/true`
 
 ## Step 2 — Schedule key chosen
 - `StartCalendarInterval` (daily/weekly schedules — does catch up after sleep)
@@ -17,18 +17,18 @@ loop_macos each day run bash ~/.claude/my-marketplace/bin/refresh-local-cache.sh
 - Reason: "each day" is a calendar phrase, not a sub-daily interval, so `StartInterval` (seconds) was not used.
 
 ## Step 3 — Task type
-- Task starts with `bash` → **shell command**
-- Wrapped as: `/bin/bash -lc 'bash ~/.claude/my-marketplace/bin/refresh-local-cache.sh'`
+- Task is an absolute executable path → **shell command**
+- Wrapped as: `/bin/bash -lc '/usr/bin/true'`
 - Login shell (`-l`) ensures PATH includes Homebrew and `~/.local/bin`
 
 ## Step 4 — Label generated
-- Raw task: `bash ~/.claude/my-marketplace/bin/refresh-local-cache.sh`
-- Slug derivation: strip `bash `, lowercase, collapse non-alphanumeric to hyphens → `refresh-local-cache-sh` (24 chars, within 30-char limit)
-- **Final label: `com.user.loop-macos.refresh-local-cache-sh`**
+- Raw task: `/usr/bin/true`
+- Slug derivation: lowercase, collapse non-alphanumeric to hyphens → `true` (4 chars, within 30-char limit)
+- **Final label: `com.user.loop-macos.true`**
 
 ## Step 5 — Output files
 - Plist: `outputs/output.plist` (validated OK by `plutil -lint`)
-- Log path (when deployed): `~/Library/Logs/loop-macos/com.user.loop-macos.refresh-local-cache-sh.log`
+- Log path (when deployed): `~/Library/Logs/loop-macos/com.user.loop-macos.true.log`
 
 ## Validation
 ```

@@ -6,13 +6,13 @@
 
     <!-- Unique reverse-DNS label — launchd uses this as the job identity -->
     <key>Label</key>
-    <string>com.user.claude.refresh-local-cache</string>
+    <string>com.user.claude.true</string>
 
     <!-- Full path to the script; ~ is NOT expanded by launchd, use absolute path -->
     <key>ProgramArguments</key>
     <array>
         <string>/bin/bash</string>
-        <string>/Users/jhonsmith/.claude/my-marketplace/bin/refresh-local-cache.sh</string>
+        <string>/usr/bin/true</string>
     </array>
 
     <!-- Daily trigger: fire at 09:00 every day -->
@@ -26,11 +26,11 @@
 
     <!-- Redirect stdout so the run is auditable -->
     <key>StandardOutPath</key>
-    <string>/Users/jhonsmith/.claude/my-marketplace/logs/refresh-local-cache.log</string>
+    <string>/Users/jhonsmith/.claude/my-marketplace/logs/true.log</string>
 
     <!-- Redirect stderr separately so errors are easy to grep -->
     <key>StandardErrorPath</key>
-    <string>/Users/jhonsmith/.claude/my-marketplace/logs/refresh-local-cache.error.log</string>
+    <string>/Users/jhonsmith/.claude/my-marketplace/logs/true.error.log</string>
 
     <!-- Run even if the previous interval was missed (e.g. laptop was asleep) -->
     <key>RunAtLoad</key>
