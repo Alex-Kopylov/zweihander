@@ -4,7 +4,7 @@
 
 Build the `md-bloat-hunter` skill: an AI assistant skill that audits markdown files (skills, agents, plugin docs) and produces concrete atomic rewrites that reduce tokens while preserving meaning. The skill uses a 3-level dispatch — one top orchestrator (SKILL.md), N file-orchestrators (one per audited file, all parallel), and 4 detector specialists per file-orchestrator (redundancy, verbosity, filler, vocab — also parallel).
 
-Each detector follows Schema-Guided Reasoning order (observe → classify → propose → estimate risk), self-validates its output against `references/schema.json`, and emits findings the top orchestrator gates by `semantic_risk` before writing changes to disk.
+Each detector follows Schema-Guided Reasoning order (observe → classify → propose → estimate risk), self-validates its output against `references/detector-output.schema.json`, and emits findings the top orchestrator gates by `semantic_risk` before writing changes to disk.
 
 ## Context
 
@@ -12,7 +12,7 @@ Each detector follows Schema-Guided Reasoning order (observe → classify → pr
 - Codex compatibility note: although this skill lives under the Claude Code marketplace directory, it is also intended for OpenAI Codex. For this implementation, validate and smoke-test behavior against Codex, not the Claude Code CLI.
 - Pre-existing artifacts:
   - `SPEC.md` — design spec, source of truth for this build
-  - `references/schema.json` — JSON Schema (draft 2020-12) for `SpecialistOutput`, already in place; reviewed and refined as Task 1 of this plan
+  - `references/detector-output.schema.json` — JSON Schema (draft 2020-12) for `SpecialistOutput`, already in place; reviewed and refined as Task 1 of this plan
 - Runtime dependency: `jsonschema` CLI on PATH (e.g. `uv tool install jsonschema`). The top orchestrator fails fast if missing.
 - Reversibility model: writer does not commit; relies on a clean git tree + `git diff` for review and `git checkout` for undo.
 - Out of v1 scope (per SPEC): cross-file redundancy, separate semantic-preservation-validator, trigger-preservation test, MUST/NEVER-rule extractor, token-delta computation. These have hook points reserved but no Task in this plan.
@@ -39,7 +39,7 @@ the specific decision, ask rather than inventing a design choice.
 
 ## Testing Strategy
 
-- Each detector Task ends with: (1) hand-author one valid sample `SpecialistOutput` JSON for that detector and verify `jsonschema -i sample.json references/schema.json` succeeds; (2) smoke-run the detector via the host sub-agent tool on a small fixture MD file containing a known instance of the bloat shape and inspect the returned findings.
+- Each detector Task ends with: (1) hand-author one valid sample `SpecialistOutput` JSON for that detector and verify `jsonschema -i sample.json references/detector-output.schema.json` succeeds; (2) smoke-run the detector via the host sub-agent tool on a small fixture MD file containing a known instance of the bloat shape and inspect the returned findings.
 - File-orchestrator and top orchestrator Tasks end with an end-to-end smoke run on a fixture file/directory.
 - Final acceptance Task re-runs every fixture and confirms `git diff` reverts cleanly.
 - Run implementation-level validation in OpenAI Codex. Treat Claude Code CLI smoke results as non-authoritative for this plan.
@@ -69,7 +69,7 @@ Cross-file redundancy is **not** in v1.
 2. Write to `<run_output_dir>/<file_hash>/<detector>.json`, where
    `run_output_dir` is a per-run private directory created with `umask 077` and
    `mktemp -d "${TMPDIR:-/tmp}/md-bloat-hunter.${run_id}.XXXXXX"`.
-3. Run `jsonschema -i <output_path> references/schema.json`.
+3. Run `jsonschema -i <output_path> references/detector-output.schema.json`.
 4. If validation fails, read the error and retry with self-correction.
 5. Repeat steps 2–4 up to **3 attempts total**.
 6. After the third attempt, return the output path regardless of validation status. Do not fail the task.
@@ -110,10 +110,10 @@ Per-detector taxonomy lives **inside** each agent file (taxonomy, examples, what
 
 ## Implementation Steps
 
-### Task 1: Review and refine references/schema.json
+### Task 1: Review and refine references/detector-output.schema.json
 
-- [x] Re-read existing `references/schema.json` against the SPEC's `Finding schema` section and confirm: SGR ordering reflected in property order, all 4 specialist enum values present, `justification` requirement noted (vocab swaps must defend equivalence), absent fields (id, estimated_token_delta, scanned_at, specialist_version) deliberately omitted
-- [x] Hand-author one valid sample `SpecialistOutput` JSON covering all 4 detector types and run `jsonschema -i sample.json references/schema.json` — must validate
+- [x] Re-read existing `references/detector-output.schema.json` against the SPEC's `Finding schema` section and confirm: SGR ordering reflected in property order, all 4 specialist enum values present, `justification` requirement noted (vocab swaps must defend equivalence), absent fields (id, estimated_token_delta, scanned_at, specialist_version) deliberately omitted
+- [x] Hand-author one valid sample `SpecialistOutput` JSON covering all 4 detector types and run `jsonschema -i sample.json references/detector-output.schema.json` — must validate
 - [x] Hand-author a deliberately invalid sample (missing required field, wrong enum) and confirm `jsonschema` rejects it
 - [x] Patch schema.json if gaps surface; otherwise leave it untouched and note "no changes needed" in the task notes
 
@@ -135,7 +135,7 @@ Task notes: patched `schema.json` to enforce non-empty `justification` for vocab
 - [x] Embed the output validation loop (3-attempt cap, write to /tmp path, jsonschema check, do not fail task after attempt 3)
 - [x] Smoke run: prepare a fixture MD file containing a clear restated rule and verify the detector emits a valid `SpecialistOutput` with at least one redundancy finding
 
-Task notes: added `agents/redundancy-detector.md`; smoke fixture `/tmp/md-bloat-hunter-task3-fixture.md` produced `/tmp/md-bloat-hunter/task3-smoke/0168b65de6b6/redundancy-detector.json`, which validates against `references/schema.json` and contains one redundancy finding.
+Task notes: added `agents/redundancy-detector.md`; smoke fixture `/tmp/md-bloat-hunter-task3-fixture.md` produced `/tmp/md-bloat-hunter/task3-smoke/0168b65de6b6/redundancy-detector.json`, which validates against `references/detector-output.schema.json` and contains one redundancy finding.
 
 ### Task 4: Build agents/verbosity-pruner.md
 
@@ -145,7 +145,7 @@ Task notes: added `agents/redundancy-detector.md`; smoke fixture `/tmp/md-bloat-
 - [x] Reference `references/calibrate-hunger.md`; embed SGR output protocol, "round up on risk", and 3-attempt validation loop
 - [x] Smoke run: fixture MD file with one obvious wordy span; verify a valid `SpecialistOutput` is produced
 
-Task notes: added `agents/verbosity-pruner.md`; smoke fixture `/tmp/md-bloat-hunter-task4-fixture.md` produced `/tmp/md-bloat-hunter/task4-smoke/c45476672b5e/verbosity-pruner.json`, which validates against `references/schema.json` and contains one verbosity finding.
+Task notes: added `agents/verbosity-pruner.md`; smoke fixture `/tmp/md-bloat-hunter-task4-fixture.md` produced `/tmp/md-bloat-hunter/task4-smoke/c45476672b5e/verbosity-pruner.json`, which validates against `references/detector-output.schema.json` and contains one verbosity finding.
 
 ### Task 5: Build agents/filler-eliminator.md
 
@@ -155,7 +155,7 @@ Task notes: added `agents/verbosity-pruner.md`; smoke fixture `/tmp/md-bloat-hun
 - [x] Reference `references/calibrate-hunger.md`; embed SGR output protocol, "round up on risk", and 3-attempt validation loop
 - [x] Smoke run: fixture MD file with one obvious filler span; verify a valid `SpecialistOutput` with `action: "delete"`
 
-Task notes: added `agents/filler-eliminator.md`; smoke fixture `/tmp/md-bloat-hunter-task5-fixture.md` produced `/tmp/md-bloat-hunter/task5-smoke/89461dffe4c0/filler-eliminator.json`, which validates against `references/schema.json` and contains filler findings with `action: "delete"` and `new_text: null`.
+Task notes: added `agents/filler-eliminator.md`; smoke fixture `/tmp/md-bloat-hunter-task5-fixture.md` produced `/tmp/md-bloat-hunter/task5-smoke/89461dffe4c0/filler-eliminator.json`, which validates against `references/detector-output.schema.json` and contains filler findings with `action: "delete"` and `new_text: null`.
 
 ### Task 6: Build agents/vocab-compressor.md
 
@@ -166,7 +166,7 @@ Task notes: added `agents/filler-eliminator.md`; smoke fixture `/tmp/md-bloat-hu
 - [x] Reference `references/calibrate-hunger.md`; embed SGR output protocol, "round up on risk" (vocab is highest-risk specialist — calibrate accordingly), and 3-attempt validation loop
 - [x] Smoke run: fixture MD file with one obvious multi-word definition of a known single word; verify a valid `SpecialistOutput` with a non-null `justification`
 
-Task notes: added `agents/vocab-compressor.md`; smoke fixture `/tmp/md-bloat-hunter-task6-fixture.md` produced `/tmp/md-bloat-hunter/task6-smoke/2e773b995069/vocab-compressor.json`, which validates against `references/schema.json` and contains one vocab finding with a non-empty `justification`.
+Task notes: added `agents/vocab-compressor.md`; smoke fixture `/tmp/md-bloat-hunter-task6-fixture.md` produced `/tmp/md-bloat-hunter/task6-smoke/2e773b995069/vocab-compressor.json`, which validates against `references/detector-output.schema.json` and contains one vocab finding with a non-empty `justification`.
 
 ### Task 7: Build agents/file-orchestrator.md
 
@@ -178,7 +178,7 @@ Task notes: added `agents/vocab-compressor.md`; smoke fixture `/tmp/md-bloat-hun
 - [x] Return one reduced finding list to caller (the top orchestrator)
 - [x] Smoke run: feed a fixture MD file containing one redundancy + one verbosity + one filler instance; verify all three findings come through the reducer with sensible severity/risk
 
-Task notes: added `agents/file-orchestrator.md`; smoke fixture `/tmp/md-bloat-hunter-task7-fixture.md` produced detector outputs under `/tmp/md-bloat-hunter/task7-smoke/`, all four validate against `references/schema.json`. Reducer artifact `/tmp/md-bloat-hunter/task7-smoke/file-orchestrator-reduced.json` preserves verbosity, filler, and redundancy findings and records the overlapping intro sentence as a different-action conflict with an ask-user recommendation.
+Task notes: added `agents/file-orchestrator.md`; smoke fixture `/tmp/md-bloat-hunter-task7-fixture.md` produced detector outputs under `/tmp/md-bloat-hunter/task7-smoke/`, all four validate against `references/detector-output.schema.json`. Reducer artifact `/tmp/md-bloat-hunter/task7-smoke/file-orchestrator-reduced.json` preserves verbosity, filler, and redundancy findings and records the overlapping intro sentence as a different-action conflict with an ask-user recommendation.
 
 ### Task 8: Build SKILL.md (top orchestrator) — dispatch, gating, reporting
 
@@ -218,11 +218,11 @@ Task notes: updated `plugins/general-plugins/.claude-plugin/plugin.json` to vers
 - [x] In OpenAI Codex, on a clean git tree, run the skill end-to-end on one fixture MD file containing a deliberate mix of all 4 bloat shapes; confirm findings appear, auto-apply runs, confirm high-risk routing with a forced high-risk reducer artifact, and the writer produces a `git diff` matching the proposed changes
 - [x] In OpenAI Codex, run the skill on a known-tight MD file (e.g. a short single-purpose skill) and confirm `audit_calibration` chooses `minimal` and total finding count is low or zero
 - [x] Run `git checkout .` after the audit and verify all changes revert cleanly (reversibility story holds)
-- [x] Validate one real-world `SpecialistOutput` from a detector against `references/schema.json` via `jsonschema -i <path> references/schema.json` and confirm it passes
+- [x] Validate one real-world `SpecialistOutput` from a detector against `references/detector-output.schema.json` via `jsonschema -i <path> references/detector-output.schema.json` and confirm it passes
 - [x] Re-read SPEC.md's "Deferred to future iterations" table and confirm none of those items leaked into v1
 - [x] Spot-check that no hard-coded magic numbers, retry frameworks, session managers, or config systems were introduced (per SPEC's "Trust the simple path")
 
-Task notes: created a clean temporary git repo at `/tmp/md-bloat-hunter-acceptance` with `mixed.md` and `tight.md` fixtures. The smoke run produced 5 applied findings across verbosity, redundancy, filler, and vocab shapes; the resulting `git diff` matched the reported edits. The live detector run did not naturally emit a `semantic_risk: "high"` finding, so the high-risk confirmation branch was checked against the existing forced high-risk reducer artifact `/tmp/md-bloat-hunter/task8-smoke/reduced-high-risk.json` and the `SKILL.md` risk-gate contract rather than an interactive prompt. `git checkout -- mixed.md` returned the temp repo to a clean tree. The tight-file smoke reported `audit_calibration: minimal`, 4/4 detectors validated, and zero findings. Fresh detector outputs under `/tmp/md-bloat-hunter/run_1779826553/mixed_md/` and `/tmp/md-bloat-hunter/run-20260527-001/1588ad89/` validated with `jsonschema -i <output> references/schema.json`. Re-reading SPEC.md's deferred table and searching the v1 skill files confirmed semantic-preservation-validator, trigger-preservation testing, MUST/NEVER extraction, cross-file redundancy, and token-delta computation remain deferred; no retry framework, session manager, concurrency cap, or config system was introduced. Review follow-up added a committed `.codex-plugin/plugin.json` so Codex packaging has a source manifest alongside the Claude plugin manifest.
+Task notes: created a clean temporary git repo at `/tmp/md-bloat-hunter-acceptance` with `mixed.md` and `tight.md` fixtures. The smoke run produced 5 applied findings across verbosity, redundancy, filler, and vocab shapes; the resulting `git diff` matched the reported edits. The live detector run did not naturally emit a `semantic_risk: "high"` finding, so the high-risk confirmation branch was checked against the existing forced high-risk reducer artifact `/tmp/md-bloat-hunter/task8-smoke/reduced-high-risk.json` and the `SKILL.md` risk-gate contract rather than an interactive prompt. `git checkout -- mixed.md` returned the temp repo to a clean tree. The tight-file smoke reported `audit_calibration: minimal`, 4/4 detectors validated, and zero findings. Fresh detector outputs under `/tmp/md-bloat-hunter/run_1779826553/mixed_md/` and `/tmp/md-bloat-hunter/run-20260527-001/1588ad89/` validated with `jsonschema -i <output> references/detector-output.schema.json`. Re-reading SPEC.md's deferred table and searching the v1 skill files confirmed semantic-preservation-validator, trigger-preservation testing, MUST/NEVER extraction, cross-file redundancy, and token-delta computation remain deferred; no retry framework, session manager, concurrency cap, or config system was introduced. Review follow-up added a committed `.codex-plugin/plugin.json` so Codex packaging has a source manifest alongside the Claude plugin manifest.
 
 ## Post-Completion
 

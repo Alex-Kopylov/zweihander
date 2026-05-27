@@ -1,5 +1,8 @@
 # md-bloat-hunter — SPEC
 
+Development artifact. Do not read this file during normal skill invocation;
+`SKILL.md` defines the runtime workflow.
+
 ## Problem
 
 AI-generated markdown (skills, agents, plugin docs) accumulates token waste: restated content, verbose constructions, empty filler, multi-word definitions of terms that already exist as single words. These cost tokens and dilute attention — each added token lowers the relative weight of every previously seen token.
@@ -41,11 +44,15 @@ For N files at runtime: 1 top orchestrator + N file-orchestrators + 4N detectors
 
 The verbosity/vocab split is deliberate. Verbosity is mechanical ("fewer words for the same idea"). Vocab is semantic ("you used the definition; the term for it exists"). Different risk profile, different scrutiny.
 
-Cross-file redundancy is **not** in v1. Each file is treated independently.
+Cross-file redundancy is handled by a directory-level redundancy detector when
+the target scope has more than one file. File-local detectors should stay
+focused on one file.
 
 ## Finding schema
 
-**Source of truth:** `references/schema.json` (JSON Schema, draft 2020-12). The inline YAML below is a human-readable quick reference — when they disagree, `schema.json` wins.
+**Source of truth:** `references/detector-output.schema.json` (JSON Schema,
+draft 2020-12). The inline YAML below is a human-readable quick reference; when
+they disagree, the schema file wins.
 
 Schema-Guided Reasoning order: `preliminary_analysis → identified_problem → proposal → estimated_risk`. The LLM fills fields in cognitive order: observe before classify, classify before propose, assess risk only after committing to a specific fix.
 
@@ -91,13 +98,13 @@ Finding:
 
 ## Output validation loop
 
-Each detector validates its own output against `references/schema.json` before returning. Protocol:
+Each detector validates its own output against `references/detector-output.schema.json` before returning. Protocol:
 
 1. Generate JSON output for the audited file.
 2. Write to `<run_output_dir>/<file_hash>/<detector>.json`, where
    `run_output_dir` is a per-run private directory created with `umask 077` and
    `mktemp -d "${TMPDIR:-/tmp}/md-bloat-hunter.${run_id}.XXXXXX"`.
-3. Run `jsonschema -i <output_path> references/schema.json`.
+3. Run `scripts/validate_output.py detector <output_path>`.
 4. If validation fails, read the error and retry with self-correction.
 5. Repeat steps 2–4 up to **3 attempts total**.
 6. After the third attempt, return the output path regardless of validation status. **Do not fail the task.**
@@ -150,8 +157,8 @@ After all file-orchestrators complete:
 
 1. **Aggregate** — collect every reduced finding list into one ranked queue.
 2. **Gate** — partition by `semantic_risk`:
-   - `none` / `low` / `medium` → auto-apply
-   - `high` → host user-question tool per finding with AI-recommended option
+   - `none` / `low` → auto-apply
+   - `medium` / `high` → host user-question tool per finding with AI-recommended option
 3. **Write** — apply each approved finding via the writer (below).
 4. **Report** — summary of applied, skipped, and failed findings.
 
@@ -189,8 +196,8 @@ unfindable excerpt is a hallucination, not a recoverable state.
 │   ├── filler-eliminator.md
 │   └── vocab-compressor.md
 └── references/
-    ├── schema.json                   # JSON Schema (draft 2020-12) — source of truth, used by jsonschema CLI
-    ├── reduced-schema.json           # file-orchestrator reduced output schema
+    ├── detector-output.schema.json   # detector SpecialistOutput schema
+    ├── file-reduction.schema.json    # file-level reduced output schema
     └── calibrate-hunger.md           # intensity rubric (shared)
 ```
 

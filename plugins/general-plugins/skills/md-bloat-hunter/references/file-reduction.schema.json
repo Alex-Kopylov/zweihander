@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "md-bloat-hunter reduced file-orchestrator output",
+  "title": "md-bloat-hunter file-level reduction output",
   "type": "object",
   "additionalProperties": false,
   "required": ["file_path", "detector_status", "findings"],
@@ -11,8 +11,8 @@
     },
     "detector_status": {
       "type": "array",
-      "minItems": 4,
-      "maxItems": 4,
+      "minItems": 1,
+      "maxItems": 5,
       "allOf": [
         {
           "contains": {
@@ -22,7 +22,7 @@
               "specialist": { "const": "redundancy-detector" }
             }
           },
-          "minContains": 1,
+          "minContains": 0,
           "maxContains": 1
         },
         {
@@ -33,7 +33,7 @@
               "specialist": { "const": "verbosity-pruner" }
             }
           },
-          "minContains": 1,
+          "minContains": 0,
           "maxContains": 1
         },
         {
@@ -44,7 +44,7 @@
               "specialist": { "const": "filler-eliminator" }
             }
           },
-          "minContains": 1,
+          "minContains": 0,
           "maxContains": 1
         },
         {
@@ -55,7 +55,18 @@
               "specialist": { "const": "vocab-compressor" }
             }
           },
-          "minContains": 1,
+          "minContains": 0,
+          "maxContains": 1
+        },
+        {
+          "contains": {
+            "type": "object",
+            "required": ["specialist"],
+            "properties": {
+              "specialist": { "const": "directory-redundancy-detector" }
+            }
+          },
+          "minContains": 0,
           "maxContains": 1
         }
       ],
@@ -474,6 +485,23 @@
               "action": { "enum": ["replace", "restructure"] }
             }
           }
+        },
+        {
+          "if": {
+            "properties": {
+              "source_specialists": {
+                "maxItems": 1,
+                "contains": { "const": "directory-redundancy-detector" }
+              }
+            },
+            "required": ["source_specialists"]
+          },
+          "then": {
+            "properties": {
+              "type": { "const": "redundancy" },
+              "action": { "enum": ["delete", "replace", "restructure"] }
+            }
+          }
         }
       ]
     },
@@ -526,6 +554,18 @@
               "action": { "enum": ["replace", "restructure"] }
             }
           }
+        },
+        {
+          "if": {
+            "properties": { "source_specialist": { "const": "directory-redundancy-detector" } },
+            "required": ["source_specialist"]
+          },
+          "then": {
+            "properties": {
+              "type": { "const": "redundancy" },
+              "action": { "enum": ["delete", "replace", "restructure"] }
+            }
+          }
         }
       ]
     },
@@ -535,7 +575,8 @@
         "redundancy-detector",
         "verbosity-pruner",
         "filler-eliminator",
-        "vocab-compressor"
+        "vocab-compressor",
+        "directory-redundancy-detector"
       ]
     },
     "findingType": {

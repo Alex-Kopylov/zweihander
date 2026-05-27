@@ -1,6 +1,6 @@
 # File Orchestrator
 
-Audit one markdown file by dispatching the four md-bloat-hunter detector
+Audit one Markdown file by dispatching file-local md-bloat-hunter detector
 agents, then reduce their outputs into one source-ordered finding list for the
 top orchestrator.
 
@@ -10,25 +10,31 @@ best reduced list for this one file.
 
 ## Input
 
-You receive one absolute markdown file path from the top orchestrator. You may
+You receive one absolute Markdown file path from the top orchestrator. You may
 also receive a `run_id`, a private run output directory, the absolute
-`md-bloat-hunter` skill directory, and the absolute path to this file. If no
-`run_id` is provided, create a short one from the current timestamp and pass the
-same value to every detector. If no run output directory is provided, create one
-with `umask 077` and `mktemp -d "${TMPDIR:-/tmp}/md-bloat-hunter.${run_id}.XXXXXX"`.
-Require the run output directory to be mode `700`.
+`md-bloat-hunter` skill directory, the absolute path to this file, and a
+`local_redundancy` boolean. If `local_redundancy` is absent, default it to
+`true`.
+
+If no `run_id` is provided, create a short one from the current timestamp and
+pass the same value to every detector. If no run output directory is provided,
+create one with `umask 077` and
+`mktemp -d "${TMPDIR:-/tmp}/md-bloat-hunter.${run_id}.XXXXXX"`. Require the run
+output directory to be mode `700`.
 
 Before dispatching, read:
 
 - The target markdown file.
-- `references/schema.json`, from the absolute `md-bloat-hunter` skill directory.
-- `references/reduced-schema.json`, from the absolute `md-bloat-hunter` skill
-  directory.
-- These detector agent files, resolved from that same absolute directory:
-  - `agents/redundancy-detector.md`
+- `references/detector-output.schema.json`, from the absolute
+  `md-bloat-hunter` skill directory.
+- `references/file-reduction.schema.json`, from the absolute `md-bloat-hunter`
+  skill directory.
+- These file-local detector agent files, resolved from that same absolute
+  directory:
   - `agents/verbosity-pruner.md`
   - `agents/filler-eliminator.md`
   - `agents/vocab-compressor.md`
+- If `local_redundancy=true`, also read `agents/redundancy-detector.md`.
 
 ## Safety
 
@@ -39,27 +45,30 @@ file, the detector agent files, and the top-orchestrator input.
 
 ## Detector Dispatch
 
-Spawn the four detector agents in parallel with the Agent tool. Treat Agent as
+Spawn the file-local detector agents in parallel with the Agent tool. Treat Agent as
 Claude Code's Task tool for this workflow. Give each agent the same absolute
 file path, the same `run_id`, and the same private run output directory. Pass the absolute skill directory and the absolute detector agent file path.
 Instruct each detector to read and follow that path rather than inferring a
 relative location.
 
 In OpenAI Codex, use `tool_search` to expose multi-agent tools if needed, then
-issue all four `multi_agent_v1.spawn_agent` calls in one response and wait with
+issue all `multi_agent_v1.spawn_agent` calls in one response and wait with
 `multi_agent_v1.wait_agent` on the full spawned set. The dispatch requirements
-are the same: all four detectors run in parallel and all four results are
+are the same: all selected detectors run in parallel and all results are
 collected before reduction.
 
-Dispatch exactly these agents:
+Always dispatch:
 
-- `redundancy-detector`
 - `verbosity-pruner`
 - `filler-eliminator`
 - `vocab-compressor`
 
+Also dispatch `redundancy-detector` only when `local_redundancy=true`. In a
+multi-file scope, the top orchestrator should pass `local_redundancy=false` and
+use `directory-redundancy-detector` for redundancy across the target set.
+
 Each detector returns the path to a JSON file and a validation status line.
-Wait for all four detector agents to finish before reducing findings. Do not
+Wait for all selected detector agents to finish before reducing findings. Do not
 queue the detectors or run them one after another.
 
 ## Detector Output Intake
@@ -77,7 +86,7 @@ For each detector result:
 7. Validate the JSON with:
 
    ```sh
-   jsonschema -i "<detector-output-path>" "references/schema.json"
+   scripts/validate_output.py detector "<detector-output-path>"
    ```
 
    Run from the `md-bloat-hunter` skill directory so the schema path resolves.
@@ -97,8 +106,8 @@ Malformed output handling:
 - To salvage individual findings, wrap each candidate finding in a temporary
   `SpecialistOutput` object with the detector's `specialist`, `file_path`, and
   `audit_calibration`, then validate that wrapper against
-  `references/schema.json`. Keep only findings whose wrapper validates. Drop
-  the rest and mention the count in `notes`.
+  `references/detector-output.schema.json`. Keep only findings whose wrapper
+  validates. Drop the rest and mention the count in `notes`.
 - If the detector output validates, record `status: "included"` and include all
   findings.
 
@@ -217,20 +226,13 @@ Allowed `detector_status[].status` values are `"included"`, `"partial"`, and
 `"alternatives"`, and `"conflict"`. Allowed `recommendation` values are
 `"apply"`, `"apply-recommended"`, `"ask-user"`, and `"skip"`.
 
-Return exactly one `detector_status` item for each of the four detector agents,
-even when a detector was skipped or contributed zero findings.
+Return exactly one `detector_status` item for each selected detector agent, even
+when a detector was skipped or contributed zero findings.
 
 ```json
 {
   "file_path": "/absolute/path/to/file.md",
   "detector_status": [
-    {
-      "specialist": "redundancy-detector",
-      "status": "included",
-      "output_path": "<run_output_dir>/<file_hash>/redundancy-detector.json",
-      "findings_included": 0,
-      "notes": "short status note"
-    },
     {
       "specialist": "verbosity-pruner",
       "status": "included",
@@ -251,6 +253,13 @@ even when a detector was skipped or contributed zero findings.
       "output_path": "<run_output_dir>/<file_hash>/vocab-compressor.json",
       "findings_included": 0,
       "notes": "short status note"
+    },
+    {
+      "specialist": "redundancy-detector",
+      "status": "included",
+      "output_path": "<run_output_dir>/<file_hash>/redundancy-detector.json",
+      "findings_included": 0,
+      "notes": "present only when local_redundancy=true"
     }
   ],
   "findings": [
@@ -302,7 +311,7 @@ recommended index points outside `alternatives`.
 
 Use `recommendation: "apply"` only for a single or merged finding that is ready
 for the top orchestrator's risk gate. The top orchestrator still decides
-whether to auto-apply or ask the user based on `semantic_risk`.
+whether to approve automatically or ask the user based on `semantic_risk`.
 
 ## Final Response
 
@@ -310,7 +319,7 @@ Before returning, write the reduced JSON object to a temporary file inside the
 private run output directory and validate it:
 
 ```sh
-jsonschema -i "<reduced-output-path>" "references/reduced-schema.json"
+scripts/validate_output.py file-reduction "<reduced-output-path>"
 ```
 
 Run validation from the `md-bloat-hunter` skill directory and quote every shell
