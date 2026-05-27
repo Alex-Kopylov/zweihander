@@ -18,7 +18,7 @@ Use one mode for the whole run:
   report, dry-run, or says not to edit.
 
 In `Audit+Report`, never write audited files. Report findings, proposed edits,
-semantic risk, and which findings would need user approval.
+semantic risk, and approval requirements.
 
 In `Edit+Report`, apply approved findings and then report what changed.
 
@@ -50,8 +50,7 @@ medium/high semantic-risk edit.
 Use the host's native tools for the same workflow:
 
 - AI Assistant questions: use the active AI Assistant's structured user-input
-  tool when available; otherwise ask the user in a normal AI Assistant response
-  and wait.
+  tool when available; otherwise ask the user in a normal response and wait.
 - Parallel dispatch: use the host's subagent or task tool. If tools are
   discoverable, expose the multi-agent tools first, then spawn the current
   fan-out in one batch and wait on the full spawned set.
@@ -65,7 +64,7 @@ Resolve the input path:
 - For a directory, enumerate only direct child `*.md` files. Do not recurse
   silently.
 - If a directory contains many Markdown files, show the list and ask whether to
-  audit all listed files or provide a narrower path.
+  audit all files or use a narrower path.
 - If no Markdown files are found, stop and report that nothing was audited.
 
 Before dispatching in `Edit+Report`, verify every target is tracked, clean,
@@ -90,8 +89,8 @@ Keep that directory for post-run debugging and include it in the final report.
 
 ## Scope Strategy
 
-Use file-local agents when precision depends on a single file's local context.
-Use directory-level agents when the issue requires comparing files.
+Use file-local agents for single-file context and directory-level agents for
+cross-file comparisons.
 
 File-local pass:
 

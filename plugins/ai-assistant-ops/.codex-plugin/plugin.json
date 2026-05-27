@@ -1,6 +1,6 @@
 {
   "name": "ai-assistant-ops",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Assistant setup, instruction hygiene, memory capture, and markdown/prompt maintenance.",
   "author": {
     "name": "Alex Kopylov"

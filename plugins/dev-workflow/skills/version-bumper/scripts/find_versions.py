@@ -28,6 +28,7 @@ GLOB_PATTERNS: list[tuple[str, str, re.Pattern[str]]] = [
     ("**/app.py", "fastapi", re.compile(r'version\s*=\s*["\'](\d+\.\d+\.\d+)["\']')),
     ("**/main.py", "fastapi", re.compile(r'version\s*=\s*["\'](\d+\.\d+\.\d+)["\']')),
     ("**/.claude-plugin/plugin.json", "plugin-manifest", VERSION_JSON_RE),
+    ("**/.codex-plugin/plugin.json", "plugin-manifest", VERSION_JSON_RE),
     ("**/.claude-plugin/marketplace.json", "marketplace-manifest", VERSION_JSON_RE),
 ]
 
