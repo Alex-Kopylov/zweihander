@@ -27,8 +27,8 @@ GLOB_PATTERNS: list[tuple[str, str, re.Pattern[str]]] = [
     ("**/__init__.py", "dunder", re.compile(r'^__version__\s*=\s*["\'](\d+\.\d+\.\d+)["\']', re.MULTILINE)),
     ("**/app.py", "fastapi", re.compile(r'version\s*=\s*["\'](\d+\.\d+\.\d+)["\']')),
     ("**/main.py", "fastapi", re.compile(r'version\s*=\s*["\'](\d+\.\d+\.\d+)["\']')),
-    ("**/.claude-plugin/plugin.json", "claude-plugin", VERSION_JSON_RE),
-    ("**/.claude-plugin/marketplace.json", "claude-marketplace", VERSION_JSON_RE),
+    ("**/.claude-plugin/plugin.json", "plugin-manifest", VERSION_JSON_RE),
+    ("**/.claude-plugin/marketplace.json", "marketplace-manifest", VERSION_JSON_RE),
 ]
 
 

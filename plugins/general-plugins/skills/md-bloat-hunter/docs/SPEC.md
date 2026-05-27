@@ -186,7 +186,7 @@ unfindable excerpt is a hallucination, not a recoverable state.
 ## On-disk layout
 
 ```
-~/.claude/my-marketplace/plugins/general-plugins/skills/md-bloat-hunter/
+~/my-marketplace/plugins/general-plugins/skills/md-bloat-hunter/
 ├── SKILL.md                          # top orchestrator entry point
 ├── docs/
 │   └── SPEC.md                       # this file
@@ -202,7 +202,7 @@ unfindable excerpt is a hallucination, not a recoverable state.
     └── calibrate-hunger.md           # intensity rubric (shared)
 ```
 
-Per-detector taxonomy lives **inside** each agent file (taxonomy, examples, what NOT to flag). `references/` holds only shared content. This mirrors the existing `claude-insights-hunter` pattern.
+Per-detector taxonomy lives **inside** each agent file (taxonomy, examples, what NOT to flag). `references/` holds only shared content. This mirrors the existing `ai-insights-hunter` pattern.
 
 Promotion rule: if knowledge in an agent file starts being needed by another agent, extract to `references/`. Not before.
 

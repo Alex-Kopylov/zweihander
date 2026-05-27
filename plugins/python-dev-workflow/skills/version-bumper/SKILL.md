@@ -15,10 +15,10 @@ Bump version strings across project config files in a single pass.
 | `pyproject.toml` | `version = "X.Y.Z"` under `[project]` or `[tool.poetry]` |
 | FastAPI/app `version` | `version="X.Y.Z"` kwarg in `FastAPI(...)` or app constructor |
 | `__init__.py` | `__version__ = "X.Y.Z"` |
-| `plugin.json` | `"version": "X.Y.Z"` (Claude Code plugins, etc.) |
+| `plugin.json` | `"version": "X.Y.Z"` (plugin manifests, etc.) |
 | `package.json` | `"version": "X.Y.Z"` |
 | `setup.cfg` | `version = X.Y.Z` under `[metadata]` |
-| `marketplace.json` | `"version": "X.Y.Z"` (Claude Code marketplace) |
+| `marketplace.json` | `"version": "X.Y.Z"` (marketplace manifests) |
 
 ## Version Resolution
 
@@ -36,7 +36,7 @@ If no argument is provided:
 
 1. **Discover current version** — find version-bearing files using the script:
    ```bash
-   python ${CLAUDE_SKILL_DIR}/scripts/find_versions.py .
+   python scripts/find_versions.py .
    ```
 2. **Resolve target version** using the rules above.
 3. **Confirm with user** — show current version, target version, and files to update. Wait for approval.

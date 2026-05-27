@@ -5,7 +5,7 @@ description: This skill should be used when the user asks to "track tasks", "cre
 
 # Task Management & Background Agent Orchestration
 
-Guide for using Claude Code's native task tools (TaskCreate, TaskGet, TaskList, TaskUpdate, TaskOutput, TaskStop) to track work, manage dependencies, and orchestrate background agents.
+Guide for using native task tools (TaskCreate, TaskGet, TaskList, TaskUpdate, TaskOutput, TaskStop) to track work, manage dependencies, and orchestrate background agents.
 
 ## When to Use Task Tools
 

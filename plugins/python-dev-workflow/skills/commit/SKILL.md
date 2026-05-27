@@ -1,6 +1,6 @@
 ---
 name: commit
-description: Commit staged changes following Conventional Commits v1.0.0. Activate when user asks to commit, create a commit, or says /commit. Commits: Conventional Commits (feat|fix|refactor|build|ci|chore|docs|style|perf|test).
+description: "Commit staged changes following Conventional Commits v1.0.0. Activate when user asks to commit, create a commit, or says /commit. Commits: Conventional Commits (feat|fix|refactor|build|ci|chore|docs|style|perf|test)."
 ---
 
 # Commit (Conventional Commits v1.0.0)
@@ -67,7 +67,7 @@ feat(auth): add oauth2 support
    git add path/to/file1 path/to/file2 && git commit -m "<scoped message>"
    ```
 6. **Never** include body or footer — single line only. No `Co-Authored-By` trailers.
-7. **Never** mention claude or claude code in commit message
+7. **Never** mention the assistant runtime in the commit message
 
 ## After Commit
 

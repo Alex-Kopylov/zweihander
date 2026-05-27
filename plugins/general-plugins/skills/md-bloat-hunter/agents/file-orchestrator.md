@@ -45,17 +45,16 @@ file, the detector agent files, and the top-orchestrator input.
 
 ## Detector Dispatch
 
-Spawn the file-local detector agents in parallel with the Agent tool. Treat Agent as
-Claude Code's Task tool for this workflow. Give each agent the same absolute
+Spawn the file-local detector agents in parallel with the host's subagent or
+task tool. Give each agent the same absolute
 file path, the same `run_id`, and the same private run output directory. Pass the absolute skill directory and the absolute detector agent file path.
 Instruct each detector to read and follow that path rather than inferring a
 relative location.
 
-In OpenAI Codex, use `tool_search` to expose multi-agent tools if needed, then
-issue all `multi_agent_v1.spawn_agent` calls in one response and wait with
-`multi_agent_v1.wait_agent` on the full spawned set. The dispatch requirements
-are the same: all selected detectors run in parallel and all results are
-collected before reduction.
+If tools are discoverable, use `tool_search` to expose multi-agent tools if
+needed, then issue all spawn calls in one response and wait on the full spawned
+set. The dispatch requirements are the same: all selected detectors run in
+parallel and all results are collected before reduction.
 
 Always dispatch:
 

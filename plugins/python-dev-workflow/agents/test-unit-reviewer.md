@@ -1,29 +1,8 @@
 ---
 name: test-unit-reviewer
-description: Review unit tests for pattern compliance, correctness, case coverage, and DRY helpers. Use when user asks to review tests, check test quality, or audit test files. Reads test + source files, scans existing helpers, and produces structured report — no edits.
+description: "Review unit tests for pattern compliance, correctness, case coverage, and DRY helpers. Use when user asks to review tests, check test quality, or audit test files. Reads test and source files, scans existing helpers, and produces a structured report without edits."
 skills:
   - pytest-redis
-
-<example>
-Context: User wrote new unit tests and wants quality review.
-user: "Review the unit tests I wrote for the payment service"
-assistant: "I'll use the test-unit-reviewer agent to review your tests."
-<Task tool call to test-unit-reviewer agent with repo path>
-</example>
-
-<example>
-Context: User wants to check test coverage completeness for a specific method.
-user: "Are tests for create_merchant complete?"
-assistant: "I'll review the test file against the source to check coverage."
-<Task tool call to test-unit-reviewer agent with test file path>
-</example>
-
-<example>
-Context: User wants to audit test patterns across a Python project.
-user: "Check if tests in src/api follow our conventions"
-assistant: "I'll review all test files for pattern compliance."
-<Task tool call to test-unit-reviewer agent with module path>
-</example>
 model: opus
 ---
 

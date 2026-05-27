@@ -4,7 +4,7 @@ Detected when MCP config contains servers that don't match any known source but 
 
 ## How to identify
 
-Check `.mcp.json` or `.claude/settings.json` for MCP servers. Skip servers that are clearly tooling (formatters, linters, file managers). Look for servers that might provide:
+Check `.mcp.json` or runtime settings files for MCP servers. Skip servers that are clearly tooling (formatters, linters, file managers). Look for servers that might provide:
 - Wiki or documentation content (Confluence, Notion, custom wikis)
 - Project management data (Jira, Linear, Asana, Shortcut)
 - Monitoring and observability (Grafana, Datadog, PagerDuty)

@@ -1,18 +1,18 @@
 {
   "name": "general-plugins",
   "version": "0.12.0",
-  "description": "General-purpose utilities for Codex setup auditing, configuration management, workflow optimization, and task management & background agent orchestration",
+  "description": "General-purpose utilities for setup auditing, configuration management, workflow optimization, task management, and background orchestration",
   "author": {
-    "name": "Migrated AI assistant config"
+    "name": "Alex Kopylov"
   },
   "license": "UNLICENSED",
   "skills": "./skills/",
   "interface": {
     "displayName": "General Plugins",
-    "shortDescription": "General-purpose utilities for Codex setup auditing, configuration management, workflow optimization, and task management",
-    "longDescription": "General-purpose utilities for Codex setup auditing, configuration management, workflow optimization, and task management & background agent orchestration",
-    "developerName": "Migrated AI assistant config",
-    "category": "Migrated AI",
+    "shortDescription": "Setup auditing, workflow optimization, and task management utilities",
+    "longDescription": "General-purpose utilities for setup auditing, configuration management, workflow optimization, task management, and background orchestration.",
+    "developerName": "Alex Kopylov",
+    "category": "Utilities",
     "capabilities": [
       "Read",
       "Write"

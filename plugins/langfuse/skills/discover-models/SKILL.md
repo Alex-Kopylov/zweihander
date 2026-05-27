@@ -61,7 +61,7 @@ done
 
 For each model definition, the relevant fields are:
 
-- `modelName` -- the canonical model name (e.g., `"gpt-4o"`, `"claude-sonnet-4-20250514"`)
+- `modelName` -- the canonical model name (e.g., `"gpt-4o"`, `"model-name-20250514"`)
 - `unit` -- pricing unit, typically `"TOKENS"` or `"CHARACTERS"`
 - `inputPrice` -- cost per unit for input/prompt tokens (decimal, e.g., `0.000003`)
 - `outputPrice` -- cost per unit for output/completion tokens (decimal, e.g., `0.000015`)
@@ -305,7 +305,7 @@ Present the final merged result as a single markdown table:
 ```
 | Model Name                  | Input Price | Output Price | Used in Observations |
 |-----------------------------|-------------|--------------|----------------------|
-| claude-sonnet-4-20250514    | 0.000003    | 0.000015     | Yes (1245)           |
+| model-name-20250514    | 0.000003    | 0.000015     | Yes (1245)           |
 | gpt-4o                      | 0.000005    | 0.000015     | Yes (3400)           |
 | gpt-4o-mini                 | 0.00000015  | 0.0000006    | Yes (890)            |
 | text-embedding-3-small      | 0.00000002  | N/A          | Yes (5600)           |
