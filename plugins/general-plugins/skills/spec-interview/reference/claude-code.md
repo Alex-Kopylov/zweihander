@@ -1,3 +1,6 @@
 # Claude Code
 
-Use Claude Code question and file tools when available. Keep each interview round focused, then write the approved spec with the file-writing tool.
+Use exact documented tools:
+- `AskUserQuestion` for structured clarification.
+- `Write` for the final spec.
+- `Read` and `Edit` if updating an existing spec.

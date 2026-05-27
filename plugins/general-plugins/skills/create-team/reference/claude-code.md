@@ -1,3 +1,7 @@
 # Claude Code
 
-Use Claude Code task and agent tools when available. If a team-creation primitive exists, map the approved blueprint into it after user approval.
+Use exact documented tools:
+- `AskUserQuestion` for clarification.
+- `TeamCreate`, `SendMessage`, `TeamDelete` for agent teams.
+- `Agent` for subagents.
+- `TaskCreate`, `TaskUpdate`, `TaskGet`, `TaskList`, `TaskStop`; use `Read` instead of deprecated `TaskOutput`.
