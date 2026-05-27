@@ -9,6 +9,21 @@ This repository publishes marketplace metadata for both supported plugin runtime
 - `.claude-plugin/marketplace.json`
 - `.agents/plugins/marketplace.json`
 
+## Shared Instructions
+
+Use `AGENTS.md` as the shared instruction file when a plugin needs runtime
+context. Runtimes that read `AGENTS.md` can consume it directly.
+
+For runtimes that read `CLAUDE.md`, keep a sibling `CLAUDE.md` next to every
+`AGENTS.md` and import the shared file:
+
+```md
+@AGENTS.md
+```
+
+This keeps both supported runtimes on the same instructions without copying
+content between files.
+
 ```shell
 /plugin marketplace add Alex-Kopylov/my-marketplace
 ```
