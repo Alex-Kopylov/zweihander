@@ -1,0 +1,9 @@
+{
+  "name": "os-tools",
+  "description": "Operating-system utilities for local machine automation.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Alex Kopylov"
+  },
+  "skills": "./skills/"
+}

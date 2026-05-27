@@ -1,7 +1,7 @@
 {
   "name": "python-dev-workflow",
-  "version": "0.11.0",
-  "description": "Python development workflow skills for testing, commits, PRs, branch management, contradiction checks, Celery, Redis, and versioning",
+  "version": "0.12.0",
+  "description": "Python-specific pytest, Redis test patterns, Celery, and unit-test review/execution agents.",
   "author": {
     "name": "Alex Kopylov"
   },
@@ -9,8 +9,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "Python Dev Workflow",
-    "shortDescription": "Python testing, Git, and release workflow skills",
-    "longDescription": "Python development workflow skills for pytest, unit testing, conventional commits, PR creation, branch management, contradiction checks, Celery, Redis, schema-guided reasoning, and version bumping.",
+    "shortDescription": "Python testing and runtime workflow skills",
+    "longDescription": "Python-specific pytest execution and review helpers, Redis testing patterns, Celery workflow guidance, and unit-test review agents.",
     "developerName": "Alex Kopylov",
     "category": "Development",
     "capabilities": [
@@ -20,7 +20,7 @@
     ],
     "defaultPrompt": [
       "Run the focused pytest suite.",
-      "Create a conventional commit for these changes."
+      "Review these Python unit tests."
     ]
   }
 }

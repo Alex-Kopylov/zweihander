@@ -41,37 +41,69 @@ Then install individual plugins:
 
 ### langfuse
 
-General-purpose Langfuse integration — data exploration, dashboard/widget management, prompt versioning, dataset/experiment management, and more via conversational interface.
+General-purpose Langfuse integration for data exploration, dashboard management, prompt versioning, datasets, and experiments.
 
-**Skills:** create-evaluator, update-evaluator, delete-evaluator, inspect-evaluator, list-evaluators, toggle-evaluator-status, discover-filter-options, discover-traces, discover-models, discover-scores, discover-datasets, create-dataset, manage-dataset-items, design-dataset-schema, trigger-experiment, configure-remote-experiment, analyze-experiment-results, compare-experiments, list-dataset-runs, query-metrics, create-widget, update-widget, delete-widget, list-widgets, suggest-widgets, layout-widgets, manage-dashboard
+**Skills:** analyze-experiment-results, compare-experiments, configure-remote-experiment, create-dataset, create-evaluator, create-widget, delete-evaluator, delete-widget, design-dataset-schema, discover-datasets, discover-filter-options, discover-models, discover-scores, discover-traces, inspect-evaluator, layout-widgets, list-dataset-runs, list-evaluators, list-widgets, manage-dashboard, manage-dataset-items, query-metrics, suggest-widgets, toggle-evaluator-status, trigger-experiment, update-evaluator, update-widget
 
-**Agents:** langfuse-data-explorer, langfuse-eval-manager, langfuse-dataset-expert, langfuse-experiment-manager, langfuse-widget-manager
+**Agents:** langfuse-data-explorer, langfuse-dataset-expert, langfuse-eval-manager, langfuse-experiment-manager, langfuse-widget-manager
 
 ### openapi-tools
 
-Skills for listing and inspecting OpenAPI endpoints on running services (FastAPI, etc.).
+Skills for listing and inspecting OpenAPI endpoints on running services.
 
-**Skills:** openapi-list, openapi-inspect
+**Skills:** openapi-inspect, openapi-list
+
+### llm-application-dev
+
+LLM application design and schema-guided reasoning patterns.
+
+**Skills:** schema-guided-reasoning
 
 ### python-dev-workflow
 
-Python development workflow — pytest execution and review helpers, conventional commits, PR creation, branch management, unit testing guidance, contradiction hunting, Celery support, and version bumping.
+Python-specific pytest, Redis test patterns, Celery, and unit-test review/execution agents.
 
-**Skills:** commit, create-pr, pr-checkout, ticket-branch, ticket-comment-status, version-bumper, writing-unit-tests, pytest-redis, task-management, contradiction-hunter
+**Skills:** celery-expert, pytest-redis, writing-unit-tests
 
 **Agents:** test-runner, test-unit-reviewer
 
-### general-plugins
+### dev-workflow
 
-General-purpose workflow and setup utilities.
+Git, PRs, tickets, releases, and review-comment workflows.
 
-**Skills:** ai-setup-audit, ai-insights-hunter, create-team, daily, interview, loop_macos, md-bloat-hunter, mega-cmd, pr-address-comments, pr-comment, spec-interview, task-management
+**Skills:** commit, create-pr, pr-address-comments, pr-checkout, pr-comment, spec-contradiction-hunter, spec-interview, ticket-branch, ticket-comment-status, version-bumper
 
-`/md-bloat-hunter [path]` audits a markdown file or a non-recursive directory
-of direct child `*.md` files for redundancy, verbosity, filler, and vocabulary
-compression. It requires `jsonschema` on PATH; install it with
-`uv tool install jsonschema`. Approved findings mutate markdown files, so run it
-from a clean git tree and review changes with `git diff`.
+**Agents:** ambiguity-contradiction-hunter, release-manager, structural-contradiction-hunter, surface-contradiction-hunter
+
+### work-session-tools
+
+Productivity and orchestration inside an assistant session.
+
+**Skills:** create-team, daily, interview, task-management
+
+### ai-assistant-ops
+
+Assistant setup, instruction hygiene, memory capture, and markdown/prompt maintenance.
+
+**Skills:** agents-md-improver, ai-insights-hunter, ai-setup-audit, md-bloat-hunter
+
+### os-tools
+
+Operating-system utilities for local machine automation.
+
+**Skills:** loop_macos
+
+### cloud-storage-tools
+
+Dropbox, Google Drive, OneDrive, and MEGA style user-file storage tools.
+
+**Skills:** mega-cmd
+
+### job-hunt-toolkit
+
+Version-controlled job application workspace with resume tailoring, PDF export, metadata scrubbing, and pre-send checks.
+
+**Skills:** export-pdf, init-workspace, new-application, prepare-to-send, resume-tailoring, scrub-pdf-metadata
 
 ## Updating
 

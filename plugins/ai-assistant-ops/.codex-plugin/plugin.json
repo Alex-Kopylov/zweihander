@@ -1,0 +1,26 @@
+{
+  "name": "ai-assistant-ops",
+  "version": "0.1.0",
+  "description": "Assistant setup, instruction hygiene, memory capture, and markdown/prompt maintenance.",
+  "author": {
+    "name": "Alex Kopylov"
+  },
+  "license": "UNLICENSED",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "AI Assistant Ops",
+    "shortDescription": "Assistant setup and prompt maintenance",
+    "longDescription": "Assistant setup, instruction hygiene, memory capture, and markdown or prompt maintenance for agent workflows.",
+    "developerName": "Alex Kopylov",
+    "category": "Utilities",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Audit my assistant setup.",
+      "Trim verbosity in these skill docs."
+    ]
+  }
+}

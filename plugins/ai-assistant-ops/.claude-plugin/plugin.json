@@ -1,0 +1,9 @@
+{
+  "name": "ai-assistant-ops",
+  "description": "Assistant setup, instruction hygiene, memory capture, and markdown/prompt maintenance.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Alex Kopylov"
+  },
+  "skills": "./skills/"
+}

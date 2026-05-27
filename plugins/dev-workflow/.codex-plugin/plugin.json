@@ -1,0 +1,27 @@
+{
+  "name": "dev-workflow",
+  "version": "0.2.0",
+  "description": "Git, PRs, tickets, releases, and review-comment workflows.",
+  "author": {
+    "name": "Alex Kopylov"
+  },
+  "license": "UNLICENSED",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Dev Workflow",
+    "shortDescription": "Git, PR, ticket, and release workflows",
+    "longDescription": "Git, PRs, tickets, releases, and review-comment workflows, including conventional commits, PR creation, PR feedback handling, spec interviews, and spec contradiction checks.",
+    "developerName": "Alex Kopylov",
+    "category": "Development",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Create a conventional commit for these changes.",
+      "Address PR review comments.",
+      "Interview me to produce an implementation spec."
+    ]
+  }
+}
