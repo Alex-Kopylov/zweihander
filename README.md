@@ -1,6 +1,6 @@
 # My Marketplace
 
-A collection of agent plugins for LLM observability, API exploration, document handling, and development workflows.
+A collection of agent plugins for LLM observability, API exploration, and development workflows.
 
 ## Installation
 
@@ -39,12 +39,6 @@ Then install individual plugins:
 
 ## Plugins
 
-### file-manager
-
-Document and data processing skills for PDF, PPTX, XLSX, and DOCX workflows.
-
-**Skills:** docx, pdf, pptx, xlsx
-
 ### langfuse
 
 General-purpose Langfuse integration — data exploration, dashboard/widget management, prompt versioning, dataset/experiment management, and more via conversational interface.
@@ -71,7 +65,7 @@ Python development workflow — pytest execution and review helpers, conventiona
 
 General-purpose workflow and setup utilities.
 
-**Skills:** ai-setup-audit, ai-insights-hunter, daily, interview, loop_macos, md-bloat-hunter, mega-cmd, pr-address-comments, pr-comment, skill-creator, task-management
+**Skills:** ai-setup-audit, ai-insights-hunter, daily, interview, loop_macos, md-bloat-hunter, mega-cmd, pr-address-comments, pr-comment, task-management
 
 `/md-bloat-hunter [path]` audits a markdown file or a non-recursive directory
 of direct child `*.md` files for redundancy, verbosity, filler, and vocabulary

@@ -5,18 +5,6 @@
   },
   "plugins": [
     {
-      "name": "file-manager",
-      "source": {
-        "source": "local",
-        "path": "./plugins/file-manager"
-      },
-      "policy": {
-        "installation": "AVAILABLE",
-        "authentication": "ON_INSTALL"
-      },
-      "category": "Documents"
-    },
-    {
       "name": "langfuse",
       "source": {
         "source": "local",
