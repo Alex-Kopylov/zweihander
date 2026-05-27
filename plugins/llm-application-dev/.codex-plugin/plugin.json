@@ -1,0 +1,25 @@
+{
+  "name": "llm-application-dev",
+  "version": "0.1.0",
+  "description": "LLM application design and schema-guided reasoning patterns.",
+  "author": {
+    "name": "Alex Kopylov"
+  },
+  "license": "UNLICENSED",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "LLM Application Dev",
+    "shortDescription": "LLM app architecture and reasoning schemas",
+    "longDescription": "LLM application design and schema-guided reasoning patterns, including structured output schemas that improve model reasoning.",
+    "developerName": "Alex Kopylov",
+    "category": "Development",
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Design a schema-guided reasoning model.",
+      "Improve this structured output schema."
+    ]
+  }
+}

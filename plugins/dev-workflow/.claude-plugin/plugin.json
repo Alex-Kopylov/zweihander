@@ -1,0 +1,9 @@
+{
+  "name": "dev-workflow",
+  "description": "Git, PRs, tickets, releases, and review-comment workflows.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Alex Kopylov"
+  },
+  "skills": "./skills/"
+}

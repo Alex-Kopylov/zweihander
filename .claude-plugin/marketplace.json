@@ -10,7 +10,7 @@
     {
       "name": "langfuse",
       "source": "./plugins/langfuse",
-      "description": "General-purpose Langfuse integration — data exploration, dashboard/widget management, prompt versioning, dataset/experiment management, and more via conversational interface",
+      "description": "General-purpose Langfuse integration for data exploration, dashboard management, prompt versioning, datasets, and experiments.",
       "category": "observability",
       "tags": [
         "langfuse",
@@ -24,7 +24,7 @@
     {
       "name": "openapi-tools",
       "source": "./plugins/openapi-tools",
-      "description": "Skills for listing and inspecting OpenAPI endpoints on running services (FastAPI, etc.)",
+      "description": "Skills for listing and inspecting OpenAPI endpoints on running services.",
       "category": "api",
       "tags": [
         "openapi",
@@ -35,41 +35,105 @@
       ]
     },
     {
+      "name": "llm-application-dev",
+      "source": "./plugins/llm-application-dev",
+      "description": "LLM application design and schema-guided reasoning patterns.",
+      "category": "development",
+      "tags": [
+        "llm",
+        "structured-output",
+        "pydantic",
+        "schemas",
+        "reasoning"
+      ]
+    },
+    {
       "name": "python-dev-workflow",
       "source": "./plugins/python-dev-workflow",
-      "description": "Python development workflow — pytest execution and review helpers, conventional commits, PR creation, branch management, unit testing guidance, contradiction hunting, Celery support, and version bumping",
+      "description": "Python-specific pytest, Redis test patterns, Celery, and unit-test review/execution agents.",
       "category": "development",
       "tags": [
         "python",
         "pytest",
         "testing",
+        "celery",
+        "redis",
+        "agents"
+      ]
+    },
+    {
+      "name": "dev-workflow",
+      "source": "./plugins/dev-workflow",
+      "description": "Git, PRs, tickets, releases, and review-comment workflows.",
+      "category": "development",
+      "tags": [
         "git",
         "workflow",
         "commits",
         "pull-requests",
-        "tasks",
-        "agents",
-        "celery",
-        "redis"
+        "tickets",
+        "release",
+        "review"
       ]
     },
     {
-      "name": "general-plugins",
-      "source": "./plugins/general-plugins",
-      "description": "General-purpose utilities for setup auditing, configuration management, workflow optimization, and task orchestration",
+      "name": "work-session-tools",
+      "source": "./plugins/work-session-tools",
+      "description": "Productivity and orchestration inside an assistant session.",
+      "category": "productivity",
+      "tags": [
+        "productivity",
+        "daily",
+        "interview",
+        "tasks",
+        "orchestration"
+      ]
+    },
+    {
+      "name": "ai-assistant-ops",
+      "source": "./plugins/ai-assistant-ops",
+      "description": "Assistant setup, instruction hygiene, memory capture, and markdown/prompt maintenance.",
       "category": "utilities",
       "tags": [
-        "audit",
         "agents-md",
         "setup",
-        "configuration",
-        "utilities"
+        "audit",
+        "memory",
+        "markdown",
+        "prompts"
+      ]
+    },
+    {
+      "name": "os-tools",
+      "source": "./plugins/os-tools",
+      "description": "Operating-system utilities for local machine automation.",
+      "category": "utilities",
+      "tags": [
+        "macos",
+        "launchd",
+        "automation",
+        "scheduling",
+        "os"
+      ]
+    },
+    {
+      "name": "cloud-storage-tools",
+      "source": "./plugins/cloud-storage-tools",
+      "description": "Dropbox, Google Drive, OneDrive, and MEGA style user-file storage tools.",
+      "category": "productivity",
+      "tags": [
+        "cloud-storage",
+        "mega",
+        "dropbox",
+        "google-drive",
+        "onedrive",
+        "files"
       ]
     },
     {
       "name": "job-hunt-toolkit",
       "source": "./plugins/job-hunt-toolkit",
-      "description": "Version-controlled job application workspace: tailored CVs with HTML source + PDF export, per-company folders, HR-safe file naming, PDF metadata scrubbing, pre-send checklist, and integrated resume tailoring",
+      "description": "Version-controlled job application workspace with resume tailoring, PDF export, metadata scrubbing, and pre-send checks.",
       "category": "productivity",
       "tags": [
         "resume",

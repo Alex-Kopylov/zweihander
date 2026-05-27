@@ -1,9 +1,0 @@
-{
-  "name": "general-plugins",
-  "description": "General-purpose utilities for setup auditing, configuration management, workflow optimization, task management, and background orchestration",
-  "version": "0.13.0",
-  "author": {
-    "name": "Alex Kopylov"
-  },
-  "skills": "./skills/"
-}

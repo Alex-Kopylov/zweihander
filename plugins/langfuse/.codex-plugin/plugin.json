@@ -1,7 +1,7 @@
 {
   "name": "langfuse",
   "version": "0.1.1",
-  "description": "General-purpose Langfuse integration for data exploration, dashboard management, prompt versioning, datasets, and experiments",
+  "description": "General-purpose Langfuse integration for data exploration, dashboard management, prompt versioning, datasets, and experiments.",
   "author": {
     "name": "Alex Kopylov"
   },

@@ -1,0 +1,9 @@
+{
+  "name": "cloud-storage-tools",
+  "description": "Dropbox, Google Drive, OneDrive, and MEGA style user-file storage tools.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Alex Kopylov"
+  },
+  "skills": "./skills/"
+}

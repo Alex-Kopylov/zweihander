@@ -1,0 +1,26 @@
+{
+  "name": "work-session-tools",
+  "version": "0.1.0",
+  "description": "Productivity and orchestration inside an assistant session.",
+  "author": {
+    "name": "Alex Kopylov"
+  },
+  "license": "UNLICENSED",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Work Session Tools",
+    "shortDescription": "Session productivity and orchestration",
+    "longDescription": "Productivity and orchestration inside an assistant session, including daily summaries, guided interviews, and task management.",
+    "developerName": "Alex Kopylov",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Create a daily note.",
+      "Walk through these findings one by one."
+    ]
+  }
+}

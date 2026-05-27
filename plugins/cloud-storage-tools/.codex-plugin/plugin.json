@@ -1,0 +1,26 @@
+{
+  "name": "cloud-storage-tools",
+  "version": "0.1.0",
+  "description": "Dropbox, Google Drive, OneDrive, and MEGA style user-file storage tools.",
+  "author": {
+    "name": "Alex Kopylov"
+  },
+  "license": "UNLICENSED",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Cloud Storage Tools",
+    "shortDescription": "User-file cloud storage tools",
+    "longDescription": "Dropbox, Google Drive, OneDrive, and MEGA style user-file storage tools. This is not for AWS, GCP, Azure, hosting, or PaaS infrastructure.",
+    "developerName": "Alex Kopylov",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Organize files in encrypted cloud storage.",
+      "Create a shareable cloud storage link."
+    ]
+  }
+}

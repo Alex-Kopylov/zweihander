@@ -1,0 +1,9 @@
+{
+  "name": "work-session-tools",
+  "description": "Productivity and orchestration inside an assistant session.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Alex Kopylov"
+  },
+  "skills": "./skills/"
+}

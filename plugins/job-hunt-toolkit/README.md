@@ -1,5 +1,6 @@
 # job-hunt-toolkit
 
+Version-controlled job application workspace with resume tailoring, PDF export, metadata scrubbing, and pre-send checks.
 A paranoid, disciplined workflow for job applications. Assumes every PDF leaks metadata, every filename signals something, and every company you apply to will find a way to notice if you cut corners.
 
 ## What it does
@@ -21,7 +22,7 @@ Turns your chaotic Downloads folder into a disciplined, structured workspace:
 |---|---|---|
 | `init-workspace` | slash command | One-time setup: scaffolds `~/Documents/job_seeking/` (or configured path) with README, AGENTS.md, and NAMING.md |
 | `new-application` | slash command | Start a new company application: create folder, scaffold `company.md`, copy master HTML, invoke tailoring |
-| `resume-tailoring` | conversational | Tailor the CV against a JD. Research → template → discovery → assembly → export. Moved from general-plugins. |
+| `resume-tailoring` | conversational | Tailor the CV against a JD. Research → template → discovery → assembly → export. |
 | `export-pdf` | slash command or auto | HTML → PDF via headless Chromium. Consistent rendering across applications. |
 | `scrub-pdf-metadata` | auto (after export) | Strip PDF metadata with exiftool. Required before sending any PDF. |
 | `prepare-to-send` | slash command | Run the full pre-send checklist: naming, metadata, visible content, and HTML↔PDF parity. |

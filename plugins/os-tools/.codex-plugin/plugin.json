@@ -1,0 +1,26 @@
+{
+  "name": "os-tools",
+  "version": "0.1.0",
+  "description": "Operating-system utilities for local machine automation.",
+  "author": {
+    "name": "Alex Kopylov"
+  },
+  "license": "UNLICENSED",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "OS Tools",
+    "shortDescription": "Operating-system utilities",
+    "longDescription": "Operating-system utilities for local machine automation, starting with persistent macOS launchd scheduling.",
+    "developerName": "Alex Kopylov",
+    "category": "Utilities",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Schedule this command on macOS.",
+      "Create a persistent launchd job."
+    ]
+  }
+}
