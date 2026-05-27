@@ -73,7 +73,9 @@
         "pull-requests",
         "tickets",
         "release",
-        "review"
+        "review",
+        "spec",
+        "requirements"
       ]
     },
     {
@@ -85,6 +87,7 @@
         "productivity",
         "daily",
         "interview",
+        "team",
         "tasks",
         "orchestration"
       ]

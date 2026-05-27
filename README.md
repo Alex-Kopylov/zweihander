@@ -71,7 +71,7 @@ Python-specific pytest, Redis test patterns, Celery, and unit-test review/execut
 
 Git, PRs, tickets, releases, and review-comment workflows.
 
-**Skills:** commit, create-pr, pr-address-comments, pr-checkout, pr-comment, spec-contradiction-hunter, ticket-branch, ticket-comment-status, version-bumper
+**Skills:** commit, create-pr, pr-address-comments, pr-checkout, pr-comment, spec-contradiction-hunter, spec-interview, ticket-branch, ticket-comment-status, version-bumper
 
 **Agents:** ambiguity-contradiction-hunter, release-manager, structural-contradiction-hunter, surface-contradiction-hunter
 
@@ -79,7 +79,7 @@ Git, PRs, tickets, releases, and review-comment workflows.
 
 Productivity and orchestration inside an assistant session.
 
-**Skills:** create-team, daily, interview, spec-interview, task-management
+**Skills:** create-team, daily, interview, task-management
 
 ### ai-assistant-ops
 
