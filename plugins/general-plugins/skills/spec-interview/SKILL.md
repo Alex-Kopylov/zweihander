@@ -1,10 +1,15 @@
 ---
 name: spec-interview
-argument-hint: [instructions]
-description: Interview user in-depth to create a detailed spec
-allowed-tools: AskUserQuestion, Write
+description: Use when the user wants an in-depth requirements interview that produces a detailed implementation spec.
+metadata:
+  ai-harness-codex: reference/codex.md
+  ai-harness-claude-code: reference/claude-code.md
 ---
 
-Follow the user instructions and interview User in detail using the **AskUserQuestionTool** about technical implementation, API design, data models, prompt engineering pitfalls, LLM output quality concerns, and tradeoffs. Make sure the questions are not obvious - be very in-depth. Hunt and track any contradictions to resolve them. Continue interviewing User continually until it's complete. Then, write the spec to a file.
+# Spec Interview
 
-<instructions>$ARGUMENTS</instructions>
+Interview the user in depth about technical implementation, API design, data models, prompt engineering pitfalls, LLM output quality, and tradeoffs. Ask non-obvious follow-up questions, track contradictions, and resolve them before writing the spec.
+
+If harness-specific tool mapping is needed, load exactly one matching reference from `metadata.ai-harness-*`. If no exact AI harness match exists, do not load a harness reference.
+
+Write the final spec only after the requirements are stable.

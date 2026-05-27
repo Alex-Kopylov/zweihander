@@ -1,17 +1,20 @@
 ---
 name: create-team
-argument-hint: [team description ]
-description: Design a multi-agent team with clear role separation and interaction patterns
-allowed-tools: AskUserQuestion, Write, Read, TaskCreate, TaskUpdate, TaskGet, TaskList, TaskOutput, TaskStop, Agent
+description: Use when the user wants to design a multi-agent team with clear roles, dependencies, handoffs, and review steps.
+metadata:
+  ai-harness-codex: reference/codex.md
+  ai-harness-claude-code: reference/claude-code.md
 ---
 
-You are a team architect. Your job is to help the user design and plan a multi-agent team using the `TeamCreate` tool.
+# Create Team
+
+Design a multi-agent team blueprint with clear role separation and interaction patterns. If harness-specific tool mapping is needed, load exactly one matching reference from `metadata.ai-harness-*`. If no exact AI harness match exists, do not load a harness reference.
 
 ## Process
 
 ### Phase 1: Understand the Mission
 
-Read the user's input below and identify what they want the team to accomplish. If the goal is unclear or too broad, use **AskUserQuestion** to clarify:
+Read the user's input and identify what they want the team to accomplish. If the goal is unclear or too broad, ask concise clarifying questions:
 
 - What is the end goal or deliverable?
 - What is the scope and complexity?
@@ -19,7 +22,7 @@ Read the user's input below and identify what they want the team to accomplish. 
 
 ### Phase 2: Deep-Dive Interview
 
-Use **AskUserQuestion** to gather specifics. Do NOT skip this phase - ask at least 2-3 rounds of questions covering:
+Gather specifics. Do NOT skip this phase - ask at least 2-3 rounds of questions covering:
 
 - **Work decomposition**: What are the major workstreams? Can they run in parallel or must they be sequential?
 - **Risk areas**: Where are the tricky parts? What needs the most careful review?
@@ -33,7 +36,7 @@ Based on gathered requirements, design the team with:
 2. **Team purpose** - one-sentence mission statement
 3. **Roles** - for each team member define:
    - **Name** (kebab-case, e.g., `backend-dev`, `test-engineer`)
-   - **Agent type** (`general-purpose` for implementation work, `Explore` for read-only research, `Plan` for architecture/design)
+   - **Role mode** (implementation, read-only research, planning/design, review/QA)
    - **Responsibility** - clear, bounded scope of what this agent owns
    - **Inputs** - what does this agent need from others before starting?
    - **Outputs** - what does this agent produce for others?
@@ -45,10 +48,10 @@ Based on gathered requirements, design the team with:
    - Owner (which agent)
    - Dependencies (blocked by which tasks)
    - Description of the work
-6. **Choosing mate model** - ask the user agent's model
-   - Opus - best for complex, multi-step work with lots of dependencies
-   - Sonnet - best for straightforward implementation work with minimal dependencies
-   - Haiku - best for direct short tasks with no dependencies
+6. **Model tier** - ask what capability level each role should use
+   - Highest-capability reasoning model - complex, multi-step work with lots of dependencies
+   - Balanced model - straightforward implementation work with modest dependencies
+   - Fast model - direct short tasks with no dependencies
 
 ### Phase 4: Present the Blueprint
 
@@ -60,15 +63,13 @@ Present the full team design to the user as a structured document. Include:
 
 ### Phase 5: Write the Blueprint
 
-After user approval, write the team blueprint to `~/.claude/tasks/{team-name}/` so it can be referenced later when actually spawning the team.
+After user approval, write the team blueprint to the appropriate task, plan, or project location for the active AI harness.
 
-## Task & Agent Tools
+## Task And Agent Tools
 
-Track progress with **TaskCreate/TaskUpdate/TaskGet/TaskList**. Use **TaskOutput** to read results and **TaskStop** to cancel. Use **Agent** to spawn parallel subagents for concurrent work.
+Track progress with the active harness's task or plan mechanism. Spawn parallel agents only when the active harness supports it and the team design justifies the coordination overhead.
 
 ## Rules
 
 - Always include a review/QA step for non-trivial teams. Prefer TDD-style implementation where applies.
 - Design for minimal communication overhead - agents that don't need to talk shouldn't.
-
-<team>$ARGUMENTS</team>
