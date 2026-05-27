@@ -79,7 +79,7 @@ Git, PRs, tickets, releases, and review-comment workflows.
 
 Productivity and orchestration inside an assistant session.
 
-**Skills:** daily, interview, task-management
+**Skills:** create-team, daily, interview, spec-interview, task-management
 
 ### ai-assistant-ops
 
