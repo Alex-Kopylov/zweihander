@@ -37,6 +37,6 @@ One command per line. Description after the dash, lowercase, no period.
 Before finalising what gets written, verify each addition:
 
 - Is it project-specific? (not generic advice)
-- Would a new assistant session actually find this useful?
+- Would a new AI Assistant session actually find this useful?
 - Is this the most concise way to say it?
 - Are file paths and commands accurate?

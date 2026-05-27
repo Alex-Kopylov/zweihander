@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Run trigger evaluation for a skill description.
 
-Tests whether a skill's description causes the assistant to trigger (read the skill)
+Tests whether a skill's description causes the AI Assistant to trigger (read the skill)
 for a set of queries. Outputs results as JSON.
 """
 
@@ -46,7 +46,7 @@ def run_single_query(
     discovery, then runs SKILL_CREATOR_EVAL_COMMAND with the raw query.
     Uses --include-partial-messages to detect triggering early from
     stream events (content_block_start) rather than waiting for the
-    full assistant message, which only arrives after tool execution.
+    full AI Assistant message, which only arrives after tool execution.
     """
     unique_id = uuid.uuid4().hex[:8]
     clean_name = f"{skill_name}-skill-{unique_id}"
@@ -152,7 +152,7 @@ def run_single_query(
                             if se_type == "message_stop":
                                 return False
 
-                    # Fallback: full assistant message
+                    # Fallback: full AI Assistant message
                     elif event.get("type") == "assistant":
                         message = event.get("message", {})
                         for content_item in message.get("content", []):
@@ -264,7 +264,7 @@ def main():
     parser.add_argument("--timeout", type=int, default=30, help="Timeout per query in seconds")
     parser.add_argument("--runs-per-query", type=int, default=3, help="Number of runs per query")
     parser.add_argument("--trigger-threshold", type=float, default=0.5, help="Trigger rate threshold")
-    parser.add_argument("--model", default=None, help="Model to use for the configured assistant command")
+    parser.add_argument("--model", default=None, help="Model to use for the configured AI Assistant command")
     parser.add_argument("--verbose", action="store_true", help="Print progress to stderr")
     args = parser.parse_args()
 

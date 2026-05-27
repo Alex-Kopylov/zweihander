@@ -1,12 +1,12 @@
 ---
 name: ai-insights-hunter
-description: Use this skill when the user says "/ai-insights-hunter", "extract insights from conversation", "harvest this session", "what should we remember from this chat", "save insights from this conversation", or provides a path to an agent conversation log and wants to capture decisions, patterns, and preferences for future sessions. This skill reads a full conversation log (or finds it automatically), extracts valuable insights using parallel agents, interviews the user about what to keep, then stores the chosen insights in the right places to improve future AI assistant interactions. Use PROACTIVELY when a long or complex session is wrapping up and the user wants to preserve learnings.
+description: Use this skill when the user says "/ai-insights-hunter", "extract insights from conversation", "harvest this session", "what should we remember from this chat", "save insights from this conversation", or provides a path to an AI Assistant conversation log and wants to capture decisions, patterns, and preferences for future sessions. This skill reads a full conversation log (or finds it automatically), extracts valuable insights using parallel agents, interviews the user about what to keep, then stores the chosen insights in the right places to improve future AI Assistant interactions. Use PROACTIVELY when a long or complex session is wrapping up and the user wants to preserve learnings.
 allowed-tools: AskUserQuestion, Read, Write, Agent, TaskCreate, TaskGet, TaskList, TaskUpdate, TaskOutput, TaskStop, Glob, Bash
 ---
 
 # AI Insights Hunter
 
-Extract valuable, reusable knowledge from an agent conversation log and store it in the right places so future AI assistant sessions start smarter.
+Extract valuable, reusable knowledge from an AI Assistant conversation log and store it in the right places so future AI Assistant sessions start smarter.
 
 ## References
 
@@ -31,12 +31,12 @@ Use it directly. If it's a directory, list `.jsonl` files inside and pick the mo
 
 ### If no path was provided
 
-Use the current runtime's documented project conversation directory.
+Use the default conversation-log directory for the active AI Assistant runtime.
 
 Find logs automatically:
 1. Determine the current project path (working directory)
 2. Encode it: replace `/` with `-` and leading `/` drops (e.g. `/Users/foo/bar` → `Users-foo-bar`)
-3. List JSONL files under the active runtime's project conversation directory sorted by modification time
+3. List JSONL files under the default conversation-log directory for the active AI Assistant runtime, sorted by modification time
 4. The most recent file is the current session's main log
 
 ### Multi-agent sessions
@@ -44,7 +44,7 @@ Find logs automatically:
 If the session used `Agent` tool with `TeamCreate`, or spawned parallel subagents via `TaskCreate`, those agents ran as separate processes with their own conversation logs. Find them:
 
 1. Note the main log's timestamp
-2. List **all** JSONL files across known project conversation roots modified within ~5 minutes of the main log's mtime
+2. List **all** JSONL files across known AI Assistant conversation-log roots modified within ~5 minutes of the main log's mtime
 3. Each file from that window is a candidate agent log — read the first few messages of each to confirm relevance (same project context, related task content)
 4. Collect all confirmed agent logs alongside the main log
 
@@ -135,7 +135,7 @@ Walk through tasks one-by-one using `AskUserQuestion`. For each item, decide: st
 
 | Context | Location |
 |---------|----------|
-| User behavior / how they like AI assistants to work | Runtime memory file or `~/.agents/memory/<topic>.md` |
+| User behavior / how they like AI Assistants to work | Runtime memory file or `<path_to_where_the_ai_assistant_stores_memory>/<memory_file>` |
 | Applies to all projects | Global agent instruction file |
 | Applies to one project | `{project}/AGENTS.md` or the runtime-specific project instruction file |
 | Relates to a specific subdirectory | `{that-dir}/AGENTS.md` or the runtime-specific instruction file |
@@ -204,7 +204,7 @@ Avoid writing:
 
 ## Step 7 — Targeted Quality Check on Modified Files
 
-By the end of the interview you have an exact list of files written to. Use an instruction-file improver when one is available, scoped only to those files. Do not let it expand into a full repo audit.
+By the end of the interview you have an exact list of files written to. Use `agents-md-management:agents-md-improver` when available, scoped only to those files. Do not let it expand into a full repo audit.
 
 Invoke it via the Skill tool:
 
@@ -214,7 +214,7 @@ Skill({ skill: "agents-md-management:agents-md-improver" })
 
 Before it runs, tell it explicitly: "Focus only on these files that were just modified: [list]. Do not audit pre-existing content — only check whether the new additions conflict with, duplicate, or contradict what was already there."
 
-The improver skill will read the files, score the additions, and flag any issues. Its quality criteria (conciseness, actionability, no obvious info) apply directly to what we just wrote.
+The `agents-md-management:agents-md-improver` skill will read the files, score the additions, and flag any issues. Its quality criteria (conciseness, actionability, no obvious info) apply directly to what we just wrote.
 
 If no issues are found, it will say so — no further action needed.
 
@@ -240,4 +240,4 @@ Stored [n] insights, skipped [n].
 
 - Never store secrets, credentials, tokens, or API keys.
 - Keep it concise — one line per concept.
-- Step 7 is mandatory when an instruction-file improver is available and must be scoped to only files modified during this session — never a full repo audit of pre-existing content.
+- Step 7 with `agents-md-management:agents-md-improver` is mandatory when the skill is available and must be scoped to only files modified during this session — never a full repo audit of pre-existing content.

@@ -1,7 +1,7 @@
 ---
 name: loop_macos
 description: >
-  Schedule a recurring shell command or AI assistant prompt using macOS launchd — persistent, no expiry,
+  Schedule a recurring shell command or AI Assistant prompt using macOS launchd — persistent, no expiry,
   survives reboots, and catches up missed runs after sleep. Use this instead of /loop whenever the
   user wants a task to keep running permanently (not just 7 days), mentions launchd, says "run this
   every day", "schedule this on macOS", "make this persistent", "set this up for good", "keep this
@@ -66,11 +66,11 @@ Default time when the user doesn't specify: **9:07 AM** (off the :00 mark to avo
 - starts with `bash`, `python`, `node`, `ruby`, a path (`/`, `~`), or ends with `.sh`, `.py`, `.rb`, `.js`
 - describes a deterministic system operation (file listing, backup, sync, cleanup, copy, move, log rotation) that a one-liner or short script handles cleanly
 
-**AI assistant prompt** — use the user's configured non-interactive assistant command when the task requires reasoning, summarising, deciding, or acting on ambiguous output (e.g. "summarise my emails", "review logs and flag issues").
+**AI Assistant prompt** — use the user's configured non-interactive AI Assistant command when the task requires reasoning, summarising, deciding, or acting on ambiguous output (e.g. "summarise my emails", "review logs and flag issues").
 
 When in doubt between the two, prefer shell — it's cheaper, faster, and more reliable in a daemon context.
 
-Use `/bin/bash -lc '…'` as the shell so PATH includes Homebrew (`/opt/homebrew/bin`) and user installs (`~/.local/bin`), where assistant CLIs and custom tools typically live.
+Use `/bin/bash -lc '…'` as the shell so PATH includes Homebrew (`/opt/homebrew/bin`) and user installs (`~/.local/bin`), where AI Assistant CLIs and custom tools typically live.
 
 If the task string contains single quotes, escape them as `'\''` inside the shell string, or write a tiny wrapper script.
 
@@ -78,7 +78,7 @@ If the task string contains single quotes, escape them as `'\''` inside the shel
 ```bash
 echo "$HOME"
 ```
-Then substitute: `~/…` → `/Users/jhonsmith/…`. This applies to both shell commands and AI assistant prompt strings.
+Then substitute: `~/…` → the absolute path returned by `echo "$HOME"` (for example, `/Users/<username>/…`). This applies to both shell commands and AI Assistant prompt strings.
 
 ## Step 4 — Generate a label
 

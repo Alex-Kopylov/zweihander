@@ -26,7 +26,7 @@ TIER: HIGH | MEDIUM | LOW
 
 ## Tier guide
 
-- **HIGH** — project-specific pattern a future assistant would need to contribute correctly
+- **HIGH** — project-specific pattern a future AI Assistant would need to contribute correctly
 - **MEDIUM** — useful shortcut or established approach
 - **LOW** — minor convention or preference
 

@@ -49,8 +49,9 @@ medium/high semantic-risk edit.
 
 Use the host's native tools for the same workflow:
 
-- User questions: use the host's structured user-input tool when available;
-  otherwise ask the user in a normal assistant response and wait.
+- AI Assistant questions: use the active AI Assistant's structured user-input
+  tool when available; otherwise ask the user in a normal AI Assistant response
+  and wait.
 - Parallel dispatch: use the host's subagent or task tool. If tools are
   discoverable, expose the multi-agent tools first, then spawn the current
   fan-out in one batch and wait on the full spawned set.

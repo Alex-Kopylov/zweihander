@@ -26,7 +26,7 @@ TIER: HIGH | MEDIUM | LOW
 
 ## Tier guide
 
-- **HIGH** — fact a future assistant would need to avoid a wrong assumption
+- **HIGH** — fact a future AI Assistant would need to avoid a wrong assumption
 - **MEDIUM** — useful context that speeds up future work
 - **LOW** — background info that's nice to know
 
