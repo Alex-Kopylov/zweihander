@@ -4,10 +4,10 @@
 
 | Field | Value |
 |---|---|
-| Raw prompt | `loop_macos each day run bash ~/.claude/my-marketplace/bin/sync-anthropic-skills.sh` |
+| Raw prompt | `loop_macos each day run bash ~/.claude/my-marketplace/bin/refresh-local-cache.sh` |
 | Recurrence | Daily |
 | Trigger time | 09:00 local time (chosen default — no time was specified) |
-| Command | `/bin/bash /Users/jhonsmith/.claude/my-marketplace/bin/sync-anthropic-skills.sh` |
+| Command | `/bin/bash /Users/jhonsmith/.claude/my-marketplace/bin/refresh-local-cache.sh` |
 
 The phrase "each day" maps unambiguously to a once-per-day schedule. No specific clock time was given, so 09:00 was chosen as a sensible working-hours default that fires after the machine is likely already awake.
 
@@ -22,7 +22,7 @@ The phrase "each day" maps unambiguously to a once-per-day schedule. No specific
 
 ### 2. Absolute path for the script
 
-`~` is not expanded by launchd because it runs without a shell. The tilde in the user's prompt was expanded to the full absolute path `/Users/jhonsmith/.claude/my-marketplace/bin/sync-anthropic-skills.sh`.
+`~` is not expanded by launchd because it runs without a shell. The tilde in the user's prompt was expanded to the full absolute path `/Users/jhonsmith/.claude/my-marketplace/bin/refresh-local-cache.sh`.
 
 ### 3. Explicit bash invocation
 
@@ -64,13 +64,13 @@ To activate (do this manually when ready):
 mkdir -p ~/.claude/my-marketplace/logs
 
 # 2. Copy the plist to the user LaunchAgents directory
-cp output.plist ~/Library/LaunchAgents/com.user.claude.sync-anthropic-skills.plist
+cp output.plist ~/Library/LaunchAgents/com.user.claude.refresh-local-cache.plist
 
 # 3. Load it into launchd
-launchctl load ~/Library/LaunchAgents/com.user.claude.sync-anthropic-skills.plist
+launchctl load ~/Library/LaunchAgents/com.user.claude.refresh-local-cache.plist
 
 # 4. Verify it is registered
-launchctl list | grep sync-anthropic-skills
+launchctl list | grep refresh-local-cache
 ```
 
 To change the firing time, edit `Hour`/`Minute` in the plist and reload.

@@ -2,7 +2,7 @@
 
 ## Input
 ```
-each day run bash ~/.claude/my-marketplace/bin/sync-anthropic-skills.sh
+each day run bash ~/.claude/my-marketplace/bin/refresh-local-cache.sh
 ```
 
 ## Parsing (Step 1)
@@ -11,19 +11,19 @@ each day run bash ~/.claude/my-marketplace/bin/sync-anthropic-skills.sh
 - **Clock time:** not specified → defaulted to 9:07 AM per skill rules
 
 ## Schedule key chosen (Step 2)
-`StartCalendarInterval` with `Hour=9`, `Minute=7`  
+`StartCalendarInterval` with `Hour=9`, `Minute=7`
 Rationale: daily cadence requires calendar-based scheduling (catches up after sleep).
 
 ## Tilde expansion (Step 3)
 - **Tilde expansion performed:** YES
 - `$HOME` resolved to: `/Users/jhonsmith`
-- `~/.claude/my-marketplace/bin/sync-anthropic-skills.sh`  
-  → `/Users/jhonsmith/.claude/my-marketplace/bin/sync-anthropic-skills.sh`
+- `~/.claude/my-marketplace/bin/refresh-local-cache.sh`
+  → `/Users/jhonsmith/.claude/my-marketplace/bin/refresh-local-cache.sh`
 - Applied in `ProgramArguments` string and both log path strings.
 - launchd does NOT expand `~` or `$HOME` in plist strings; all paths use absolute form.
 
 ## Label (Step 4)
-`com.user.loop-macos.sync-anthropic-skills-sh`
+`com.user.loop-macos.refresh-local-cache-sh`
 
 ## Plist validation
 `plutil -lint output.plist` → **OK**

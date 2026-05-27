@@ -4,13 +4,13 @@
 <plist version="1.0">
 <dict>
     <key>Label</key>
-    <string>com.user.loop-macos.sync-anthropic-skills-sh</string>
+    <string>com.user.loop-macos.refresh-local-cache-sh</string>
 
     <key>ProgramArguments</key>
     <array>
         <string>/bin/bash</string>
         <string>-lc</string>
-        <string>bash /Users/jhonsmith/.claude/my-marketplace/bin/sync-anthropic-skills.sh</string>
+        <string>bash /Users/jhonsmith/.claude/my-marketplace/bin/refresh-local-cache.sh</string>
     </array>
 
     <key>StartCalendarInterval</key>
@@ -20,9 +20,9 @@
     </dict>
 
     <key>StandardOutPath</key>
-    <string>/Users/jhonsmith/Library/Logs/loop-macos/com.user.loop-macos.sync-anthropic-skills-sh.log</string>
+    <string>/Users/jhonsmith/Library/Logs/loop-macos/com.user.loop-macos.refresh-local-cache-sh.log</string>
     <key>StandardErrorPath</key>
-    <string>/Users/jhonsmith/Library/Logs/loop-macos/com.user.loop-macos.sync-anthropic-skills-sh.log</string>
+    <string>/Users/jhonsmith/Library/Logs/loop-macos/com.user.loop-macos.refresh-local-cache-sh.log</string>
 
     <key>RunAtLoad</key>
     <false/>

@@ -3,12 +3,12 @@
   "evals": [
     {
       "id": 0,
-      "prompt": "loop_macos each day run bash ~/.claude/my-marketplace/bin/sync-anthropic-skills.sh",
+      "prompt": "loop_macos each day run bash ~/.claude/my-marketplace/bin/refresh-local-cache.sh",
       "expected_output": "Plist uses StartCalendarInterval (daily). Command runs the bash script. Label follows com.user.loop-macos.* format. Interval phrase 'each day' not leaked into command string.",
       "files": [],
       "assertions": [
         {"name": "uses_StartCalendarInterval", "check": "output.plist contains '<key>StartCalendarInterval</key>'"},
-        {"name": "script_path_preserved", "check": "output.plist command contains 'sync-anthropic-skills.sh'"},
+        {"name": "script_path_preserved", "check": "output.plist command contains 'refresh-local-cache.sh'"},
         {"name": "label_format_correct", "check": "label starts with 'com.user.loop-macos.'"},
         {"name": "no_interval_in_command", "check": "command string does not contain 'each day' or 'daily'"},
         {"name": "valid_plist", "check": "plutil -lint output.plist exits 0"}

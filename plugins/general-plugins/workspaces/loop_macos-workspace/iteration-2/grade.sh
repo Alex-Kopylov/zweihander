@@ -17,7 +17,7 @@ echo "=== eval-0-daily-shell [with_skill] ==="
 P="$ITER/eval-0-daily-shell/with_skill/outputs/output.plist"
 [ -f "$P" ] || { echo "  MISSING"; ((FAIL++)); }
 check "uses_StartCalendarInterval"  "$(contains "$P" '<key>StartCalendarInterval</key>')"
-check "script_path_preserved"       "$(contains "$P" 'sync-anthropic-skills.sh')"
+check "script_path_preserved"       "$(contains "$P" 'refresh-local-cache.sh')"
 check "label_com.user.loop-macos"   "$(contains "$P" 'com.user.loop-macos.')"
 check "no_each_day_in_command"      "$(not_contains "$P" 'each day')"
 check "tilde_expanded"              "$(not_contains "$P" '~/')"
