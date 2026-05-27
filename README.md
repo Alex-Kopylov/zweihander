@@ -65,7 +65,7 @@ Python development workflow — pytest execution and review helpers, conventiona
 
 General-purpose workflow and setup utilities.
 
-**Skills:** ai-setup-audit, ai-insights-hunter, daily, interview, loop_macos, md-bloat-hunter, mega-cmd, pr-address-comments, pr-comment, task-management
+**Skills:** ai-setup-audit, ai-insights-hunter, create-team, daily, interview, loop_macos, md-bloat-hunter, mega-cmd, pr-address-comments, pr-comment, spec-interview, task-management
 
 `/md-bloat-hunter [path]` audits a markdown file or a non-recursive directory
 of direct child `*.md` files for redundancy, verbosity, filler, and vocabulary
