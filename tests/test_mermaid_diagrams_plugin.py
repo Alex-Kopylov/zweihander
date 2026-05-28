@@ -5,6 +5,7 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 PLUGIN_ROOT = REPO_ROOT / "plugins" / "mermaid-diagrams"
+TOOLING_ROOT = PLUGIN_ROOT / "plugin_maintenance"
 
 
 def read_text(relative_path: str) -> str:
@@ -83,41 +84,38 @@ def test_linter_schema_reports_status_input_and_errors() -> None:
     assert sorted(schema["properties"]) == ["errors", "input", "status"]
 
 
-def test_sync_scripts_are_plugin_scoped() -> None:
-    script_text = "\n".join(
-        [
-            (PLUGIN_ROOT / "scripts" / "update-generated-docs.mjs").read_text(
-                encoding="utf-8"
-            ),
-            (PLUGIN_ROOT / "scripts" / "sync-mermaid-docs.mjs").read_text(
-                encoding="utf-8"
-            ),
-        ]
-    )
+def test_python_tooling_is_plugin_scoped() -> None:
+    generated_docs = read_text("plugin_maintenance/generated_docs.py")
+    sync = read_text("plugin_maintenance/sync.py")
+    template = read_text("plugin_maintenance/templates/mermaid_skill.md")
 
-    assert "skills/mermaid/references" in script_text
-    assert "mermaid-lint" in script_text
-    assert ".claude/skills" not in script_text
-    assert "Claude" not in script_text
-    assert "rootDir, 'README.md'" not in script_text
+    assert (TOOLING_ROOT / "__init__.py").is_file()
+    assert (TOOLING_ROOT / "generated_docs.py").is_file()
+    assert (TOOLING_ROOT / "sync.py").is_file()
+    assert (TOOLING_ROOT / "templates" / "mermaid_skill.md").is_file()
+    assert (TOOLING_ROOT / "templates" / "readme.md").is_file()
+    assert not (PLUGIN_ROOT / "scripts" / "update-generated-docs.mjs").exists()
+    assert not (PLUGIN_ROOT / "scripts" / "sync-mermaid-docs.mjs").exists()
+
+    combined = "\n".join([generated_docs, sync, template])
+    assert "skills/mermaid/references" in combined
+    assert ".claude/skills" not in combined
+    assert "Claude" not in combined
+    assert "User requirements: $ARGUMENTS" not in combined
 
 
-def test_sync_scripts_preflight_sources_and_preserve_sync_status() -> None:
-    update_script = (PLUGIN_ROOT / "scripts" / "update-generated-docs.mjs").read_text(
-        encoding="utf-8"
-    )
-    sync_script = (PLUGIN_ROOT / "scripts" / "sync-mermaid-docs.mjs").read_text(
-        encoding="utf-8"
-    )
+def test_python_sync_preserves_first_port_safety_gates() -> None:
+    generated_docs = read_text("plugin_maintenance/generated_docs.py")
+    sync = read_text("plugin_maintenance/sync.py")
 
-    assert "existingSyncStatus" in update_script
-    assert "MERMAID_DOCS_NAVIGATION" in update_script
-    assert "Mermaid docs navigation file not found" in update_script
-    assert "THIRD_PARTY_NOTICES.md" in update_script
-    assert "renderThirdPartyNotices" in update_script
-    assert "preflightSyncSource" in sync_script
-    assert "existingSyncMetadata" in sync_script
-    assert "existingSyncMetadata?.commit === sourceCommit" in sync_script
+    assert "existing_sync_status" in generated_docs
+    assert "MERMAID_DOCS_NAVIGATION" in generated_docs
+    assert "Mermaid docs navigation file not found" in generated_docs
+    assert "THIRD_PARTY_NOTICES.md" in generated_docs
+    assert "render_third_party_notices" in generated_docs
+    assert "preflight_sync_source" in sync
+    assert "existing_sync_metadata" in sync
+    assert "existing_sync_metadata.commit == source_commit" in sync
 
 
 def test_sync_workflow_targets_mermaid_plugin_paths() -> None:
@@ -129,9 +127,13 @@ def test_sync_workflow_targets_mermaid_plugin_paths() -> None:
     assert "pull_request:" in workflow
     assert "validate-generated-files:" in workflow
     assert "sync-docs:" in workflow
-    assert "plugins/mermaid-diagrams/scripts/sync-mermaid-docs.mjs" in workflow
+    assert "astral-sh/setup-uv" in workflow
+    assert "uv run --project plugins/mermaid-diagrams" in workflow
+    assert "python -m plugin_maintenance.generated_docs" in workflow
+    assert "python -m plugin_maintenance.sync mermaid-source" in workflow
+    assert "plugins/mermaid-diagrams/scripts/sync-mermaid-docs.mjs" not in workflow
+    assert "node plugins/mermaid-diagrams/scripts/update-generated-docs.mjs" not in workflow
     assert "plugins/mermaid-diagrams/skills/** plugins/mermaid-diagrams/README.md" in workflow
-    assert "node plugins/mermaid-diagrams/scripts/update-generated-docs.mjs" in workflow
     assert (
         "git diff --exit-code -- plugins/mermaid-diagrams/skills/mermaid/SKILL.md "
         "plugins/mermaid-diagrams/README.md "
@@ -147,6 +149,16 @@ def test_sync_workflow_targets_mermaid_plugin_paths() -> None:
         workflow,
     )
     assert "npm run" not in workflow
+
+
+def test_plugin_python_project_declares_tooling_entrypoints() -> None:
+    pyproject = read_text("pyproject.toml")
+
+    assert 'name = "mermaid-diagrams"' in pyproject
+    assert 'requires-python = ">=3.12"' in pyproject
+    assert 'update-generated-docs = "plugin_maintenance.generated_docs:main"' in pyproject
+    assert 'sync-mermaid-docs = "plugin_maintenance.sync:main"' in pyproject
+    assert (PLUGIN_ROOT / "uv.lock").is_file()
 
 
 def test_plugin_manifests_point_to_neutral_skills() -> None:
