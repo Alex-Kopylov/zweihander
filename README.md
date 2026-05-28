@@ -84,7 +84,6 @@ classDiagram
 direction LR
 
 class Langfuse["langfuse"]:::langfuse {
-  Best for: traces, evals, dashboards
   +analyze-experiment-results
   +compare-experiments
   +configure-remote-experiment
@@ -122,18 +121,15 @@ class LangfuseAgents["langfuse agents"]:::langfuseAgents {
 }
 
 class OpenAPITools["openapi-tools"]:::openapi {
-  Best for: OpenAPI discovery
   +openapi-list
   +openapi-inspect
 }
 
 class LLMApplicationDev["llm-application-dev"]:::llm {
-  Best for: schema-guided LLM apps
   +schema-guided-reasoning
 }
 
 class PythonDevWorkflow["python-dev-workflow"]:::python {
-  Best for: Python tests and Celery
   +celery-expert
   +pytest-redis
   +writing-unit-tests
@@ -144,7 +140,6 @@ class PythonDevWorkflowAgents["python-dev-workflow agents"]:::pythonAgents {
 }
 
 class DevWorkflow["dev-workflow"]:::dev {
-  Best for: git, PRs, specs
   +commit
   +create-pr
   +pr-address-comments
@@ -164,7 +159,6 @@ class DevWorkflowAgents["dev-workflow agents"]:::devAgents {
 }
 
 class WorkSessionTools["work-session-tools"]:::session {
-  Best for: session orchestration
   +create-team
   +daily
   +interview
@@ -172,7 +166,6 @@ class WorkSessionTools["work-session-tools"]:::session {
 }
 
 class AIAssistantOps["ai-assistant-ops"]:::ops {
-  Best for: assistant setup and docs
   +agents-md-improver
   +ai-insights-hunter
   +ai-setup-audit
@@ -194,17 +187,14 @@ class MDBloatHunterAgents["md-bloat-hunter agents"]:::opsAgents {
 }
 
 class OSTools["os-tools"]:::os {
-  Best for: macOS automation
   +loop_macos
 }
 
 class CloudStorageTools["cloud-storage-tools"]:::storage {
-  Best for: encrypted file storage
   +mega-cmd
 }
 
 class JobHuntToolkit["job-hunt-toolkit"]:::job {
-  Best for: job applications
   +export-pdf
   +init-workspace
   +new-application
