@@ -317,6 +317,17 @@ HTML-to-PDF export, PDF metadata scrubbing, or a final pre-send checklist.
 | `resume-tailoring` | Tailor a CV to a job description without fabrication. |
 | `scrub-pdf-metadata` | Strip sensitive PDF metadata before sending. |
 
+## Recommended Third-Party Plugins
+
+These are useful companion plugin and skill collections to consider alongside
+this marketplace:
+
+- [browser-harness](https://github.com/browser-use/browser-harness) - direct browser control through CDP.
+- [plannotator](https://github.com/backnotprop/plannotator) - browser-based plan review, annotation, and visual explanation workflows.
+- [worktrunk](https://github.com/max-sixty/worktrunk) - worktree and branch workflow support.
+- [ralphex](https://github.com/umputun/ralphex) - AI-assisted development planning and project workflow tools.
+- [wshobson/agents](https://github.com/wshobson/agents) - Claude Code workflow skills for Python, LLM applications, debugging, testing, and PR work.
+
 ## Runtime Support
 
 | Runtime | Marketplace metadata | Plugin metadata |
