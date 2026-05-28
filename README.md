@@ -84,20 +84,40 @@ flowchart TB
 
 subgraph RowOne[" "]
   direction LR
-  Langfuse["langfuse<br/>Trace exploration, datasets,<br/>evaluators, dashboards, and experiments"]:::langfuse
-  OpenAPITools["openapi-tools<br/>List and inspect OpenAPI endpoints<br/>on running services"]:::openapi
-  LLMApplicationDev["llm-application-dev<br/>Schema-guided reasoning patterns<br/>for LLM application design"]:::llm
-  PythonDevWorkflow["python-dev-workflow<br/>Pytest, Redis test patterns,<br/>Celery, and unit-test review agents"]:::python
-  DevWorkflow["dev-workflow<br/>Commits, PRs, tickets, releases,<br/>and review-comment workflows"]:::dev
+  Langfuse["`**langfuse**
+  Trace exploration, datasets,
+  evaluators, dashboards, and experiments`"]:::langfuse
+  OpenAPITools["`**openapi-tools**
+  List and inspect OpenAPI endpoints
+  on running services`"]:::openapi
+  LLMApplicationDev["`**llm-application-dev**
+  Schema-guided reasoning patterns
+  for LLM application design`"]:::llm
+  PythonDevWorkflow["`**python-dev-workflow**
+  Pytest, Redis test patterns,
+  Celery, and unit-test review agents`"]:::python
+  DevWorkflow["`**dev-workflow**
+  Commits, PRs, tickets, releases,
+  and review-comment workflows`"]:::dev
 end
 
 subgraph RowTwo[" "]
   direction LR
-  WorkSessionTools["work-session-tools<br/>Daily notes, task tracking,<br/>interviews, and team planning"]:::session
-  AIAssistantOps["ai-assistant-ops<br/>Assistant setup audits, AGENTS.md hygiene,<br/>memory capture, and Markdown cleanup"]:::ops
-  OSTools["os-tools<br/>Local macOS automation utilities<br/>for assistant workflows"]:::os
-  CloudStorageTools["cloud-storage-tools<br/>User-file storage workflows for<br/>Dropbox, Drive, OneDrive, and MEGA"]:::storage
-  JobHuntToolkit["job-hunt-toolkit<br/>Versioned job applications with<br/>resume tailoring and PDF checks"]:::job
+  WorkSessionTools["`**work-session-tools**
+  Daily notes, task tracking,
+  interviews, and team planning`"]:::session
+  AIAssistantOps["`**ai-assistant-ops**
+  Assistant setup audits, AGENTS.md hygiene,
+  memory capture, and Markdown cleanup`"]:::ops
+  OSTools["`**os-tools**
+  Local macOS automation utilities
+  for assistant workflows`"]:::os
+  CloudStorageTools["`**cloud-storage-tools**
+  User-file storage workflows for
+  Dropbox, Drive, OneDrive, and MEGA`"]:::storage
+  JobHuntToolkit["`**job-hunt-toolkit**
+  Versioned job applications with
+  resume tailoring and PDF checks`"]:::job
 end
 
 Langfuse ~~~ OpenAPITools ~~~ LLMApplicationDev ~~~ PythonDevWorkflow ~~~ DevWorkflow
