@@ -120,9 +120,17 @@ subgraph RowTwo[" "]
   resume tailoring and PDF checks`"]:::job
 end
 
+subgraph RowThree[" "]
+  direction LR
+  MermaidDiagrams["`**mermaid-diagrams**
+  Mermaid generation,
+  syntax references, and linting`"]:::mermaid
+end
+
 Langfuse ~~~ OpenAPITools ~~~ LLMApplicationDev ~~~ PythonDevWorkflow ~~~ DevWorkflow
 WorkSessionTools ~~~ AIAssistantOps ~~~ OSTools ~~~ CloudStorageTools ~~~ JobHuntToolkit
 RowOne ~~~ RowTwo
+RowTwo ~~~ RowThree
 
 classDef langfuse fill:#dff7ff,stroke:#0284c7,stroke-width:2px,color:#0f172a;
 classDef openapi fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#052e16;
@@ -134,8 +142,10 @@ classDef ops fill:#fce7f3,stroke:#db2777,stroke-width:2px,color:#500724;
 classDef os fill:#e0e7ff,stroke:#4f46e5,stroke-width:2px,color:#1e1b4b;
 classDef storage fill:#ecfccb,stroke:#65a30d,stroke-width:2px,color:#1a2e05;
 classDef job fill:#ffedd5,stroke:#ea580c,stroke-width:2px,color:#431407;
+classDef mermaid fill:#f0fdf4,stroke:#059669,stroke-width:2px,color:#052e16;
 style RowOne fill:transparent,stroke:transparent,color:transparent;
 style RowTwo fill:transparent,stroke:transparent,color:transparent;
+style RowThree fill:transparent,stroke:transparent,color:transparent;
 ```
 
 ## Plugins
@@ -257,6 +267,23 @@ review comments, ticket branches, status updates, version bumps, or spec checks.
 | `release-manager` | Coordinates version bump and commit workflows. |
 | `structural-contradiction-hunter` | Finds deeper logical and scope conflicts. |
 | `surface-contradiction-hunter` | Finds direct, explicit contradictions. |
+
+### `mermaid-diagrams`
+
+<details>
+<summary>Generate and validate Mermaid diagrams with synced syntax references.</summary>
+
+**Use when:** you want to create Mermaid diagrams from requirements or validate
+Mermaid code blocks with the Mermaid CLI.
+
+**Skills**
+
+| Skill | Description |
+|---|---|
+| `mermaid` | Generate Mermaid diagrams from user requirements with local syntax references. |
+| `mermaid-lint` | Validate Mermaid code blocks with `mmdc` and report lint status and errors. |
+
+</details>
 
 ### `work-session-tools`
 

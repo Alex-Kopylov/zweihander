@@ -65,6 +65,18 @@
       "category": "Development"
     },
     {
+      "name": "mermaid-diagrams",
+      "source": {
+        "source": "local",
+        "path": "./plugins/mermaid-diagrams"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Development"
+    },
+    {
       "name": "work-session-tools",
       "source": {
         "source": "local",

@@ -1,0 +1,94 @@
+name: Sync Mermaid Docs
+
+on:
+  schedule:
+    - cron: "0 0 * * 0"
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - ".github/workflows/sync-mermaid-docs.yml"
+      - "plugins/mermaid-diagrams/**"
+      - "tests/test_mermaid_diagrams_plugin.py"
+
+jobs:
+  validate-generated-files:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout current repository
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Install test runner
+        run: python -m pip install pytest
+
+      - name: Regenerate files from bundled references
+        run: node plugins/mermaid-diagrams/scripts/update-generated-docs.mjs
+
+      - name: Check generated files are current
+        run: git diff --exit-code -- plugins/mermaid-diagrams/skills/mermaid/SKILL.md plugins/mermaid-diagrams/README.md plugins/mermaid-diagrams/THIRD_PARTY_NOTICES.md
+
+      - name: Validate plugin files
+        run: python -m pytest -q tests/test_mermaid_diagrams_plugin.py
+
+  sync-docs:
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout current repository
+        uses: actions/checkout@v6
+
+      - name: Checkout mermaid docs
+        uses: actions/checkout@v6
+        with:
+          repository: mermaid-js/mermaid
+          path: plugins/mermaid-diagrams/mermaid-source
+          sparse-checkout: |
+            /docs/syntax
+            /docs/config
+            /packages/mermaid/src/docs/.vitepress/config.ts
+          sparse-checkout-cone-mode: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Install test runner
+        run: python -m pip install pytest
+
+      - name: Sync docs and regenerate plugin files
+        run: node plugins/mermaid-diagrams/scripts/sync-mermaid-docs.mjs mermaid-source
+
+      - name: Validate generated files
+        run: python -m pytest -q tests/test_mermaid_diagrams_plugin.py
+
+      - name: Cleanup mermaid source checkout
+        run: rm -rf plugins/mermaid-diagrams/mermaid-source
+
+      - name: Commit and push changes
+        if: github.event_name != 'pull_request'
+        uses: stefanzweifel/git-auto-commit-action@v7
+        with:
+          commit_message: "docs: sync mermaid syntax and config docs"
+          file_pattern: "plugins/mermaid-diagrams/skills/** plugins/mermaid-diagrams/README.md plugins/mermaid-diagrams/THIRD_PARTY_NOTICES.md"
