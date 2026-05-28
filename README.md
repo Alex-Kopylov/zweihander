@@ -1,113 +1,326 @@
 # My Marketplace
 
-A collection of agent plugins for LLM observability, API exploration, and development workflows.
+A personal marketplace of agent plugins for Codex and Claude Code.
 
-## Installation
+This marketplace collects practical plugins for LLM observability, API
+exploration, development workflows, assistant operations, cloud storage, local
+automation, and job-search workflows.
 
-This repository publishes marketplace metadata for both supported plugin runtimes:
+## Notes for Users
 
-- `.claude-plugin/marketplace.json`
-- `.agents/plugins/marketplace.json`
+Use this README when you want to install the marketplace, install a plugin, or
+choose what each plugin is for. Developer and maintenance notes live in
+`AGENTS.md`.
 
-## Shared Instructions
+## Quick Install
 
-Use `AGENTS.md` as the shared instruction file when a plugin needs runtime
-context. Runtimes that read `AGENTS.md` can consume it directly.
+### Codex
 
-For runtimes that read `CLAUDE.md`, keep a sibling `CLAUDE.md` next to every
-`AGENTS.md` and import the shared file:
+Add the marketplace:
 
-```md
-@AGENTS.md
+```shell
+codex plugin marketplace add Alex-Kopylov/my-marketplace
 ```
 
-This keeps both supported runtimes on the same instructions without copying
-content between files.
+Install a plugin:
+
+```shell
+codex plugin add langfuse@my-marketplace
+```
+
+List available plugins:
+
+```shell
+codex plugin list
+```
+
+Update the installed marketplace:
+
+```shell
+codex plugin marketplace upgrade my-marketplace
+```
+
+### Claude Code
+
+Add the marketplace from inside Claude Code:
 
 ```shell
 /plugin marketplace add Alex-Kopylov/my-marketplace
 ```
 
-Use the equivalent marketplace add command if your runtime uses a CLI command
-instead of slash commands.
-
-Then install individual plugins:
+Install a plugin:
 
 ```shell
 /plugin install langfuse@my-marketplace
 ```
 
+Update the installed marketplace:
+
+```shell
+/plugin marketplace update my-marketplace
+```
+
+For scripts or automation, use the non-interactive CLI:
+
+```shell
+claude plugin marketplace add Alex-Kopylov/my-marketplace
+claude plugin install langfuse@my-marketplace
+claude plugin marketplace update my-marketplace
+```
+
+## How to Use
+
+1. Add this marketplace to Codex or Claude Code.
+2. Pick a plugin from the catalog below.
+3. Install the plugin with `plugin@my-marketplace`, for example
+   `langfuse@my-marketplace`.
+4. Ask the assistant naturally for the workflow you want. The installed plugin
+   contributes skills, agents, or both.
+
+## Plugin Catalog
+
+```mermaid
+flowchart TB
+
+subgraph RowOne[" "]
+  direction LR
+  Langfuse["langfuse<br/>Trace exploration, datasets,<br/>evaluators, dashboards, and experiments"]:::langfuse
+  OpenAPITools["openapi-tools<br/>List and inspect OpenAPI endpoints<br/>on running services"]:::openapi
+  LLMApplicationDev["llm-application-dev<br/>Schema-guided reasoning patterns<br/>for LLM application design"]:::llm
+  PythonDevWorkflow["python-dev-workflow<br/>Pytest, Redis test patterns,<br/>Celery, and unit-test review agents"]:::python
+  DevWorkflow["dev-workflow<br/>Commits, PRs, tickets, releases,<br/>and review-comment workflows"]:::dev
+end
+
+subgraph RowTwo[" "]
+  direction LR
+  WorkSessionTools["work-session-tools<br/>Daily notes, task tracking,<br/>interviews, and team planning"]:::session
+  AIAssistantOps["ai-assistant-ops<br/>Assistant setup audits, AGENTS.md hygiene,<br/>memory capture, and Markdown cleanup"]:::ops
+  OSTools["os-tools<br/>Local macOS automation utilities<br/>for assistant workflows"]:::os
+  CloudStorageTools["cloud-storage-tools<br/>User-file storage workflows for<br/>Dropbox, Drive, OneDrive, and MEGA"]:::storage
+  JobHuntToolkit["job-hunt-toolkit<br/>Versioned job applications with<br/>resume tailoring and PDF checks"]:::job
+end
+
+Langfuse ~~~ OpenAPITools ~~~ LLMApplicationDev ~~~ PythonDevWorkflow ~~~ DevWorkflow
+WorkSessionTools ~~~ AIAssistantOps ~~~ OSTools ~~~ CloudStorageTools ~~~ JobHuntToolkit
+RowOne ~~~ RowTwo
+
+classDef langfuse fill:#dff7ff,stroke:#0284c7,stroke-width:2px,color:#0f172a;
+classDef openapi fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#052e16;
+classDef llm fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#451a03;
+classDef python fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#2e1065;
+classDef dev fill:#fee2e2,stroke:#dc2626,stroke-width:2px,color:#450a0a;
+classDef session fill:#ccfbf1,stroke:#0f766e,stroke-width:2px,color:#042f2e;
+classDef ops fill:#fce7f3,stroke:#db2777,stroke-width:2px,color:#500724;
+classDef os fill:#e0e7ff,stroke:#4f46e5,stroke-width:2px,color:#1e1b4b;
+classDef storage fill:#ecfccb,stroke:#65a30d,stroke-width:2px,color:#1a2e05;
+classDef job fill:#ffedd5,stroke:#ea580c,stroke-width:2px,color:#431407;
+style RowOne fill:transparent,stroke:transparent,color:transparent;
+style RowTwo fill:transparent,stroke:transparent,color:transparent;
+```
+
 ## Plugins
 
-### langfuse
+### `langfuse`
 
-General-purpose Langfuse integration for data exploration, dashboard management, prompt versioning, datasets, and experiments.
+**Use when:** you need to inspect Langfuse data, create or update evaluation
+assets, compare experiment runs, or manage dashboard widgets.
 
-**Skills:** analyze-experiment-results, compare-experiments, configure-remote-experiment, create-dataset, create-evaluator, create-widget, delete-evaluator, delete-widget, design-dataset-schema, discover-datasets, discover-filter-options, discover-models, discover-scores, discover-traces, inspect-evaluator, layout-widgets, list-dataset-runs, list-evaluators, list-widgets, manage-dashboard, manage-dataset-items, query-metrics, suggest-widgets, toggle-evaluator-status, trigger-experiment, update-evaluator, update-widget
+**Skills**
 
-**Agents:** langfuse-data-explorer, langfuse-dataset-expert, langfuse-eval-manager, langfuse-experiment-manager, langfuse-widget-manager
+| Skill | Description |
+|---|---|
+| `analyze-experiment-results` | Analyze scores and per-item results for a dataset run. |
+| `compare-experiments` | Compare experiment runs and detect regressions. |
+| `configure-remote-experiment` | Configure remote experiment webhooks and payloads. |
+| `create-dataset` | Create Langfuse datasets with optional schemas. |
+| `create-evaluator` | Create LLM-as-a-Judge evaluators. |
+| `create-widget` | Create dashboard widgets. |
+| `delete-evaluator` | Remove evaluators after safety checks. |
+| `delete-widget` | Remove dashboard widgets safely. |
+| `design-dataset-schema` | Design dataset item input and output schemas. |
+| `discover-datasets` | List datasets, items, runs, and metadata. |
+| `discover-filter-options` | Discover trace filter values for evaluators. |
+| `discover-models` | List tracked models and pricing. |
+| `discover-scores` | Enumerate score names, types, and sources. |
+| `discover-traces` | Explore trace names, tags, environments, and users. |
+| `inspect-evaluator` | Show evaluator prompts, versions, and job configs. |
+| `layout-widgets` | Calculate dashboard widget grid placement. |
+| `list-dataset-runs` | Browse experiment runs for datasets. |
+| `list-evaluators` | Summarize evaluator configurations. |
+| `list-widgets` | Inventory dashboard widgets. |
+| `manage-dashboard` | Create, update, delete, and arrange dashboards. |
+| `manage-dataset-items` | Add, update, archive, delete, or import dataset items. |
+| `query-metrics` | Query Langfuse metrics and aggregates. |
+| `suggest-widgets` | Recommend useful dashboard visualizations. |
+| `toggle-evaluator-status` | Enable, disable, pause, or resume evaluators. |
+| `trigger-experiment` | Start dataset runs or remote experiments. |
+| `update-evaluator` | Update evaluator prompts, filters, or model config. |
+| `update-widget` | Modify existing widget configuration. |
 
-### openapi-tools
+**Agents**
 
-Skills for listing and inspecting OpenAPI endpoints on running services.
+| Agent | Description |
+|---|---|
+| `langfuse-data-explorer` | Read-only discovery for scores, traces, models, and metrics. |
+| `langfuse-dataset-expert` | Dataset creation, item management, and schema design. |
+| `langfuse-eval-manager` | Evaluator CRUD, filters, and status management. |
+| `langfuse-experiment-manager` | Experiment runs, analysis, comparison, and webhooks. |
+| `langfuse-widget-manager` | Dashboard and widget creation, updates, and suggestions. |
 
-**Skills:** openapi-inspect, openapi-list
+### `openapi-tools`
 
-### llm-application-dev
+**Use when:** you have a running API service and want the assistant to discover
+available endpoints or inspect operation details.
+
+**Skills**
+
+| Skill | Description |
+|---|---|
+| `openapi-list` | List available OpenAPI routes. |
+| `openapi-inspect` | Inspect endpoint inputs, outputs, and schema details. |
+
+### `llm-application-dev`
 
 LLM application design and schema-guided reasoning patterns.
 
-**Skills:** schema-guided-reasoning
+**Skills**
 
-### python-dev-workflow
+| Skill | Description |
+|---|---|
+| `schema-guided-reasoning` | Design structured Pydantic schemas that guide LLM reasoning. |
 
-Python-specific pytest, Redis test patterns, Celery, and unit-test review/execution agents.
+### `python-dev-workflow`
 
-**Skills:** celery-expert, pytest-redis, writing-unit-tests
+**Use when:** you are writing or reviewing Python tests, working with Redis test
+isolation, or configuring Celery for production behavior.
 
-**Agents:** test-runner, test-unit-reviewer
+**Skills**
 
-### dev-workflow
+| Skill | Description |
+|---|---|
+| `celery-expert` | Configure Celery, workers, retries, schedules, and tests. |
+| `pytest-redis` | Test Redis code with fakeredis, fixtures, or containers. |
+| `writing-unit-tests` | Write pytest unit tests with reliable mocks and fixtures. |
 
-Git, PRs, tickets, releases, and review-comment workflows.
+**Agents**
 
-**Skills:** commit, create-pr, pr-address-comments, pr-checkout, pr-comment, spec-contradiction-hunter, spec-interview, ticket-branch, ticket-comment-status, version-bumper
+| Agent | Description |
+|---|---|
+| `test-runner` | Run focused pytest or `uv run pytest` commands. |
+| `test-unit-reviewer` | Review unit tests for quality, coverage, and patterns. |
 
-**Agents:** ambiguity-contradiction-hunter, release-manager, structural-contradiction-hunter, surface-contradiction-hunter
+### `dev-workflow`
 
-### work-session-tools
+**Use when:** you need structured development workflow support: commits, PRs,
+review comments, ticket branches, status updates, version bumps, or spec checks.
 
-Productivity and orchestration inside an assistant session.
+**Skills**
 
-**Skills:** create-team, daily, interview, task-management
+| Skill | Description |
+|---|---|
+| `commit` | Create single-line Conventional Commits. |
+| `create-pr` | Open pull requests from the current branch. |
+| `pr-address-comments` | Fetch, fix, reply to, and resolve PR feedback. |
+| `pr-checkout` | Switch to a PR branch for review or changes. |
+| `pr-comment` | Post general or inline PR comments. |
+| `spec-contradiction-hunter` | Find contradictions and inconsistencies in specs. |
+| `spec-interview` | Interview the user and produce an implementation spec. |
+| `ticket-branch` | Create a git branch from a ticket ID or URL. |
+| `ticket-comment-status` | Post status updates to tickets or work items. |
+| `version-bumper` | Bump versions in plugin and package metadata. |
 
-### ai-assistant-ops
+**Agents**
 
-Assistant setup, instruction hygiene, memory capture, and markdown/prompt maintenance.
+| Agent | Description |
+|---|---|
+| `ambiguity-contradiction-hunter` | Finds hidden contradictions from vague language. |
+| `release-manager` | Coordinates version bump and commit workflows. |
+| `structural-contradiction-hunter` | Finds deeper logical and scope conflicts. |
+| `surface-contradiction-hunter` | Finds direct, explicit contradictions. |
 
-**Skills:** agents-md-improver, ai-insights-hunter, ai-setup-audit, md-bloat-hunter
+### `work-session-tools`
 
-### os-tools
+**Use when:** you want daily notes, task tracking, structured interviews, or a
+designed multi-agent team for a larger work session.
+
+**Skills**
+
+| Skill | Description |
+|---|---|
+| `create-team` | Design a multi-agent team and handoff plan. |
+| `daily` | Generate a daily note from project activity. |
+| `interview` | Walk through a list of items one by one. |
+| `task-management` | Track, split, and orchestrate session tasks. |
+
+### `ai-assistant-ops`
+
+**Use when:** you want to audit assistant instructions, improve AGENTS.md files,
+capture useful session insights, or reduce Markdown bloat.
+
+**Skills**
+
+| Skill | Description |
+|---|---|
+| `agents-md-improver` | Audit and improve repository AGENTS.md files. |
+| `ai-insights-hunter` | Extract reusable decisions, patterns, and preferences from a session. |
+| `ai-setup-audit` | Audit assistant configuration files for conflicts and bloat. |
+| `md-bloat-hunter` | Trim redundancy, verbosity, and filler in Markdown. |
+
+**Skill Agents**
+
+| Skill | Agent | Description |
+|---|---|---|
+| `ai-insights-hunter` | `decisions-hunter` | Extracts durable decisions from a conversation. |
+| `ai-insights-hunter` | `patterns-hunter` | Finds recurring workflow and implementation patterns. |
+| `ai-insights-hunter` | `preferences-hunter` | Identifies user preferences worth preserving. |
+| `ai-insights-hunter` | `project-context-hunter` | Captures project-specific context and constraints. |
+| `md-bloat-hunter` | `directory-redundancy-detector` | Finds repeated guidance across Markdown directories. |
+| `md-bloat-hunter` | `file-orchestrator` | Coordinates per-file Markdown cleanup. |
+| `md-bloat-hunter` | `filler-eliminator` | Removes low-value filler language. |
+| `md-bloat-hunter` | `redundancy-detector` | Spots repeated content inside files. |
+| `md-bloat-hunter` | `verbosity-pruner` | Compresses overlong explanations. |
+| `md-bloat-hunter` | `vocab-compressor` | Replaces inflated wording with direct wording. |
+
+### `os-tools`
 
 Operating-system utilities for local machine automation.
 
-**Skills:** loop_macos
+**Skills**
 
-### cloud-storage-tools
+| Skill | Description |
+|---|---|
+| `loop_macos` | Schedule persistent macOS launchd commands or prompts. |
 
-Dropbox, Google Drive, OneDrive, and MEGA style user-file storage tools.
+### `cloud-storage-tools`
 
-**Skills:** mega-cmd
+Cloud storage workflows for MEGA-style user-file storage tools.
 
-### job-hunt-toolkit
+**Skills**
 
-Version-controlled job application workspace with resume tailoring, PDF export, metadata scrubbing, and pre-send checks.
+| Skill | Description |
+|---|---|
+| `mega-cmd` | Manage encrypted MEGA storage, links, sync, search, and backups. |
 
-**Skills:** export-pdf, init-workspace, new-application, prepare-to-send, resume-tailoring, scrub-pdf-metadata
+### `job-hunt-toolkit`
+
+**Use when:** you want a structured job application workspace, tailored resumes,
+HTML-to-PDF export, PDF metadata scrubbing, or a final pre-send checklist.
+
+**Skills**
+
+| Skill | Description |
+|---|---|
+| `export-pdf` | Render HTML CVs to PDF with headless Chromium. |
+| `init-workspace` | Scaffold the job application workspace. |
+| `new-application` | Create a company application folder and starter files. |
+| `prepare-to-send` | Run final filename, metadata, and content checks. |
+| `resume-tailoring` | Tailor a CV to a job description without fabrication. |
+| `scrub-pdf-metadata` | Strip sensitive PDF metadata before sending. |
 
 ## Recommended Third-Party Plugins
 
-These are useful companion plugin and skill collections to consider alongside this marketplace:
+These are useful companion plugin and skill collections to consider alongside
+this marketplace:
 
 - [browser-harness](https://github.com/browser-use/browser-harness) - direct browser control through CDP.
 - [plannotator](https://github.com/backnotprop/plannotator) - browser-based plan review, annotation, and visual explanation workflows.
@@ -115,8 +328,14 @@ These are useful companion plugin and skill collections to consider alongside th
 - [ralphex](https://github.com/umputun/ralphex) - AI-assisted development planning and project workflow tools.
 - [wshobson/agents](https://github.com/wshobson/agents) - Claude Code workflow skills for Python, LLM applications, debugging, testing, and PR work.
 
-## Updating
+## Runtime Support
 
-```shell
-/plugin marketplace update my-marketplace
-```
+| Runtime | Marketplace metadata | Plugin metadata |
+|---|---|---|
+| Codex | `.agents/plugins/marketplace.json` | `plugins/*/.codex-plugin/plugin.json` |
+| Claude Code | `.claude-plugin/marketplace.json` | `plugins/*/.claude-plugin/plugin.json` |
+
+## Official References
+
+- [Codex plugin marketplace CLI](https://developers.openai.com/codex/cli/reference#codex-plugin-marketplace)
+- [Claude Code plugin marketplaces](https://code.claude.com/docs/en/plugin-marketplaces)
