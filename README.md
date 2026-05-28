@@ -80,149 +80,42 @@ claude plugin marketplace update my-marketplace
 ## Plugin Catalog
 
 ```mermaid
-classDiagram
-direction LR
+flowchart TB
 
-class Langfuse["langfuse"]:::langfuse {
-  +analyze-experiment-results
-  +compare-experiments
-  +configure-remote-experiment
-  +create-dataset
-  +create-evaluator
-  +create-widget
-  +delete-evaluator
-  +delete-widget
-  +design-dataset-schema
-  +discover-datasets
-  +discover-filter-options
-  +discover-models
-  +discover-scores
-  +discover-traces
-  +inspect-evaluator
-  +layout-widgets
-  +list-dataset-runs
-  +list-evaluators
-  +list-widgets
-  +manage-dashboard
-  +manage-dataset-items
-  +query-metrics
-  +suggest-widgets
-  +toggle-evaluator-status
-  +trigger-experiment
-  +update-evaluator
-  +update-widget
-}
-class LangfuseAgents["langfuse agents"]:::langfuseAgents {
-  +langfuse-data-explorer
-  +langfuse-dataset-expert
-  +langfuse-eval-manager
-  +langfuse-experiment-manager
-  +langfuse-widget-manager
-}
+subgraph RowOne[" "]
+  direction LR
+  Langfuse["langfuse<br/>Trace exploration, datasets,<br/>evaluators, dashboards, and experiments"]:::langfuse
+  OpenAPITools["openapi-tools<br/>List and inspect OpenAPI endpoints<br/>on running services"]:::openapi
+  LLMApplicationDev["llm-application-dev<br/>Schema-guided reasoning patterns<br/>for LLM application design"]:::llm
+  PythonDevWorkflow["python-dev-workflow<br/>Pytest, Redis test patterns,<br/>Celery, and unit-test review agents"]:::python
+  DevWorkflow["dev-workflow<br/>Commits, PRs, tickets, releases,<br/>and review-comment workflows"]:::dev
+end
 
-class OpenAPITools["openapi-tools"]:::openapi {
-  +openapi-list
-  +openapi-inspect
-}
+subgraph RowTwo[" "]
+  direction LR
+  WorkSessionTools["work-session-tools<br/>Daily notes, task tracking,<br/>interviews, and team planning"]:::session
+  AIAssistantOps["ai-assistant-ops<br/>Assistant setup audits, AGENTS.md hygiene,<br/>memory capture, and Markdown cleanup"]:::ops
+  OSTools["os-tools<br/>Local macOS automation utilities<br/>for assistant workflows"]:::os
+  CloudStorageTools["cloud-storage-tools<br/>User-file storage workflows for<br/>Dropbox, Drive, OneDrive, and MEGA"]:::storage
+  JobHuntToolkit["job-hunt-toolkit<br/>Versioned job applications with<br/>resume tailoring and PDF checks"]:::job
+end
 
-class LLMApplicationDev["llm-application-dev"]:::llm {
-  +schema-guided-reasoning
-}
-
-class PythonDevWorkflow["python-dev-workflow"]:::python {
-  +celery-expert
-  +pytest-redis
-  +writing-unit-tests
-}
-class PythonDevWorkflowAgents["python-dev-workflow agents"]:::pythonAgents {
-  +test-runner
-  +test-unit-reviewer
-}
-
-class DevWorkflow["dev-workflow"]:::dev {
-  +commit
-  +create-pr
-  +pr-address-comments
-  +pr-checkout
-  +pr-comment
-  +spec-contradiction-hunter
-  +spec-interview
-  +ticket-branch
-  +ticket-comment-status
-  +version-bumper
-}
-class DevWorkflowAgents["dev-workflow agents"]:::devAgents {
-  +ambiguity-contradiction-hunter
-  +release-manager
-  +structural-contradiction-hunter
-  +surface-contradiction-hunter
-}
-
-class WorkSessionTools["work-session-tools"]:::session {
-  +create-team
-  +daily
-  +interview
-  +task-management
-}
-
-class AIAssistantOps["ai-assistant-ops"]:::ops {
-  +agents-md-improver
-  +ai-insights-hunter
-  +ai-setup-audit
-  +md-bloat-hunter
-}
-class AIInsightsHunterAgents["ai-insights-hunter agents"]:::opsAgents {
-  +decisions-hunter
-  +patterns-hunter
-  +preferences-hunter
-  +project-context-hunter
-}
-class MDBloatHunterAgents["md-bloat-hunter agents"]:::opsAgents {
-  +directory-redundancy-detector
-  +file-orchestrator
-  +filler-eliminator
-  +redundancy-detector
-  +verbosity-pruner
-  +vocab-compressor
-}
-
-class OSTools["os-tools"]:::os {
-  +loop_macos
-}
-
-class CloudStorageTools["cloud-storage-tools"]:::storage {
-  +mega-cmd
-}
-
-class JobHuntToolkit["job-hunt-toolkit"]:::job {
-  +export-pdf
-  +init-workspace
-  +new-application
-  +prepare-to-send
-  +resume-tailoring
-  +scrub-pdf-metadata
-}
-
-Langfuse --> LangfuseAgents : agents
-PythonDevWorkflow --> PythonDevWorkflowAgents : agents
-DevWorkflow --> DevWorkflowAgents : agents
-AIAssistantOps --> AIInsightsHunterAgents : ai-insights-hunter agents
-AIAssistantOps --> MDBloatHunterAgents : md-bloat-hunter agents
+Langfuse ~~~ OpenAPITools ~~~ LLMApplicationDev ~~~ PythonDevWorkflow ~~~ DevWorkflow
+WorkSessionTools ~~~ AIAssistantOps ~~~ OSTools ~~~ CloudStorageTools ~~~ JobHuntToolkit
+RowOne ~~~ RowTwo
 
 classDef langfuse fill:#dff7ff,stroke:#0284c7,stroke-width:2px,color:#0f172a;
-classDef langfuseAgents fill:#eefbff,stroke:#0369a1,stroke-width:2px,color:#0f172a;
 classDef openapi fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#052e16;
 classDef llm fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#451a03;
 classDef python fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#2e1065;
-classDef pythonAgents fill:#f5f3ff,stroke:#6d28d9,stroke-width:2px,color:#2e1065;
 classDef dev fill:#fee2e2,stroke:#dc2626,stroke-width:2px,color:#450a0a;
-classDef devAgents fill:#fff1f2,stroke:#be123c,stroke-width:2px,color:#4c0519;
 classDef session fill:#ccfbf1,stroke:#0f766e,stroke-width:2px,color:#042f2e;
 classDef ops fill:#fce7f3,stroke:#db2777,stroke-width:2px,color:#500724;
-classDef opsAgents fill:#fdf2f8,stroke:#be185d,stroke-width:2px,color:#500724;
 classDef os fill:#e0e7ff,stroke:#4f46e5,stroke-width:2px,color:#1e1b4b;
 classDef storage fill:#ecfccb,stroke:#65a30d,stroke-width:2px,color:#1a2e05;
 classDef job fill:#ffedd5,stroke:#ea580c,stroke-width:2px,color:#431407;
+style RowOne fill:transparent,stroke:transparent,color:transparent;
+style RowTwo fill:transparent,stroke:transparent,color:transparent;
 ```
 
 ## Plugins
