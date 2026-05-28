@@ -84,6 +84,7 @@ classDiagram
 direction LR
 
 class Langfuse["langfuse"]:::langfuse {
+  Best for: traces, evals, dashboards
   +analyze-experiment-results
   +compare-experiments
   +configure-remote-experiment
@@ -121,15 +122,18 @@ class LangfuseAgents["langfuse agents"]:::langfuseAgents {
 }
 
 class OpenAPITools["openapi-tools"]:::openapi {
+  Best for: OpenAPI discovery
   +openapi-list
   +openapi-inspect
 }
 
 class LLMApplicationDev["llm-application-dev"]:::llm {
+  Best for: schema-guided LLM apps
   +schema-guided-reasoning
 }
 
 class PythonDevWorkflow["python-dev-workflow"]:::python {
+  Best for: Python tests and Celery
   +celery-expert
   +pytest-redis
   +writing-unit-tests
@@ -140,6 +144,7 @@ class PythonDevWorkflowAgents["python-dev-workflow agents"]:::pythonAgents {
 }
 
 class DevWorkflow["dev-workflow"]:::dev {
+  Best for: git, PRs, specs
   +commit
   +create-pr
   +pr-address-comments
@@ -159,6 +164,7 @@ class DevWorkflowAgents["dev-workflow agents"]:::devAgents {
 }
 
 class WorkSessionTools["work-session-tools"]:::session {
+  Best for: session orchestration
   +create-team
   +daily
   +interview
@@ -166,6 +172,7 @@ class WorkSessionTools["work-session-tools"]:::session {
 }
 
 class AIAssistantOps["ai-assistant-ops"]:::ops {
+  Best for: assistant setup and docs
   +agents-md-improver
   +ai-insights-hunter
   +ai-setup-audit
@@ -187,14 +194,17 @@ class MDBloatHunterAgents["md-bloat-hunter agents"]:::opsAgents {
 }
 
 class OSTools["os-tools"]:::os {
+  Best for: macOS automation
   +loop_macos
 }
 
 class CloudStorageTools["cloud-storage-tools"]:::storage {
+  Best for: encrypted file storage
   +mega-cmd
 }
 
 class JobHuntToolkit["job-hunt-toolkit"]:::job {
+  Best for: job applications
   +export-pdf
   +init-workspace
   +new-application
@@ -225,25 +235,9 @@ classDef storage fill:#ecfccb,stroke:#65a30d,stroke-width:2px,color:#1a2e05;
 classDef job fill:#ffedd5,stroke:#ea580c,stroke-width:2px,color:#431407;
 ```
 
-| Plugin | Best for | Inside |
-|---|---|---|
-| `langfuse` | Langfuse traces, datasets, experiments, evaluators, metrics, and dashboards. | 27 skills, 5 agents |
-| `openapi-tools` | Listing and inspecting OpenAPI endpoints on running services. | 2 skills |
-| `llm-application-dev` | Schema-guided LLM application design. | 1 skill |
-| `python-dev-workflow` | Python tests, Redis isolation, Celery patterns, and test review. | 3 skills, 2 agents |
-| `dev-workflow` | Git, PRs, tickets, releases, review feedback, and specs. | 10 skills, 4 agents |
-| `work-session-tools` | Daily notes, task tracking, interviews, and multi-agent team design. | 4 skills |
-| `ai-assistant-ops` | Assistant setup audits, AGENTS.md maintenance, memory capture, and Markdown cleanup. | 4 skills, 10 skill agents |
-| `os-tools` | Local macOS automation helpers. | 1 skill |
-| `cloud-storage-tools` | MEGA-style cloud storage workflows. | 1 skill |
-| `job-hunt-toolkit` | Job applications, resume tailoring, PDF export, metadata scrubbing, and pre-send checks. | 6 skills |
-
 ## Plugins
 
 ### `langfuse`
-
-<details>
-<summary>General-purpose Langfuse integration for observability, datasets, experiments, evaluators, and dashboards.</summary>
 
 **Use when:** you need to inspect Langfuse data, create or update evaluation
 assets, compare experiment runs, or manage dashboard widgets.
@@ -290,35 +284,29 @@ assets, compare experiment runs, or manage dashboard widgets.
 | `langfuse-experiment-manager` | Experiment runs, analysis, comparison, and webhooks. |
 | `langfuse-widget-manager` | Dashboard and widget creation, updates, and suggestions. |
 
-</details>
-
 ### `openapi-tools`
-
-<details>
-<summary>Skills for listing and inspecting OpenAPI endpoints on running services.</summary>
 
 **Use when:** you have a running API service and want the assistant to discover
 available endpoints or inspect operation details.
+
+**Skills**
 
 | Skill | Description |
 |---|---|
 | `openapi-list` | List available OpenAPI routes. |
 | `openapi-inspect` | Inspect endpoint inputs, outputs, and schema details. |
 
-</details>
-
 ### `llm-application-dev`
 
 LLM application design and schema-guided reasoning patterns.
+
+**Skills**
 
 | Skill | Description |
 |---|---|
 | `schema-guided-reasoning` | Design structured Pydantic schemas that guide LLM reasoning. |
 
 ### `python-dev-workflow`
-
-<details>
-<summary>Python workflow helpers for tests, Redis, Celery, and test review.</summary>
 
 **Use when:** you are writing or reviewing Python tests, working with Redis test
 isolation, or configuring Celery for production behavior.
@@ -338,12 +326,7 @@ isolation, or configuring Celery for production behavior.
 | `test-runner` | Run focused pytest or `uv run pytest` commands. |
 | `test-unit-reviewer` | Review unit tests for quality, coverage, and patterns. |
 
-</details>
-
 ### `dev-workflow`
-
-<details>
-<summary>Git, pull request, ticket, release, review-comment, and specification workflows.</summary>
 
 **Use when:** you need structured development workflow support: commits, PRs,
 review comments, ticket branches, status updates, version bumps, or spec checks.
@@ -372,15 +355,12 @@ review comments, ticket branches, status updates, version bumps, or spec checks.
 | `structural-contradiction-hunter` | Finds deeper logical and scope conflicts. |
 | `surface-contradiction-hunter` | Finds direct, explicit contradictions. |
 
-</details>
-
 ### `work-session-tools`
-
-<details>
-<summary>Productivity and orchestration inside an assistant session.</summary>
 
 **Use when:** you want daily notes, task tracking, structured interviews, or a
 designed multi-agent team for a larger work session.
+
+**Skills**
 
 | Skill | Description |
 |---|---|
@@ -389,12 +369,7 @@ designed multi-agent team for a larger work session.
 | `interview` | Walk through a list of items one by one. |
 | `task-management` | Track, split, and orchestrate session tasks. |
 
-</details>
-
 ### `ai-assistant-ops`
-
-<details>
-<summary>Assistant setup, instruction hygiene, memory capture, and Markdown maintenance.</summary>
 
 **Use when:** you want to audit assistant instructions, improve AGENTS.md files,
 capture useful session insights, or reduce Markdown bloat.
@@ -423,11 +398,11 @@ capture useful session insights, or reduce Markdown bloat.
 | `md-bloat-hunter` | `verbosity-pruner` | Compresses overlong explanations. |
 | `md-bloat-hunter` | `vocab-compressor` | Replaces inflated wording with direct wording. |
 
-</details>
-
 ### `os-tools`
 
 Operating-system utilities for local machine automation.
+
+**Skills**
 
 | Skill | Description |
 |---|---|
@@ -437,17 +412,18 @@ Operating-system utilities for local machine automation.
 
 Cloud storage workflows for MEGA-style user-file storage tools.
 
+**Skills**
+
 | Skill | Description |
 |---|---|
 | `mega-cmd` | Manage encrypted MEGA storage, links, sync, search, and backups. |
 
 ### `job-hunt-toolkit`
 
-<details>
-<summary>Version-controlled job application workspace with resume tailoring and PDF safety checks.</summary>
-
 **Use when:** you want a structured job application workspace, tailored resumes,
 HTML-to-PDF export, PDF metadata scrubbing, or a final pre-send checklist.
+
+**Skills**
 
 | Skill | Description |
 |---|---|
@@ -457,8 +433,6 @@ HTML-to-PDF export, PDF metadata scrubbing, or a final pre-send checklist.
 | `prepare-to-send` | Run final filename, metadata, and content checks. |
 | `resume-tailoring` | Tailor a CV to a job description without fabrication. |
 | `scrub-pdf-metadata` | Strip sensitive PDF metadata before sending. |
-
-</details>
 
 ## Runtime Support
 
