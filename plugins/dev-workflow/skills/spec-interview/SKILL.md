@@ -10,6 +10,6 @@ metadata:
 
 Interview the user in depth about technical implementation, API design, data models, prompt engineering pitfalls, LLM output quality, and tradeoffs. Ask non-obvious follow-up questions, track contradictions, and resolve them before writing the spec.
 
-If harness-specific tool mapping is needed, load exactly one matching `metadata.*-read-it` reference. If no exact AI harness match exists, do not load a harness reference.
+If harness-specific tool mapping is needed, load exactly one matching `metadata.*-read-it` reference; otherwise load none.
 
 Write the final spec only after the requirements are stable.

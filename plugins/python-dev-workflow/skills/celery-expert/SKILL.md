@@ -8,7 +8,7 @@ model: opus
 
 ## Overview
 
-Expert guidance for building production-grade Celery distributed task queues with Redis as both broker and result backend. Covers task design, workflow orchestration (chains, groups, chords), scheduling with Celery Beat, performance tuning, monitoring, and security hardening.
+Guidance for production Celery with Redis as broker/result backend, covering task design, workflows, Beat scheduling, performance, monitoring, and security.
 
 **Core Principles:**
 
@@ -18,7 +18,7 @@ Expert guidance for building production-grade Celery distributed task queues wit
 4. **Security** — safe serialization (JSON only, never pickle), broker authentication
 5. **Observable** — monitoring, metrics, tracing, alerting
 
-**Pydantic models in tasks:** Manually serializing/deserializing Pydantic models (`.dict()`, `.model_dump()`, `**kwargs` unpacking) is ALWAYS an anti-pattern. Use the `celery-pydantic` package which handles serialization natively — it registers a custom serializer that lets you pass Pydantic models directly as task arguments.
+**Pydantic models in tasks:** Do not manually serialize Pydantic models (`.dict()`, `.model_dump()`, `**kwargs`). Use `celery-pydantic` so tasks can accept models directly.
 
 ## When to Apply
 

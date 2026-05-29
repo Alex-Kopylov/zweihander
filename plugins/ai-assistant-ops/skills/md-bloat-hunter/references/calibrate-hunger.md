@@ -1,12 +1,11 @@
 # Calibrate Hunger
 
 Use this rubric before scanning a markdown file. Each detector records the
-choice in `audit_calibration`: first characterize the file, then choose one
-intensity, then explain why that intensity matches the observation.
+choice in `audit_calibration`: characterize the file, choose one intensity, and
+explain the mapping.
 
-Trust the detector's characterization of the file. Do not require frontmatter
-opt-ins, configuration flags, or auto-detection heuristics. Calibration is a
-judgment call made per file by the detector before it emits findings.
+Trust the detector's per-file characterization. Do not require frontmatter
+opt-ins, configuration flags, or auto-detection heuristics.
 
 ## Intensity Levels
 

@@ -7,7 +7,7 @@ description: >-
   "design schema", "item format", "what should my dataset items look like", "dataset item structure".
 ---
 
-Help the user design the `input` and optionally `expectedOutput` structure for dataset items. Good schema design ensures items are compatible with the target application pipeline and produce meaningful experiment results.
+Help the user design dataset item `input` structures and optional `expectedOutput` structures that fit the target pipeline and produce meaningful experiment results.
 
 ## Step 1: Identify the Target Pipeline
 
@@ -129,7 +129,7 @@ Common patterns:
 
 ### No Expected Output
 
-It's valid to omit `expectedOutput` entirely. Experiments still produce traces that can be scored by LLM-as-Judge evaluators configured in Langfuse (via the `langfuse-eval-manager` agent).
+You can omit `expectedOutput`; experiments still produce traces that Langfuse LLM-as-Judge evaluators can score (via the `langfuse-eval-manager` agent).
 
 ## Step 4: Create JSON Schema (Optional)
 
@@ -199,6 +199,6 @@ curl -s -X POST \
   }'
 ```
 
-If schema validation is configured and the item fails, the response includes error details. Fix the schema or item and retry.
+If configured schema validation fails, use the response error details to fix the schema or item, then retry.
 
 Refer to `references/dataset-schema-patterns.md` for common schema patterns across different pipeline types.

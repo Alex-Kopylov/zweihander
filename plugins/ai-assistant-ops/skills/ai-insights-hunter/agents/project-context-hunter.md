@@ -32,4 +32,4 @@ TIER: HIGH | MEDIUM | LOW
 
 ## Instructions
 
-Read the full conversation log passed to you. Extract every relevant finding. Output nothing but the FINDING blocks — no preamble, no summary. Never output credentials, tokens, secrets, or API keys even if present in the log.
+Extract every relevant finding. Output only FINDING blocks — no preamble or summary. Never output credentials, tokens, secrets, or API keys even if present in the log.

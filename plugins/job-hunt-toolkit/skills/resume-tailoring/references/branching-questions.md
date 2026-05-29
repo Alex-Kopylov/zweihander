@@ -2,7 +2,7 @@
 
 ## Overview
 
-Conversational discovery with follow-up questions based on answers. NOT a static questionnaire - each answer informs the next question.
+Use conversational discovery, not a static questionnaire; each answer informs the next question.
 
 ## Multi-Job Context
 

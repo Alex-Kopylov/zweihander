@@ -5,9 +5,9 @@ description: "Audit and improve AGENTS.md files in repositories. Use when user a
 
 # AGENTS.md Improver
 
-Audit, evaluate, and improve AGENTS.md files across a codebase to ensure Codex has optimal project context.
+Audit and improve AGENTS.md files so Codex has useful project context.
 
-**This skill can write to AGENTS.md files.** After presenting a quality report and getting user approval, it updates AGENTS.md files with targeted improvements.
+**This skill can write targeted AGENTS.md updates after reporting and user approval.**
 
 ## Workflow
 

@@ -33,7 +33,7 @@ Present each item one at a time via AskUserQuestion.
 
 #### Previews
 
-When an item involves code or config, use `preview` on options to show what each action produces (proposed fix, alternative implementation, before/after). Skip preview for trivial items.
+When an item involves code or config, add option `preview`s showing each action's result. Skip trivial items.
 
 #### Example
 
@@ -87,6 +87,6 @@ Apply agreed actions after each item, or batch if user prefers.
 
 ## Rules
 
-- Never skip an item silently. Every item gets presented.
+- Present every item; never skip one silently.
 - If the user asks to batch-fix similar items, group them but log each individually.
 - If new items are discovered during fixes, append to the queue and inform the user.

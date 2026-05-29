@@ -10,7 +10,7 @@ description: >-
 
 # Discover Traces
 
-Enumerate all unique trace names, tags, environments, and user IDs present in a Langfuse project. Return a comprehensive summary so the caller understands the tracing landscape before filtering data, building widgets, or analyzing specific workflows.
+Enumerate unique trace names, tags, environments, and user IDs in a Langfuse project, then summarize the tracing landscape before filtering data, building widgets, or analyzing workflows.
 
 ---
 
@@ -34,13 +34,13 @@ curl -s -o /dev/null -w "%{http_code}" \
   "$HOST/api/public/traces?limit=1"
 ```
 
-A `200` response confirms that authentication is valid. Any `401` or `403` response means the keys are incorrect -- report the error and ask the user to verify the public and secret keys.
+`200` confirms valid authentication. `401` or `403` means the keys are incorrect; report the error and ask the user to verify them.
 
 ---
 
 ## Step 1 -- Fetch Traces via REST API (Primary Path)
 
-Call the Langfuse public traces endpoint with pagination. Start at page 1 and continue until all pages are consumed or enough data is collected for a representative summary.
+Call the Langfuse public traces endpoint from page 1 until all pages are consumed or the sample is representative.
 
 ```bash
 PAGE=1
@@ -59,7 +59,7 @@ while true; do
 done
 ```
 
-For each page response, the `data` array contains trace objects with the following relevant fields:
+Each page's `data` array contains trace objects with these relevant fields:
 
 - `name` -- the trace name (e.g., `"chat-completion"`, `"document-qa"`, `"intake-generation"`)
 - `tags` -- array of string tags (e.g., `["production", "v2", "experiment-a"]`)
@@ -134,13 +134,13 @@ else:
 
 ### Handling Large Projects
 
-If the project contains many thousands of traces and pagination becomes slow (more than 20 pages), abort the API loop after 20 pages. The collected sample of 2000 traces is sufficient to discover the unique names, tags, and environments. Note in the output that results are based on a sample and switch to the database fallback for exact counts if needed.
+If pagination is slow past 20 pages, stop the API loop after 20 pages. The 2000-trace sample should discover names, tags, and environments; note it is sampled and use the database fallback for exact counts when needed.
 
 ---
 
 ## Step 2 -- Database Fallback
 
-When the REST API is unavailable, returns errors, or exact counts are needed for large projects, query the Langfuse PostgreSQL database directly.
+When the REST API is unavailable, errors, or exact counts are needed, query Langfuse PostgreSQL directly.
 
 ### Option A: psycopg2 (Preferred)
 
@@ -226,7 +226,7 @@ Parse the pipe-delimited output and format it into the standard tables.
 
 ## Step 3 -- Format and Present Output
 
-Present the final results as three separate markdown tables plus a user ID summary.
+Present three markdown tables plus a user ID summary.
 
 ### Trace Names
 
@@ -264,28 +264,28 @@ Present the final results as three separate markdown tables plus a user ID summa
 
 ### User IDs
 
-Report the total number of unique user IDs. If the count is 20 or fewer, list them all. If more than 20, list the first 20 alphabetically and note how many more exist.
+Report total unique user IDs; list all when 20 or fewer, otherwise list the first 20 alphabetically and the remaining count.
 
 ---
 
 ## Step 4 -- Summary and Observations
 
-After the tables, provide a brief textual summary:
+After the tables, summarize:
 
 - Total number of unique trace names.
 - Total number of unique tags.
 - Total number of distinct environments (API-only; not available via database fallback).
 - Total number of unique user IDs.
-- Any notable patterns such as: traces that lack a name (unnamed traces may indicate SDK misconfiguration), tags that appear on very few traces (possible test data), environments that have very low trace counts (possible staging/dev leftover data).
+- Notable patterns: unnamed traces (possible SDK misconfiguration), rare tags (possible test data), and low-count environments (possible staging/dev leftover data).
 - If session IDs were observed in the API response, note whether sessions are being used and how many distinct sessions exist.
 
 ---
 
 ## Error Handling
 
-- **Empty results**: If no traces are found, report that the project has no traces yet and suggest the user verify that their application is instrumented with the Langfuse SDK and sending trace data.
+- **Empty results**: If no traces are found, report that the project has no traces and suggest verifying Langfuse SDK instrumentation and trace delivery.
 - **API timeout or 5xx errors**: Log the error, switch to the DB fallback path, and note to the user that the API was unreachable.
-- **DB connection refused**: Report the connection error and ask the user to verify the connection string, database host reachability, and whether the Langfuse database container is running.
+- **DB connection refused**: Report the connection error and ask the user to verify the connection string, host reachability, and database container status.
 - **Permission denied on DB**: Report that the database user lacks SELECT permission on the `traces` table and suggest verifying the credentials.
 - **Malformed tags column**: If the `unnest(tags)` query fails, the tags column format may differ. Fall back to fetching raw tag values and parsing them in Python.
 

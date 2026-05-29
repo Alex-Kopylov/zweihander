@@ -5,7 +5,7 @@ description: This skill should be used when the user asks to "track tasks", "cre
 
 # Task Management & Background Agent Orchestration
 
-Guide for using native task tools (TaskCreate, TaskGet, TaskList, TaskUpdate, TaskOutput, TaskStop) to track work, manage dependencies, and orchestrate background agents.
+Use native task tools to track work, manage dependencies, and orchestrate background agents.
 
 ## When to Use Task Tools
 
@@ -98,7 +98,7 @@ Agent(
 )
 ```
 
-After launching, continue other work. A notification arrives when the agent completes. To manually check:
+After launching, continue other work. To check manually before the completion notification:
 
 ```
 TaskOutput(task_id: "<agent-id>", block: false, timeout: 5000)
@@ -112,7 +112,7 @@ TaskStop(task_id: "<agent-id>")
 
 ### Parallel Agent Pattern
 
-Launch multiple independent agents simultaneously for maximum throughput:
+Launch multiple independent agents simultaneously:
 
 ```
 # In a single message, launch all independent agents:
@@ -172,6 +172,4 @@ Set a metadata key to `null` to remove it.
 
 ## Orchestration Patterns
 
-For detailed orchestration patterns (explore-plan-execute, research-implement, parallel validation), consult:
-
-- **`references/orchestration-patterns.md`** — Multi-agent coordination patterns, workflow templates, and advanced dependency management strategies
+For detailed orchestration patterns, see **`references/orchestration-patterns.md`**.

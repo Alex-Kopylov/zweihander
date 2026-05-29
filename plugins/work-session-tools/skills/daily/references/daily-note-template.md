@@ -4,7 +4,7 @@ The output file is `daily-DD-MM-YYYY.md`. Adapt sections based on which sources 
 
 ## Hyperlinks
 
-Every item referenced in the note must include a hyperlink to its source. This is non-negotiable — the daily note is a reference document, and readers need one-click access to evidence.
+Every referenced item must link to its source so the note remains a reference document with one-click evidence.
 
 | Source | Link format |
 |--------|-------------|
@@ -105,9 +105,9 @@ Build the base URLs from context extracted during source detection (org, project
 
 ## Guidelines
 
-- The **TL;DR section** is the first thing people read — it follows classical standup structure. "Yesterday" is synthesized from actual completed work in the window (not just a list of commits). "Today" is inferred from what's in-progress or next up. "Blockers" captures failed pipelines, stale PRs, or anything that might need escalation.
+- Structure TL;DR as standup: "Yesterday" from completed work in the window, "Today" from in-progress or next work, and "Blockers" from failed pipelines, stale PRs, or escalation risks.
 - Every PR, issue, work item, commit, and pipeline run must be a clickable markdown link
-- Keep it factual, not narrative — this is a reference document, not a story
+- Keep it factual, not narrative
 - Use the DD-MM-YYYY date format everywhere in the note
 - If a hyperlink cannot be constructed (e.g. messaging source doesn't provide deep links), use the item title/name as plain text
 - If a source failed, add a note at the bottom: `> Source {name} was unavailable: {reason}`

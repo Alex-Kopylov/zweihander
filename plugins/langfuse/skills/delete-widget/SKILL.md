@@ -1,25 +1,23 @@
 ---
 name: delete-widget
 description: >
-  This skill should be used when the user wants to delete or remove a Langfuse
-  dashboard widget. Trigger phrases include "delete widget", "remove widget",
-  "drop widget". It performs referential integrity checks against dashboards
-  before deletion and cleans up dashboard references.
+  Use when the user wants to delete/remove a Langfuse dashboard widget. Trigger
+  phrases: "delete widget", "remove widget", "drop widget". Performs referential
+  integrity checks against dashboards before deletion and cleans up dashboard
+  references.
 ---
 
 # Delete Langfuse Dashboard Widget
 
-Delete a Langfuse dashboard widget from PostgreSQL with full referential
-integrity checks. Before removing the widget row, inspect all dashboards that
-reference it, warn the user, clean up references, and only then perform the
-deletion.
+Delete a Langfuse dashboard widget from PostgreSQL with referential integrity
+checks: inspect referencing dashboards, warn the user, clean up references, then
+delete the row.
 
 ## Prerequisites
 
 - **Langfuse Host URL** and **Project ID** from the parent plugin context.
-- **Database connection** via psycopg2 (preferred) or docker exec psql fallback.
-- Python library `psycopg2-binary` installed. If missing, install via
-  `uv add psycopg2-binary`.
+- **Database connection** via psycopg2 (preferred; install `psycopg2-binary`
+  with `uv add psycopg2-binary` if missing) or docker exec psql fallback.
 - The widget ID to delete. If unknown, ask the user or use the `list-widgets`
   skill to enumerate available widgets.
 
@@ -52,8 +50,7 @@ WHERE project_id = %(project_id)s
   AND definition::text LIKE %(widget_id_pattern)s;
 ```
 
-Where `%(widget_id_pattern)s` is `%<WIDGET_ID>%` (percent-wrapped widget ID
-for LIKE matching).
+Use `%<WIDGET_ID>%` for `%(widget_id_pattern)s`.
 
 ### 3. Handle Referenced Widgets
 
@@ -83,8 +80,8 @@ Delete permanently? (yes/no)
 
 ### 4. Remove Widget References from Dashboards
 
-If the widget is referenced by dashboards and the user confirmed deletion,
-clean up each dashboard's `definition.widgets[]` array.
+If dashboards reference the widget and the user confirmed deletion, clean up
+each affected dashboard's `definition.widgets[]` array.
 
 For each affected dashboard:
 
@@ -101,8 +98,7 @@ SET definition = %(updated_definition)s::jsonb,
 WHERE id = %(dashboard_id)s AND project_id = %(project_id)s;
 ```
 
-Repeat for every affected dashboard. Use a transaction if possible (psycopg2
-connection with `autocommit=False`) to ensure atomicity.
+Repeat for every affected dashboard.
 
 ### 5. Delete the Widget Row
 
@@ -122,9 +118,7 @@ SELECT COUNT(*) FROM dashboard_widgets
 WHERE id = %(widget_id)s AND project_id = %(project_id)s;
 ```
 
-The count should be 0. Report success to the user.
-
-Also verify that dashboard references were cleaned up:
+Count should be 0; report success. Also verify dashboard references were cleaned up:
 
 ```sql
 SELECT id, name FROM dashboards
@@ -144,8 +138,7 @@ Present a summary of actions taken:
 
 ## Transaction Safety
 
-When using psycopg2, wrap the entire operation (dashboard updates + widget
-deletion) in a single transaction:
+With psycopg2, wrap dashboard updates and widget deletion in one transaction:
 
 ```python
 conn.autocommit = False
@@ -162,7 +155,7 @@ except Exception:
     raise
 ```
 
-This ensures that if any step fails, no partial changes are left behind.
+This prevents partial changes if any step fails.
 
 ## Error Handling
 

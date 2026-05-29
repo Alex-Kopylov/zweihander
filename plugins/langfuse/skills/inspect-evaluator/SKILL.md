@@ -9,15 +9,13 @@ description: >-
 
 # Inspect Evaluator
 
-Look up a specific LLM-as-a-Judge evaluator by name or ID, display its full
+Look up an LLM-as-a-Judge evaluator by name or ID and display its full
 configuration (prompt, variables, output schema, model, filters), version
-history, and associated job configurations.
-
----
+history, and job configurations.
 
 ## Prerequisites
 
-Ensure the following are available before proceeding:
+Ensure these are available:
 
 | Variable        | Example                              | Purpose                    |
 |-----------------|--------------------------------------|----------------------------|
@@ -31,7 +29,7 @@ Ensure the following are available before proceeding:
 
 ## Step 1 -- Identify the Evaluator
 
-Accept a name or ID from the user. Use ILIKE for fuzzy matching on name:
+Accept a user-provided name or ID. Use ILIKE for fuzzy name matching:
 
 ### Option A: psycopg2 (Preferred)
 
@@ -42,7 +40,7 @@ import json
 conn = psycopg2.connect("CONNECTION_STRING_HERE")
 cur = conn.cursor()
 
-# Search by name (fuzzy) — returns latest version by default
+# Fuzzy name search; returns latest version by default
 cur.execute("""
     SELECT id, name, version, prompt, model, provider,
            model_params, vars, output_schema, created_at, updated_at
@@ -79,14 +77,11 @@ docker exec CONTAINER_NAME psql -U USER -d DBNAME -t -A -F '|' -c "
 "
 ```
 
-If multiple evaluators match the fuzzy search, list them all and ask the user
-to select the specific one.
-
----
+If multiple evaluators match, list them and ask the user to choose one.
 
 ## Step 2 -- Display Full Template Detail
 
-Present the template configuration in a structured format:
+Present the template configuration:
 
 ```
 ## Evaluator: factuality (v3)
@@ -106,11 +101,9 @@ Present the template configuration in a structured format:
 <prompt text displayed in a code block>
 ```
 
----
-
 ## Step 3 -- Fetch Version History
 
-Query all versions of this evaluator:
+Query all evaluator versions:
 
 ```python
 cur.execute("""
@@ -136,11 +129,9 @@ Present as a version history table:
 | 1 | cmm44... | gpt-3.5-turbo | azure | 2024-12-01 | 320 chars |
 ```
 
----
-
 ## Step 4 -- Fetch Associated Job Configurations
 
-Query all job configurations linked to any version of this evaluator:
+Query job configurations linked to any evaluator version:
 
 ```python
 cur.execute("""
@@ -178,9 +169,7 @@ Present job configuration details:
   - environment any of ["production"]
 ```
 
-Format the variable_mapping and filter JSON into human-readable descriptions.
-
----
+Format the variable_mapping and filter JSON into readable descriptions.
 
 ## Step 5 -- Provide URL
 
@@ -188,18 +177,14 @@ Format the variable_mapping and filter JSON into human-readable descriptions.
 **Evaluator settings**: {LANGFUSE_HOST}/project/{PROJECT_ID}/settings/llm-as-a-judge
 ```
 
----
-
 ## Error Handling
 
-- **Evaluator not found**: If no match is found, report this and suggest using
-  `list-evaluators` to see available evaluators.
-- **Multiple matches**: If ILIKE returns multiple different evaluator names,
-  list them all and ask the user to specify which one.
+- **Evaluator not found**: If no match is found, report it and suggest
+  `list-evaluators`.
+- **Multiple matches**: If ILIKE returns multiple evaluator names, list them and
+  ask the user to choose one.
 - **DB connection failed**: Attempt docker exec psql fallback before reporting
   failure.
-
----
 
 ## Cleanup
 

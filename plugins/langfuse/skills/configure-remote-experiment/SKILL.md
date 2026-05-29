@@ -7,7 +7,7 @@ description: >-
   "enable custom experiment", "set up experiment trigger", "configure dataset webhook".
 ---
 
-Configure the `remote_experiment_url` and `remote_experiment_payload` on a Langfuse dataset to enable triggering experiments from the Langfuse UI ("Custom Experiment" feature).
+Configure `remote_experiment_url` and `remote_experiment_payload` on a Langfuse dataset to enable Custom Experiment triggers from the Langfuse UI.
 
 ## Step 1: Identify the Dataset
 
@@ -28,7 +28,7 @@ Ask the user for:
    - For local development: `http://localhost:8000/api/v1/experiments/trigger`
    - Note: Langfuse does NOT send auth headers — endpoint must be network-isolated or use URL-based tokens.
 
-2. **Default payload** (optional) — JSON object sent with every trigger. Users can override per-trigger in the UI.
+2. **Default payload** (optional) — JSON object sent with every trigger and overridable per-trigger in the UI.
    Common payload fields:
    ```json
    {
@@ -41,7 +41,7 @@ Ask the user for:
 
 ## Step 3: Check Current Configuration
 
-Read current values from DB (these fields are NOT available via REST API):
+Read current DB values (not available via REST API):
 
 ```sql
 SELECT name, remote_experiment_url, remote_experiment_payload

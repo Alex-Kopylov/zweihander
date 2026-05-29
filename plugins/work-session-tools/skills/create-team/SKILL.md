@@ -8,7 +8,7 @@ metadata:
 
 # Create Team
 
-Design a multi-agent team blueprint with clear role separation and interaction patterns. If harness-specific tool mapping is needed, load exactly one matching `metadata.*-read-it` reference. If no exact AI harness match exists, do not load a harness reference.
+Design a multi-agent team blueprint with clear role separation and interaction patterns. If harness-specific tool mapping is needed, load exactly one matching `metadata.*-read-it` reference; if no exact AI harness match exists, load none.
 
 ## Process
 
@@ -55,21 +55,21 @@ Based on gathered requirements, design the team with:
 
 ### Phase 4: Present the Blueprint
 
-Present the full team design to the user as a structured document. Include:
+Present the team design as a structured document with:
 
-- A visual-style interaction diagram using text/ASCII showing communication flows
+- A text/ASCII interaction diagram showing communication flows
 - A task dependency graph
 - Clear explanation of why each role exists and how they interact
 
 ### Phase 5: Write the Blueprint
 
-After user approval, write the team blueprint to the appropriate task, plan, or project location for the active AI harness.
+After user approval, write the blueprint to the active harness's appropriate task, plan, or project location.
 
 ## Task And Agent Tools
 
-Track progress with the active harness's task or plan mechanism. Spawn parallel agents only when the active harness supports it and the team design justifies the coordination overhead.
+Track progress with the active harness's task or plan mechanism. Spawn parallel agents only when supported and justified by the team design.
 
 ## Rules
 
 - Always include a review/QA step for non-trivial teams. Prefer TDD-style implementation where applies.
-- Design for minimal communication overhead - agents that don't need to talk shouldn't.
+- Minimize communication overhead; agents that don't need to talk shouldn't.

@@ -45,7 +45,7 @@ Single source of truth for all evaluator-related database schemas, formats, and 
 
 ## `output_schema` Format
 
-The `output_schema` is a flat JSON object with exactly two keys: `reasoning` and `score`. The values are **LLM instruction strings** — descriptions passed to the LLM telling it what to produce for each field. They are NOT type descriptors or JSON Schema.
+The `output_schema` is a flat JSON object with exactly two keys: `reasoning` and `score`. Values are **LLM instruction strings**, not type descriptors or JSON Schema.
 
 ### Correct examples
 
@@ -285,12 +285,11 @@ A JSON array of condition objects. Empty `[]` matches all traces.
 {"temperature": 0, "max_tokens": 500}
 ```
 
-- `temperature: 0` ensures deterministic evaluation results.
-- `max_tokens: 500` is sufficient for reasoning + score output.
-- Adjust as needed for evaluators requiring longer reasoning chains.
+- `temperature: 0`: deterministic evaluation results.
+- `max_tokens: 500`: sufficient for reasoning + score output; increase for longer reasoning.
 
 ---
 
 ## Note on CUID Versions
 
-**Note on CUID versions:** Langfuse's Prisma schema uses `@default(cuid())` (CUID v1) for auto-generated IDs. This plugin uses `cuid2` for manually generated IDs. Both formats are compatible -- Langfuse accepts either.
+Langfuse's Prisma schema uses `@default(cuid())` (CUID v1) for auto-generated IDs. This plugin uses `cuid2` for manually generated IDs. Both formats are compatible -- Langfuse accepts either.

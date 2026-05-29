@@ -1,7 +1,7 @@
 ---
 name: discover-filter-options
 description: >-
-  This skill should be used when the user needs to build or configure trace
+  Use this skill when the user needs to build or configure trace
   filters for LLM-as-a-Judge evaluators. It discovers all filterable dimensions
   in the project (trace names, tags, environments, observation names, levels),
   helps construct the filter JSON array, validates the filter, and optionally
@@ -19,7 +19,7 @@ through constructing a valid `filter` JSON array for `job_configurations`.
 
 ## Prerequisites
 
-Ensure the following are available before proceeding:
+Ensure these are available:
 
 | Variable        | Example                              | Purpose                    |
 |-----------------|--------------------------------------|----------------------------|
@@ -109,7 +109,7 @@ conn.close()
 
 ### Option B: docker exec psql (Fallback)
 
-Run each query individually via docker exec:
+Run each query via docker exec:
 
 ```bash
 # Trace names
@@ -175,7 +175,7 @@ Format the results as a structured summary:
 
 ### Environments (environment)
 
-**Note:** Environment data comes from the REST API, not direct DB queries. The `environment` column exists only in ClickHouse, not in the Postgres `traces` table.
+**Note:** Environment data comes from the REST API, not direct DB queries; the `environment` column exists in ClickHouse, not Postgres `traces`.
 
 | Environment | Count |
 |-------------|-------|
@@ -207,8 +207,8 @@ Format the results as a structured summary:
 
 ## Step 3 -- Guide Filter Construction
 
-Ask the user which dimensions they want to filter on. For each selected
-dimension, present the appropriate operators:
+Ask the user which dimensions to filter on, then present operators for each selected
+dimension:
 
 ### Filterable Columns Reference
 
@@ -221,7 +221,7 @@ dimension, present the appropriate operators:
 | `level` | `stringOptions` | `any of`, `none of` | array of: `DEFAULT`, `DEBUG`, `WARNING`, `ERROR` |
 | `userId` | `string` | `=`, `contains`, `does not contain`, `starts with`, `ends with` | single string |
 
-For each dimension the user selects:
+For each selected dimension:
 
 1. Show available values from Step 1.
 2. Ask which operator to use.
@@ -278,14 +278,14 @@ Report: "This filter matches approximately <count> existing traces."
 
 ## Step 5 -- Return the Filter JSON
 
-Return the validated filter JSON for use by the calling skill
+Return the validated filter JSON to the calling skill
 (`create-evaluator` or `update-evaluator`).
 
 ---
 
 ## Error Handling
 
-- **No traces found**: Report that the project has no traces. Suggest verifying
+- **No traces found**: Report that the project has no traces and suggest verifying
   instrumentation.
 - **No tags/environments**: Report that the dimension is empty. The user can
   still create a filter, but it may match nothing.
@@ -297,4 +297,4 @@ Return the validated filter JSON for use by the calling skill
 
 ## Cleanup
 
-No temporary files are created by this skill.
+This skill creates no temporary files.

@@ -53,7 +53,7 @@ curl -s -X POST \
 
 ### Bulk Create via Python Script
 
-For creating many items at once, use a Python script with the REST API:
+For many items, use Python with the REST API:
 
 ```python
 import json
@@ -149,7 +149,7 @@ curl -s -u "$PUBLIC_KEY:$SECRET_KEY" \
 
 ## Verification
 
-After any create/update operation, verify by fetching the item:
+After create/update, fetch the item:
 
 ```bash
 curl -s -u "$PUBLIC_KEY:$SECRET_KEY" \

@@ -12,10 +12,8 @@ that preserve meaning.
 
 Use one mode for the whole run:
 
-- `Edit+Report` is the default. Use it when the user asks to trim, compress,
-  reduce, rewrite, or gives no explicit read-only constraint.
-- `Audit+Report` is read-only. Use it when the user asks to audit, inspect,
-  report, dry-run, or says not to edit.
+- `Edit+Report` (default): use for trim, compress, reduce, rewrite, or no explicit read-only constraint.
+- `Audit+Report`: read-only; use for audit, inspect, report, dry-run, or explicit no-edit requests.
 
 In `Audit+Report`, never write audited files. Report findings, proposed edits,
 semantic risk, and approval requirements.

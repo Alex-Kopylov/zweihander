@@ -7,7 +7,7 @@ allowed-tools: Read, Bash, Glob, AskUserQuestion
 
 # Export PDF
 
-Convert an HTML CV to PDF using headless Chromium. Every PDF in the workspace comes from this skill — consistent rendering across applications is critical (a recruiter comparing two PDFs from the same candidate shouldn't see inconsistent fonts / margins / layouts).
+Convert an HTML CV to PDF using headless Chromium; every workspace PDF should use this skill for consistent rendering.
 
 ## When to use
 
@@ -75,7 +75,7 @@ Where `${PLUGIN_ROOT}` resolves to the plugin's root directory.
 
 ### 3b. Sanity-check PDF content
 
-Use the Read tool to read the produced PDF and inspect its text content. If the content contains any of the following strings, the render almost certainly captured a browser error page rather than the CV:
+Use Read to inspect the produced PDF text. These strings almost certainly mean Chromium rendered a browser error page rather than the CV:
 
 - `This page isn't working`
 - `ERR_CONNECTION_REFUSED`
@@ -111,9 +111,9 @@ Every exported PDF is scrubbed, even when attached directly without `prepare-to-
 
 ## Hard rules
 
-- **Use the same tool (Chromium) every time.** Cross-application rendering consistency matters. Never fall back to weasyprint or wkhtmltopdf even if Chromium is missing — prompt the user to install it.
+- **Use Chromium every time.** Never fall back to weasyprint or wkhtmltopdf; prompt the user to install Chrome or Chromium if missing.
 - **Use absolute paths.** Chromium's `--print-to-pdf` writes to CWD otherwise, which is unpredictable across tool calls.
-- **Always scrub metadata after export.** This skill auto-invokes `scrub-pdf-metadata` as its final step. `prepare-to-send` still verifies scrubbing as a gate, but scrubbing can no longer be bypassed by exporting and attaching directly.
+- **Always scrub metadata after export.** Auto-invoke `scrub-pdf-metadata`; `prepare-to-send` also verifies scrubbing.
 - **Warn if the HTML has never-rendered markers** like `TODO`, `<!-- draft -->`, `[placeholder]` — these will appear in the PDF unless scrubbed at HTML level.
 
 ## Error handling
@@ -132,7 +132,3 @@ Remind user:
 1. Visually review the PDF (open it, check layout)
 2. Metadata has already been scrubbed by this skill
 3. Run `/job-hunt-toolkit:prepare-to-send` before attaching to any application for a final freshness and content check
-
-## Gotchas
-
-- Chromium's `--print-to-pdf` writes to CWD unless given an absolute path. `html-to-pdf.sh` handles this by building absolute paths — always pass absolute paths to it.

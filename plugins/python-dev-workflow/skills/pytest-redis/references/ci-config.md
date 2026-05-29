@@ -74,11 +74,11 @@ test:
 
 ## Azure DevOps Pipelines
 
-Azure Pipelines supports [service containers](https://learn.microsoft.com/en-us/azure/devops/pipelines/process/service-containers?view=azure-devops) for running Redis alongside tests. Two approaches are available depending on whether the job itself runs in a container.
+[Azure Pipelines service containers](https://learn.microsoft.com/en-us/azure/devops/pipelines/process/service-containers?view=azure-devops) can run Redis alongside tests; choose an approach based on whether the job runs in a container.
 
 ### Container job (recommended)
 
-When the job runs inside a container, all services on the same Docker network resolve by name automatically -- no port mapping needed.
+In container jobs, services share a Docker network and resolve by name; no port mapping is needed.
 
 ```yaml
 # azure-pipelines.yml
@@ -112,11 +112,11 @@ steps:
       REDIS_PORT: 6379
 ```
 
-Inside the container job, the hostname `redis` resolves directly to the service container. All ports are exposed between containers on the same network without explicit `ports` mapping.
+Inside the container job, `redis` resolves to the service container and ports are exposed without explicit `ports` mapping.
 
 ### Non-container job (host-based)
 
-When the job runs directly on the host VM, explicit port mapping is required. The pipeline exposes the Redis port and the job connects via `localhost`.
+For host VM jobs, map the Redis port and connect via `localhost`.
 
 ```yaml
 # azure-pipelines.yml
@@ -166,7 +166,7 @@ For dynamic port assignment, omit the host port (`ports: - 6379`) and read the a
 
 ## Testcontainers (no service container needed)
 
-When using testcontainers, the Redis instance is managed by the test fixtures. No CI service configuration is required -- only Docker must be available on the runner.
+With testcontainers, fixtures manage Redis; CI only needs Docker on the runner.
 
 ```yaml
 # GitHub Actions -- testcontainers approach
@@ -181,7 +181,7 @@ jobs:
       - run: uv run pytest tests/ -v
 ```
 
-Set generous timeouts for container startup in CI (containers may take 10-30s on cold runners):
+Use generous CI startup timeouts; containers may take 10-30s on cold runners:
 
 ```python
 @pytest.fixture(scope="session")

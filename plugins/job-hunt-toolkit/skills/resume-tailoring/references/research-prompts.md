@@ -55,7 +55,7 @@ Search results:
 3. Fallback: "site:linkedin.com {job_title} {similar_company}"
 ```
 
-**If LinkedIn data is inaccessible:** Search for role title + company on general web to find job postings, Glassdoor reviews, or blog posts from employees. These provide similar signal about common backgrounds and terminology.
+**If LinkedIn data is inaccessible:** Search the general web for role title + company to find job postings, Glassdoor reviews, or employee blog posts with background and terminology signals.
 
 **Analysis prompt:**
 

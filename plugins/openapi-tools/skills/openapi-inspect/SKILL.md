@@ -28,17 +28,15 @@ Replace `"/path/to/endpoint"` with the actual path the user asked about.
 
 Scan the output for any `"$ref": "#/components/schemas/SchemaName"` entries. Collect every unique schema name.
 
-### 3. Resolve each referenced schema
+### 3. Resolve referenced schemas
 
-For each `$ref` found, query the full schema definition:
+For each `$ref`, query its schema and recursively resolve nested `$ref` entries until all schemas are fully expanded:
 
 ```bash
 curl -s {host}/openapi.json | jq '.components.schemas.SchemaName'
 ```
 
-Replace `SchemaName` with the actual name extracted from the `$ref`.
-
-If a resolved schema itself contains nested `$ref` entries, resolve those as well until all schemas are fully expanded.
+Replace `SchemaName` with the name extracted from the `$ref`.
 
 ### 4. Present the results
 

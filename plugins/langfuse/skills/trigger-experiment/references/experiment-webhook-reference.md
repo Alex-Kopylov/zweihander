@@ -4,7 +4,7 @@ Complete reference for the Langfuse Remote Experiment Trigger (Custom Experiment
 
 ## Overview
 
-The Custom Experiment feature allows triggering experiments from the Langfuse UI. When a user clicks "Run" in the dataset UI, Langfuse sends a POST request to a configured webhook URL. The receiving service fetches the dataset, processes each item, and records results back to Langfuse.
+Custom Experiment triggers experiments from the Langfuse UI. Clicking "Run" in the dataset UI sends a POST request to the configured webhook URL. The receiving service fetches the dataset, processes each item, and records results back to Langfuse.
 
 ## Webhook Configuration
 
@@ -15,7 +15,7 @@ The Custom Experiment feature allows triggering experiments from the Langfuse UI
 | `remote_experiment_url` | text | Webhook URL. POST target when "Run" is clicked. |
 | `remote_experiment_payload` | jsonb | Default payload. Users can modify per-trigger in the UI. |
 
-These fields are **NOT available via REST API** — only via direct DB access.
+These fields are **NOT available via REST API**; they require direct DB access.
 
 ### Setting via DB
 
@@ -92,7 +92,7 @@ The webhook receiver (your service) follows this pattern:
 
 ## Trace Linking
 
-For experiment traces to appear nested under the dataset run in the Langfuse UI, use one of:
+To nest experiment traces under the dataset run in the Langfuse UI, use one of:
 
 ### Option A: SDK `item.run()` Context Manager (Recommended for SDK-based)
 
@@ -131,7 +131,7 @@ with item.run(run_name=experiment_name):
     # Pass headers to downstream calls
 ```
 
-Note: `propagate_attributes()` propagates **metadata** context within a process. For cross-service HTTP propagation, OTel context propagation (Option B) is the reliable mechanism.
+Note: `propagate_attributes()` propagates **metadata** context within a process. For cross-service HTTP propagation, use OTel context propagation (Option B).
 
 ## Python SDK Experiment Runner
 

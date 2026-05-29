@@ -46,7 +46,7 @@ mcp__azure-devops__repo_list_pull_request_threads(
 )
 ```
 
-Returns a list of threads. Each thread contains:
+Returns threads with:
 - `id` — thread ID
 - `status` — 1=Active, 2=Fixed, 3=WontFix, 4=Closed, 5=ByDesign, 6=Pending
 - `threadContext.filePath` — file path (if inline comment)

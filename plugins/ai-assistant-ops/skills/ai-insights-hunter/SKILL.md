@@ -41,7 +41,7 @@ Find logs automatically:
 
 ### Multi-agent sessions
 
-If the session used `Agent` tool with `TeamCreate`, or spawned parallel subagents via `TaskCreate`, those agents ran as separate processes with their own conversation logs. Find them:
+If the session used `Agent` with `TeamCreate` or parallel `TaskCreate` subagents, find their separate conversation logs:
 
 1. Note the main log's timestamp
 2. List **all** JSONL files across known AI Assistant conversation-log roots modified within ~5 minutes of the main log's mtime
@@ -56,13 +56,7 @@ If the session used `Agent` tool with `TeamCreate`, or spawned parallel subagent
 
 For each conversation log, read the 4 agent spec files, then spawn all 4 agents simultaneously in a single message. Pass the full log content to each agent's prompt.
 
-Agents to spawn (read their spec first):
-- `decisions-hunter` — reads `agents/decisions-hunter.md`
-- `preferences-hunter` — reads `agents/preferences-hunter.md`
-- `patterns-hunter` — reads `agents/patterns-hunter.md`
-- `project-context-hunter` — reads `agents/project-context-hunter.md`
-
-If there are multiple logs (multi-agent session), spawn all 4 hunters × N logs in a single message — all in parallel.
+If there are multiple logs (multi-agent session), spawn the four hunters listed above for each log in a single message — all in parallel.
 
 Wait for all agents to complete before continuing.
 
@@ -198,19 +192,13 @@ Avoid writing:
 - One-off fixes unlikely to recur
 - Verbose explanations — if a one-liner suffices, use it
 
-**Digressions are fine.** If the user wants to explore an item, ask questions, or revisit a decision — go with it. After any side conversation, use `TaskList` to re-orient and resume from where you left off.
+If the user explores an item, asks questions, or revisits a decision, continue the side conversation, then use `TaskList` to re-orient and resume.
 
 ---
 
 ## Step 7 — Targeted Quality Check on Modified Files
 
-By the end of the interview you have an exact list of files written to. Use `ai-assistant-ops:agents-md-improver` when available, scoped only to those files. Do not let it expand into a full repo audit.
-
-Invoke it via the Skill tool:
-
-```
-Skill({ skill: "ai-assistant-ops:agents-md-improver" })
-```
+Use `ai-assistant-ops:agents-md-improver` when available, scoped only to the files written during Step 6. Invoke it via `Skill({ skill: "ai-assistant-ops:agents-md-improver" })`.
 
 Before it runs, tell it explicitly: "Focus only on these files that were just modified: [list]. Do not audit pre-existing content — only check whether the new additions conflict with, duplicate, or contradict what was already there."
 

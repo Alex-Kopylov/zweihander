@@ -170,7 +170,7 @@ source.
 
 #### If Multiple Environments Exist
 
-**Note:** Environment data requires the REST API (not the DB fallback). The `environment` column exists only in ClickHouse, not in the Postgres `traces` table. Discover environments via the REST API before suggesting this widget.
+**Note:** Environment data requires the REST API: `environment` exists in ClickHouse, not the Postgres `traces` table. Discover environments via the REST API before suggesting this widget.
 
 | Suggestion | View | Metric | Dimension | Chart Type |
 |---|---|---|---|---|
@@ -188,7 +188,7 @@ These are generally useful regardless of data shape:
 
 ### 4. Present Suggestions
 
-Format suggestions as a numbered list with clear descriptions:
+Format suggestions as a numbered list with clear descriptions and data context, then ask which to create:
 
 ```
 Based on your data from the last 30 days, here are recommended widgets:
@@ -199,19 +199,8 @@ Based on your data from the last 30 days, here are recommended widgets:
  2. Cost by Model -- Horizontal bar chart comparing total cost across models
     (4 models found: gpt-4o, gpt-4o-mini, model-a, model-b)
 
- 3. Latency P95 Over Time -- Line chart tracking 95th percentile latency daily
-
- 4. Trace Volume -- Bar chart showing daily trace count
-    (12,450 traces in period)
-
- 5. Total Cost (Big Number) -- Single stat showing aggregate cost
-    ($142.37 total in period)
-
 Which widgets would you like to create? Enter numbers (e.g., "1, 3, 5") or "all".
 ```
-
-Include data context (counts, model names, score names) to help the user make
-informed selections.
 
 ### 5. Create Selected Widgets
 
@@ -220,10 +209,7 @@ pre-computed configuration. Pass all parameters:
 
 - `name` -- descriptive widget name
 - `description` -- brief explanation of what the widget shows
-- `view` -- from the suggestion table
-- `dimensions` -- from the suggestion table
-- `metrics` -- from the suggestion table
-- `chart_type` -- from the suggestion table
+- `view`, `dimensions`, `metrics`, `chart_type` -- from the suggestion table
 - `chart_config` -- appropriate for the chart type
 - `filters` -- any relevant filters (e.g., score name prefix)
 
@@ -237,11 +223,11 @@ creation and `layout-widgets` for automatic grid positioning.
 
 When many suggestions are possible, prioritize by:
 
-1. **Scores** -- most directly actionable for evaluation workflows
-2. **Cost metrics** -- critical for budget monitoring
-3. **Latency metrics** -- important for performance tracking
-4. **Volume metrics** -- useful for usage monitoring
-5. **Breakdowns** (by model, environment, tag) -- useful for comparison
+1. **Scores** -- evaluation workflows
+2. **Cost metrics** -- budget monitoring
+3. **Latency metrics** -- performance tracking
+4. **Volume metrics** -- usage monitoring
+5. **Breakdowns** (by model, environment, tag) -- comparison
 
 Limit suggestions to a maximum of **10** to avoid overwhelming the user. Select
 the most impactful based on data volume and diversity.

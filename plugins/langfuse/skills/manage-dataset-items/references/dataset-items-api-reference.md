@@ -1,7 +1,5 @@
 # Dataset Items API Reference
 
-Complete reference for Langfuse dataset item management.
-
 ## REST API
 
 ### Create / Upsert Item
@@ -25,14 +23,14 @@ Content-Type: application/json
 | `status` | string | No | `ACTIVE` (default) or `ARCHIVED` |
 
 **Upsert Behavior:**
-- If `id` is not provided: creates new item with auto-generated ID.
-- If `id` is provided and exists: creates a new version. The previous version's `valid_to` is set. The new version has `valid_from = NOW()` and `valid_to = NULL`.
-- If `id` is provided and does not exist: creates new item with the given ID.
+- No `id`: creates a new item with an auto-generated ID.
+- Existing `id`: creates a new version, setting the previous version's `valid_to`. The new version has `valid_from = NOW()` and `valid_to = NULL`.
+- New `id`: creates a new item with that ID.
 
 **Schema Validation:**
-- If the parent dataset has `inputSchema` set, the `input` field is validated against it.
-- If validation fails, the item creation is rejected with error details.
-- Same applies for `expectedOutputSchema` against `expectedOutput`.
+- If the parent dataset has `inputSchema`, `input` is validated against it.
+- Validation failures reject item creation with error details.
+- `expectedOutputSchema` similarly validates `expectedOutput`.
 
 ### List Items
 
@@ -70,7 +68,7 @@ GET /api/public/dataset-items?datasetName={name}&limit=50&page=1
 }
 ```
 
-Note: The API returns only the **current version** of each item (i.e., `valid_to IS NULL`). Historical versions require direct DB access.
+The API returns only each item's **current version** (`valid_to IS NULL`). Historical versions require direct DB access.
 
 ## Database Schema
 
@@ -93,7 +91,7 @@ Note: The API returns only the **current version** of each item (i.e., `valid_to
 
 ### Versioning Model
 
-Items use a temporal versioning pattern:
+Items use temporal versioning:
 
 ```
 Version 1: valid_from=T1, valid_to=T2  (superseded)

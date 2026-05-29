@@ -10,7 +10,7 @@ compatibility: |
 
 # MEGA CMD Skill
 
-MEGA CMD is a CLI for MEGA cloud storage with **zero-knowledge end-to-end encryption**. This means not even MEGA can read your files — they're encrypted on your device before upload.
+MEGA CMD is a CLI for MEGA cloud storage with **zero-knowledge end-to-end encryption**: files are encrypted on-device before upload, so MEGA cannot read them.
 
 All `mega-*` commands operate on **cloud paths** (starting with `/`), not local files. Think of `/` as the root of your MEGA vault.
 
@@ -75,7 +75,7 @@ mega-put ./local-file.pdf /remote/path/           # Upload single file
 mega-put -c ./local-folder/ /remote/destination/  # Upload folder recursively
 ```
 
-**Best practice for bulk uploads:** Organize files locally first, then upload the entire folder with one `mega-put -c` command. This is faster and cleaner than uploading individual files.
+**Best practice for bulk uploads:** Organize files locally first, then upload the folder once with `mega-put -c`; this is faster and cleaner than per-file uploads.
 
 Example workflow:
 ```bash
@@ -103,7 +103,7 @@ mega-export -a -f /path/to/folder/               # Create link to folder
 mega-export -d /path/to/file                     # Remove public link
 ```
 
-**Output:** Returns a `https://mega.nz/file/...` link that anyone can access.
+**Output:** A `https://mega.nz/file/...` link anyone can access.
 
 **Pro account features** (not available on free accounts):
 - Password-protected links
@@ -145,7 +145,7 @@ mega-thumbnail /remote/photo.jpg ./thumb.jpg    # Get thumbnail (~50KB)
 mega-get /remote/photo.jpg ./full-size/          # Get full original
 ```
 
-**Strategy for image workflows:** Check thumbnails first to verify which files you need, then download only the full originals you actually need. This saves bandwidth and time.
+**Strategy for image workflows:** Check thumbnails first, then download only the originals you need to save bandwidth and time.
 
 ## Sync & Backups
 
@@ -155,7 +155,7 @@ mega-sync /local/path /remote/path/              # One-way sync (local → remot
 mega-sync /remote/path/ /local/path/             # One-way sync (remote → local)
 ```
 
-Sync is one-way: specifying local path first means it pushes changes to remote. Remote path first means it pulls changes locally.
+Sync is one-way: local path first pushes to remote; remote path first pulls locally.
 
 ### Check Sync Status
 ```bash
@@ -227,4 +227,3 @@ mega-rm -r -f /Contracts/2024/
 3. **Escape spaces in paths** with backslash: `/My\ Folder/My\ File.pdf`
 4. **Test share links** before sending them — copy the link and open in an incognito window.
 5. **For large uploads**, check `mega-transfers` to monitor progress.
-6. **Organize locally first** before bulk uploading — it's cleaner and faster.

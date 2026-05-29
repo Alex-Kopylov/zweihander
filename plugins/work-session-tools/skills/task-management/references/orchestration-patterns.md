@@ -31,9 +31,7 @@ Agent(description: "Run linter",           prompt: "...", run_in_background: tru
 Agent(description: "Check type safety",    prompt: "...", run_in_background: true)
 Agent(description: "Security audit",       prompt: "...", run_in_background: true)
 
-# Continue other work while agents run
-# Notifications arrive as each completes
-# Aggregate results when all finish
+# Continue other work; aggregate results after completion notifications
 ```
 
 ### When to Use
@@ -53,8 +51,7 @@ Agent(
   run_in_background: true
 )
 
-# Continue current work in main session
-# When research completes, use findings to inform implementation
+# Continue current work; use research output when it completes
 ```
 
 ### When to Use
@@ -64,7 +61,7 @@ Agent(
 
 ## Pattern 4: Fan-Out / Fan-In
 
-Divide a large task into independent subtasks, execute in parallel, merge results.
+Divide a large task into parallel subtasks, then merge results.
 
 ```
 TaskCreate: "Prepare migration plan"                → #1

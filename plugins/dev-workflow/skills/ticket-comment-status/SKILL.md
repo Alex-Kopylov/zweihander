@@ -58,9 +58,5 @@ Write a concise, PM/customer-friendly status update and post it as a comment on 
 
 ## Notes
 
-- Never use technical jargon — no class names, function names, or file paths
-- Never include metrics (commit counts, line counts, file counts) — PMs don't care
-- Never skip user confirmation
-- Always use markdown format when posting
 - Bold the heading (`**Status Update**`) — no markdown H1/H2 in comments
 - "Remaining" section is optional — omit if work is fully complete

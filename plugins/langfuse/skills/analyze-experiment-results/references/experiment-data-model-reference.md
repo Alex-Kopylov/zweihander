@@ -30,9 +30,7 @@ Dataset
 
 ### 2. Experiment Execution
 - An experiment run creates a `DatasetRun` linked to the dataset.
-- For each `DatasetItem`, a `DatasetRunItem` is created linking:
-  - The `datasetItemId` (what was tested)
-  - The `traceId` (what the LLM produced)
+- For each `DatasetItem`, a `DatasetRunItem` links the tested `datasetItemId` to the produced `traceId`.
 
 ### 3. Scoring
 Scores are attached to **traces**, not directly to run items. The link is:
@@ -133,12 +131,9 @@ Langfuse uses a **hybrid storage model**:
 - **PostgreSQL**: `datasets`, `dataset_items`, `dataset_runs` (metadata and config)
 - **ClickHouse**: `traces`, `scores`, `dataset_run_items_rmt` (runtime/analytics data)
 
-**The Postgres `traces`, `scores`, and `dataset_run_items` tables exist but are EMPTY.** All runtime data lives in ClickHouse.
+The Postgres `traces`, `scores`, and `dataset_run_items` tables exist but are empty; query ClickHouse for runtime data.
 
-**For analysis queries**, use one of:
-1. **REST API** (preferred) — reads from ClickHouse transparently.
-2. **ClickHouse direct** — `docker exec langfuse-clickhouse clickhouse-client --query "..."`.
-3. **Two-step approach** — fetch run items via REST API, then query scores per trace.
+**For analysis queries**, use the REST API (preferred; it reads ClickHouse transparently), direct ClickHouse (`docker exec langfuse-clickhouse clickhouse-client --query "..."`), or the two-step REST pattern below.
 
 ## Key Queries
 

@@ -83,7 +83,7 @@ fi
 
 **Invoke the `scrub-pdf-metadata` skill** on the PDF; do not inline exiftool commands here.
 
-If, for some reason, the skill cannot be invoked as a skill, fall back to the exact commands from `${PLUGIN_ROOT}/skills/scrub-pdf-metadata/references/exiftool-commands.md` under "One-liner: scrub + set + verify" — never improvise.
+If the skill cannot be invoked as a skill, fall back to the exact commands from `${PLUGIN_ROOT}/skills/scrub-pdf-metadata/references/exiftool-commands.md` under "One-liner: scrub + set + verify" — never improvise.
 
 After scrub, verify with:
 
@@ -125,9 +125,9 @@ other_companies="$(ls -1 "$workspace" 2>/dev/null | grep -v "^${current_company}
 
 Fail on ANY hit for another company name in the PDF text.
 
-**@page CSS path leak:** Some HTML templates embed the source file path in headers/footers via `@page` CSS. When scanning PDF text, also look for path-like strings such as `file:`, `/Users/`, `/home/`, or the workspace basename derived from `$(basename "${JOB_HUNT_WORKSPACE:-$HOME/Documents/job_seeking}")`. A match here means the @page rule leaked the build path into the rendered output.
+**@page CSS path leak:** Some HTML templates embed source paths in headers/footers via `@page` CSS. When scanning PDF text, also look for `file:`, `/Users/`, `/home/`, or the workspace basename from `$(basename "${JOB_HUNT_WORKSPACE:-$HOME/Documents/job_seeking}")`. Any match means the @page rule leaked the build path into the rendered output.
 
-**Rasterized PDF check:** After reading the PDF, verify that the extracted text is at least 200 characters long (configurable via `JOB_HUNT_MIN_PDF_TEXT_CHARS`). Below that floor, even a one-page CV header would not fit — the PDF is likely image-only or the export failed. If it fails, report: "FAIL: PDF text extraction yielded fewer than `$min_chars` chars. Likely rasterized. Re-export."
+**Rasterized PDF check:** After reading the PDF, verify extracted text is at least 200 characters long (configurable via `JOB_HUNT_MIN_PDF_TEXT_CHARS`). If it fails, report: "FAIL: PDF text extraction yielded fewer than `$min_chars` chars. Likely rasterized. Re-export."
 
 **Checklist:**
 
@@ -145,7 +145,7 @@ Fail on ANY hit for another company name in the PDF text.
 grep -oE '<!--[^>]*-->' "$html" || true
 ```
 
-Block if any HTML comment references another company name. Forgotten commented-out bullets from prior applications are a high-risk leak (some PDF indexers parse HTML comments).
+Block HTML comments that reference another company; commented-out prior-application bullets are high-risk because some PDF indexers parse comments.
 
 **Checklist:**
 
@@ -157,7 +157,7 @@ Block if any HTML comment references another company name. Forgotten commented-o
 
 ## Section 5 — Sensitive file presence
 
-Check whether sensitive files are present in the workspace that should not travel with the application.
+Check for sensitive files in the workspace that should not travel with the application.
 
 **Checklist:**
 
@@ -183,22 +183,22 @@ Use the `Read` tool on the PDF and verify:
 - [ ] Page count matches expectation (usually 1–2 pages for a CV)
 - [ ] Links (LinkedIn, portfolio, email) are present
 
-Threshold: minimum 200 characters of extracted text (already checked in Section 4a). If it already passed there, record PASS here. If `JOB_HUNT_MIN_PDF_TEXT_CHARS` is set to a higher value for multi-page documents, use that threshold.
+Reuse Section 4a's `JOB_HUNT_MIN_PDF_TEXT_CHARS` threshold; if it passed there, record PASS here.
 
 ---
 
 ## Section 7 — Content correctness
 
-The highest-value gate. The assistant must read the PDF text AND the accompanying `company.md` / `job_description.*` and verify:
+The assistant must read both the PDF text and accompanying `company.md` / `job_description.*`, then verify:
 
 - [ ] Name spelling correct
 - [ ] Dates consistent (no contradictions between roles)
 - [ ] Company names in work history spelled correctly
-- [ ] No fabricated experience, no inflated seniority beyond defensible (cross-check against master CV)
+- [ ] No fabricated experience or inflated seniority beyond defensible (cross-check against master CV)
 - [ ] Role title on the CV sensibly matches / reframes the target JD's role
 - [ ] Key must-have JD requirements are visibly addressed in the CV text
 
-The assistant does this by reading the PDF text (from Section 4a), the master HTML, the `<company>/company.md`, and `<company>/job_description.*`. Any discrepancy = fail with a specific line-level finding.
+Also read the master HTML. Any discrepancy = fail with a specific line-level finding.
 
 ---
 
@@ -216,13 +216,13 @@ company_md="$(dirname "$pdf")/company.md"
 - [ ] `company.md` exists in the application folder
 - [ ] `status` field reflects current reality (valid values: `drafting | applied | screening | interview | offer | signed | rejected | withdrew`)
 
-If `status` is still `drafting`, note it as informational — the user may be preparing to send for the first time and has not yet switched to `applied`. Do not fail on this; surface it so the user can update after sending.
+If `status` is still `drafting`, surface it as informational so the user can update it after sending; do not fail.
 
 ---
 
 ## Section 9 — Final sanity
 
-The assistant surfaces these as judgment calls for the user to confirm, not automated gates. Ask via `AskUserQuestion`.
+Ask the user to confirm these judgment calls via `AskUserQuestion`; they are not automated gates.
 
 - [ ] Open PDF in a different renderer than the one that made it (Preview if exported via Chrome; vice-versa) to catch tool-specific bugs
 - [ ] Re-read the first sentence of the first bullet — does it instantly signal fit for THIS role?

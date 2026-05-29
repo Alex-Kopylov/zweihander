@@ -1,6 +1,6 @@
 # Source: Git
 
-Always available when a `.git/` directory exists. This is the foundation — every other source builds on top of it.
+Always available when a `.git/` directory exists.
 
 ## What to fetch
 
@@ -42,7 +42,7 @@ For each worktree beyond the main one:
 - Run `git -C {worktree-path} log --oneline -1` for last commit
 - Run `git -C {worktree-path} status --short | wc -l` for dirty file count
 
-This is particularly useful for projects with heavy parallel development. Example output:
+Example output:
 
 ```
 /repos/my-app                                   d57022e [develop]
@@ -56,7 +56,7 @@ This is particularly useful for projects with heavy parallel development. Exampl
 git for-each-ref --sort=-committerdate --format='%(refname:short) %(committerdate:relative)' refs/heads/ | head -10
 ```
 
-Which branches were touched recently? Helps identify active work streams.
+Identify recently touched branches and active work streams.
 
 ## Notes
 

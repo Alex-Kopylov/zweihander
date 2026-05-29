@@ -6,15 +6,15 @@ description: >-
   Trigger phrases include "create dataset", "new dataset", "set up dataset", "add dataset".
 ---
 
-Create a new Langfuse dataset via the REST API. Optionally configure input and expected output JSON schemas for item validation.
+Create a Langfuse dataset via REST API, optionally with input and expected output JSON schemas for item validation.
 
 ## Step 1: Gather Requirements
 
 Ask the user:
-1. **Dataset name** — use folder-style naming with `/` for organization (e.g., `benchmarks/ssp-controls`, `regression/html-tags`).
+1. **Dataset name** — follow the naming conventions below.
 2. **Description** — brief purpose description.
-3. **Input schema** — does the user want to enforce a JSON Schema on item inputs? If yes, help design it (delegate to `design-dataset-schema` skill).
-4. **Expected output schema** — does the user want to enforce expected output structure?
+3. **Input schema** — whether to enforce JSON Schema on item inputs; if yes, help design it (delegate to `design-dataset-schema` skill).
+4. **Expected output schema** — whether to enforce expected output structure.
 
 ## Step 2: Check for Existing Dataset
 
@@ -24,7 +24,7 @@ Before creating, verify no dataset with the same name exists:
 curl -s -u "$PUBLIC_KEY:$SECRET_KEY" "$HOST/api/public/datasets/{name}"
 ```
 
-If it exists, warn the user that creating with the same name will **upsert** (update metadata/schemas on the existing dataset).
+If it exists, warn that creating with the same name will **upsert** the existing dataset's metadata/schemas.
 
 ## Step 3: Create Dataset
 
@@ -76,10 +76,10 @@ Provide:
 ## Schema Validation
 
 When `inputSchema` or `expectedOutputSchema` is set:
-- Items that fail validation are **rejected** with error details
-- Items that pass are created normally
-- Schemas follow standard JSON Schema (draft-07)
-- Schema validation applies to new items and upserts
+- Failing items are **rejected** with error details
+- Passing items are created normally
+- Schemas follow JSON Schema draft-07
+- Validation applies to new items and upserts
 
 Example input schema for an SSP pipeline dataset:
 ```json

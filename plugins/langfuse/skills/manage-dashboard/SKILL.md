@@ -11,8 +11,7 @@ description: >
 
 # Manage Langfuse Dashboards
 
-Perform create, read, update, and delete operations on Langfuse dashboards,
-including managing the widget placement entries within each dashboard's
+Create, read, update, and delete Langfuse dashboards, including widget placement entries in each dashboard's
 `definition` JSON column.
 
 ## Prerequisites
@@ -51,7 +50,7 @@ cuid_generator = cuid_wrapper()
 dashboard_id = cuid_generator()
 ```
 
-Ask the user for a name and optional description. Insert the dashboard with an
+Ask for a name and optional description, then insert the dashboard with an
 empty widget list:
 
 ```sql
@@ -100,9 +99,8 @@ Parse the `definition` JSON and check the `widgets` array length.
 
 **If the dashboard has widgets:**
 
-Warn the user that the dashboard contains widget placement entries. Deleting
-the dashboard will orphan these placement entries but will NOT delete the
-underlying `dashboard_widgets` rows. Ask for explicit confirmation:
+Warn that deletion will orphan widget placement entries but will NOT delete the
+underlying `dashboard_widgets` rows, then ask for explicit confirmation:
 
 ```
 WARNING: Dashboard "<name>" contains <N> widget placements.
@@ -143,8 +141,8 @@ SELECT definition FROM dashboards
 WHERE id = %(dashboard_id)s AND project_id = %(project_id)s;
 ```
 
-3. Use the `layout-widgets` skill to calculate the placement position (x, y,
-   x_size, y_size) based on existing widget positions.
+3. Use `layout-widgets` to calculate placement (x, y, x_size, y_size) from
+   existing widget positions.
 
 4. Generate a UUID v4 for the placement slot ID:
 
@@ -195,9 +193,8 @@ WHERE id = %(dashboard_id)s AND project_id = %(project_id)s;
 
 4. Remove the matching entry from the `widgets` array.
 
-5. Optionally re-compact the grid positions to remove gaps. This is a
-   convenience step; skipping it leaves visual gaps on the dashboard but does
-   not break functionality.
+5. Optionally re-compact grid positions to remove visual gaps; skipping this
+   does not break functionality.
 
 6. Update the dashboard definition:
 

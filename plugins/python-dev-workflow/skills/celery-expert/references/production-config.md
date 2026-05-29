@@ -106,14 +106,7 @@ celery -A app beat -S redbeat.RedBeatScheduler
 
 ### Preventing Duplicate Scheduled Tasks
 
-Use a distributed lock to ensure only one beat scheduler runs:
-
-```python
-from celery_redbeat import RedBeatSchedulerEntry
-
-# RedBeat handles locking automatically via Redis
-# Just run: celery -A app beat -S redbeat.RedBeatScheduler
-```
+With RedBeat, `redbeat.RedBeatScheduler` handles Redis locking; use the beat command above.
 
 ## Worker Deployment
 
@@ -210,7 +203,7 @@ def check_celery_health(app: Celery) -> dict:
 
 ## Graceful Shutdown
 
-Workers should finish current tasks before stopping. Configure appropriate timeouts:
+Let workers finish current tasks; configure matching timeouts:
 
 ```bash
 # Warm shutdown — wait up to 60s for tasks to finish

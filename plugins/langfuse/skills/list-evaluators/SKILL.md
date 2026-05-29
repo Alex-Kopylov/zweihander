@@ -17,7 +17,7 @@ templates and stale job configs.
 
 ## Prerequisites
 
-Ensure the following are available before proceeding:
+Required inputs:
 
 | Variable        | Example                              | Purpose                    |
 |-----------------|--------------------------------------|----------------------------|
@@ -48,7 +48,7 @@ import json
 conn = psycopg2.connect("CONNECTION_STRING_HERE")
 cur = conn.cursor()
 
-# Latest version of each evaluator with its job configuration
+# Latest evaluator version with job config
 cur.execute("""
     WITH latest_templates AS (
         SELECT DISTINCT ON (name)
@@ -121,8 +121,7 @@ WHERE et.project_id = %s AND jc.id IS NULL
 ORDER BY et.name, et.version DESC
 ```
 
-Templates without a job configuration exist in the database but are not wired
-to evaluate any traces.
+Templates without job configs are not wired to evaluate traces.
 
 ### Stale job configs (pointing to non-latest template version)
 
@@ -151,7 +150,7 @@ outdated evaluation prompt.
 
 ### Main Evaluator Table
 
-Present the results as a markdown table:
+Present a markdown table:
 
 ```
 | Name | Version | Model | Status | Score Name | Sampling | Delay (ms) | Filters |
@@ -161,8 +160,7 @@ Present the results as a markdown table:
 | tone | 2 | gpt-4o | INACTIVE | tone_professional | 0.5 | 10000 | 1 condition |
 ```
 
-For the Filters column, show the count of filter conditions (e.g., "2 conditions")
-or "none" if the filter array is empty.
+In Filters, show the condition count (e.g., "2 conditions") or "none" for an empty filter array.
 
 ### Anomalies Section
 
@@ -182,7 +180,7 @@ If orphaned templates or stale job configs are found, add a section:
 
 ## Step 4 -- Summary
 
-After the table, provide a brief summary:
+After the table, summarize:
 
 - Total evaluator count (unique names with latest-version templates).
 - Active/inactive split (count of ACTIVE vs INACTIVE job configurations).
@@ -194,15 +192,12 @@ After the table, provide a brief summary:
 
 ## Error Handling
 
-- **No evaluators found**: Report that no eval_templates exist for this project.
-  Suggest using the `create-evaluator` skill.
-- **DB connection failed**: Attempt docker exec psql fallback. Report failure if
-  both methods fail.
-- **Permission denied**: Report that the DB user lacks SELECT permission on
-  `eval_templates` or `job_configurations`.
+- **No evaluators found**: Report no `eval_templates` exist; suggest `create-evaluator`.
+- **DB connection failed**: Try docker exec psql fallback; report failure only if both methods fail.
+- **Permission denied**: Report missing SELECT permission on `eval_templates` or `job_configurations`.
 
 ---
 
 ## Cleanup
 
-No temporary files are created by this skill.
+No temporary files are created.

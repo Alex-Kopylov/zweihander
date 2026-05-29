@@ -44,6 +44,6 @@ Skip private 1:1 chats by default. Group chats are included only if they match t
 
 ## Notes
 
-- Teams MCP servers typically use Microsoft Graph API under the hood
+
 - Message formatting may include adaptive cards — extract the plain text content
 - If the MCP server supports `/me/messages` or activity feed, use it to find mentions

@@ -90,9 +90,7 @@
 
 1. Read the AGENTS.md file completely
 2. Cross-reference with actual codebase:
-   - Run documented commands (mentally or actually)
-   - Check if referenced files exist
-   - Verify architecture descriptions
+   - Validate commands, paths, and architecture descriptions
 3. Score each criterion
 4. Calculate total and assign grade
 5. List specific issues found

@@ -7,9 +7,7 @@ allowed-tools: Read, Bash, AskUserQuestion
 
 # Scrub PDF Metadata
 
-Every PDF carries metadata. Most of it is harmless. Some of it leaks — the export tool you used, the timestamp (looks suspicious if 10 minutes before you applied), the source HTML filename, and sometimes the device name.
-
-This skill strips all of it with `exiftool` and resets a clean Author.
+Some PDF metadata can leak export tools, suspicious timestamps, source HTML filenames, and device names. Strip it with `exiftool`, then reset a clean Author.
 
 ## When to use
 
@@ -70,7 +68,7 @@ Specifically highlight any of these that are non-empty:
 exiftool -all= -overwrite_original "$pdf"
 ```
 
-`-all=` removes ALL metadata. This also removes Author, which we re-set next. `-overwrite_original` skips creating a `.pdf_original` backup file alongside the PDF.
+`-all=` removes all metadata, including Author; re-set it next. `-overwrite_original` skips creating a `.pdf_original` backup alongside the PDF.
 
 ### 3. Set clean Author + Title
 
@@ -82,7 +80,7 @@ exiftool \
   "$pdf"
 ```
 
-Title = "CV" (neutral, generic, gives nothing away). Do NOT set company name, role, or date in Title.
+Use `Title = "CV"`; do not include company, role, or date.
 
 ### 4. Inspect (after)
 
@@ -102,7 +100,7 @@ exiftool -CreateDate= -ModifyDate= -MetadataDate= -overwrite_original "$pdf"
 
 ### 5. Scan PDF text for leaks
 
-Even after metadata scrub, the PDF *content* can leak. Use the Read tool on the PDF file, then scan the extracted text for these patterns:
+Metadata scrub does not cover PDF *content*. Use Read, then scan extracted text for:
 
 - `file:`
 - `/Users/`
@@ -141,8 +139,8 @@ Recruiters and hiring managers sometimes open `File → Properties` on a PDF. AT
 
 ## Gotchas
 
-- **exiftool -all= strips EVERYTHING including Author — always restore a clean Author after.** Running `-all=` clears Author along with everything else. Step 3 (Set clean Author + Title) is mandatory, not optional. See `references/exiftool-commands.md` for commands.
-- **HTML @page CSS paths render INTO the PDF as text, surviving exiftool metadata strip.** If a template uses `@page` rules that reference file paths or URLs in headers/footers, those strings end up in the visible PDF content — exiftool cannot touch them because they are not metadata fields. Always scan PDF text for leaks (Step 5) even after a clean exiftool report.
+- **`exiftool -all=` strips Author too.** Step 3 (Set clean Author + Title) is mandatory; see `references/exiftool-commands.md` for commands.
+- **HTML `@page` paths render into PDF text and survive metadata stripping.** `exiftool` cannot remove visible header/footer text, so always run Step 5 after a clean report.
 
 ## References
 

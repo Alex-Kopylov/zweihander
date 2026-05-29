@@ -11,18 +11,18 @@ description: >-
 
 # List Dashboard Widgets
 
-Retrieve all dashboard widgets from a Langfuse project and display them alongside their dashboard associations. This skill queries the PostgreSQL database directly since no public REST API endpoint exists for listing widgets.
+Retrieve dashboard widgets from a Langfuse project and their dashboard associations by querying PostgreSQL directly, since no public REST API endpoint lists widgets.
 
 ## Prerequisites
 
-Before executing, ensure the following credentials are available:
+Ensure these credentials are available:
 
 - **Project ID** -- the Langfuse project identifier (visible in the URL path)
 - **Database connection** -- either a PostgreSQL connection string or Docker container access
 
 ## Step 1: Query All Widgets
 
-Run the following SQL query against the Langfuse PostgreSQL database to retrieve all widgets belonging to the project:
+Run this SQL query against Langfuse PostgreSQL to retrieve project widgets:
 
 ```sql
 SELECT dw.id, dw.name, dw.view, dw.chart_type, dw.created_at
@@ -43,11 +43,11 @@ FROM dashboards d
 WHERE d.project_id = '{PROJECT_ID}';
 ```
 
-The `definition` column is a JSON object containing a `widgets` array. Each entry in that array has a `widgetId` field referencing a `dashboard_widgets.id`.
+The `definition` column is JSON with a `widgets` array; each entry has a `widgetId` referencing `dashboard_widgets.id`.
 
 ## Step 3: Cross-Reference Widgets to Dashboards
 
-Parse each dashboard's `definition` JSON and extract the `widgetId` values from the `widgets` array:
+Parse each dashboard's `definition` JSON and extract `widgetId` values from `widgets`:
 
 ```python
 import json
@@ -64,11 +64,11 @@ for dashboard_id, dashboard_name, definition_json in dashboard_rows:
             widget_to_dashboards.setdefault(widget_id, []).append(dashboard_name)
 ```
 
-Map each widget ID to the list of dashboard names it appears on. Widgets not referenced by any dashboard are orphaned -- flag them in the output.
+Map each widget ID to its dashboard names. Flag widgets not referenced by any dashboard as orphaned.
 
 ## Step 4: Format Output
 
-Present the results as a formatted table combining widget metadata and dashboard associations:
+Present a table combining widget metadata and dashboard associations:
 
 ```
 | ID | Name | View | Chart Type | Dashboards |
@@ -78,13 +78,13 @@ Present the results as a formatted table combining widget metadata and dashboard
 | cmm88t8zw... | Orphaned Widget | TRACES | PIE | (none) |
 ```
 
-Include the full CUID for the ID column (do not truncate). Mark widgets that appear on zero dashboards with `(none)` in the Dashboards column.
+Use full CUIDs in the ID column. Mark widgets on zero dashboards with `(none)`.
 
 ## Execution Methods
 
 ### Preferred: psycopg2 Python Script
 
-Write and execute a Python script that connects to the database, runs both queries, performs the cross-referencing, and prints the formatted table:
+Write and run a Python script that connects to the database, runs both queries, cross-references results, and prints the table:
 
 ```python
 import json
@@ -160,7 +160,7 @@ docker exec {CONTAINER_NAME} psql -U {DB_USER} -d {DB_NAME} -c \
    WHERE d.project_id = '{PROJECT_ID}';"
 ```
 
-Parse the psql output manually to perform the cross-referencing step. Note that JSON output from psql may require careful handling of escaping and line breaks.
+Parse the psql output manually for cross-referencing. JSON output from psql may require careful handling of escaping and line breaks.
 
 ## Output Interpretation
 

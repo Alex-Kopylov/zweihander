@@ -74,7 +74,7 @@ Step 2 — For each pipeline ID returned, fetch recent runs:
 az pipelines runs list --org https://dev.azure.com/{org} --project {project} --pipeline-ids {pipeline-id} --top 5
 ```
 
-Only include runs from pipelines associated with the current repository. Pipelines from other repos in the same project (e.g. `other-service` when generating a note for `my-app`) must be excluded — they create noise and confuse the reader about what actually happened in their project.
+Only include runs from current-repo pipelines; exclude same-project pipelines from other repos (e.g. `other-service` for `my-app`) because they add noise.
 
 Capture: pipeline name, run number, result (succeeded/failed/canceled), branch, timestamp.
 

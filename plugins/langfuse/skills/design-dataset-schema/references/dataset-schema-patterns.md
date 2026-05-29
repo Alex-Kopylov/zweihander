@@ -4,9 +4,9 @@ Common `input` schema patterns for different experiment pipeline types. Use thes
 
 ## Pattern: HTTP Endpoint Pipeline
 
-For datasets used with webhook-based experiments that POST to HTTP endpoints.
+For webhook experiments that POST to HTTP endpoints.
 
-**Structure:** Separate path parameters (for URL construction) from the request body.
+**Structure:** Separate URL path parameters from the request body.
 
 ```json
 {
@@ -85,9 +85,7 @@ No path parameters — only request body:
 
 ## Pattern: SDK Task Function
 
-For datasets used with `langfuse.run_experiment(task=my_task)` or `dataset.run_experiment(task=my_task)`.
-
-**Structure:** Flat object with everything the task function needs. The task receives `item.input` directly.
+For `langfuse.run_experiment(task=my_task)` or `dataset.run_experiment(task=my_task)`, use a flat object with everything the task function needs. The task receives `item.input` directly.
 
 ### Example: Question Answering
 

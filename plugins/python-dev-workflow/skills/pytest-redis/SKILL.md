@@ -7,7 +7,7 @@ description: This skill should be used when the user asks to "test Redis", "writ
 
 ## Overview
 
-Guidance for writing unit and integration tests that interact with Redis in Python projects using pytest. Covers fixture design, isolation strategies, mocking with fakeredis, real-instance testing with testcontainers, and advanced patterns (pub/sub, Lua scripts, concurrency).
+Guidance for Redis unit and integration tests in Python projects using pytest: fixtures, isolation, fakeredis, testcontainers, pub/sub, Lua scripts, and concurrency.
 
 ## When to Apply
 
@@ -63,7 +63,7 @@ def clean_redis(redis_client):
     yield
 ```
 
-Always flush **before** each test (in setup), not only after. This guarantees a clean slate even when a prior test crashes.
+Flush **before** each test, not only after, so crashes do not leave stale state.
 
 ### Service-under-test fixture
 
@@ -125,7 +125,7 @@ Use `db=15` (or any unused index 1-15) for tests. Simple, fast, no key collision
 
 ### Key prefix with UUID
 
-Generate a unique prefix per session to allow parallel test runs on a shared Redis:
+Generate a unique per-session prefix for parallel runs on shared Redis:
 
 ```python
 import uuid
@@ -183,7 +183,7 @@ def test_set_with_ttl(self, cache_service, redis_client):
 
 ### Concurrency (atomic increments)
 
-Use `threading` to spawn parallel `INCR` calls and verify the final count matches expected total. See `examples/test_cache.py`.
+Use `threading` for parallel `INCR` calls and assert the final count. See `examples/test_cache.py`.
 
 ### Pub/Sub
 
@@ -212,7 +212,7 @@ services:
       --health-retries 5
 ```
 
-Set `REDIS_HOST=localhost` and `REDIS_PORT=6379` as env vars. See `references/ci-config.md` for full GitHub Actions, GitLab CI, and Azure DevOps Pipelines examples.
+Set env vars `REDIS_HOST=localhost` and `REDIS_PORT=6379`; see `references/ci-config.md` for full GitHub Actions, GitLab CI, and Azure DevOps Pipelines examples.
 
 ## Dependencies
 

@@ -1,6 +1,6 @@
 # Langfuse v1 Metrics Query Schema Reference
 
-Complete reference for the Langfuse v1 metrics API query format. This file is the single source of truth for valid views, dimensions, metrics, filters, and their allowed values.
+Reference for valid Langfuse v1 metrics API views, dimensions, metrics, filters, and values.
 
 ## Endpoint
 
@@ -53,23 +53,12 @@ Authentication: HTTP Basic (public_key as username, secret_key as password).
 
 **Metrics:**
 
-| Measure | Valid Aggregations |
+Numeric aggregation set: `avg`, `p50`, `p75`, `p90`, `p95`, `p99`, `count`, `sum`, `min`, `max`, `histogram`, `uniq`.
+
+| Measures | Valid Aggregations |
 |---|---|
-| `latency` | `avg`, `p50`, `p75`, `p90`, `p95`, `p99`, `count`, `sum`, `min`, `max`, `histogram`, `uniq` |
-| `totalTokens` | `avg`, `p50`, `p75`, `p90`, `p95`, `p99`, `count`, `sum`, `min`, `max`, `histogram`, `uniq` |
-| `inputTokens` | `avg`, `p50`, `p75`, `p90`, `p95`, `p99`, `count`, `sum`, `min`, `max`, `histogram`, `uniq` |
-| `outputTokens` | `avg`, `p50`, `p75`, `p90`, `p95`, `p99`, `count`, `sum`, `min`, `max`, `histogram`, `uniq` |
-| `inputCost` | `avg`, `p50`, `p75`, `p90`, `p95`, `p99`, `count`, `sum`, `min`, `max`, `histogram`, `uniq` |
-| `outputCost` | `avg`, `p50`, `p75`, `p90`, `p95`, `p99`, `count`, `sum`, `min`, `max`, `histogram`, `uniq` |
-| `totalCost` | `avg`, `p50`, `p75`, `p90`, `p95`, `p99`, `count`, `sum`, `min`, `max`, `histogram`, `uniq` |
-| `timeToFirstToken` | `avg`, `p50`, `p75`, `p90`, `p95`, `p99`, `count`, `sum`, `min`, `max`, `histogram`, `uniq` |
-| `count` | `count` |
-| `streamingLatency` | `avg`, `p50`, `p75`, `p90`, `p95`, `p99`, `count`, `sum`, `min`, `max`, `histogram`, `uniq` |
-| `outputTokensPerSecond` | `avg`, `p50`, `p75`, `p90`, `p95`, `p99`, `count`, `sum`, `min`, `max`, `histogram`, `uniq` |
-| `tokensPerSecond` | `avg`, `p50`, `p75`, `p90`, `p95`, `p99`, `count`, `sum`, `min`, `max`, `histogram`, `uniq` |
-| `countScores` | `count` |
-| `toolDefinitions` | `count` |
-| `toolCalls` | `count` |
+| `latency`, `totalTokens`, `inputTokens`, `outputTokens`, `inputCost`, `outputCost`, `totalCost`, `timeToFirstToken`, `streamingLatency`, `outputTokensPerSecond`, `tokensPerSecond` | numeric aggregation set |
+| `count`, `countScores`, `toolDefinitions`, `toolCalls` | `count` |
 
 **Filters:**
 
@@ -102,16 +91,12 @@ Authentication: HTTP Basic (public_key as username, secret_key as password).
 
 **Metrics:**
 
-| Measure | Valid Aggregations |
+Numeric aggregation set: `avg`, `p50`, `p75`, `p90`, `p95`, `p99`, `count`, `sum`, `min`, `max`, `histogram`, `uniq`.
+
+| Measures | Valid Aggregations |
 |---|---|
-| `latency` | `avg`, `p50`, `p75`, `p90`, `p95`, `p99`, `count`, `sum`, `min`, `max`, `histogram`, `uniq` |
-| `count` | `count` |
-| `observationsCount` | `avg`, `p50`, `p75`, `p90`, `p95`, `p99`, `count`, `sum`, `min`, `max`, `histogram`, `uniq` |
-| `scoresCount` | `avg`, `p50`, `p75`, `p90`, `p95`, `p99`, `count`, `sum`, `min`, `max`, `histogram`, `uniq` |
-| `uniqueUserIds` | `count` |
-| `uniqueSessionIds` | `count` |
-| `totalTokens` | `avg`, `p50`, `p75`, `p90`, `p95`, `p99`, `count`, `sum`, `min`, `max`, `histogram`, `uniq` |
-| `totalCost` | `avg`, `p50`, `p75`, `p90`, `p95`, `p99`, `count`, `sum`, `min`, `max`, `histogram`, `uniq` |
+| `latency`, `observationsCount`, `scoresCount`, `totalTokens`, `totalCost` | numeric aggregation set |
+| `count`, `uniqueUserIds`, `uniqueSessionIds` | `count` |
 
 **Filters:**
 

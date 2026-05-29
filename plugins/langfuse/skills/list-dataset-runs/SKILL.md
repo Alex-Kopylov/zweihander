@@ -1,7 +1,7 @@
 ---
 name: list-dataset-runs
 description: >-
-  This skill should be used when the user wants to list dataset runs, browse experiment runs,
+  Use when the user wants to list dataset runs, browse experiment runs,
   see what experiments have been executed, check run status, or inspect run metadata.
   Trigger phrases include "list runs", "show runs", "experiment runs", "dataset runs",
   "what experiments have been run", "browse runs".

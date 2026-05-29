@@ -15,9 +15,7 @@ On the `datasets` table:
 | `remote_experiment_url` | text | Webhook URL. NULL = feature disabled. |
 | `remote_experiment_payload` | jsonb | Default payload. NULL = no default. |
 
-**These fields are NOT available via any REST API endpoint.** They can only be:
-- **Read**: Via direct DB query
-- **Written**: Via direct DB UPDATE or through the Langfuse UI configuration
+**These fields are not available via REST API.** Read via direct DB query; write via direct DB UPDATE or Langfuse UI configuration.
 
 ## Webhook Payload Format
 
@@ -48,7 +46,7 @@ Content-Type: application/json
 
 ### Payload String Contents
 
-The `payload` is a JSON string that, when parsed, typically contains:
+`payload` is a JSON string that typically parses to:
 
 | Key | Type | Default | Purpose |
 |-----|------|---------|---------|
@@ -59,7 +57,7 @@ The `payload` is a JSON string that, when parsed, typically contains:
 | `cache_enabled` | bool | false | Whether to use LLM cache |
 | `pipeline` | string | varies | Pipeline identifier (if webhook handles multiple) |
 
-Additional keys are passed through to the underlying application.
+Additional keys pass through to the application.
 
 ## Constraints
 

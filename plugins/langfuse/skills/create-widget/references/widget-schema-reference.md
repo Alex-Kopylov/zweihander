@@ -54,16 +54,7 @@ No additional fields required.
 ```
 
 - `row_limit` is optional. When omitted, the server applies a default.
-
-### HORIZONTAL_BAR (additional options)
-
-```json
-{
-  "type": "HORIZONTAL_BAR",
-  "row_limit": <int, optional, max 1000>,
-  "show_value_labels": <bool, optional>
-}
-```
+- `HORIZONTAL_BAR` also accepts `show_value_labels`: `<bool, optional>`.
 
 ### HISTOGRAM
 

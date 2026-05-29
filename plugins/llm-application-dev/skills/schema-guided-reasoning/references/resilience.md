@@ -1,16 +1,5 @@
 # SGR Resilience — Handling Partial LLM Output
 
-## Table of Contents
-
-1. [The Problem](#the-problem)
-2. [TBDBaseModel Pattern](#tbdbasemodel-pattern)
-3. [TBDType Sentinel](#tbdtype-sentinel)
-4. [Stricter Eval Fields](#stricter-eval-fields)
-5. [Partial JSON Deserialization](#partial-json-deserialization)
-6. [Complete Example](#complete-example)
-
----
-
 ## The Problem
 
 LLMs sometimes produce partial structured output — they might skip a field, truncate mid-response, or return malformed JSON. Standard Pydantic validation rejects the entire response if any required field is missing. In production, a partial answer is almost always better than no answer.
@@ -168,7 +157,7 @@ This works well with `TBDBaseModel` — partial JSON produces a dict with missin
 
 ## Complete Example
 
-Putting it all together — a production-grade SGR response with resilience:
+A production-grade resilient SGR response:
 
 ```python
 from abc import ABC

@@ -1,6 +1,6 @@
 # Source: Custom MCP Servers
 
-Detected when MCP config contains servers that don't match any known source but appear to be project-relevant data sources.
+Detected for project-relevant MCP servers that do not match known sources.
 
 ## How to identify
 
@@ -58,6 +58,6 @@ For each custom source:
 
 ## Notes
 
-- Custom MCPs vary wildly — probe available tools first, then decide what to fetch
+- Custom MCPs vary; probe tools before deciding what to fetch
 - If a server has too many tools or unclear naming, skip it and note in the daily that it was detected but not queried
 - This is the primary extension point — new sources added as custom MCPs are automatically picked up by the detection step

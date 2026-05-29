@@ -15,18 +15,17 @@ description: Create a pull request from the current branch. Activate when user a
    - Only skip ticket if user **explicitly** says "no ticket"
 
 2. **Fetch ticket context** (if ticket exists):
-   - Use `<platform-cli>` to fetch ticket details for background context
-   - This is secondary info — code changes take priority for title
+   - Use `<platform-cli>` to fetch ticket details as secondary context; code changes take priority for the title
 
 3. **Analyze code changes** (primary source for PR title):
    - Commits: `git log develop..HEAD --oneline`
    - Diff summary: `git diff develop...HEAD --stat`
    - Full diff: `git diff develop...HEAD`
-   - Focus on the essence of what actually changed in code
+   - Focus on what changed in code
 
 4. **Generate PR title**:
    - Prioritize actual code changes over ticket description
-   - Handles cases where main ticket work already merged and this is follow-up/leftovers
+   - Handles follow-up/leftover work after main ticket work already merged
    - With ticket: `<TICKET-ID>: <concise summary>` (e.g. `1234: bump dependency to 2.0.33`)
    - No ticket: just `<concise summary>`
    - Keep it short and descriptive

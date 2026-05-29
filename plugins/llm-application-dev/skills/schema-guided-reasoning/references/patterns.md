@@ -1,15 +1,5 @@
 # SGR Patterns — Full Reference
 
-## Table of Contents
-
-1. [Cascade Pattern](#cascade-pattern)
-2. [Routing Pattern](#routing-pattern)
-3. [Cycle Pattern](#cycle-pattern)
-4. [Combined Patterns](#combined-patterns)
-5. [Anti-Patterns](#anti-patterns)
-
----
-
 ## Cascade Pattern
 
 Forces sequential reasoning where each field builds on the previous. The model generates fields left-to-right — earlier field values become context for later ones.

@@ -4,8 +4,7 @@ Instruction-file conventions adapted for use here.
 
 ## Diff block header
 
-Use `**Why this helps:**` (not just `**Why:**`) — the longer form is clearer when
-someone reads the file cold and needs context on why a line was added.
+Use `**Why this helps:**` instead of `**Why:**` so the reason is clear when read later.
 
 ```
 ### Update: ./AGENTS.md
@@ -34,7 +33,7 @@ One command per line. Description after the dash, lowercase, no period.
 
 ## Pre-write checklist
 
-Before finalising what gets written, verify each addition:
+Before writing, verify each addition:
 
 - Is it project-specific? (not generic advice)
 - Would a new AI Assistant session actually find this useful?

@@ -55,7 +55,7 @@ If a comment is unclear or requires a judgment call, use **AskUserQuestion** to 
 
 ### 5. Post-Fix Actions
 
-After all selected comments are addressed, present the user with options via **AskUserQuestion**:
+After addressing selected comments, present options via **AskUserQuestion**:
 
 - **Commit changes** — invoke `Skill(dev-workflow:commit)`
 - **Push to remote** — push the current branch

@@ -9,7 +9,7 @@ description: >-
 
 # Query Metrics via Langfuse v1 Metrics API
 
-Execute queries against the Langfuse v1 metrics REST endpoint to retrieve aggregated analytics data. This skill handles the full lifecycle: constructing the query JSON, URL-encoding it, sending the HTTP request, and interpreting the response.
+Query the Langfuse v1 metrics REST endpoint for aggregated analytics. Build the query JSON, URL-encode it, send the request, and interpret the response.
 
 ## Endpoint
 
@@ -31,7 +31,7 @@ Build a query JSON object with the following top-level fields:
 - **fromTimestamp** / **toTimestamp** -- ISO 8601 timestamps bounding the query window
 - **orderBy** -- optional array controlling result ordering
 
-Refer to `references/v1-metrics-schema.md` for the complete list of valid views, dimension fields, metric fields, aggregation functions, filter columns, filter operators, and filter types.
+See `references/v1-metrics-schema.md` for valid views, fields, aggregations, filter operators, and filter types.
 
 ## Execution via curl
 
@@ -87,17 +87,17 @@ with urllib.request.urlopen(req) as resp:
 
 ## Building Queries Step by Step
 
-1. **Choose the view.** Determine whether the data lives in traces, observations, numeric scores, or categorical scores. Consult `references/v1-metrics-schema.md` for valid view names.
+1. **Choose the view.** Use `"traces"`, `"observations"`, `"scores-numeric"`, or `"scores-categorical"`.
 
-2. **Select dimensions.** Pick grouping fields appropriate for the chosen view. Each dimension is an object with a `"field"` key. Omit dimensions entirely to get a single aggregate row.
+2. **Select dimensions.** Pick grouping fields for the view. Omit dimensions for a single aggregate row.
 
-3. **Select metrics.** Pick one or more measures with their aggregation function. Each metric is an object with `"measure"` and `"aggregation"` keys. Available aggregations include `avg`, `sum`, `count`, `min`, `max`, `p50`, `p75`, `p90`, `p95`, `p99`, `histogram`, `uniq` -- but not all aggregations apply to all measures. Check the schema reference.
+3. **Select metrics.** Pick measures and aggregations. Not all aggregations apply to all measures; check the schema reference.
 
-4. **Apply filters.** Narrow the result set by adding filter objects. Each filter has `"column"`, `"operator"`, `"value"`, and `"type"` keys. Use `references/v1-metrics-schema.md` to find valid filter columns and operators for the chosen view.
+4. **Apply filters.** Add `"column"`, `"operator"`, `"value"`, and `"type"` filters as needed.
 
-5. **Set time bounds.** Provide `fromTimestamp` and `toTimestamp` in ISO 8601 format (these are required). If querying a time series, also set `timeDimension` with the desired `granularity` (`"auto"`, `"minute"`, `"hour"`, `"day"`, or `"month"`).
+5. **Set time bounds.** Provide required ISO 8601 `fromTimestamp` and `toTimestamp`. For a time series, set `timeDimension.granularity` (`"auto"`, `"minute"`, `"hour"`, `"day"`, or `"month"`).
 
-6. **Set ordering.** Optionally add `orderBy` entries to sort results by a specific field in ascending or descending direction.
+6. **Set ordering.** Optionally add `orderBy` entries for ascending or descending sort.
 
 ## Common Query Patterns
 
@@ -160,7 +160,7 @@ with urllib.request.urlopen(req) as resp:
 
 ## Response Handling
 
-The API returns a JSON object. Parse the response and present results in a readable table format. If the response is empty or contains an error, report the issue clearly -- check that the view, dimensions, metrics, and filters are all valid according to the schema reference.
+Parse the JSON response and present results in a readable table. If it is empty or errors, report the issue and check the view, dimensions, metrics, and filters against the schema reference.
 
 ## Error Troubleshooting
 

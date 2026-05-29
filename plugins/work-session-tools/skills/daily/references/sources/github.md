@@ -13,7 +13,7 @@ https://github.com/{owner}/{repo}.git
 
 ## What to fetch
 
-Use `gh` CLI (GitHub CLI). Verify it's installed and authenticated: `gh auth status`.
+Use `gh` and verify it is installed/authenticated with `gh auth status`.
 
 ### Pull Requests
 

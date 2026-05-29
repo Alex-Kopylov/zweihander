@@ -1,6 +1,6 @@
 # Datasets API Reference
 
-Complete reference for Langfuse dataset REST API endpoints and database access patterns.
+
 
 ## REST API Endpoints
 
@@ -38,7 +38,7 @@ GET /api/public/datasets
 }
 ```
 
-Note: `items` contains only IDs, `runs` contains only names. For full details, use the single-dataset endpoint.
+Note: `items` are IDs and `runs` are names; use the single-dataset endpoint for full details.
 
 ### List All Datasets (v2)
 
@@ -46,7 +46,7 @@ Note: `items` contains only IDs, `runs` contains only names. For full details, u
 GET /api/public/v2/datasets
 ```
 
-Same query parameters. Response is similar but does **not** include inline `items[]` or `runs[]`.
+Same query parameters; similar response, but no inline `items[]` or `runs[]`.
 
 ### Get Single Dataset
 
@@ -83,7 +83,7 @@ Content-Type: application/json
 - `description`, `metadata`, `inputSchema`, `expectedOutputSchema` — all optional.
 - `inputSchema` and `expectedOutputSchema` are JSON Schema objects for validation.
 
-**Upsert behavior:** If a dataset with the same name already exists, it updates the existing dataset's description, metadata, and schemas.
+**Upsert behavior:** If the name already exists, it updates that dataset's description, metadata, and schemas.
 
 ### List Dataset Items
 

@@ -74,7 +74,7 @@ GET /api/public/dataset-run-items?runName={runName}&datasetId={datasetId}&limit=
 }
 ```
 
-**Key field:** `traceId` links each run item to the trace produced during execution. Use this to fetch scores and trace details.
+**Key field:** `traceId` links each run item to its execution trace for scores and details.
 
 ## Database Schema
 
@@ -93,11 +93,9 @@ GET /api/public/dataset-run-items?runName={runName}&datasetId={datasetId}&limit=
 
 **Unique Constraint:** `(dataset_id, project_id, name)`
 
-### `dataset_run_items` — ClickHouse (not Postgres!)
+### `dataset_run_items` — ClickHouse
 
-**Important:** `dataset_run_items` data lives in **ClickHouse**, not Postgres. The Postgres table exists but is empty. Use the REST API or ClickHouse direct queries.
-
-**ClickHouse table: `dataset_run_items_rmt`** (denormalized with inline item/run data):
+`dataset_run_items` data lives in ClickHouse (`dataset_run_items_rmt`, denormalized with inline item/run data); the Postgres table exists but is empty. Use the REST API or direct ClickHouse queries.
 
 | Column | Type | Notes |
 |--------|------|-------|

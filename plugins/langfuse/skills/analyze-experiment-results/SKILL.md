@@ -1,10 +1,10 @@
 ---
 name: analyze-experiment-results
 description: >-
-  This skill should be used when the user wants to analyze experiment results, inspect scores
-  from a dataset run, check pass/fail rates, review per-item outputs, or deep-dive into
-  experiment performance. Trigger phrases include "analyze results", "experiment scores",
-  "how did the experiment perform", "show results", "inspect run", "experiment analysis".
+  Use when the user wants to analyze experiment results, inspect scores from a dataset
+  run, check pass/fail rates, review per-item outputs, or deep-dive into experiment
+  performance. Trigger phrases: "analyze results", "experiment scores", "how did
+  the experiment perform", "show results", "inspect run", "experiment analysis".
 ---
 
 Analyze the results of a Langfuse experiment run: aggregate scores, per-item details, pass/fail rates, and output inspection.
@@ -31,7 +31,7 @@ Collect all `traceId` values — these link to the actual experiment traces.
 
 ## Step 3: Fetch Scores per Item
 
-**Important:** Traces, scores, and run items live in **ClickHouse**, not Postgres. Use the REST API or ClickHouse direct queries.
+**Important:** Traces, scores, and run items live in **ClickHouse**, not Postgres; use the REST API or direct ClickHouse queries.
 
 ### Via REST API (preferred)
 
@@ -78,7 +78,7 @@ GROUP BY s.name
 ORDER BY s.name;
 ```
 
-Note: ClickHouse uses `quantile(0.5)()` instead of Postgres `PERCENTILE_CONT`, and `stddevPop()` instead of `STDDEV`.
+Note: Use ClickHouse `quantile(0.5)()` and `stddevPop()` instead of Postgres `PERCENTILE_CONT` and `STDDEV`.
 
 Present as:
 
@@ -136,7 +136,7 @@ GROUP BY dri.dataset_item_id, dri.dataset_item_input, dri.trace_id, t.output
 ORDER BY dri.dataset_item_id;
 ```
 
-Note: ClickHouse uses `groupArray()` instead of Postgres `STRING_AGG()`, and `substring()` instead of `SUBSTRING(... FROM ... FOR ...)`.
+Note: Use ClickHouse `groupArray()` and `substring()` instead of Postgres `STRING_AGG()` and `SUBSTRING(... FROM ... FOR ...)`.
 
 | Item ID | Input Preview | Trace ID | Output Preview | Scores |
 |---------|--------------|----------|----------------|--------|
@@ -171,9 +171,6 @@ Present:
    - Run URL: `{HOST}/project/{PROJECT_ID}/datasets/{DATASET_ID}/runs/{RUN_ID}`
    - Individual traces: `{HOST}/project/{PROJECT_ID}/traces/{TRACE_ID}`
 
-Suggest next actions:
-- "Use `compare-experiments` to compare this run against another."
-- "Use `langfuse-eval-manager` to add more evaluators."
-- "Use `langfuse-dataset-expert` to update items that consistently fail."
+Suggest relevant next actions: compare against another run with `compare-experiments`, add evaluators with `langfuse-eval-manager`, or update consistently failing items with `langfuse-dataset-expert`.
 
 Refer to `references/experiment-data-model-reference.md` for the complete data model.

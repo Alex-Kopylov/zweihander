@@ -13,11 +13,11 @@ Analyze user-provided specs, requirements, and design notes for internal contrad
 
 ### Step 1: Gather Information
 
-If the user has not yet provided the information to analyze, use **AskUserQuestion** to ask for the material (spec, requirements, design decisions, constraints, etc.). Follow up until there is a substantial body of claims to analyze.
+If the user has not yet provided material to analyze, use **AskUserQuestion** to request it (spec, requirements, design decisions, constraints, etc.). Follow up until there is a substantial body of claims.
 
 ### Step 2: Dispatch Parallel Contradiction Hunters
 
-Launch all applicable agents in a **single message** using the Agent tool. Pass the full collected information in each agent's `prompt` parameter.
+Launch all applicable agents with the Agent tool in a **single message**. Pass the full collected information in each agent's `prompt`.
 
 **Default agents:**
 1. `surface-contradiction-hunter` — direct, obvious conflicts (required)
@@ -26,9 +26,7 @@ Launch all applicable agents in a **single message** using the Agent tool. Pass 
 
 **Domain-specific agents (0..N):**
 
-Review the collected material for domain-specific aspects the default agents are not equipped to catch. For each identified domain, spawn an additional `general-purpose` agent with `model: "opus"` and a tailored prompt targeting that domain's contradiction patterns.
-
-Spawn a domain-specific agent for any domain where specialized knowledge would reveal contradictions the default agents would miss. Avoid speculative spawning — only when the material clearly warrants it.
+Review the collected material for domains where specialized knowledge would reveal contradictions the default agents may miss. For each clearly warranted domain, spawn an additional `general-purpose` agent with `model: "opus"` and a tailored prompt. Avoid speculative spawning.
 
 ### Step 3: Synthesize & Present
 
@@ -40,9 +38,6 @@ After all agents return:
 
 ### Step 4: Write Report
 
-Once the user has addressed all findings, write a clean summary to a file using **Write**. Include:
-- Original contradictions found
-- User's resolutions
-- Any remaining open items
+Once the user has addressed all findings, use **Write** to save a summary covering original contradictions, user resolutions, and open items.
 
 <topic>$ARGUMENTS</topic>

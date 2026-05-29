@@ -13,8 +13,6 @@ Handle 3-5 similar jobs efficiently by consolidating experience discovery while 
 
 ## Phase 0: Job Intake & Batch Initialization
 
-**Goal:** Collect all job descriptions and initialize batch structure.
-
 Present intake options:
 1. Paste all JDs at once (recommended)
 2. Provide one at a time
@@ -69,8 +67,6 @@ Run standard library initialization once for the entire batch: scan resume direc
 
 ## Phase 1: Aggregate Gap Analysis
 
-**Goal:** Build unified gap list across all jobs for efficient discovery.
-
 ### Process
 
 1. **Extract requirements from all JDs** - quick parsing for requirements, technical skills, soft skills, domain areas
@@ -91,8 +87,6 @@ Run standard library initialization once for the entire batch: scan resume direc
 
 ## Phase 2: Shared Experience Discovery
 
-**Goal:** Surface undocumented experiences across all gaps through single conversational session.
-
 ### Session Flow
 
 1. Process gaps in priority order: critical first, then important, then job-specific
@@ -110,8 +104,6 @@ Run standard library initialization once for the entire batch: scan resume direc
 **Checkpoint:** User approves before moving to per-job processing.
 
 ## Phase 3: Per-Job Processing
-
-**Goal:** Process each job independently through research/template/matching/generation using enriched library.
 
 ### Processing Modes
 
@@ -144,8 +136,6 @@ After each job completes, report: quality metrics, jobs remaining, estimated tim
 Save batch state after each major milestone. Provide resume instructions with batch ID.
 
 ## Phase 4: Batch Finalization
-
-**Goal:** Present all resumes for review and handle library update.
 
 ### Batch Summary
 

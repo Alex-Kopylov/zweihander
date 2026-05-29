@@ -7,7 +7,7 @@ allowed-tools: Read, Write, Edit, Bash, AskUserQuestion
 
 # Initialize Workspace
 
-One-time setup for a job-hunt workspace. Creates folder structure, generates docs from plugin templates, and copies master CV into place.
+One-time setup for a job-hunt workspace: create the folder structure, generate docs from plugin templates, and copy the master CV.
 
 ## When to use
 
@@ -44,20 +44,20 @@ Validate against `references/naming-rules.md` (underscores only, ASCII only).
 
 ### 3. Prompt for master CV
 
-Use `AskUserQuestion` to ask the user for the absolute path to their existing master CV HTML file.
+Use `AskUserQuestion` for the absolute path to the existing master CV HTML file.
 
-- If the user provides a valid, readable path to an `.html` file: **copy** (do not move) the file into the workspace root as `<First>_<Last>_<Role>_CV.html`. Leave the source file untouched. Print: `✓ Master CV copied to <workspace>/<First>_<Last>_<Role>_CV.html`.
+- If the user provides a valid, readable `.html` path: **copy** it into the workspace root as `<First>_<Last>_<Role>_CV.html` and leave the source untouched. Print: `✓ Master CV copied to <workspace>/<First>_<Last>_<Role>_CV.html`.
 - If the user provides no path, an empty value, or a path that does not exist / is not readable: **HARD ERROR** — print exactly:
 
   ```
   No CV file provided. A master HTML CV is required to initialize the workspace. Please provide a valid path and re-run.
   ```
 
-  Stop entirely. Do not proceed with any further steps.
+  Stop entirely.
 
 ### 4. Scaffold files
 
-Write these files using the plugin's reference docs as source of truth. **Do not copy-paste from stale snapshots.** Always read from this plugin's `references/` directory at generation time.
+Write these files from this plugin's `references/` directory and templates at generation time. **Do not copy-paste from stale snapshots.**
 
 - `README.md` — workspace overview. Use `templates/README.md.template`, substituting `<First>`, `<Last>`, `<Role>`.
 - `AGENTS.md` — workspace-local agent rules. Use `templates/AGENTS.md.template`. Reference the plugin `AGENTS.md` for authoritative rules.

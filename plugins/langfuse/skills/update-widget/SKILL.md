@@ -1,25 +1,22 @@
 ---
 name: update-widget
 description: >
-  This skill should be used when the user wants to update or modify an existing
-  Langfuse dashboard widget configuration. Trigger phrases include "update
-  widget", "modify widget", "change widget", "edit widget configuration". It
-  reads the current widget state, accepts changes conversationally, validates
-  the new configuration, and applies the UPDATE.
+  Use when the user wants to update or modify an existing Langfuse dashboard
+  widget configuration. Triggers: "update widget", "modify widget", "change
+  widget", "edit widget configuration". It reads the current widget state,
+  accepts changes conversationally, validates the new configuration, and applies
+  the UPDATE.
 ---
 
 # Update Langfuse Dashboard Widget
 
-Modify an existing Langfuse dashboard widget by reading its current
-configuration from PostgreSQL, accepting user changes, validating the updated
-configuration against the widget schema, and applying the UPDATE.
+
 
 ## Prerequisites
 
 - **Langfuse Host URL** and **Project ID** from the parent plugin context.
 - **Database connection** via psycopg2 (preferred) or docker exec psql fallback.
-- Python libraries `psycopg2-binary` installed. If missing, install via
-  `uv add psycopg2-binary`.
+- Python library `psycopg2-binary`; install with `uv add psycopg2-binary` if needed.
 - The widget ID to update. If unknown, ask the user or use the `list-widgets`
   skill to enumerate available widgets.
 
@@ -52,16 +49,10 @@ FROM dashboard_widgets
 WHERE id = %(widget_id)s AND project_id = %(project_id)s;
 ```
 
-Present the current configuration to the user in a readable format. Show:
-
-- **Name**: the widget name
-- **Description**: the widget description
-- **View**: the data source view (TRACES, OBSERVATIONS, etc.)
-- **Chart type**: the visualization type
-- **Dimensions**: the grouping/bucketing fields
-- **Metrics**: the measured values and their aggregations
-- **Filters**: any active filters
-- **Chart config**: type-specific configuration
+Present the current configuration in a readable format, including name,
+description, data-source view (TRACES, OBSERVATIONS, etc.), chart type,
+grouping/bucketing dimensions, metric aggregations, active filters, and
+type-specific chart config.
 
 ### 3. Accept Changes Conversationally
 
@@ -80,8 +71,8 @@ re-specify unchanged fields.
 
 ### 4. Validate the Updated Configuration
 
-Before applying the update, validate the complete new configuration against
-the schema in `skills/create-widget/references/widget-schema-reference.md`:
+Before applying, validate the complete updated configuration against
+`skills/create-widget/references/widget-schema-reference.md`:
 
 - Confirm `view` is a valid `DashboardWidgetViews` enum value.
 - Confirm `chart_type` is a valid `DashboardWidgetChartType` enum value.
@@ -156,6 +147,4 @@ Inform the user which dashboards will reflect the updated widget configuration.
 
 ## Reference
 
-Consult `skills/create-widget/references/widget-schema-reference.md` for the complete
-list of valid views, dimensions, metrics, filter operators, chart types, and
-chart config shapes.
+For schema details, use `skills/create-widget/references/widget-schema-reference.md`.

@@ -1,8 +1,7 @@
 ---
 name: openapi-list
 description: >
-  This skill should be used when the user wants to list API endpoints, show endpoints,
-  see what endpoints are available, list API routes, or show the API of a running service.
+  This skill should be used when the user wants to list or show API endpoints or routes for a running service.
   Trigger phrases: "list endpoints", "show endpoints", "what endpoints are available",
   "list API routes", "show API".
 ---
