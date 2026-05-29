@@ -7,6 +7,7 @@ from pathlib import Path
 SKILL_DIR = Path(__file__).resolve().parents[1]
 DETECTOR_SCHEMA = SKILL_DIR / "references" / "detector-output.schema.json"
 FILE_REDUCTION_SCHEMA = SKILL_DIR / "references" / "file-reduction.schema.json"
+SIZE_REPORT_SCHEMA = SKILL_DIR / "references" / "size-report.schema.json"
 
 
 def run_jsonschema(instance: Path, schema: Path) -> subprocess.CompletedProcess[str]:
@@ -97,6 +98,24 @@ def file_reduction(**finding_overrides: object) -> dict:
         "detector_status": detector_status(),
         "findings": [finding],
     }
+
+
+def size_report(**overrides: object) -> dict:
+    payload = {
+        "file_path": "/tmp/example.md",
+        "bytes": 256,
+        "characters": 240,
+        "words": 60,
+        "lines": 12,
+        "tokens": 80,
+        "token_source": "estimate:max(chars/4,words/0.75)",
+        "soft_budget_tokens": 4096,
+        "hard_budget_tokens": 8192,
+        "status": "ok",
+        "warning": None,
+    }
+    payload.update(overrides)
+    return payload
 
 
 def test_detector_output_schema_accepts_valid_output(tmp_path: Path) -> None:
@@ -200,6 +219,22 @@ def test_validate_output_script_rejects_out_of_range_recommended_index(tmp_path:
 
     assert result.returncode != 0
     assert "recommended_alternative_index" in result.stderr
+
+
+def test_size_report_schema_accepts_valid_report(tmp_path: Path) -> None:
+    payload = write_json(tmp_path / "size-report.json", size_report())
+
+    result = run_jsonschema(payload, SIZE_REPORT_SCHEMA)
+
+    assert result.returncode == 0, result.stderr
+
+
+def test_size_report_schema_rejects_invalid_budget_status(tmp_path: Path) -> None:
+    payload = write_json(tmp_path / "bad-size-report.json", size_report(status="critical"))
+
+    result = run_jsonschema(payload, SIZE_REPORT_SCHEMA)
+
+    assert result.returncode != 0
 
 
 def test_apply_findings_script_applies_exact_single_match(tmp_path: Path) -> None:

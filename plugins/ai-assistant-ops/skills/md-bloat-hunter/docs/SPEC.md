@@ -21,17 +21,22 @@ This skill audits MD files and produces concrete atomic rewrites that reduce tok
 
 ```
 SKILL.md (top orchestrator)
+   ├── size-budget-reporter (one per file, parallel, report-only)
    ├── file-orchestrator (one per file, parallel)
    │     ├── redundancy-detector
    │     ├── verbosity-pruner
    │     ├── filler-eliminator
    │     └── vocab-compressor
-   ⋮  one file-orchestrator per file, all parallel
+   ⋮  one size-budget-reporter and one file-orchestrator per file, all parallel
 ```
 
-For N files at runtime: 1 top orchestrator + N file-orchestrators + 4N detectors, all in parallel. No queueing.
+For N files at runtime: 1 top orchestrator + N size reporters + N
+file-orchestrators + 4N detectors, all in parallel. No queueing.
 
 **Why two-level:** the top orchestrator's concern is fan-out + aggregation + gating + writing. The file-orchestrator's concern is producing a reduced finding list for one file. Each level does one thing.
+
+`size-budget-reporter` is deliberately outside the edit-finding path. It emits
+measurement warnings only; it never proposes rewrites.
 
 ## Detector taxonomy
 
@@ -47,6 +52,11 @@ The verbosity/vocab split is deliberate. Verbosity is mechanical ("fewer words f
 Cross-file redundancy is handled by a directory-level redundancy detector when
 the target scope has more than one file. File-local detectors should stay
 focused on one file.
+
+Size reporting is handled separately by `size-budget-reporter`. Default
+guardrails are 4,096 soft-warning tokens and 8,192 hard-warning tokens.
+`@scripts/measure_size.py` owns tokenization, fallback estimation, budget
+status, and warning text.
 
 ## Finding schema
 
@@ -115,7 +125,10 @@ The file-orchestrator handles malformed output gracefully:
 
 This trade prefers degraded coverage over hard failure. A detector that hallucinates structure costs one detector's findings on one file, not the whole audit.
 
-**Runtime dependency:** `jsonschema` CLI (e.g. `uv tool install jsonschema`). The top orchestrator verifies it's on PATH before dispatching and fails fast if missing.
+**Runtime dependency:** `jsonschema` CLI (e.g. `uv tool install jsonschema`).
+The top orchestrator verifies it's on PATH before dispatching and fails fast if
+missing. Optional dependency: `tiktoken` for exact OpenAI-style token counts in
+size-budget reports.
 
 ## Calibration rubric
 
@@ -190,8 +203,14 @@ unfindable excerpt is a hallucination, not a recoverable state.
 ├── SKILL.md                          # top orchestrator entry point
 ├── docs/
 │   └── SPEC.md                       # this file
+├── scripts/
+│   ├── apply_findings.py
+│   ├── measure_size.py
+│   ├── preflight.py
+│   └── validate_output.py
 ├── agents/
 │   ├── file-orchestrator.md          # per-file fan-out + reducer
+│   ├── size-budget-reporter.md       # per-file size warning report
 │   ├── redundancy-detector.md
 │   ├── verbosity-pruner.md
 │   ├── filler-eliminator.md
@@ -199,6 +218,7 @@ unfindable excerpt is a hallucination, not a recoverable state.
 └── references/
     ├── detector-output.schema.json   # detector SpecialistOutput schema
     ├── file-reduction.schema.json    # file-level reduced output schema
+    ├── size-report.schema.json       # size-budget report schema
     └── calibrate-hunger.md           # intensity rubric (shared)
 ```
 
