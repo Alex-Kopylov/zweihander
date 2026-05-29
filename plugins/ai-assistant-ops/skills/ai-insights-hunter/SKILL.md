@@ -54,9 +54,9 @@ If the session used `Agent` with `TeamCreate` or parallel `TaskCreate` subagents
 
 ## Step 2 — Parallel Insight Extraction
 
-For each conversation log, read the 4 agent spec files, then spawn all 4 agents simultaneously in a single message. Pass the full log content to each agent's prompt.
+For each conversation log, read all agent specs defined in `agents/`, then spawn those agents simultaneously in a single message. Pass the full log content to each agent's prompt.
 
-If there are multiple logs (multi-agent session), spawn the four hunters listed above for each log in a single message — all in parallel.
+If there are multiple logs (multi-agent session), spawn every `agents/` hunter for each log in a single message — all in parallel.
 
 Wait for all agents to complete before continuing.
 
@@ -198,7 +198,7 @@ If the user explores an item, asks questions, or revisits a decision, continue t
 
 ## Step 7 — Targeted Quality Check on Modified Files
 
-Use `ai-assistant-ops:agents-md-improver` when available, scoped only to the files written during Step 6. Invoke it via `Skill({ skill: "ai-assistant-ops:agents-md-improver" })`.
+Use `ai-assistant-ops:agents-md-improver` when available, scoped only to the files written during Step 6.
 
 Before it runs, tell it explicitly: "Focus only on these files that were just modified: [list]. Do not audit pre-existing content — only check whether the new additions conflict with, duplicate, or contradict what was already there."
 

@@ -188,7 +188,7 @@ These are generally useful regardless of data shape:
 
 ### 4. Present Suggestions
 
-Format suggestions as a numbered list with clear descriptions and data context, then ask which to create:
+Format suggestions as a numbered list with clear descriptions:
 
 ```
 Based on your data from the last 30 days, here are recommended widgets:
@@ -199,8 +199,19 @@ Based on your data from the last 30 days, here are recommended widgets:
  2. Cost by Model -- Horizontal bar chart comparing total cost across models
     (4 models found: gpt-4o, gpt-4o-mini, model-a, model-b)
 
+ 3. Latency P95 Over Time -- Line chart tracking 95th percentile latency daily
+
+ 4. Trace Volume -- Bar chart showing daily trace count
+    (12,450 traces in period)
+
+ 5. Total Cost (Big Number) -- Single stat showing aggregate cost
+    ($142.37 total in period)
+
 Which widgets would you like to create? Enter numbers (e.g., "1, 3, 5") or "all".
 ```
+
+Include data context (counts, model names, score names) to help the user make
+informed selections.
 
 ### 5. Create Selected Widgets
 

@@ -57,7 +57,7 @@ Based on gathered requirements, design the team with:
 
 Present the team design as a structured document with:
 
-- A text/ASCII interaction diagram showing communication flows
+- An ASCII interaction diagram showing communication flows
 - A task dependency graph
 - Clear explanation of why each role exists and how they interact
 

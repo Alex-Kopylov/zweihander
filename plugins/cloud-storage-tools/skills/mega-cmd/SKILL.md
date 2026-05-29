@@ -1,7 +1,7 @@
 ---
 name: mega-cmd
 description: |
-  Use this skill whenever the user mentions MEGA cloud storage, encrypted file management, or any workflow involving file organization, sharing, searching, or bulk transfers to/from MEGA. This includes: organizing files in encrypted cloud storage, creating shareable links, syncing folders, finding files across a vault, backing up data, or integrating MEGA into automation workflows. Use this skill even if the user doesn't explicitly say "MEGA" — if they're talking about encrypted cloud storage, zero-knowledge synchronization, or privacy-first file management, they likely want MEGA. Common scenarios: "organize my invoices in the cloud", "create a backup of my documents", "find all PDFs from the last month", "share a folder with my accountant", "sync my photos to encrypted storage".
+  Use this skill for MEGA cloud storage, encrypted file management, and workflows involving file organization, sharing, search, sync, backup, bulk transfer to/from MEGA, or MEGA automation.
 compatibility: |
   - MEGA CMD CLI must be installed and accessible via `mega-` commands
   - User must have a MEGA account (free account with 20GB included)
@@ -10,9 +10,9 @@ compatibility: |
 
 # MEGA CMD Skill
 
-MEGA CMD is a CLI for MEGA cloud storage with **zero-knowledge end-to-end encryption**: files are encrypted on-device before upload, so MEGA cannot read them.
+MEGA CMD is a CLI for [MEGA cloud storage](https://mega.io/cmd).
 
-All `mega-*` commands operate on **cloud paths** (starting with `/`), not local files. Think of `/` as the root of your MEGA vault.
+All `mega-*` commands operate on **cloud paths** rooted at `/`, not local files.
 
 ## Critical Rules
 

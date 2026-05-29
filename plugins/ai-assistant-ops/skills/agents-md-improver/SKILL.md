@@ -5,7 +5,7 @@ description: "Audit and improve AGENTS.md files in repositories. Use when user a
 
 # AGENTS.md Improver
 
-Audit and improve AGENTS.md files so Codex has useful project context.
+Audit, evaluate, and improve AGENTS.md files so AI Assistant has useful project context.
 
 **This skill can write targeted AGENTS.md updates after reporting and user approval.**
 
@@ -29,7 +29,7 @@ find . -name "AGENTS.md" -o -name ".codex.md" -o -name ".codex.local.md" 2>/dev/
 | Package-specific | `./packages/*/AGENTS.md` | Module-level context in monorepos |
 | Subdirectory | Any nested location | Feature/domain-specific context |
 
-**Note:** AI assistant auto-discovers AGENTS.md files in parent directories, making monorepo setups work automatically.
+**Note:** AI Assistant auto-discovers AGENTS.md files in parent directories, making monorepo setups work automatically.
 
 ### Phase 2: Quality Assessment
 
@@ -40,7 +40,7 @@ For each AGENTS.md file, evaluate against quality criteria. See [references/qual
 | Criterion | Weight | Check |
 |-----------|--------|-------|
 | Commands/workflows documented | High | Are build/test/deploy commands present? |
-| Architecture clarity | High | Can AI assistant understand the codebase structure? |
+| Architecture clarity | High | Can AI Assistant understand the codebase structure? |
 | Non-obvious patterns | Medium | Are gotchas and quirks documented? |
 | Conciseness | Medium | No verbose explanations or obvious info? |
 | Currency | High | Does it reflect current codebase state? |
@@ -153,7 +153,7 @@ See [references/templates.md](references/templates.md) for AGENTS.md templates b
 
 When presenting recommendations, remind users:
 
-- **`#` key shortcut**: During a AI assistant session, press `#` to have AI assistant auto-incorporate learnings into AGENTS.md
+- **`#` key shortcut**: During an AI Assistant session, press `#` to have AI Assistant auto-incorporate learnings into AGENTS.md
 - **Keep it concise**: AGENTS.md should be human-readable; dense is better than verbose
 - **Actionable commands**: All documented commands should be copy-paste ready
 - **Use `.codex.local.md`**: For personal preferences not shared with team (add to `.gitignore`)

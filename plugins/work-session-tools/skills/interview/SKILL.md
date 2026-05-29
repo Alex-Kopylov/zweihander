@@ -33,7 +33,7 @@ Present each item one at a time via AskUserQuestion.
 
 #### Previews
 
-When an item involves code or config, add option `preview`s showing each action's result. Skip trivial items.
+When an item involves code or config, use `preview` on options to show what each action produces (proposed fix, alternative implementation, before/after). Skip preview for trivial items.
 
 #### Example
 

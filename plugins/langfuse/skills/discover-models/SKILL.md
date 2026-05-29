@@ -234,7 +234,7 @@ docker exec CONTAINER_NAME psql -U USER -d DBNAME -t -A -F '|' -c "
 
 Parse the pipe-delimited output and format it into the standard tables.
 
-
+**Note:** The `latency` field is computed, not stored. In Postgres queries, compute it as `EXTRACT(EPOCH FROM (end_time - start_time))` (returns seconds as a float). The REST API returns `latency` as a pre-computed field.
 
 ---
 

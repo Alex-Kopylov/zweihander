@@ -212,7 +212,7 @@ services:
       --health-retries 5
 ```
 
-Set env vars `REDIS_HOST=localhost` and `REDIS_PORT=6379`; see `references/ci-config.md` for full GitHub Actions, GitLab CI, and Azure DevOps Pipelines examples.
+Set env vars `REDIS_HOST=localhost` and `REDIS_PORT=6379`; see `references/ci-config.md` for GitHub Actions and GitLab CI examples. Use `references/azure-devops-ci.md` for Azure DevOps Pipelines.
 
 ## Dependencies
 
@@ -227,7 +227,8 @@ Set env vars `REDIS_HOST=localhost` and `REDIS_PORT=6379`; see `references/ci-co
 ### Reference Files
 
 - **`references/isolation-patterns.md`** -- Key-prefix wrapper, DB-per-suite rotation, and parallel-safe patterns
-- **`references/ci-config.md`** -- GitHub Actions, GitLab CI, and Azure DevOps Pipelines service container configs
+- **`references/ci-config.md`** -- GitHub Actions and GitLab CI service container configs
+- **`references/azure-devops-ci.md`** -- Azure DevOps Pipelines service container configs
 
 ### Example Files
 
