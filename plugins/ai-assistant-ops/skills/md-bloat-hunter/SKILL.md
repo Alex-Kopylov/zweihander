@@ -1,6 +1,6 @@
 ---
 name: md-bloat-hunter
-description: Use when the user asks to audit, trim, compress, or reduce bloat, verbosity, redundancy, filler, or over-expanded vocabulary in Markdown files or directories, especially skills, agent prompts, plugin docs, and generated docs.
+description: Use when the user asks to audit, trim, compress, or reduce bloat, verbosity, redundancy, filler, or over-expanded vocabulary in Markdown loaded into AI agent or LLM context, especially skills, agent prompts, command prompts, and assistant instruction files.
 ---
 
 # md-bloat-hunter
@@ -26,6 +26,8 @@ In `Edit+Report`, apply approved findings and then report what changed.
 
 Read these during normal invocation:
 
+@references/FILES_TO_AUDIT.MD
+
 - `agents/file-orchestrator.md` for file-local detectors.
 - `agents/directory-redundancy-detector.md` when the target set has more than
   one file.
@@ -33,8 +35,7 @@ Read these during normal invocation:
 
 Detector agents read `references/detector-output.schema.json` themselves.
 
-Do not read or follow `docs/` or `tests/` during normal invocation. Those are
-development artifacts. Use them only when the user is developing this skill.
+During normal invocation, `docs/` and `tests/` are skill-dev artifacts only.
 
 ## Safety
 
@@ -61,11 +62,9 @@ Resolve the input path:
 
 - Expand `~` and relative paths against the current working directory.
 - Accept one `.md` file or one directory.
-- For a directory, enumerate only direct child `*.md` files. Do not recurse
-  silently.
-- If a directory contains many Markdown files, show the list and ask whether to
-  audit all files or use a narrower path.
-- If no Markdown files are found, stop and report that nothing was audited.
+- File: audit if included; otherwise require explicit audit for that file.
+- Directory: recurse included Markdown only. No symlinks. Stay under supplied
+  directory. If eligible targets exceed 50, ask user before dispatch.
 
 Before dispatching in `Edit+Report`, verify every target is tracked, clean,
 non-symlinked, and inside its git root:

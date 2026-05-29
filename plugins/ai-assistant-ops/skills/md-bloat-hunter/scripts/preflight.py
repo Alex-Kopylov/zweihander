@@ -34,7 +34,7 @@ def git_root_for(path: Path) -> Path:
 
 def validate_target(path: Path) -> dict[str, str]:
     resolved = path.expanduser().resolve()
-    if path.suffix != ".md":
+    if path.suffix.lower() != ".md":
         raise ValueError("target must have a .md extension")
     if path.is_symlink() or resolved.is_symlink():
         raise ValueError("target must not be a symlink")

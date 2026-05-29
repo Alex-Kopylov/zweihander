@@ -34,14 +34,14 @@ def run_git(repo: Path, *args: str) -> subprocess.CompletedProcess[str]:
     )
 
 
-def clean_git_repo(tmp_path: Path) -> tuple[Path, Path]:
+def clean_git_repo(tmp_path: Path, target_name: str = "doc.md") -> tuple[Path, Path]:
     repo = tmp_path / "repo"
     repo.mkdir()
     assert run_git(repo, "init").returncode == 0
 
-    target = repo / "doc.md"
+    target = repo / target_name
     target.write_text("# Title\n\nUse concise prose.\n", encoding="utf-8")
-    assert run_git(repo, "add", "doc.md").returncode == 0
+    assert run_git(repo, "add", target_name).returncode == 0
     commit = run_git(
         repo,
         "-c",
@@ -198,6 +198,17 @@ def test_preflight_validate_target_accepts_clean_tracked_markdown(tmp_path: Path
     assert result["repo_root"] == str(repo.resolve())
     assert result["git_relative_path"] == "doc.md"
     assert result["sha256"] == preflight.sha256(target)
+
+
+def test_preflight_validate_target_accepts_uppercase_markdown_extension(tmp_path: Path) -> None:
+    preflight = load_script("preflight")
+    repo, target = clean_git_repo(tmp_path, "doc.MD")
+
+    result = preflight.validate_target(target)
+
+    assert result["file_path"] == str(target.resolve())
+    assert result["repo_root"] == str(repo.resolve())
+    assert result["git_relative_path"] == "doc.MD"
 
 
 def test_preflight_rejects_dirty_target(tmp_path: Path) -> None:
