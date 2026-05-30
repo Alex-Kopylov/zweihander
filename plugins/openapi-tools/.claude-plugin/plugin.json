@@ -1,7 +1,7 @@
 {
   "name": "openapi-tools",
   "description": "Skills for listing and inspecting OpenAPI endpoints on running services.",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "author": {
     "name": "Alex Kopylov"
   },

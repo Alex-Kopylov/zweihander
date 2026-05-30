@@ -1,7 +1,7 @@
 ---
 name: compare-experiments
 description: >-
-  This skill should be used when the user wants to compare two or more experiment runs,
+  Use when the user wants to compare two or more experiment runs,
   detect regressions, see score deltas between runs, or evaluate model performance differences.
   Trigger phrases include "compare runs", "compare experiments", "diff runs", "regression check",
   "which run is better", "model comparison", "A/B comparison".
@@ -56,7 +56,7 @@ Present as a comparison table:
 | Score | Run A Mean | Run B Mean | Delta | Better |
 |-------|-----------|-----------|-------|--------|
 
-Delta = Run B - Run A. "Better" column: ↑ (improved), ↓ (regressed), = (no change).
+Delta = Run B - Run A. Better: ↑ improved, ↓ regressed, = unchanged.
 
 ## Step 3: Per-Item Score Comparison
 
@@ -89,11 +89,11 @@ Present items with largest regressions first:
 
 ## Step 4: Regression Detection
 
-Identify items where scores decreased:
+Identify regressions:
 
 - Filter per-item comparison for `delta < 0` (or below a threshold).
-- Group by item to find items that regressed on multiple scores.
-- Highlight items that went from passing to failing (boolean scores: 1 → 0).
+- Group items that regressed on multiple scores.
+- Highlight passing-to-failing boolean scores (1 → 0).
 
 ```sql
 SELECT dri_a.dataset_item_id,

@@ -245,9 +245,4 @@ For packages within a monorepo or distinct modules.
 
 ## Update Principles
 
-When updating any AGENTS.md:
-
-1. **Be specific**: Use actual file paths, real commands from this project
-2. **Be current**: Verify info against the actual codebase
-3. **Be brief**: One line per concept when possible
-4. **Be useful**: Would this help a new AI assistant session understand the project?
+Keep updates specific, current, brief, and useful to a new AI assistant session.

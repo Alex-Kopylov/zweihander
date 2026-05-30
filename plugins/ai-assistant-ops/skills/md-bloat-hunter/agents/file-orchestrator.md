@@ -12,9 +12,8 @@ best reduced list for this one file.
 
 You receive one absolute Markdown file path from the top orchestrator. You may
 also receive a `run_id`, a private run output directory, the absolute
-`md-bloat-hunter` skill directory, the absolute path to this file, and a
-`local_redundancy` boolean. If `local_redundancy` is absent, default it to
-`true`.
+`md-bloat-hunter` skill directory, and a `local_redundancy` boolean. If
+`local_redundancy` is absent, default it to `true`.
 
 If no `run_id` is provided, create a short one from the current timestamp and
 pass the same value to every detector. If no run output directory is provided,
@@ -46,9 +45,9 @@ file, the detector agent files, and the top-orchestrator input.
 ## Detector Dispatch
 
 Spawn the file-local detector agents in parallel with the host's subagent or
-task tool. Give each agent the same absolute
-file path, the same `run_id`, and the same private run output directory. Pass the absolute skill directory and the absolute detector agent file path.
-Instruct each detector to read and follow that path rather than inferring a
+task tool. Give each agent the same absolute file path, `run_id`, private run
+output directory, absolute skill directory, and absolute detector agent file
+path. Instruct each detector to read that agent file path instead of inferring a
 relative location.
 
 If tools are discoverable, use `tool_search` to expose multi-agent tools if
@@ -291,11 +290,10 @@ top-level reduced finding, including `source_order`, and leave `alternatives`
 empty.
 
 For `alternatives` and `conflict` findings, copy the recommended alternative's
-fields to the top level when there is a recommended alternative, including
-`source_order`. If there is no safe recommendation, set the top-level edit fields
-and `source_order` from the first
-alternative only so the finding remains inspectable, set
-`recommendation: "ask-user"` or `"skip"`, and explain in `resolution_notes`.
+fields to the top level when present, including `source_order`. If there is no
+safe recommendation, copy the first alternative's edit fields and `source_order`,
+set `recommendation: "ask-user"` or `"skip"`, and explain in
+`resolution_notes`.
 
 Every object in `alternatives` must include the full finding fields plus
 `source_specialist`, `source_index`, and `source_order`.

@@ -14,8 +14,6 @@ Generate tailored, multi-format resumes optimized for specific job descriptions 
 
 ## References
 
-Consult these files for detailed procedures at each phase:
-
 - **`references/research-prompts.md`** - JD parsing templates, company research queries, role benchmarking strategy, success profile synthesis
 - **`references/matching-strategies.md`** - Weighted scoring formula (Direct 40%, Transferable 30%, Adjacent 20%, Impact 10%), confidence bands, reframing strategies, gap handling options
 - **`references/branching-questions.md`** - Technical/soft-skill/recent-work question trees, branching logic, multi-job context framing, capture structure

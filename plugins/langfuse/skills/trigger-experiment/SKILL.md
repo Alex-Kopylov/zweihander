@@ -39,7 +39,7 @@ The payload mimics what Langfuse sends when a user clicks "Run" in the Custom Ex
 }
 ```
 
-**Critical:** The `payload` field is a **JSON-encoded string**, not a nested object. This matches Langfuse's webhook format.
+**Critical:** The `payload` field is a **JSON-encoded string**, not a nested object, matching Langfuse's webhook format.
 
 ### Step 3: Send Webhook
 
@@ -59,7 +59,7 @@ The endpoint must respond within **10 seconds** (Langfuse's webhook timeout). A 
 
 ### Step 4: Monitor
 
-After triggering, check if a dataset run was created:
+After triggering, check for a new dataset run:
 
 ```bash
 curl -s -u "$PUBLIC_KEY:$SECRET_KEY" \
@@ -76,7 +76,7 @@ Look for a run with a recent `createdAt` timestamp matching the experiment name.
 | `name` | string | auto-generated | Experiment run name. Auto-generated as `{pipeline}-{model}-{ISO timestamp}` if absent |
 | `item_timeout` | int | 300 | Per-item timeout in seconds |
 | `experiment_timeout` | int | 1800 | Overall experiment timeout in seconds |
-| `cache_enabled` | bool | false | Whether to cache LLM results (experiments should default to false) |
+| `cache_enabled` | bool | false | Cache LLM results (experiments should default to false) |
 
 Any other key in `payload` matching a route query parameter is passed through.
 

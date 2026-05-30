@@ -2,7 +2,7 @@
 
 ## Key Prefix Wrapper
 
-A lightweight wrapper that auto-prefixes all keys, enabling safe parallel test runs on a shared Redis instance.
+A lightweight wrapper that auto-prefixes keys for safe parallel runs on shared Redis.
 
 ```python
 # tests/conftest.py
@@ -50,7 +50,7 @@ def prefixed_client(redis_client, test_prefix):
 
 ## Database-Per-Suite Rotation
 
-Assign a unique DB index (1-14) to each test class. Useful when running multiple test suites in parallel without Docker.
+Assign each test class a unique DB index (1-14) for parallel suites without Docker.
 
 ```python
 # tests/conftest.py

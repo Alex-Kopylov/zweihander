@@ -86,7 +86,7 @@ class RiskAssessment(BaseModel):
     overall_risk_level: Literal["acceptable", "elevated", "critical"]  # Cascade: conclude last
 ```
 
-Use `MinLen`/`MaxLen` from `annotated_types` when you have a clear lower/upper bound. When you don't — a plain `list[T]` is fine to start with.
+Use `MinLen`/`MaxLen` from `annotated_types` when you have clear bounds; otherwise start with a plain `list[T]`.
 
 ## Combining Patterns
 

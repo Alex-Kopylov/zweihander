@@ -6,7 +6,7 @@ description: >-
   Langfuse project. It enumerates all datasets with their items, runs, and schema configurations.
 ---
 
-Discover and enumerate all datasets in the Langfuse project. Present findings in organized tables.
+Enumerate all datasets in the Langfuse project and present findings in organized tables.
 
 ## Step 1: List All Datasets
 

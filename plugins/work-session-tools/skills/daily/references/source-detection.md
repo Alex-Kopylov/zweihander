@@ -1,6 +1,6 @@
 # Source Detection
 
-Scan the project root to determine which sources are available. Check each signal below — if it matches, add that source to the active list.
+Scan the project root. Add a source when its signal matches.
 
 ## Detection rules
 

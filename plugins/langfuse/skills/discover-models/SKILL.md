@@ -10,7 +10,7 @@ description: >-
 
 # Discover Models
 
-List all model definitions registered in a Langfuse project (including pricing configuration) and cross-reference them against models actually observed in trace data. Return a unified view so the caller understands which models are available, how they are priced, and which are actively generating observations.
+List registered Langfuse model definitions (including pricing) and cross-reference them with models observed in trace data. Return a unified view showing available models, pricing, and which models are actively generating observations.
 
 ---
 
@@ -34,7 +34,7 @@ curl -s -o /dev/null -w "%{http_code}" \
   "$HOST/api/public/models?limit=1"
 ```
 
-A `200` response confirms that authentication is valid. Any `401` or `403` response means the keys are incorrect -- report the error and ask the user to verify the public and secret keys.
+A `200` confirms valid authentication. A `401` or `403` means the keys are incorrect -- report the error and ask the user to verify the public and secret keys.
 
 ---
 
@@ -99,7 +99,7 @@ for m in sorted(models, key=lambda x: x.get('modelName', '')):
 
 ## Step 2 -- Discover Models Actually Used in Observations
 
-The registered model definitions represent what Langfuse knows about for pricing. However, observations may reference model strings that do not match any registered definition (resulting in missing cost calculations). Discover which models are actually used in observations.
+Registered model definitions are what Langfuse knows for pricing. Observations may reference model strings that do not match any registered definition, resulting in missing cost calculations. Discover which models are used in observations.
 
 ### Via REST API
 
@@ -161,11 +161,11 @@ For exact counts on large projects, use the database fallback in Step 3.
 
 ## Step 3 -- Database Fallback
 
-When the REST API is unavailable, returns errors, or exact counts are needed, query the PostgreSQL database directly.
+When the REST API is unavailable, returns errors, or exact counts are needed, query PostgreSQL directly.
 
 ### Option A: psycopg2 (Preferred)
 
-Write and execute a Python script using parameterized queries:
+Run a Python script with parameterized queries:
 
 ```python
 import psycopg2
@@ -240,7 +240,7 @@ Parse the pipe-delimited output and format it into the standard tables.
 
 ## Step 4 -- Cross-Reference and Merge
 
-After collecting both registered model definitions and observed model names, merge them into a single unified table. For each model, indicate whether it has a registered pricing definition and whether it appears in actual observations.
+After collecting registered definitions and observed model names, merge them into one table. For each model, indicate whether it has registered pricing and appears in observations.
 
 ```bash
 python3 -c "
@@ -300,7 +300,7 @@ for name in sorted(all_models):
 
 ## Step 5 -- Format and Present Output
 
-Present the final merged result as a single markdown table:
+Present the merged result as one Markdown table:
 
 ```
 | Model Name                  | Input Price | Output Price | Used in Observations |
@@ -316,9 +316,9 @@ After the table, provide a brief summary:
 
 - Total number of registered model definitions.
 - Total number of distinct models observed in trace data.
-- Any models appearing in observations that lack a registered pricing definition -- flag these explicitly because their cost calculations will be missing in Langfuse. Recommend the user register these models via the Langfuse UI or API to enable accurate cost tracking.
-- Any registered models that have zero observations -- these may be outdated definitions or models not yet deployed.
-- If pricing is configured, note the relative cost difference between the most and least expensive models to help the user understand cost distribution.
+- Models appearing in observations without a registered pricing definition -- flag them because Langfuse cost calculations will be missing, and recommend registering them via the Langfuse UI or API.
+- Registered models with zero observations -- note they may be outdated or not yet deployed.
+- If pricing is configured, note the relative cost difference between the most and least expensive models.
 
 ---
 

@@ -1,17 +1,5 @@
 # SGR Adaptive Planning
 
-## Table of Contents
-
-1. [The Core Idea](#the-core-idea)
-2. [The NextStep Schema](#the-nextstep-schema)
-3. [Tool Definitions](#tool-definitions)
-4. [The Agent Loop](#the-agent-loop)
-5. [Conversation Context Management](#conversation-context-management)
-6. [Why Constant Replanning Works](#why-constant-replanning-works)
-7. [Complete Working Example](#complete-working-example)
-
----
-
 ## The Core Idea
 
 Traditional planning: create a plan upfront, execute it step by step, fail when reality diverges from the plan.
@@ -111,7 +99,7 @@ class ReportTaskCompletion(BaseModel):
 
 ## The Agent Loop
 
-The loop is simple. Each iteration: parse structured output, check for completion, dispatch the tool, append results to context.
+Each iteration parses structured output, checks completion, dispatches the tool, and appends results to context.
 
 ```python
 from openai import OpenAI

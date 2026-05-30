@@ -1,17 +1,17 @@
 ---
 name: create-evaluator
 description: >
-  This skill should be used when the user wants to create a new LLM-as-a-Judge
-  evaluator in Langfuse. Trigger phrases include "create evaluator", "add
-  evaluator", "new evaluation", "set up evaluation criteria", "create judge".
-  It handles prompt composition, schema validation, ID generation, SQL insertion
-  into eval_templates and job_configurations, and post-creation verification.
+  Use when the user wants to create a Langfuse LLM-as-a-Judge evaluator.
+  Trigger phrases: "create evaluator", "add evaluator", "new evaluation",
+  "set up evaluation criteria", "create judge". Handles prompt composition,
+  schema validation, ID generation, SQL insertion into eval_templates and
+  job_configurations, and post-creation verification.
 ---
 
 # Create LLM-as-a-Judge Evaluator
 
-Create a new Langfuse LLM-as-a-Judge evaluator by inserting an `eval_template`
-and a corresponding `job_configuration` directly into the PostgreSQL database.
+Insert a Langfuse LLM-as-a-Judge evaluator directly into PostgreSQL by creating
+an `eval_template` and matching `job_configuration`.
 
 ---
 
@@ -95,13 +95,9 @@ WHERE project_id = %s;
 
 ### 6. Configure Trace Filters
 
-Ask the user if they want to restrict which traces this evaluator runs on.
-
-If yes, delegate to the `discover-filter-options` skill to help the user
-discover available filter dimensions (trace names, tags, environments) and
-construct the filter JSON.
-
-If no filters needed, use an empty array: `[]`.
+Ask whether to restrict which traces this evaluator runs on. If yes, delegate to
+`discover-filter-options` to identify filter dimensions (trace names, tags,
+environments) and construct the filter JSON. If not, use `[]`.
 
 ### 7. Configure Job Parameters
 
@@ -283,11 +279,3 @@ If the user wants to activate, delegate to the `toggle-evaluator-status` skill.
   evaluator can execute.
 - **DB connection failed**: Attempt docker exec psql fallback before reporting
   failure.
-
----
-
-## Reference
-
-Consult `references/evaluator-schema-reference.md` for complete schema details
-including `output_schema` format, `variable_mapping` schema, `filter` format,
-common evaluator patterns, and `model_params` defaults.

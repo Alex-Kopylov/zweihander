@@ -2,7 +2,7 @@
 
 ## Detecting the Platform
 
-Parse the origin URL or user-provided PR link to determine the platform:
+Determine the platform from the origin URL or PR link:
 
 | Pattern in URL | Platform | Details file |
 |----------------|----------|--------------|
@@ -13,13 +13,13 @@ If the platform cannot be determined, ask the user via AskUserQuestion.
 
 ## Auto-Detecting PR from Current Branch
 
-1. Run `git remote get-url origin` to get the repo URL
+1. Run `git remote get-url origin`
 2. Determine the platform from the URL pattern above
-3. Run `git branch --show-current` to get the current branch name
+3. Run `git branch --show-current`
 4. Use the platform-specific PR lookup (see platform files) to find open PRs from this branch
 5. If exactly one PR found — use it
 6. If multiple — present via AskUserQuestion
-7. If none — ask user for the PR link
+7. If none — ask for the PR link
 
 ## Parsing PR URLs
 

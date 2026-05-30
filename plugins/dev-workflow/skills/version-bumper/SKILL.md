@@ -6,8 +6,6 @@ argument-hint: "[version] — e.g. 1.2.3, patch, minor, major. If omitted, auto-
 
 # Version Bumper
 
-Bump version strings across project config files in a single pass.
-
 ## Supported Files
 
 | File | Pattern |
@@ -15,29 +13,20 @@ Bump version strings across project config files in a single pass.
 | `pyproject.toml` | `version = "X.Y.Z"` under `[project]` or `[tool.poetry]` |
 | FastAPI/app `version` | `version="X.Y.Z"` kwarg in `FastAPI(...)` or app constructor |
 | `__init__.py` | `__version__ = "X.Y.Z"` |
-| `plugin.json` | `"version": "X.Y.Z"` (plugin manifests, etc.) |
+| `plugin.json` | `"version": "X.Y.Z"` (plugin manifests) |
 | `package.json` | `"version": "X.Y.Z"` |
 | `setup.cfg` | `version = X.Y.Z` under `[metadata]` |
 | `marketplace.json` | `"version": "X.Y.Z"` (marketplace manifests) |
 
 ## Version Resolution
 
-If `$ARGUMENTS` provides a version (e.g. `1.2.3`, `patch`, `minor`, `major`):
-- **Exact** (`1.2.3`): use it directly.
-- **Keyword** (`patch`/`minor`/`major`): increment the current version accordingly.
+If `$ARGUMENTS` is `1.2.3`, use it directly; if it is `patch`, `minor`, or `major`, increment the current version accordingly.
 
-If no argument is provided:
-1. Run `git log --oneline -20` to read recent commits.
-2. If any commit starts with `feat!:` or contains `BREAKING CHANGE` → **major**.
-3. If any commit starts with `feat:` → **minor**.
-4. Otherwise → **patch**.
+If no argument is provided, run `git log --oneline -20`: `feat!:` or `BREAKING CHANGE` means **major**, `feat:` means **minor**, otherwise use **patch**.
 
 ## Instructions
 
-1. **Discover current version** — find version-bearing files using the script:
-   ```bash
-   python scripts/find_versions.py .
-   ```
+1. **Discover current version** — run `python scripts/find_versions.py .`.
 2. **Resolve target version** using the rules above.
 3. **Confirm with user** — show current version, target version, and files to update. Wait for approval.
 4. **Apply changes** — edit each file, replacing the old version with the new one.
@@ -48,5 +37,5 @@ If no argument is provided:
 
 ## Additional Resources
 
-- For discovery script details, see [scripts/find_versions.py](scripts/find_versions.py)
-- For example outputs, see [examples/](examples/)
+- [scripts/find_versions.py](scripts/find_versions.py)
+- [examples/](examples/)

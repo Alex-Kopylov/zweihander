@@ -1,21 +1,20 @@
 ---
 name: discover-scores
 description: >-
-  This skill should be used when the user asks to discover scores, list scores,
-  find what scores exist, enumerate score names, or inspect score types in their
-  Langfuse project. It enumerates all unique score names, data types, and sources
-  via the Langfuse REST API with a direct-database fallback.
+  Use when the user asks to discover, list, enumerate, or inspect Langfuse
+  score names, data types, or sources. Enumerates unique score names, data
+  types, and sources via the Langfuse REST API with a direct-database fallback.
 ---
 
 # Discover Scores
 
-Enumerate all score names, data types, and sources present in a Langfuse project. Return a deduplicated, grouped summary so the caller understands the scoring landscape before building widgets, running analyses, or filtering traces.
+Enumerate score names, data types, and sources in a Langfuse project. Return a deduplicated, grouped summary for use before building widgets, running analyses, or filtering traces.
 
 ---
 
 ## Prerequisites
 
-Before executing any requests, ensure the following credentials are available (ask the user if missing):
+Before requests, ensure these credentials are available; ask the user if any are missing:
 
 | Variable        | Example                              | Purpose                    |
 |-----------------|--------------------------------------|----------------------------|
@@ -33,13 +32,13 @@ curl -s -o /dev/null -w "%{http_code}" \
   "$HOST/api/public/scores?limit=1"
 ```
 
-A `200` response confirms that authentication is valid. Any `401` or `403` response means the keys are incorrect -- report the error and ask the user to verify the public and secret keys.
+A `200` confirms authentication. For `401` or `403`, report the error and ask the user to verify the public and secret keys.
 
 ---
 
 ## Step 1 -- Fetch Scores via REST API (Primary Path)
 
-Call the Langfuse public scores endpoint with pagination. Start at page 1 and continue until all pages are consumed.
+Call the Langfuse public scores endpoint from page 1 until all pages are consumed.
 
 ```bash
 PAGE=1
@@ -59,7 +58,7 @@ while true; do
 done
 ```
 
-For each page response, the `data` array contains score objects with the following relevant fields:
+Each page's `data` array contains score objects with these relevant fields:
 
 - `name` -- the score name (e.g., `"correctness"`, `"self_eval:relevance"`)
 - `dataType` -- either `NUMERIC` or `CATEGORICAL`
@@ -67,7 +66,7 @@ For each page response, the `data` array contains score objects with the followi
 - `value` -- the numeric or string value
 - `traceId` -- the associated trace
 
-Process all collected pages with a Python script to extract unique combinations:
+Extract unique combinations from the collected pages:
 
 ```bash
 python3 -c "
@@ -97,17 +96,17 @@ for (name, dtype, source), count in sorted(summary.items()):
 
 ### Handling Large Projects
 
-If the project contains thousands of scores and pagination becomes slow (more than 20 pages), abort the API loop after 20 pages and switch to the database fallback described in Step 2. Log a message noting that the API was too slow and the DB path is being used instead.
+If pagination exceeds 20 pages, abort the API loop, switch to the Step 2 database fallback, and log that the API was too slow.
 
 ---
 
 ## Step 2 -- Database Fallback
 
-When the REST API is unavailable, returns errors, or is too slow for large projects, query the Langfuse PostgreSQL database directly.
+When the REST API is unavailable, returns errors, or is too slow, query the Langfuse PostgreSQL database directly.
 
 ### Option A: psycopg2 (Preferred)
 
-Write and execute a Python script using parameterized queries:
+Run a Python script with a parameterized query:
 
 ```python
 import psycopg2
@@ -130,7 +129,7 @@ cur.close()
 conn.close()
 ```
 
-If `psycopg2` is not installed, install it first:
+If `psycopg2` is missing:
 
 ```bash
 uv add psycopg2-binary
@@ -138,7 +137,7 @@ uv add psycopg2-binary
 
 ### Option B: docker exec psql (Fallback)
 
-When the database is only reachable from within a Docker container:
+If the database is only reachable from a Docker container:
 
 ```bash
 docker exec CONTAINER_NAME psql -U USER -d DBNAME -t -A -F '|' -c "
@@ -156,13 +155,13 @@ Parse the pipe-delimited output and format it into the standard table.
 
 ## Step 3 -- Group and Classify Results
 
-After collecting the raw data (from either API or DB), organize scores into three source groups:
+After collecting API or DB data, group scores by source:
 
 1. **API scores** -- scores ingested programmatically via the Langfuse SDK or REST API during trace creation.
 2. **ANNOTATION scores** -- scores added manually by human annotators through the Langfuse UI.
 3. **EVAL scores** -- scores produced by Langfuse's built-in evaluation pipelines (e.g., LLM-as-judge evaluators).
 
-Within each group, note whether the score is `NUMERIC` (continuous float values, typically 0-1 but can be any range) or `CATEGORICAL` (discrete string labels like `"pass"`, `"fail"`, `"good"`, `"bad"`).
+Within each group, note whether each score is `NUMERIC` (continuous floats, typically 0-1 but not limited to that range) or `CATEGORICAL` (labels such as `"pass"`, `"fail"`, `"good"`, `"bad"`).
 
 ---
 
@@ -200,7 +199,7 @@ After the table, provide a brief summary:
 
 ## Cleanup
 
-Remove any temporary files created during execution:
+Remove temporary files:
 
 ```bash
 rm -f /tmp/langfuse_scores_raw.json

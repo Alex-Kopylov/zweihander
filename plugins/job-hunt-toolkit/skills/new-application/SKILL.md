@@ -17,7 +17,7 @@ Scaffold a per-company application folder inside the workspace and set up everyt
 
 ## Inputs
 
-- **Company slug** (argument, required): lowercase with underscores. Examples: `openai`, `acme_robotics`, `hugging_face`. Whatever the user passes becomes the folder name verbatim (after deny-list validation). If the user provides something with denied characters (spaces, pipes, commas, slashes, emojis, non-ASCII), reject it and ask for a corrected slug.
+- **Company slug** (argument, required): lowercase with underscores. Examples: `openai`, `acme_robotics`, `hugging_face`. Used verbatim as the folder name after deny-list validation.
 - **Role** (argument, optional): role the user is targeting. Default to the master's role.
 - **JD source** (ask): text paste, file path, or URL.
 
@@ -55,8 +55,8 @@ mkdir -p <workspace>/<slug>
 
 Ask user how they'll provide the JD:
 - **Paste text** → write to `<slug>/job_description.md` (wrap with a header noting source and date)
-- **URL** → use WebFetch to grab the content; write to `<slug>/job_description.md` with a `> Source: <url>` line and fetch date at the top; preserve the URL as reference
-- **File path** → copy into `<slug>/job_description.<original-ext>`, preserving the original file extension as-is (`.pdf` stays `.pdf`, `.txt` stays `.txt`, `.md` stays `.md`). Do NOT convert the format.
+- **URL** → use WebFetch to grab the content; write to `<slug>/job_description.md` with a `> Source: <url>` line and fetch date at the top
+- **File path** → copy into `<slug>/job_description.<original-ext>`, preserving the original extension as-is. Do NOT convert the format.
 
 ### 6. Scaffold company.md
 
@@ -72,7 +72,7 @@ Find the master: `<workspace>/<First>_<Last>_<Role>_CV.html` (glob for `*_CV.htm
 
 Copy to `<slug>/<First>_<Last>_<NewRole>_CV.html`. The role in the filename matches the **target role**, not the master's role, since tailoring often reframes the title.
 
-**Do not generate the PDF yet** — the HTML is about to be edited by tailoring, so exporting now wastes the effort.
+**Do not generate the PDF yet**; tailoring will edit the HTML first.
 
 ### 8. Offer to chain
 

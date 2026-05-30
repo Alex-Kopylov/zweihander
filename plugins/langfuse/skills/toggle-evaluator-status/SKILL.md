@@ -13,16 +13,10 @@ description: >
 Activate or deactivate LLM-as-a-Judge evaluators by updating the `status`
 column in `job_configurations`.
 
----
-
 ## Prerequisites
 
 - **Langfuse Host URL** and **Project ID** from the parent plugin context.
-- **Database connection** via psycopg2 (preferred) or docker exec psql fallback.
-- Python library `psycopg2-binary` installed. If missing, install via
-  `uv add psycopg2-binary`.
-
----
+- **Database connection** via psycopg2 (preferred; install `psycopg2-binary` with `uv add psycopg2-binary` if missing) or docker exec psql fallback.
 
 ## Step-by-Step Procedure
 
@@ -98,9 +92,7 @@ If not, I can update the time_scope to ['NEW'] before activating.
 **Warn about activation backfill risk:**
 
 ```
-Note: Activating an evaluator may trigger evaluation of recent traces
-depending on Langfuse's internal queue behavior. The evaluator will begin
-processing new matching traces immediately upon activation.
+Note: Activation may evaluate recent traces depending on Langfuse's internal queue behavior and will process new matching traces immediately.
 ```
 
 ### 3. Show Activation/Deactivation Summary
@@ -184,8 +176,6 @@ For bulk operations:
 **Evaluators**: <list of names>
 ```
 
----
-
 ## Error Handling
 
 - **Evaluator not found**: Report and suggest using `list-evaluators`.
@@ -195,8 +185,6 @@ For bulk operations:
   and offer to create one via `create-evaluator`.
 - **User declines**: Abort without changes.
 - **DB connection failed**: Attempt docker exec psql fallback before reporting.
-
----
 
 ## Cleanup
 

@@ -26,7 +26,7 @@ Rule of thumb: aim for ~100 items per task. Adjust based on per-item processing 
 
 ## Prefetch Tuning
 
-The prefetch multiplier controls how many messages a worker reserves from the broker ahead of time. The right value depends on task characteristics:
+Prefetch controls how many broker messages a worker reserves; tune it by task type:
 
 | Task Type | `worker_prefetch_multiplier` | Pool | Concurrency | Why |
 |-----------|------------------------------|------|-------------|-----|
@@ -48,30 +48,9 @@ app.conf.worker_prefetch_multiplier = 1
 app.conf.task_acks_late = True
 ```
 
-## Result Backend Optimization
-
-Every task result is stored in Redis by default. This wastes memory for fire-and-forget tasks and can cause Redis OOM for high-throughput systems.
-
-```python
-# Fire-and-forget — don't store results at all
-@app.task(ignore_result=True)
-def send_email(to: str, subject: str, body: str):
-    mailer.send(to, subject, body)
-
-# Results you need — set expiration to prevent unbounded growth
-app.conf.result_expires = 3600  # 1 hour
-
-# Large results — store externally, return only a reference
-@app.task
-def process_large_file(file_id: int):
-    data = process(read_file(file_id))
-    result_key = save_to_s3(data)
-    return {'result_key': result_key}  # only the reference hits Redis
-```
-
 ## Connection Pooling
 
-Creating a new DB or Redis connection per task execution is expensive. Initialize pools at module level so all tasks in a worker process share them.
+Per-task DB or Redis connections are expensive. Initialize module-level pools shared by tasks in each worker process.
 
 ```python
 from sqlalchemy import create_engine

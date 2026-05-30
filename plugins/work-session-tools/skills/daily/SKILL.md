@@ -37,7 +37,7 @@ Use 24h time format everywhere (no AM/PM).
 
 ### 1. Detect sources
 
-Read `references/source-detection.md` and follow it to scan the project root. This produces a list of active sources (e.g. `git`, `azure-devops`, `slack`).
+Read `references/source-detection.md` to scan the project root and list active sources (e.g. `git`, `azure-devops`, `slack`).
 
 ### 2. Gather activity per source
 

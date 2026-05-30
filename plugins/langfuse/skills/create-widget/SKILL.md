@@ -35,9 +35,7 @@ Ask the user what they want to visualize. Typical intents include:
 - "Trace count over time"
 - "Big number: total cost"
 
-Use the intent-to-config mapping table in
-`references/widget-schema-reference.md` to translate the user's intent into
-the correct combination of `view`, `metric`, `dimension`, and `chart_type`.
+Use `references/widget-schema-reference.md` to map the user's intent to `view`, `metric`, `dimension`, and `chart_type`.
 
 ### 2. Generate a CUID for the Widget ID
 
@@ -94,7 +92,7 @@ clarify.
 
 ### 5. Insert into PostgreSQL
 
-Use psycopg2 with parameterized queries to perform the INSERT:
+Use psycopg2 with a parameterized INSERT:
 
 ```sql
 INSERT INTO dashboard_widgets (
@@ -134,9 +132,7 @@ If the query returns a row, the widget was created successfully.
 
 ### 7. Optionally Add to a Dashboard
 
-Ask the user whether to add this widget to an existing dashboard. If yes,
-delegate to the `layout-widgets` skill to calculate grid placement and the
-`manage-dashboard` skill to update the dashboard definition.
+Ask whether to add the widget to an existing dashboard. If yes, delegate grid placement to `layout-widgets` and dashboard updates to `manage-dashboard`.
 
 ### 8. Provide the Widget URL
 

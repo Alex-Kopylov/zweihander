@@ -23,8 +23,7 @@ Unit tests for a Python project using pytest. Follow the conventions below for f
 
 - Group tests with `class TestMethodName:` (mirrors the function or class under test)
 - Use nested classes for scenario grouping when needed
-- Test functions: `def test_what_condition_expected():` — snake_case, descriptive, no "should"
-- Always `def test_...()` — never wrap in a plain function without the `test_` prefix
+- Test functions: `def test_what_condition_expected():` — snake_case, descriptive, no "should"; never use a plain function without the `test_` prefix
 
 ## Mock Patterns
 
@@ -135,7 +134,7 @@ from tests.fixtures.users import create_user
 
 ## Setup / Teardown
 
-Fixtures are function-scoped by default — each test gets a fresh mock. No explicit reset is needed.
+Fixtures are function-scoped by default, so each test gets a fresh mock with no explicit reset.
 
 Use `yield` for teardown when a fixture acquires resources:
 
@@ -205,7 +204,7 @@ def _test_environment(monkeypatch_session):
 
 ### Factory functions — `tests/unit/factories.py`
 
-Use `create_*` prefix. Always accept `**overrides` and apply them at the end so callers can override any field.
+Use the `create_*` prefix. Always accept `**overrides` and apply them last so callers can override any field.
 
 ```python
 # tests/unit/factories.py
@@ -231,22 +230,7 @@ def create_payment(**overrides) -> dict:
 
 ### Shared fixtures — `tests/conftest.py` and `tests/unit/conftest.py`
 
-Extract any mock setup that is used in more than one test class into a `conftest.py` at the appropriate scope. See the **Setup Files** section for the conftest hierarchy and the `_test_environment` fixture.
-
-Example of a reusable mock fixture at unit scope:
-
-```python
-# tests/unit/conftest.py
-import pytest
-from unittest.mock import MagicMock, patch
-
-@pytest.fixture()
-def mock_db_client():
-    with patch("src.repositories.base.get_db_client") as mock_get:
-        mock_db = MagicMock()
-        mock_get.return_value = mock_db
-        yield mock_db
-```
+Extract mock setup used in more than one test class into a `conftest.py` at the narrowest applicable scope.
 
 ### Shared data files — `tests/fixtures/`
 
@@ -338,7 +322,7 @@ Test every code path:
 4. **Never write tests that pass even when the code under test is broken (vacuous tests)** — tests must build trust. A test that cannot fail is worse than no test.
 5. **Never rewrite a failing test to make it pass** — if a test fails, the code is suspect first. Bending tests to match broken behavior masks real problems and erodes trust.
 6. **Never mask a failing assertion behind a broad `except Exception`** — let it propagate. Masking failures defeats the purpose of testing.
-7. **No `print()` in tests** — use the `caplog` fixture or a loguru sink if you need log assertions.
+
 
 ## Post-Generation Review
 

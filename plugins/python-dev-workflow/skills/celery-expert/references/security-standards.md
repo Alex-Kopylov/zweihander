@@ -16,7 +16,7 @@ app.conf.update(
 )
 ```
 
-This means task arguments and return values must be JSON-serializable (strings, numbers, lists, dicts, booleans, None). For Pydantic models, use the `celery-pydantic` package — it registers a custom serializer that handles Pydantic models natively. Never manually convert models with `.dict()` or `.model_dump()`.
+Task arguments and return values must be JSON-serializable (strings, numbers, lists, dicts, booleans, None). For Pydantic models, use `celery-pydantic`; do not manually convert with `.dict()` or `.model_dump()`.
 
 ## Redis Broker Authentication & TLS
 

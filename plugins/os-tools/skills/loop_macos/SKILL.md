@@ -10,9 +10,7 @@ description: >
 
 # loop_macos
 
-Schedule a recurring task using macOS launchd — the system daemon manager. Unlike a
-session-tied loop command, launchd jobs run permanently, survive reboots, and
-when scheduled by calendar time, catch up any runs missed while the Mac was asleep.
+Use macOS launchd for recurring tasks that persist across reboots. Calendar schedules catch up missed runs after sleep.
 
 ## Step 1 — Parse the input
 
@@ -30,7 +28,7 @@ If the resulting task is empty after parsing, ask the user what they want to sch
 Two mechanisms — pick based on interval length:
 
 ### `StartInterval` (seconds) — for sub-daily intervals
-Fires every N seconds while the Mac is awake. If the Mac sleeps, the timer resets on wake — no catch-up. Acceptable for short intervals.
+Fires every N seconds while awake. Sleep resets the timer on wake with no catch-up; acceptable for short intervals.
 
 | User input | `StartInterval` value | Notes |
 |---|---|---|
@@ -74,11 +72,7 @@ Use `/bin/bash -lc '…'` as the shell so PATH includes Homebrew (`/opt/homebrew
 
 If the task string contains single quotes, escape them as `'\''` inside the shell string, or write a tiny wrapper script.
 
-**Tilde expansion — critical:** launchd does NOT expand `~` or `$HOME` in plist strings. Any path starting with `~` must be replaced with the user's actual home directory before writing the plist. Get it with:
-```bash
-echo "$HOME"
-```
-Then substitute: `~/…` → the absolute path returned by `echo "$HOME"` (for example, `/Users/<username>/…`). This applies to both shell commands and AI Assistant prompt strings.
+**Tilde expansion — critical:** launchd does NOT expand `~` or `$HOME` in plist strings. Replace `~/…` with the absolute home path from `echo "$HOME"` (for example, `/Users/<username>/…`) in shell commands and AI Assistant prompts.
 
 ## Step 4 — Generate a label
 
@@ -149,11 +143,7 @@ After loading, run the task once right away so the user sees it work immediately
 launchctl start <label>
 ```
 
-Then tell the user:
-
-- What is scheduled and when it runs next
-- Where logs go
-- The label, for management
+Then tell the user what is scheduled, when it runs next, where logs go, and the management label.
 
 ```
 Scheduled: com.user.loop-macos.sync-sh

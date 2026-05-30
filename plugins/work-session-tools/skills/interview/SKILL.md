@@ -87,6 +87,6 @@ Apply agreed actions after each item, or batch if user prefers.
 
 ## Rules
 
-- Never skip an item silently. Every item gets presented.
+- Present every item; never skip one silently.
 - If the user asks to batch-fix similar items, group them but log each individually.
 - If new items are discovered during fixes, append to the queue and inform the user.

@@ -16,7 +16,7 @@ Post review comments to pull requests — general or inline on specific lines.
 | Comment text | Yes | The review message to post |
 | File path | No | Path to file for inline comment |
 | Start line | No | First line of the comment range |
-| End line | No | Last line of the comment range (defaults to start line) |
+| End line | No | Last line of the comment range |
 
 ## Workflow
 

@@ -1,7 +1,7 @@
 {
   "name": "llm-application-dev",
   "description": "LLM application design and schema-guided reasoning patterns.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": {
     "name": "Alex Kopylov"
   },

@@ -1,11 +1,11 @@
 ---
 name: commit
-description: "Commit staged changes following Conventional Commits v1.0.0. Activate when user asks to commit, create a commit, or says /commit. Commits: Conventional Commits (feat|fix|refactor|build|ci|chore|docs|style|perf|test)."
+description: "Commit staged changes following Conventional Commits v1.0.0. Activate when user asks to commit, create a commit, or says /commit."
 ---
 
-# Commit (Conventional Commits v1.0.0)
+# Commit
 
-Create git commits following the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification.
+Follow the [Conventional Commits v1.0.0](https://www.conventionalcommits.org/en/v1.0.0/) specification.
 
 ## Format
 
@@ -13,7 +13,7 @@ Create git commits following the [Conventional Commits](https://www.conventional
 <type>[optional scope]: <description>
 ```
 
-Single line only. No body, no footer, no multiline.
+Single-line message only.
 
 ## Types
 
@@ -54,7 +54,7 @@ feat(auth): add oauth2 support
 - Lower-case first letter
 - No period at end
 - Imperative mood ("add" not "added", "fix" not "fixed")
-- Concise — describe what was done briefly
+- Describe what was done concisely
 
 ## Instructions
 
@@ -66,7 +66,7 @@ feat(auth): add oauth2 support
    ```bash
    git add path/to/file1 path/to/file2 && git commit -m "<scoped message>"
    ```
-6. **Never** include body or footer — single line only. No `Co-Authored-By` trailers.
+6. **Never** include a body, footer, or `Co-Authored-By` trailer
 7. **Never** mention the assistant runtime in the commit message
 
 ## After Commit

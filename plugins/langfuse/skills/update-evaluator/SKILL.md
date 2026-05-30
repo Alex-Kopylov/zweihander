@@ -1,18 +1,17 @@
 ---
 name: update-evaluator
 description: >
-  This skill should be used when the user wants to update, modify, or change an
-  existing LLM-as-a-Judge evaluator in Langfuse. Trigger phrases include "update
-  evaluator", "modify evaluator", "change evaluator prompt", "update evaluation
-  filters", "change evaluator model". It handles both template-level changes
-  (new version) and job-config-level changes (in-place update).
+  Use when updating an existing Langfuse LLM-as-a-Judge evaluator. Trigger
+  phrases include "update evaluator", "modify evaluator", "change evaluator
+  prompt", "update evaluation filters", and "change evaluator model". Handles
+  template-level changes (new version) and job-config-level changes (in-place
+  update).
 ---
 
 # Update LLM-as-a-Judge Evaluator
 
-Update an existing Langfuse LLM-as-a-Judge evaluator. Changes are categorized
-into template-level (requiring a new version) and job-config-level (in-place
-update).
+Update an existing Langfuse LLM-as-a-Judge evaluator by separating changes into
+template-level (new version) and job-config-level (in-place update).
 
 ---
 
@@ -20,11 +19,11 @@ update).
 
 - **Langfuse Host URL** and **Project ID** from the parent plugin context.
 - **Database connection** via psycopg2 (preferred) or docker exec psql fallback.
-- Python libraries `cuid2` and `psycopg2-binary` installed. If missing, install
-  via `uv add cuid2 psycopg2-binary`.
+- Python libraries `cuid2` and `psycopg2-binary`; install missing packages with
+  `uv add cuid2 psycopg2-binary`.
 
-Consult `references/evaluator-schema-reference.md` (in the `create-evaluator`
-skill directory) for complete schema details.
+For complete schema details, consult `create-evaluator`'s
+`references/evaluator-schema-reference.md`.
 
 ---
 
@@ -49,11 +48,11 @@ cur.execute("""
 """, (PROJECT_ID, f"%{search_term}%"))
 ```
 
-Display the current configuration so the user can see what they're changing.
+Display the current configuration.
 
 ### 2. Determine Change Category
 
-Ask the user what they want to change. Categorize each change:
+Ask what to change, then categorize each change:
 
 **Template-level changes** (require a new template version):
 - `prompt` — evaluation prompt text
@@ -72,7 +71,7 @@ Ask the user what they want to change. Categorize each change:
 
 ### 3. Show Proposed Changes
 
-Present the changes for user approval:
+Present changes for approval:
 
 ```
 ## Proposed Changes to: <evaluator_name>
@@ -95,7 +94,7 @@ Wait for explicit user approval.
 
 If any template-level field changed:
 
-1. **Generate a new template CUID and job config CUID**:
+1. **Generate template and job config CUIDs**:
 
 ```python
 from cuid2 import cuid_wrapper
@@ -149,7 +148,7 @@ try:
         """, (PROJECT_ID, PROJECT_ID, name, next_version))
 ```
 
-5. **INSERT a new job configuration** linked to the new template:
+5. **INSERT the new template's job configuration**:
 
 ```python
         cur.execute("""
@@ -176,7 +175,7 @@ except Exception:
 
 ### 4B. Job-Config-Level Update (In-Place)
 
-If only job-config-level fields changed, UPDATE the existing job configuration:
+If only job-config-level fields changed, UPDATE the job configuration:
 
 ```python
 cur.execute("""
@@ -196,7 +195,7 @@ cur.execute("""
 conn.commit()
 ```
 
-Only include the fields that actually changed in the SET clause.
+Include only changed fields in the SET clause.
 
 ### 5. Verify and Report
 

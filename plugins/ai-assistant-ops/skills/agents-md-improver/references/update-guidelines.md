@@ -2,7 +2,7 @@
 
 ## Core Principle
 
-Only add information that will genuinely help future AI assistant sessions. The context window is precious - every line must earn its place.
+Only add information that helps future AI assistant sessions; every line must earn its place.
 
 ## What TO Add
 

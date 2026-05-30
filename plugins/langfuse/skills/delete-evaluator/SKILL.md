@@ -1,26 +1,22 @@
 ---
 name: delete-evaluator
 description: >
-  This skill should be used when the user wants to delete or remove an
-  LLM-as-a-Judge evaluator from Langfuse. Trigger phrases include "delete
-  evaluator", "remove evaluator", "drop evaluator", "clean up evaluator".
-  It handles safety checks, confirmation, transaction-wrapped deletion of
-  job_configurations and eval_templates, and post-deletion verification.
+  Use when the user wants to delete or remove an LLM-as-a-Judge evaluator from
+  Langfuse. Trigger phrases: "delete evaluator", "remove evaluator", "drop
+  evaluator", "clean up evaluator". Handles safety checks, confirmation,
+  transaction-wrapped deletion of job_configurations and eval_templates, and
+  post-deletion verification.
 ---
 
 # Delete LLM-as-a-Judge Evaluator
 
-Delete a Langfuse LLM-as-a-Judge evaluator with full safety checks,
-confirmation, and transaction-wrapped deletion.
 
----
 
 ## Prerequisites
 
 - **Langfuse Host URL** and **Project ID** from the parent plugin context.
 - **Database connection** via psycopg2 (preferred) or docker exec psql fallback.
-- Python library `psycopg2-binary` installed. If missing, install via
-  `uv add psycopg2-binary`.
+- `psycopg2-binary`; if missing, install via `uv add psycopg2-binary`.
 
 ---
 
@@ -28,8 +24,8 @@ confirmation, and transaction-wrapped deletion.
 
 ### 1. Identify the Evaluator
 
-Accept the evaluator name or ID from the user. Fetch all versions and all
-job configurations:
+Accept the evaluator name or ID from the user. Fetch template versions and job
+configurations:
 
 ```python
 import psycopg2
@@ -98,18 +94,18 @@ Offer two options:
 ```
 **Option A: Delete job configuration(s) only**
   Removes job configurations but preserves template versions for future reuse.
-  Historical scores in the scores table are NOT affected.
 
 **Option B: Full cleanup**
   Removes ALL job configurations AND all template versions.
-  Historical scores in the scores table are NOT affected.
+
+Historical scores in the scores table are NOT affected.
 
 Which option? (A/B)
 ```
 
 ### 5. Require Explicit Confirmation
 
-After the user selects an option, require one more confirmation:
+After option selection, require final confirmation:
 
 ```
 This will permanently delete:
@@ -130,7 +126,6 @@ conn.autocommit = False
 try:
     with conn.cursor() as cur:
         if option == "A":
-            # Delete job configurations only
             cur.execute("""
                 DELETE FROM job_configurations
                 WHERE project_id = %s
@@ -226,8 +221,7 @@ and are not affected by this deletion.
 
 - **Evaluator not found**: Report and suggest using `list-evaluators`.
 - **User declines confirmation**: Abort the operation entirely.
-- **Transaction failure**: Roll back and report the error. No partial deletions
-  should remain.
+- **Transaction failure**: Roll back and report the error; no partial deletions should remain.
 - **DB connection failed**: Attempt docker exec psql fallback before reporting.
 
 ---

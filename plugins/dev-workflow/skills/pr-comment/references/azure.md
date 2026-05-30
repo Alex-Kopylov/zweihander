@@ -8,7 +8,7 @@ URL formats:
 
 Extract: org, project, repo name, PR ID.
 
-You also need the **repository UUID**. Get it via MCP:
+Get the required **repository UUID** via MCP:
 ```
 mcp__azure-devops__repo_get_repo_by_name_or_id(project="{project}", repositoryNameOrId="{repo}")
 ```
@@ -85,7 +85,7 @@ az repos pr list \
 
 ### Inline comment (CLI limitation)
 
-The `az repos pr comment create` CLI does **not** natively support inline/file-level comments. For inline comments, prefer MCP tools. If MCP is unavailable, use the REST API directly:
+The `az repos pr comment create` CLI does **not** natively support inline/file-level comments; use MCP or, if unavailable, the REST API:
 
 ```bash
 az rest --method post \
@@ -105,4 +105,4 @@ az rest --method post \
 
 1. Check if `mcp__azure-devops__repo_create_pull_request_thread` is available — **prefer MCP**
 2. If MCP unavailable, check if `az` CLI is installed (`az --version`)
-3. For inline comments specifically, MCP is strongly preferred since the CLI lacks native support
+3. For inline comments, use the REST API when MCP is unavailable

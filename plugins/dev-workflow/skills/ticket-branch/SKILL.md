@@ -9,12 +9,9 @@ Create git branches using a ticket ID and summary.
 
 ## Instructions
 
-1. **Parse ticket ID** from user input:
-   - URL format: extract the ticket ID from the URL
-   - Direct ID: `1234` → `1234`
+1. **Parse ticket ID** from user input, accepting either a ticket URL or a direct ID such as `1234`.
 
-2. **Fetch ticket details** using platform-cli:
-   - Use `<platform-cli>` to fetch the ticket title/summary
+2. **Fetch ticket details** with `<platform-cli>` to get the ticket title/summary.
 
 3. **Generate branch name**:
    - Format: `<type>/<TICKET-ID>-<short-description>`

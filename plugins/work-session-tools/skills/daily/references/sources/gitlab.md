@@ -16,7 +16,7 @@ For self-hosted, extract the base URL for API calls.
 
 ## What to fetch
 
-Use `glab` CLI (GitLab CLI) if available, otherwise fall back to GitLab REST API via `curl`.
+Use `glab` if available; otherwise use GitLab REST API via `curl`.
 
 ### Merge Requests
 

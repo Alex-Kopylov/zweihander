@@ -1,15 +1,5 @@
 # SGR Observability — Langfuse Integration
 
-## Table of Contents
-
-1. [Why Observe SGR](#why-observe-sgr)
-2. [Publishing Eval Scores](#publishing-eval-scores)
-3. [Attaching Reasoning as Metadata](#attaching-reasoning-as-metadata)
-4. [Complete Integration Example](#complete-integration-example)
-5. [What You Can Track](#what-you-can-track)
-
----
-
 ## Why Observe SGR
 
 SGR eval fields are structured PASS/FAIL verdicts the model generates about its own output. Publishing these to Langfuse turns self-evaluation into quantitative quality metrics — you can track pass rates per eval field, per model, per schema version, over time.
@@ -89,7 +79,7 @@ def publish_reasoning_metadata(
     )
 ```
 
-This means when investigating a failed eval in the Langfuse UI, you can see exactly what the model was "thinking" — which reasoning fields were populated, which were TBD, and whether the reasoning supported the output.
+When investigating a failed eval in Langfuse, you can see what the model was "thinking": which reasoning fields were populated, which were TBD, and whether the reasoning supported the output.
 
 ---
 

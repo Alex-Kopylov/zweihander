@@ -30,4 +30,4 @@ TIER: HIGH | MEDIUM | LOW
 
 ## Instructions
 
-Read the full conversation log passed to you. Extract every relevant finding. Output nothing but the FINDING blocks — no preamble, no summary.
+Extract every relevant finding. Output only FINDING blocks — no preamble or summary.

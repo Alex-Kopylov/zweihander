@@ -54,7 +54,7 @@ exiftool \
 Rules:
 - `Title = "CV"` — neutral, generic
 - `Author` = your clean, properly-cased name
-- Do NOT set: Company, Keywords, Subject, Keywords, Role
+- Do NOT set: Company, Keywords, Subject, Role
 
 ## Remove timestamps specifically
 
@@ -91,7 +91,7 @@ diff /tmp/before.txt /tmp/after.txt
 
 ## Check PDF text for path leaks
 
-Even after metadata scrub, visible content can leak. Use the Read tool on the PDF file, then scan the extracted text for these patterns:
+Metadata scrub does not cover visible content. Use Read, then scan extracted text for:
 
 - `file:`
 - `/Users/`

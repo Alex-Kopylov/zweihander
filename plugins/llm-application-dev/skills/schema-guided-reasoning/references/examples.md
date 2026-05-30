@@ -1,16 +1,5 @@
 # SGR Real-World Examples
 
-## Table of Contents
-
-1. [Math Reasoning](#math-reasoning)
-2. [Text-to-SQL](#text-to-sql)
-3. [Document Classification](#document-classification)
-4. [Compliance Analysis](#compliance-analysis)
-5. [Customer Support Triage](#customer-support-triage)
-6. [Code Review](#code-review)
-
----
-
 ## Math Reasoning
 
 Force the model to show work step-by-step before giving the final answer. The extra tokens spent on explanation improve accuracy significantly.
@@ -93,7 +82,7 @@ class TextToSQL(BaseModel):
     )
 ```
 
-**Why it works:** By the time the model reaches `sql_query`, it has already committed to specific tables, joins, and filters. The query practically writes itself — the model just assembles what it already decided.
+**Why it works:** By the time the model reaches `sql_query`, it has already committed to specific tables, joins, and filters.
 
 ---
 
