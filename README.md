@@ -309,7 +309,7 @@ reduce Markdown bloat.
 
 | Skill | Description |
 |---|---|
-| `adapt-skill-for-ai-harness` | Adapt explicitly named skills so Claude Code and Codex-specific instructions live in metadata-linked harness references. |
+| `adapt-skill-for-ai-harness` | Adapt explicitly named skills using a JSON assistant action matrix and target-specific harness references. |
 | `agents-md-improver` | Audit and improve repository AGENTS.md files. |
 | `ai-insights-hunter` | Extract reusable decisions, patterns, and preferences from a session. |
 | `ai-setup-audit` | Audit assistant configuration files for conflicts and bloat. |

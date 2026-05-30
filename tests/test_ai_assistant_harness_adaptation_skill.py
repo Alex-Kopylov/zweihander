@@ -1,5 +1,7 @@
 import json
 import re
+import subprocess
+import sys
 from pathlib import Path
 
 
@@ -12,7 +14,8 @@ SKILL_ROOT = (
     / "adapt-skill-for-ai-harness"
 )
 SKILL_FILE = SKILL_ROOT / "SKILL.md"
-HARNESS_ROOT = SKILL_ROOT / "references" / "ai-assistant-harnesses"
+MATRIX_FILE = SKILL_ROOT / "references" / "harness-action-matrix.json"
+LOOKUP_SCRIPT = SKILL_ROOT / "scripts" / "lookup_harness_action.py"
 
 
 def parse_frontmatter(path: Path) -> dict[str, object]:
@@ -54,49 +57,88 @@ def test_skill_exists_with_expected_metadata() -> None:
     for phrase in [
         "adapting skills",
         "AI Assistant Harness Adaptation",
-        "Claude Code",
-        "Codex",
+        "assistant harness action matrix",
     ]:
         assert phrase in description
 
     metadata = frontmatter["metadata"]
     assert isinstance(metadata, dict)
     assert (
-        metadata["ai-assistant-harness-adaptation.claude-code"]
-        == "references/ai-assistant-harnesses/claude-code.md"
+        metadata["ai-assistant-harness-adaptation.action-matrix"]
+        == "references/harness-action-matrix.json"
     )
-    assert (
-        metadata["ai-assistant-harness-adaptation.codex"]
-        == "references/ai-assistant-harnesses/codex.md"
-    )
+    assert not any(key.endswith(".codex") for key in metadata)
+    assert not any(key.endswith(".claude-code") for key in metadata)
 
 
-def test_metadata_links_are_file_only_harness_references() -> None:
+def test_metadata_links_to_scriptable_action_matrix() -> None:
     metadata = parse_frontmatter(SKILL_FILE)["metadata"]
     assert isinstance(metadata, dict)
 
-    for key, value in metadata.items():
-        assert key.startswith("ai-assistant-harness-adaptation.")
-        assert value.endswith(".md")
-        assert "\n" not in value
-        assert " " not in value
-        resolved = (SKILL_ROOT / value).resolve()
-        assert resolved.is_file()
-        assert HARNESS_ROOT.resolve() in resolved.parents
+    value = metadata["ai-assistant-harness-adaptation.action-matrix"]
+    assert value.endswith(".json")
+    assert "\n" not in value
+    assert " " not in value
+    assert (SKILL_ROOT / value).resolve() == MATRIX_FILE.resolve()
+    assert MATRIX_FILE.is_file()
+
+
+def test_action_matrix_supports_action_then_assistant_lookup() -> None:
+    matrix = json.loads(MATRIX_FILE.read_text(encoding="utf-8"))
+
+    assert matrix["schema_version"] == 1
+    assert matrix["lookup_order"] == ["action", "assistant"]
+    assert set(matrix["assistants"]) >= {"ClaudeCode", "Codex"}
+
+    kinds = {action["kind"] for action in matrix["actions"].values()}
+    assert {"workflow", "skill", "tool", "command"}.issubset(kinds)
+
+    create_agent = matrix["actions"]["CreateAgent"]
+    assert create_agent["kind"] == "workflow"
+    assert set(create_agent) >= {"ClaudeCode", "Codex"}
+    assert "Agent" in create_agent["ClaudeCode"]["terms"]
+    assert "spawn_agent" in create_agent["Codex"]["terms"]
+    assert "tool_search" in create_agent["Codex"]["discovery"]
+    assert "guidance" not in json.dumps(matrix)
+
+
+def test_lookup_script_returns_action_assistant_entry() -> None:
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(LOOKUP_SCRIPT),
+            "--matrix",
+            str(MATRIX_FILE),
+            "--action",
+            "CreateAgent",
+            "--assistant",
+            "Codex",
+        ],
+        check=True,
+        text=True,
+        capture_output=True,
+    )
+
+    entry = json.loads(result.stdout)
+    assert entry["action"] == "CreateAgent"
+    assert entry["assistant"] == "Codex"
+    assert entry["kind"] == "workflow"
+    assert "spawn_agent" in entry["terms"]
+    assert "tool_search" in entry["discovery"]
 
 
 def test_skill_instructs_single_matching_harness_reference_only() -> None:
     body = skill_body()
 
     assert re.search(
-        r"load exactly one matching metadata-linked harness reference",
+        r'matrix\["actions"\]\[action_key\]\[assistant_key\]',
         body,
         flags=re.IGNORECASE,
     )
     assert re.search(
-        r"skip the other harness files",
+        r"CreateAgent.*Codex",
         body,
-        flags=re.IGNORECASE,
+        flags=re.IGNORECASE | re.DOTALL,
     )
 
 
@@ -110,9 +152,13 @@ def test_skill_has_no_shared_cross_harness_instruction_table() -> None:
     )
 
 
-def test_harness_references_and_live_lab_protocol_exist() -> None:
-    assert (HARNESS_ROOT / "claude-code.md").is_file()
-    assert (HARNESS_ROOT / "codex.md").is_file()
+def test_skill_does_not_ship_its_own_per_harness_references() -> None:
+    harness_root = SKILL_ROOT / "references" / "ai-assistant-harnesses"
+    assert not (harness_root / "claude-code.md").exists()
+    assert not (harness_root / "codex.md").exists()
+
+
+def test_live_lab_protocol_and_skill_readme_exist() -> None:
     assert (SKILL_ROOT / "references" / "live-lab-protocol.md").is_file()
     assert (SKILL_ROOT / "README.md").is_file()
 
@@ -130,8 +176,9 @@ def test_evals_cover_adaptation_and_harness_read_scope() -> None:
 
     combined = json.dumps(cases, sort_keys=True)
     assert "explicitly named skill" in combined
-    assert "Claude Code" in combined
-    assert "Codex" in combined
-    assert "codex.md" in combined
-    assert "claude-code.md" in combined
-    assert "only" in combined
+    assert "action matrix" in combined
+    assert "CreateAgent" in combined
+    assert "matrix" in combined
+    assert "action_key" in combined
+    assert "assistant_key" in combined
+    assert "target skill" in combined

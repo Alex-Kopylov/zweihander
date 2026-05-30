@@ -1,0 +1,427 @@
+{
+  "schema_version": 1,
+  "checked": "2026-05-30",
+  "lookup_order": [
+    "action",
+    "assistant"
+  ],
+  "assistants": {
+    "ClaudeCode": {
+      "id": "claude-code",
+      "display_name": "Claude Code",
+      "source_urls": [
+        "https://code.claude.com/docs/en/skills",
+        "https://code.claude.com/docs/en/tools-reference",
+        "https://code.claude.com/docs/en/sub-agents",
+        "https://code.claude.com/docs/en/plugins-reference"
+      ]
+    },
+    "Codex": {
+      "id": "codex",
+      "display_name": "Codex",
+      "source_urls": [
+        "https://developers.openai.com/codex/skills",
+        "https://developers.openai.com/codex/plugins/build",
+        "https://developers.openai.com/codex/cli/slash-commands",
+        "https://developers.openai.com/codex/cli/reference#codex-plugin-marketplace",
+        "https://agentskills.io/specification#metadata-field"
+      ]
+    }
+  },
+  "actions": {
+    "InvokeSkill": {
+      "kind": "skill",
+      "intent": "Load or activate a skill by name or path.",
+      "ClaudeCode": {
+        "surface": "skill",
+        "terms": [
+          "Skill",
+          "/plugin-name:skill-name"
+        ],
+        "aliases": [],
+        "discovery": [
+          "available skills list"
+        ],
+        "nuances": [
+          "plugin skills can be invoked with plugin namespace"
+        ]
+      },
+      "Codex": {
+        "surface": "skill",
+        "terms": [
+          "SKILL.md",
+          "skill"
+        ],
+        "aliases": [],
+        "discovery": [
+          "available skills list"
+        ],
+        "nuances": [
+          "frontmatter name and description are in context before body load"
+        ]
+      }
+    },
+    "CreateAgent": {
+      "kind": "workflow",
+      "intent": "Delegate work to an isolated agent or subagent context.",
+      "ClaudeCode": {
+        "surface": "tool",
+        "terms": [
+          "Agent"
+        ],
+        "aliases": [
+          "Task"
+        ],
+        "discovery": [
+          "tools reference",
+          "sub-agents docs"
+        ],
+        "nuances": [
+          "Task is legacy wording in older material"
+        ]
+      },
+      "Codex": {
+        "surface": "deferred-tool",
+        "terms": [
+          "spawn_agent"
+        ],
+        "aliases": [
+          "multi-agent tool"
+        ],
+        "discovery": [
+          "tool_search"
+        ],
+        "nuances": [
+          "availability can be deferred until discovered",
+          "use only when current harness instructions permit subagents"
+        ]
+      }
+    },
+    "AskUser": {
+      "kind": "workflow",
+      "intent": "Ask the user for clarification or a bounded choice.",
+      "ClaudeCode": {
+        "surface": "tool-or-chat",
+        "terms": [
+          "AskUserQuestion",
+          "chat"
+        ],
+        "aliases": [],
+        "discovery": [
+          "tools reference"
+        ],
+        "nuances": [
+          "structured questions are optional when plain chat is enough"
+        ]
+      },
+      "Codex": {
+        "surface": "tool-or-chat",
+        "terms": [
+          "request_user_input",
+          "chat"
+        ],
+        "aliases": [],
+        "discovery": [
+          "active tool list"
+        ],
+        "nuances": [
+          "request_user_input may be mode-limited"
+        ]
+      }
+    },
+    "TrackTasks": {
+      "kind": "workflow",
+      "intent": "Track a multi-step task list during a work session.",
+      "ClaudeCode": {
+        "surface": "tool",
+        "terms": [
+          "TaskCreate",
+          "TaskGet",
+          "TaskList",
+          "TaskUpdate",
+          "TaskStop"
+        ],
+        "aliases": [
+          "TodoWrite"
+        ],
+        "discovery": [
+          "tools reference"
+        ],
+        "nuances": [
+          "tool names vary across installed plugins and harness versions"
+        ]
+      },
+      "Codex": {
+        "surface": "tool",
+        "terms": [
+          "update_plan"
+        ],
+        "aliases": [],
+        "discovery": [
+          "active tool list"
+        ],
+        "nuances": [
+          "at most one plan item should be in_progress"
+        ]
+      }
+    },
+    "SearchFiles": {
+      "kind": "tool",
+      "intent": "Find files or text in the current workspace.",
+      "ClaudeCode": {
+        "surface": "tool",
+        "terms": [
+          "Glob",
+          "Grep",
+          "Bash"
+        ],
+        "aliases": [],
+        "discovery": [
+          "tools reference"
+        ],
+        "nuances": [
+          "Bash covers shell-native search commands"
+        ]
+      },
+      "Codex": {
+        "surface": "shell-tool",
+        "terms": [
+          "rg",
+          "rg --files",
+          "exec_command"
+        ],
+        "aliases": [],
+        "discovery": [
+          "active tool list"
+        ],
+        "nuances": [
+          "rg is preferred when available"
+        ]
+      }
+    },
+    "ReadFile": {
+      "kind": "tool",
+      "intent": "Read a workspace file or file section.",
+      "ClaudeCode": {
+        "surface": "tool",
+        "terms": [
+          "Read"
+        ],
+        "aliases": [],
+        "discovery": [
+          "tools reference"
+        ],
+        "nuances": []
+      },
+      "Codex": {
+        "surface": "shell-tool",
+        "terms": [
+          "sed",
+          "nl",
+          "exec_command"
+        ],
+        "aliases": [],
+        "discovery": [
+          "active tool list"
+        ],
+        "nuances": [
+          "read scoped sections when possible"
+        ]
+      }
+    },
+    "EditFile": {
+      "kind": "tool",
+      "intent": "Create or modify workspace files.",
+      "ClaudeCode": {
+        "surface": "tool",
+        "terms": [
+          "Edit",
+          "MultiEdit",
+          "Write"
+        ],
+        "aliases": [],
+        "discovery": [
+          "tools reference"
+        ],
+        "nuances": [
+          "Edit and MultiEdit are exact-replacement tools"
+        ]
+      },
+      "Codex": {
+        "surface": "tool",
+        "terms": [
+          "apply_patch"
+        ],
+        "aliases": [
+          "formatter"
+        ],
+        "discovery": [
+          "active tool list"
+        ],
+        "nuances": [
+          "manual edits use patches; mechanical rewrites may use formatters"
+        ]
+      }
+    },
+    "RunShell": {
+      "kind": "tool",
+      "intent": "Run shell commands.",
+      "ClaudeCode": {
+        "surface": "tool",
+        "terms": [
+          "Bash"
+        ],
+        "aliases": [],
+        "discovery": [
+          "tools reference"
+        ],
+        "nuances": [
+          "environment mutations may not persist across separate calls"
+        ]
+      },
+      "Codex": {
+        "surface": "tool",
+        "terms": [
+          "exec_command",
+          "write_stdin"
+        ],
+        "aliases": [],
+        "discovery": [
+          "active tool list"
+        ],
+        "nuances": [
+          "write_stdin continues an existing command session"
+        ]
+      }
+    },
+    "ParallelTools": {
+      "kind": "workflow",
+      "intent": "Run independent tool calls concurrently.",
+      "ClaudeCode": {
+        "surface": "tool-calling",
+        "terms": [
+          "parallel tool calls"
+        ],
+        "aliases": [],
+        "discovery": [
+          "active tool list"
+        ],
+        "nuances": [
+          "only independent operations are parallel candidates"
+        ]
+      },
+      "Codex": {
+        "surface": "tool",
+        "terms": [
+          "multi_tool_use.parallel"
+        ],
+        "aliases": [],
+        "discovery": [
+          "active tool list"
+        ],
+        "nuances": [
+          "developer tools only"
+        ]
+      }
+    },
+    "FetchWeb": {
+      "kind": "tool",
+      "intent": "Fetch or search external web content.",
+      "ClaudeCode": {
+        "surface": "tool",
+        "terms": [
+          "WebFetch",
+          "WebSearch"
+        ],
+        "aliases": [],
+        "discovery": [
+          "tools reference"
+        ],
+        "nuances": []
+      },
+      "Codex": {
+        "surface": "tool-or-mcp",
+        "terms": [
+          "web.run",
+          "search_openai_docs",
+          "fetch_openai_doc"
+        ],
+        "aliases": [
+          "OpenAI docs MCP"
+        ],
+        "discovery": [
+          "active tool list",
+          "OpenAI docs MCP"
+        ],
+        "nuances": [
+          "OpenAI product docs use OpenAI docs MCP first"
+        ]
+      }
+    },
+    "PluginManifest": {
+      "kind": "command",
+      "intent": "Locate plugin and marketplace metadata files.",
+      "ClaudeCode": {
+        "surface": "file",
+        "terms": [
+          ".claude-plugin/plugin.json",
+          ".claude-plugin/marketplace.json"
+        ],
+        "aliases": [],
+        "discovery": [
+          "plugin docs"
+        ],
+        "nuances": []
+      },
+      "Codex": {
+        "surface": "file",
+        "terms": [
+          ".codex-plugin/plugin.json",
+          ".agents/plugins/marketplace.json"
+        ],
+        "aliases": [],
+        "discovery": [
+          "plugin marketplace docs"
+        ],
+        "nuances": []
+      }
+    },
+    "SlashCommand": {
+      "kind": "command",
+      "intent": "Refer to slash-command workflows.",
+      "ClaudeCode": {
+        "surface": "slash-command",
+        "terms": [
+          "/plugin-name:skill-name"
+        ],
+        "aliases": [],
+        "discovery": [
+          "skills docs",
+          "plugins docs"
+        ],
+        "nuances": [
+          "plugin namespace syntax can overlap with skill invocation"
+        ]
+      },
+      "Codex": {
+        "surface": "slash-command",
+        "terms": [
+          "/skills",
+          "/plugins",
+          "/goal",
+          "/plan",
+          "/review",
+          "/status",
+          "/diff"
+        ],
+        "aliases": [],
+        "discovery": [
+          "slash commands docs"
+        ],
+        "nuances": [
+          "only translate commands with matching semantics"
+        ]
+      }
+    }
+  }
+}

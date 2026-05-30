@@ -1,8 +1,25 @@
 # Live Lab Protocol
 
-Use this protocol to manually verify an already-adapted target skill. The first version covers only Claude Code and Codex personas.
+Use this protocol to manually verify the action matrix and an already-adapted target skill. The first version covers only Claude Code and Codex personas.
 
-## Setup
+## Matrix Setup
+
+Check this skill has:
+
+- `metadata.ai-assistant-harness-adaptation.action-matrix`
+- `references/harness-action-matrix.json`
+- No local `references/ai-assistant-harnesses/claude-code.md`
+- No local `references/ai-assistant-harnesses/codex.md`
+
+Run:
+
+```shell
+python plugins/ai-assistant-ops/skills/adapt-skill-for-ai-harness/scripts/lookup_harness_action.py --action CreateAgent --assistant Codex
+```
+
+Expected pass condition: the output is JSON for the `CreateAgent`/`Codex` entry and includes Codex-specific terms such as `spawn_agent`.
+
+## Target Skill Setup
 
 Select one adapted target skill that has:
 
@@ -45,4 +62,4 @@ For each persona, record:
 - Pass or fail
 - Notes about unexpected context loading
 
-Fail the lab if a persona reads both harness files, reads the wrong harness file, or relies on a shared cross-harness instruction table in the target `SKILL.md`.
+Fail the lab if this skill grows its own per-harness markdown references, a matrix lookup fails, a persona reads both target harness files, a persona reads the wrong target harness file, or the target `SKILL.md` relies on a shared cross-harness instruction table.

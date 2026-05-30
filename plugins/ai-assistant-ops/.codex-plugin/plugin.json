@@ -1,6 +1,6 @@
 {
   "name": "ai-assistant-ops",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Assistant setup, instruction hygiene, memory capture, harness adaptation, and markdown/prompt maintenance.",
   "author": {
     "name": "Alex Kopylov"
@@ -21,7 +21,7 @@
     "defaultPrompt": [
       "Audit my assistant setup.",
       "Trim verbosity in these skill docs.",
-      "Adapt this skill for Claude Code and Codex harnesses."
+      "Adapt this skill using the assistant harness action matrix."
     ]
   }
 }
