@@ -270,8 +270,7 @@ review comments, ticket branches, status updates, version bumps, or spec checks.
 
 ### `mermaid-diagrams`
 
-<details>
-<summary>Generate and validate Mermaid diagrams with synced syntax references.</summary>
+Generate and validate Mermaid diagrams with synced syntax references.
 
 **Use when:** you want to create Mermaid diagrams from requirements or validate
 Mermaid code blocks with the Mermaid CLI.
