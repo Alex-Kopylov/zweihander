@@ -1,0 +1,49 @@
+{
+  "skill_name": "adapt-skill-for-ai-harness",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "Adapt the explicitly named skill plugins/example/skills/deploy-helper for AI Assistant Harness Adaptation so it works for Claude Code and Codex.",
+      "expected_output": "Resolves or asks for the explicitly named skill path, keeps Claude Code as the shared SKILL.md baseline, adds flat ai-assistant-harness-adaptation metadata links, creates only claude-code.md and codex.md harness references, avoids migrating unrelated skills, reports exact changed files, and runs focused verification.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "requires_explicit_target",
+          "check": "response resolves or asks for the explicitly named skill"
+        },
+        {
+          "name": "keeps_claude_code_baseline",
+          "check": "shared SKILL.md remains Claude Code-baseline"
+        },
+        {
+          "name": "no_unrelated_migration",
+          "check": "does not migrate unrelated skills"
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "prompt": "As a Codex persona, invoke an adapted target skill without taking actions and report which files enter context.",
+      "expected_output": "Reads the target SKILL.md and only references/ai-assistant-harnesses/codex.md from the harness directory. Does not read claude-code.md unless the user asks to compare or edit harness references.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "codex_only",
+          "check": "loaded files include codex.md and exclude claude-code.md"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "As a Claude Code persona, invoke an adapted target skill without taking actions and report which files enter context.",
+      "expected_output": "Reads the target SKILL.md and only references/ai-assistant-harnesses/claude-code.md from the harness directory. Does not read codex.md unless the user asks to compare or edit harness references.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "claude_code_only",
+          "check": "loaded files include claude-code.md and exclude codex.md"
+        }
+      ]
+    }
+  ]
+}

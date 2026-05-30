@@ -1,0 +1,4 @@
+interface:
+  display_name: "Adapt Skill For AI Harness"
+  short_description: "Adapt skills for assistant harnesses"
+  default_prompt: "Adapt this explicitly named skill for Claude Code and Codex harnesses."

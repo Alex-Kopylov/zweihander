@@ -107,7 +107,7 @@ subgraph RowTwo[" "]
   Daily notes, task tracking,
   interviews, and team planning`"]:::session
   AIAssistantOps["`**ai-assistant-ops**
-  Assistant setup audits, AGENTS.md hygiene,
+  Assistant setup audits, harness adaptation,
   memory capture, and Markdown cleanup`"]:::ops
   OSTools["`**os-tools**
   Local macOS automation utilities
@@ -302,12 +302,14 @@ designed multi-agent team for a larger work session.
 ### `ai-assistant-ops`
 
 **Use when:** you want to audit assistant instructions, improve AGENTS.md files,
-capture useful session insights, or reduce Markdown bloat.
+adapt skills for assistant harnesses, capture useful session insights, or
+reduce Markdown bloat.
 
 **Skills**
 
 | Skill | Description |
 |---|---|
+| `adapt-skill-for-ai-harness` | Adapt explicitly named skills so Claude Code and Codex-specific instructions live in metadata-linked harness references. |
 | `agents-md-improver` | Audit and improve repository AGENTS.md files. |
 | `ai-insights-hunter` | Extract reusable decisions, patterns, and preferences from a session. |
 | `ai-setup-audit` | Audit assistant configuration files for conflicts and bloat. |
