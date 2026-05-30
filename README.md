@@ -325,6 +325,7 @@ capture useful session insights, or reduce Markdown bloat.
 | `md-bloat-hunter` | `file-orchestrator` | Coordinates per-file Markdown cleanup. |
 | `md-bloat-hunter` | `filler-eliminator` | Removes low-value filler language. |
 | `md-bloat-hunter` | `redundancy-detector` | Spots repeated content inside files. |
+| `md-bloat-hunter` | `size-budget-reporter` | Reports Markdown size and token budget status. |
 | `md-bloat-hunter` | `verbosity-pruner` | Compresses overlong explanations. |
 | `md-bloat-hunter` | `vocab-compressor` | Replaces inflated wording with direct wording. |
 

@@ -1,6 +1,7 @@
 ---
 name: md-bloat-hunter
 description: Use when the user asks to audit, trim, compress, or reduce bloat, verbosity, redundancy, filler, or over-expanded vocabulary in Markdown loaded into AI agent or LLM context, especially skills, agent prompts, command prompts, and assistant instruction files.
+compatibility: Optional `tiktoken` for exact token counts; falls back if missing.
 ---
 
 # md-bloat-hunter
@@ -27,9 +28,12 @@ Read these during normal invocation:
 @references/FILES_TO_AUDIT.MD
 
 - `agents/file-orchestrator.md` for file-local detectors.
+- `agents/size-budget-reporter.md` for report-only size warnings.
 - `agents/directory-redundancy-detector.md` when the target set has more than
   one file.
+- `@scripts/measure_size.py` for deterministic size measurement.
 - `references/file-reduction.schema.json` for file-level reduced outputs.
+- `references/size-report.schema.json` for size-budget outputs.
 
 Detector agents read `references/detector-output.schema.json` themselves.
 
@@ -86,8 +90,19 @@ Keep that directory for post-run debugging and include it in the final report.
 
 ## Scope Strategy
 
-Use file-local agents for single-file context and directory-level agents for
-cross-file comparisons.
+Use size-budget agents for measurement, file-local agents for single-file
+context, and directory-level agents for cross-file comparisons.
+
+Size-budget pass:
+
+- Dispatch one `agents/size-budget-reporter.md` worker per target file.
+- Run it in parallel with file-local orchestrators when the host supports it.
+- Treat its output as report-only. Never convert size warnings into edit
+  findings.
+- Default budgets are `4096` soft-warning tokens and `8192` hard-warning
+  tokens. These are prompt-quality guardrails, not provider limits.
+- Do not calculate token, word, character, line, or byte counts in prose. Run
+  `@scripts/measure_size.py` and report its JSON fields.
 
 File-local pass:
 
@@ -121,6 +136,12 @@ Every detector output must validate before a reducer consumes it:
 
 ```sh
 scripts/validate_output.py detector "<detector-output.json>"
+```
+
+Every size-budget output must validate before reporting:
+
+```sh
+scripts/validate_output.py size-report "<size-budget-output.json>"
 ```
 
 The validation script also enforces cross-field invariants that JSON Schema
@@ -216,6 +237,7 @@ Report concisely:
 - number applied, skipped, failed, and requiring approval
 - file paths touched
 - file paths with failed agent outputs or writer failures
+- size-budget warnings and over-budget files
 - private run output directory
 
 If no findings are approved or the mode is `Audit+Report`, report that no files
