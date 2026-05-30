@@ -1,0 +1,25 @@
+{
+  "name": "mermaid-diagrams",
+  "version": "0.1.0",
+  "description": "Generate and validate Mermaid diagrams with synced syntax references.",
+  "author": {
+    "name": "Alex Kopylov"
+  },
+  "license": "MIT",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Mermaid Diagrams",
+    "shortDescription": "Generate and validate Mermaid diagrams",
+    "longDescription": "Skills for creating Mermaid diagrams from requirements and validating Mermaid code blocks with mmdc using synced Mermaid syntax references.",
+    "developerName": "Alex Kopylov",
+    "category": "Development",
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Create a Mermaid diagram for this workflow.",
+      "Validate the Mermaid diagrams in this Markdown file."
+    ]
+  }
+}

@@ -1,0 +1,24 @@
+[project]
+name = "mermaid-diagrams"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = []
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+]
+
+[project.scripts]
+update-generated-docs = "plugin_maintenance.generated_docs:main"
+sync-mermaid-docs = "plugin_maintenance.sync:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["plugin_maintenance"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]

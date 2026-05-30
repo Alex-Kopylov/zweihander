@@ -79,6 +79,19 @@
       ]
     },
     {
+      "name": "mermaid-diagrams",
+      "source": "./plugins/mermaid-diagrams",
+      "description": "Generate and validate Mermaid diagrams with synced syntax references.",
+      "category": "development",
+      "tags": [
+        "mermaid",
+        "diagrams",
+        "visualization",
+        "documentation",
+        "linting"
+      ]
+    },
+    {
       "name": "work-session-tools",
       "source": "./plugins/work-session-tools",
       "description": "Productivity and orchestration inside an assistant session.",

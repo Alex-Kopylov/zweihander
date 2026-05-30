@@ -1,0 +1,9 @@
+{
+  "name": "mermaid-diagrams",
+  "description": "Generate and validate Mermaid diagrams with synced syntax references.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Alex Kopylov"
+  },
+  "skills": "./skills/"
+}

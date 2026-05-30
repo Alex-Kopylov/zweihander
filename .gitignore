@@ -1,4 +1,5 @@
 .DS_Store
+.tmp/
 *.local.md
 .claude/settings.json
 .claude/settings.local.json
