@@ -17,7 +17,7 @@ Run:
 python plugins/ai-assistant-ops/skills/adapt-skill-for-ai-harness/scripts/lookup_harness_action.py --action CreateAgent --assistant Codex
 ```
 
-Expected pass condition: the output is JSON for the `CreateAgent`/`Codex` entry and includes Codex-specific terms such as `spawn_agent`.
+Pass condition: output is JSON for the `CreateAgent`/`Codex` entry and includes Codex-specific terms such as `spawn_agent`.
 
 ## Target Skill Setup
 
@@ -29,7 +29,7 @@ Select one adapted target skill that has:
 - `references/ai-assistant-harnesses/claude-code.md`
 - `references/ai-assistant-harnesses/codex.md`
 
-Start each persona in a clean session or clean sub-session with access to the same target skill files.
+Start each persona in a clean session or sub-session with the same target skill files.
 
 ## Claude Code Persona Prompt
 
@@ -39,7 +39,7 @@ Report which files you read or loaded to understand the skill.
 Stop after reporting the loaded files.
 ```
 
-Expected pass condition: the persona reads the target `SKILL.md` and only `references/ai-assistant-harnesses/claude-code.md` from the harness directory.
+Pass condition: the persona reads the target `SKILL.md` and only `references/ai-assistant-harnesses/claude-code.md` from the harness directory.
 
 ## Codex Persona Prompt
 
@@ -49,7 +49,7 @@ Report which files you read or loaded to understand the skill.
 Stop after reporting the loaded files.
 ```
 
-Expected pass condition: the persona reads the target `SKILL.md` and only `references/ai-assistant-harnesses/codex.md` from the harness directory.
+Pass condition: the persona reads the target `SKILL.md` and only `references/ai-assistant-harnesses/codex.md` from the harness directory.
 
 ## Record
 

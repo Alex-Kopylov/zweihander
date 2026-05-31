@@ -9,7 +9,7 @@ metadata:
 
 This skill adapts an explicitly named target skill from one AI assistant harness vocabulary to another.
 
-Its reusable source of truth is an assistant harness action matrix, not per-harness explanatory notes for this skill itself.
+The assistant harness action matrix is the reusable source of truth, not per-harness explanatory notes for this skill.
 
 ```python
 matrix = load_json(metadata["ai-assistant-harness-adaptation.action-matrix"])
@@ -17,15 +17,15 @@ entry = matrix["actions"][action_key][assistant_key]
 codex_agent = matrix["actions"]["CreateAgent"]["Codex"]
 ```
 
-Use `scripts/lookup_harness_action.py --action CreateAgent --assistant Codex` when scriptable lookup is useful.
+Use `scripts/lookup_harness_action.py --action CreateAgent --assistant Codex` for scriptable lookup.
 
 ## Purpose
 
 Adapt only an explicitly named target skill or target skill path. Do not migrate every skill in a repository unless the user explicitly asks for that broader migration.
 
-The matrix maps workflows, skills, tools, and commands that different AI harnesses share in purpose but name differently. It should capture names, aliases, surfaces, discovery paths, and short nuances needed for translation. It should not explain a harness to itself.
+The matrix maps shared-purpose workflows, skills, tools, and commands that AI harnesses name differently. It should capture names, aliases, surfaces, discovery paths, and short translation nuances, not explain a harness to itself.
 
-End-result target skills may still receive `references/ai-assistant-harnesses/claude-code.md` and `references/ai-assistant-harnesses/codex.md` when that is the right way to keep target-specific wording out of shared `SKILL.md`.
+Adapted target skills may still receive `references/ai-assistant-harnesses/claude-code.md` and `references/ai-assistant-harnesses/codex.md` when that keeps target-specific wording out of shared `SKILL.md`.
 
 ## Target Adaptation Policy
 
@@ -39,9 +39,9 @@ metadata:
   ai-assistant-harness-adaptation.codex: references/ai-assistant-harnesses/codex.md
 ```
 
-Store only file links in metadata values. Do not store tool mappings, prose policy, compatibility notes, or lists of all harness instructions in metadata.
+Metadata values must be file links only. Do not store tool mappings, prose policy, compatibility notes, or lists of all harness instructions there.
 
-Store target harness adaptation files under `references/ai-assistant-harnesses/<harness-id>.md`. Keep them narrow and include only the actions that target skill actually needs.
+Store target harness adaptation files under `references/ai-assistant-harnesses/<harness-id>.md`. Keep them narrow and include only actions the target skill needs.
 
 The adapted target `SKILL.md` must tell assistants to identify the active harness, load exactly one matching metadata-linked harness reference when harness-specific adaptation is needed, and skip non-matching harness files.
 
@@ -61,7 +61,7 @@ Do not create `references/ai-assistant-harnesses/` inside this skill. That direc
 8. Preserve Claude Code as the shared baseline. Keep broadly valid skill workflow in the target `SKILL.md`.
 9. Move Codex-specific instructions to the target `references/ai-assistant-harnesses/codex.md`.
 10. Move Claude Code-specific details that should not stay in shared prose to the target `references/ai-assistant-harnesses/claude-code.md`.
-11. If per-assistant instructions already exist, reorganize them into the target `references/ai-assistant-harnesses/` format and remove duplicated old adaptation information.
+11. If per-assistant instructions exist, reorganize them into the target `references/ai-assistant-harnesses/` format and remove duplicated old adaptation information.
 12. Add or update the flat metadata links in the target `SKILL.md`.
 13. Add or update focused static tests or evals when the repository has a test/eval convention that can enforce the policy.
 14. Report the exact files changed and the verification commands run.
