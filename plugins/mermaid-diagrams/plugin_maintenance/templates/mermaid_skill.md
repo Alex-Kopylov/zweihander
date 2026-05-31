@@ -5,6 +5,8 @@ description: Generate Mermaid diagrams from user requirements. Supports {diagram
 
 # Mermaid Diagram Generator
 
+> Note: check current Mermaid version first and ask to upgrade if outdated.
+
 Generate high-quality Mermaid diagram code based on user requirements.
 
 ## Workflow
