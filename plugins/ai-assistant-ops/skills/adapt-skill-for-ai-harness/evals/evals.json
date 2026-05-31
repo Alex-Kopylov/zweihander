@@ -1,0 +1,53 @@
+{
+  "skill_name": "adapt-skill-for-ai-harness",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "Adapt the explicitly named skill plugins/example/skills/deploy-helper for AI Assistant Harness Adaptation so it works for Claude Code and Codex.",
+      "expected_output": "Resolves or asks for the explicitly named skill path, loads the action matrix, maps host-specific operations through matrix[\"actions\"][action_key][assistant_key], keeps Claude Code as the shared target skill SKILL.md baseline, adds flat ai-assistant-harness-adaptation metadata links to the target skill, creates only needed target claude-code.md and codex.md harness references, avoids migrating unrelated skills, reports exact changed files, and runs focused verification.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "requires_explicit_target",
+          "check": "response resolves or asks for the explicitly named skill"
+        },
+        {
+          "name": "uses_action_matrix",
+          "check": "uses the action matrix and matrix[\"actions\"][action_key][assistant_key] lookup"
+        },
+        {
+          "name": "keeps_claude_code_baseline",
+          "check": "shared SKILL.md remains Claude Code-baseline"
+        },
+        {
+          "name": "no_unrelated_migration",
+          "check": "does not migrate unrelated skills"
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "prompt": "Look up the CreateAgent action for Codex from this skill's assistant harness action matrix.",
+      "expected_output": "Reads references/harness-action-matrix.json or uses the lookup script, evaluates matrix[\"actions\"][action_key][assistant_key] with action_key CreateAgent and assistant_key Codex, and returns only the Codex CreateAgent entry.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "create_agent_codex_lookup",
+          "check": "returns the CreateAgent Codex entry from the action matrix"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "As a Codex persona, invoke an adapted target skill without taking actions and report which files enter context.",
+      "expected_output": "Reads the target skill SKILL.md and only the target skill references/ai-assistant-harnesses/codex.md from the harness directory. Does not read the target claude-code.md unless the user asks to compare or edit harness references.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "codex_only_target_reference",
+          "check": "loaded files include the target skill codex.md and exclude the target skill claude-code.md"
+        }
+      ]
+    }
+  ]
+}
