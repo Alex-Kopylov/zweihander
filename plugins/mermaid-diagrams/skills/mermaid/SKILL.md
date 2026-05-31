@@ -15,7 +15,7 @@ Generate high-quality Mermaid diagram code based on user requirements.
 2. **Read Documentation**: Read the corresponding syntax reference for the diagram type.
 3. **Generate Code**: Generate Mermaid code following the specification.
 4. **Apply Styling**: Apply appropriate themes and style configurations.
-5. **Lint Before Presenting**: Run this plugin's `mermaid-lint` skill against every generated diagram before presenting it as ready. If linting fails, fix Mermaid syntax errors when possible and rerun linting. If `mmdc` is unavailable, do not present the diagram as validated; report the missing dependency and the install command from `mermaid-lint`.
+5. **Lint Before Presenting**: Run `mermaid-lint` on every generated diagram before presenting it as ready. If linting fails, fix Mermaid syntax errors when possible and rerun linting. If `mmdc` is unavailable, do not present the diagram as validated; report the missing dependency and the install command from `mermaid-lint`.
 
 ## Diagram Type Reference
 
@@ -66,7 +66,7 @@ Select the appropriate diagram type and read the corresponding documentation. If
 
 ## Linting
 
-Run this plugin's `mermaid-lint` skill before declaring generated Mermaid ready. Pass each generated diagram to the linter, inspect the result, fix Mermaid syntax errors when possible, and rerun linting until it passes. If `mmdc` is not installed, stop before final presentation and report the missing dependency instead of silently skipping validation.
+Run `mermaid-lint` before declaring generated Mermaid ready. Pass each generated diagram to the linter, inspect the result, fix Mermaid syntax errors when possible, and rerun linting until it passes. If `mmdc` is not installed, stop before final presentation and report the missing dependency instead of silently skipping validation.
 
 ## Choice Reports
 
