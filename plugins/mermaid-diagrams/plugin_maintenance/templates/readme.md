@@ -11,6 +11,7 @@ Generate and validate Mermaid diagrams with synced Mermaid syntax references.
 
 ## Notes
 
+- `mermaid` runs `mermaid-lint`, fixes Mermaid syntax errors when possible, and relints before presenting generated diagrams as ready.
 - `mermaid-lint` requires the `mmdc` command from `@mermaid-js/mermaid-cli`.
 - The synced references are bundled with the plugin so diagram generation can use local syntax documentation.
 

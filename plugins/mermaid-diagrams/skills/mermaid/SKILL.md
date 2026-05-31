@@ -15,7 +15,7 @@ Generate high-quality Mermaid diagram code based on user requirements.
 2. **Read Documentation**: Read the corresponding syntax reference for the diagram type.
 3. **Generate Code**: Generate Mermaid code following the specification.
 4. **Apply Styling**: Apply appropriate themes and style configurations.
-5. **Optionally Lint**: If `mmdc` is installed, optionally render generated diagrams to validate syntax. If `mmdc` is unavailable and linting was not explicitly requested, skip linting by default.
+5. **Lint Before Presenting**: Run this plugin's `mermaid-lint` skill against every generated diagram before presenting it as ready. If linting fails, fix Mermaid syntax errors when possible and rerun linting. If `mmdc` is unavailable, do not present the diagram as validated; report the missing dependency and the install command from `mermaid-lint`.
 
 ## Diagram Type Reference
 
@@ -66,7 +66,11 @@ Select the appropriate diagram type and read the corresponding documentation. If
 
 ## Linting
 
-If `mmdc` is installed, optionally render generated diagrams with the `mermaid-lint` skill or an equivalent `mmdc` command before declaring the diagram ready. If `mmdc` is not installed and the user did not explicitly ask for linting, skip this step and mention that linting was not run.
+Run this plugin's `mermaid-lint` skill before declaring generated Mermaid ready. Pass each generated diagram to the linter, inspect the result, fix Mermaid syntax errors when possible, and rerun linting until it passes. If `mmdc` is not installed, stop before final presentation and report the missing dependency instead of silently skipping validation.
+
+## Choice Reports
+
+When producing a multi-block choice report, use `assets/choice_report_template.html` as the base HTML. Populate its `choice-report-data` JSON with source text blocks and one or more Mermaid options per block. Multiple options may be approved for the same source block, so do not force a single approved option. Lint every Mermaid option with `mermaid-lint` before presenting the report.
 
 ## Output Specification
 
