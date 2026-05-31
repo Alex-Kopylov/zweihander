@@ -1,0 +1,182 @@
+[
+  {
+    "id": "flowchart",
+    "title": "Flowchart",
+    "category": "Diagram Syntax",
+    "order": 0
+  },
+  {
+    "id": "sequenceDiagram",
+    "title": "Sequence Diagram",
+    "category": "Diagram Syntax",
+    "order": 1
+  },
+  {
+    "id": "classDiagram",
+    "title": "Class Diagram",
+    "category": "Diagram Syntax",
+    "order": 2
+  },
+  {
+    "id": "stateDiagram",
+    "title": "State Diagram",
+    "category": "Diagram Syntax",
+    "order": 3
+  },
+  {
+    "id": "userJourney",
+    "title": "User Journey",
+    "category": "Diagram Syntax",
+    "order": 4
+  },
+  {
+    "id": "gantt",
+    "title": "Gantt",
+    "category": "Diagram Syntax",
+    "order": 5
+  },
+  {
+    "id": "pie",
+    "title": "Pie Chart",
+    "category": "Diagram Syntax",
+    "order": 6
+  },
+  {
+    "id": "quadrantChart",
+    "title": "Quadrant Chart",
+    "category": "Diagram Syntax",
+    "order": 7
+  },
+  {
+    "id": "requirementDiagram",
+    "title": "Requirement Diagram",
+    "category": "Diagram Syntax",
+    "order": 8
+  },
+  {
+    "id": "gitgraph",
+    "title": "GitGraph (Git) Diagram",
+    "category": "Diagram Syntax",
+    "order": 9
+  },
+  {
+    "id": "c4",
+    "title": "C4 Diagram",
+    "category": "Diagram Syntax",
+    "order": 10
+  },
+  {
+    "id": "mindmap",
+    "title": "Mindmaps",
+    "category": "Diagram Syntax",
+    "order": 11
+  },
+  {
+    "id": "timeline",
+    "title": "Timeline",
+    "category": "Diagram Syntax",
+    "order": 12
+  },
+  {
+    "id": "zenuml",
+    "title": "ZenUML",
+    "category": "Diagram Syntax",
+    "order": 13
+  },
+  {
+    "id": "sankey",
+    "title": "Sankey",
+    "category": "Diagram Syntax",
+    "order": 14
+  },
+  {
+    "id": "xyChart",
+    "title": "XY Chart",
+    "category": "Diagram Syntax",
+    "order": 15
+  },
+  {
+    "id": "block",
+    "title": "Block Diagram",
+    "category": "Diagram Syntax",
+    "order": 16
+  },
+  {
+    "id": "packet",
+    "title": "Packet",
+    "category": "Diagram Syntax",
+    "order": 17
+  },
+  {
+    "id": "kanban",
+    "title": "Kanban",
+    "category": "Diagram Syntax",
+    "order": 18
+  },
+  {
+    "id": "architecture",
+    "title": "Architecture",
+    "category": "Diagram Syntax",
+    "order": 19
+  },
+  {
+    "id": "radar",
+    "title": "Radar",
+    "category": "Diagram Syntax",
+    "order": 20
+  },
+  {
+    "id": "eventmodeling",
+    "title": "Event Modeling",
+    "category": "Diagram Syntax",
+    "order": 21
+  },
+  {
+    "id": "treemap",
+    "title": "Treemap",
+    "category": "Diagram Syntax",
+    "order": 22
+  },
+  {
+    "id": "venn",
+    "title": "Venn",
+    "category": "Diagram Syntax",
+    "order": 23
+  },
+  {
+    "id": "ishikawa",
+    "title": "Ishikawa",
+    "category": "Diagram Syntax",
+    "order": 24
+  },
+  {
+    "id": "wardley",
+    "title": "Wardley",
+    "category": "Diagram Syntax",
+    "order": 25
+  },
+  {
+    "id": "cynefin",
+    "title": "Cynefin",
+    "category": "Diagram Syntax",
+    "order": 26
+  },
+  {
+    "id": "treeView",
+    "title": "TreeView",
+    "category": "Diagram Syntax",
+    "order": 27
+  },
+  {
+    "id": "entityRelationshipDiagram",
+    "title": "Entity Relationship Diagrams",
+    "category": "Diagram Syntax",
+    "order": 28
+  },
+  {
+    "id": "railroad",
+    "title": "Railroad Diagrams",
+    "category": "Diagram Syntax",
+    "order": 29
+  }
+]

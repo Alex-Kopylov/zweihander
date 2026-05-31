@@ -1,11 +1,16 @@
 import json
 import re
+import sys
 from pathlib import Path
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 PLUGIN_ROOT = REPO_ROOT / "plugins" / "mermaid-diagrams"
 TOOLING_ROOT = PLUGIN_ROOT / "plugin_maintenance"
+
+sys.path.insert(0, str(PLUGIN_ROOT))
+
+from plugin_maintenance.generated_docs import load_navigation_metadata
 
 
 def read_text(relative_path: str) -> str:
@@ -68,6 +73,17 @@ def test_references_and_schema_are_preserved() -> None:
         assert "DO NOT EDIT" not in first_lines
 
 
+def test_bundled_navigation_metadata_is_used_without_source_checkout(monkeypatch) -> None:
+    monkeypatch.delenv("MERMAID_DOCS_NAVIGATION", raising=False)
+    metadata = load_navigation_metadata()
+
+    assert (TOOLING_ROOT / "mermaid_navigation.json").is_file()
+    assert metadata["flowchart"].title == "Flowchart"
+    assert metadata["flowchart"].order == 0
+    assert metadata["sequenceDiagram"].title == "Sequence Diagram"
+    assert metadata["sequenceDiagram"].order == 1
+
+
 def test_linter_schema_reports_status_input_and_errors() -> None:
     schema = json.loads(
         (
@@ -110,10 +126,12 @@ def test_python_sync_preserves_first_port_safety_gates() -> None:
 
     assert "existing_sync_status" in generated_docs
     assert "MERMAID_DOCS_NAVIGATION" in generated_docs
+    assert "mermaid_navigation.json" in generated_docs
     assert "Mermaid docs navigation file not found" in generated_docs
     assert "THIRD_PARTY_NOTICES.md" in generated_docs
     assert "render_third_party_notices" in generated_docs
     assert "preflight_sync_source" in sync
+    assert "write_bundled_navigation_metadata" in sync
     assert "existing_sync_metadata" in sync
     assert "existing_sync_metadata.commit == source_commit" in sync
 
@@ -137,9 +155,11 @@ def test_sync_workflow_targets_mermaid_plugin_paths() -> None:
     assert (
         "git diff --exit-code -- plugins/mermaid-diagrams/skills/mermaid/SKILL.md "
         "plugins/mermaid-diagrams/README.md "
-        "plugins/mermaid-diagrams/THIRD_PARTY_NOTICES.md"
+        "plugins/mermaid-diagrams/THIRD_PARTY_NOTICES.md "
+        "plugins/mermaid-diagrams/plugin_maintenance/mermaid_navigation.json"
     ) in workflow
     assert "plugins/mermaid-diagrams/THIRD_PARTY_NOTICES.md" in workflow
+    assert "plugins/mermaid-diagrams/plugin_maintenance/mermaid_navigation.json" in workflow
     assert re.search(
         r"validate-generated-files:[\s\S]*?permissions:\n      contents: read",
         workflow,

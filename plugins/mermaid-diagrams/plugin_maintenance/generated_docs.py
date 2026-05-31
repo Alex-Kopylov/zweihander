@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import UTC, datetime
+import json
 import os
 from pathlib import Path
 import re
@@ -15,6 +16,7 @@ THIRD_PARTY_NOTICES_PATH = PLUGIN_ROOT / "THIRD_PARTY_NOTICES.md"
 TEMPLATES_DIR = Path(__file__).resolve().parent / "templates"
 MERMAID_SKILL_TEMPLATE_PATH = TEMPLATES_DIR / "mermaid_skill.md"
 README_TEMPLATE_PATH = TEMPLATES_DIR / "readme.md"
+BUNDLED_DOCS_NAVIGATION_PATH = Path(__file__).resolve().parent / "mermaid_navigation.json"
 DEFAULT_DOCS_NAVIGATION_PATH = (
     PLUGIN_ROOT / "mermaid-source/packages/mermaid/src/docs/.vitepress/config.ts"
 )
@@ -180,20 +182,7 @@ def function_block(text: str, function_name: str) -> str:
     return ""
 
 
-def load_navigation_metadata() -> dict[str, NavigationMetadata]:
-    configured = os.environ.get("MERMAID_DOCS_NAVIGATION")
-    configured_path = (
-        plugin_relative_path(configured) if configured else DEFAULT_DOCS_NAVIGATION_PATH
-    )
-
-    if not configured_path.exists():
-        if configured:
-            raise FileNotFoundError(
-                f"Mermaid docs navigation file not found: {configured_path}"
-            )
-        return {}
-
-    config = configured_path.read_text(encoding="utf-8")
+def parse_navigation_config(config: str) -> dict[str, NavigationMetadata]:
     syntax_block = function_block(config, "sidebarSyntax")
     metadata: dict[str, NavigationMetadata] = {}
     section_pattern = re.compile(
@@ -221,6 +210,80 @@ def load_navigation_metadata() -> dict[str, NavigationMetadata]:
             order += 1
 
     return metadata
+
+
+def navigation_metadata_from_entries(
+    entries: list[dict[str, object]],
+) -> dict[str, NavigationMetadata]:
+    metadata: dict[str, NavigationMetadata] = {}
+
+    for entry in entries:
+        identifier = str(entry["id"])
+        metadata[identifier] = NavigationMetadata(
+            category=normalize_markdown_text(
+                str(entry.get("category") or "Diagram Syntax"),
+                escape_table_pipes=True,
+            ),
+            order=int(entry["order"]),
+            title=clean_title(str(entry.get("title") or title_from_id(identifier))),
+        )
+
+    return metadata
+
+
+def navigation_metadata_entries(
+    metadata: dict[str, NavigationMetadata],
+) -> list[dict[str, object]]:
+    return [
+        {
+            "id": identifier,
+            "title": nav.title,
+            "category": nav.category,
+            "order": nav.order,
+        }
+        for identifier, nav in sorted(
+            metadata.items(),
+            key=lambda item: (item[1].order, item[0]),
+        )
+    ]
+
+
+def load_navigation_metadata_from_path(path: Path) -> dict[str, NavigationMetadata]:
+    return parse_navigation_config(path.read_text(encoding="utf-8"))
+
+
+def load_bundled_navigation_metadata() -> dict[str, NavigationMetadata]:
+    entries = json.loads(BUNDLED_DOCS_NAVIGATION_PATH.read_text(encoding="utf-8"))
+    return navigation_metadata_from_entries(entries)
+
+
+def write_bundled_navigation_metadata(
+    metadata: dict[str, NavigationMetadata],
+) -> None:
+    BUNDLED_DOCS_NAVIGATION_PATH.write_text(
+        f"{json.dumps(navigation_metadata_entries(metadata), indent=2)}\n",
+        encoding="utf-8",
+    )
+
+
+def load_navigation_metadata() -> dict[str, NavigationMetadata]:
+    configured = os.environ.get("MERMAID_DOCS_NAVIGATION")
+
+    if configured:
+        configured_path = plugin_relative_path(configured)
+        if not configured_path.exists():
+            raise FileNotFoundError(
+                f"Mermaid docs navigation file not found: {configured_path}"
+            )
+        return load_navigation_metadata_from_path(configured_path)
+
+    if BUNDLED_DOCS_NAVIGATION_PATH.exists():
+        return load_bundled_navigation_metadata()
+
+    if DEFAULT_DOCS_NAVIGATION_PATH.exists():
+        return load_navigation_metadata_from_path(DEFAULT_DOCS_NAVIGATION_PATH)
+
+    return {}
 
 
 def extract_diagram_metadata(
