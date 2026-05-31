@@ -71,24 +71,7 @@ feat(auth): add oauth2 support
 
 ## After Commit
 
-Always run these short commands before pushing:
-
-```bash
-git fetch --prune
-git rev-list --left-right --count @{u}...HEAD 2>/dev/null
-```
-
-If upstream has commits (`<left> <right>` output, where `<left>` is remote-only), pause and run `AskUserQuestion` with exactly this prompt: `Remote branch is ahead. Update branch before push? (update/continue)`.
-
-If permission is denied, continue with `git log --oneline --max-count=10` and show only the local commit preview.
-
-If no upstream is configured, show only the new commit and note that push requires `--set-upstream`.
-
-For regular push-preview checks, use:
-
-```bash
-git log @{u}..HEAD --oneline
-```
+Ask whether to push via `AskUserQuestion`. Preview = actual output of `git log @{u}..HEAD --oneline`. If no upstream, show only the new commit and note that push will require `--set-upstream`.
 
 ## Examples
 
