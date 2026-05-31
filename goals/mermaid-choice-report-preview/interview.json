@@ -1,0 +1,112 @@
+{
+  "stage": "interview",
+  "title": "Mermaid Choice Report Preview",
+  "goalSlug": "mermaid-choice-report-preview",
+  "questions": [
+    {
+      "id": "scope",
+      "prompt": "Which changes should this goal include?",
+      "description": "The recommended scope follows your current feedback and the README diff comment.",
+      "answerMode": "multi-custom",
+      "recommendedAnswer": "Include all requested UI behavior: approval/rejection/note stats, wrapping vertical navigation, normal page scrolling with keyboard jump navigation, Mermaid zoom controls, fullscreen diagram preview, regenerated local audit page, and README wording that says Mermaid syntax errors are auto-fixed when possible.",
+      "recommendedOptionIds": [
+        "stats",
+        "wrap-navigation",
+        "scroll-page",
+        "zoom-preview",
+        "fullscreen-preview",
+        "readme-autofix",
+        "local-audit-page"
+      ],
+      "options": [
+        {
+          "id": "stats",
+          "label": "Decision stats"
+        },
+        {
+          "id": "wrap-navigation",
+          "label": "Wrap navigation"
+        },
+        {
+          "id": "scroll-page",
+          "label": "Scrollable page"
+        },
+        {
+          "id": "zoom-preview",
+          "label": "Zoom preview"
+        },
+        {
+          "id": "fullscreen-preview",
+          "label": "Fullscreen preview"
+        },
+        {
+          "id": "readme-autofix",
+          "label": "README auto-fix"
+        },
+        {
+          "id": "local-audit-page",
+          "label": "Local audit page"
+        }
+      ],
+      "required": true
+    },
+    {
+      "id": "navigation_model",
+      "prompt": "How should keyboard navigation behave on the normal scrolling page?",
+      "description": "This determines whether up/down simply changes the current block or also moves the viewport.",
+      "answerMode": "single-custom",
+      "recommendedAnswer": "Up/down should wrap across blocks and call scrollIntoView for the selected block, so the page moves naturally instead of behaving like a fixed carousel.",
+      "recommendedOptionIds": [
+        "scroll-into-view"
+      ],
+      "options": [
+        {
+          "id": "scroll-into-view",
+          "label": "Scroll to block"
+        },
+        {
+          "id": "state-only",
+          "label": "Change only"
+        }
+      ],
+      "required": true
+    },
+    {
+      "id": "preview_controls",
+      "prompt": "What should the Mermaid preview controls support?",
+      "description": "The recommended answer keeps the feature complete without adding a separate editor.",
+      "answerMode": "multi-custom",
+      "recommendedAnswer": "Add zoom out, reset zoom, zoom in, fit-to-panel, pan by scrolling in the preview area, open fullscreen, close fullscreen, and keep code fallback visible when browser rendering fails.",
+      "recommendedOptionIds": [
+        "zoom",
+        "reset",
+        "fit",
+        "fullscreen",
+        "fallback"
+      ],
+      "options": [
+        {
+          "id": "zoom",
+          "label": "Zoom in/out"
+        },
+        {
+          "id": "reset",
+          "label": "Reset zoom"
+        },
+        {
+          "id": "fit",
+          "label": "Fit to panel"
+        },
+        {
+          "id": "fullscreen",
+          "label": "Fullscreen"
+        },
+        {
+          "id": "fallback",
+          "label": "Code fallback"
+        }
+      ],
+      "required": true
+    }
+  ]
+}

@@ -11,7 +11,9 @@ import sys
 from plugin_maintenance.generated_docs import (
     PLUGIN_ROOT,
     js_iso_timestamp,
+    load_navigation_metadata_from_path,
     update_generated_docs,
+    write_bundled_navigation_metadata,
 )
 
 
@@ -122,6 +124,9 @@ def sync_mermaid_docs(source: str | Path = "mermaid-source") -> None:
     )
 
     preflight_sync_source(source_dir)
+    write_bundled_navigation_metadata(
+        load_navigation_metadata_from_path(docs_navigation_path)
+    )
     copy_docs(source_dir)
     update_generated_docs()
 

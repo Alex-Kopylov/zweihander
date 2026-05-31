@@ -6,6 +6,8 @@ compatibility: Requires the mmdc command from @mermaid-js/mermaid-cli; Markdown 
 
 # Mermaid Linter
 
+> Note: check current Mermaid version first and ask to upgrade if outdated.
+
 Validate Mermaid diagrams by running `mmdc` from `@mermaid-js/mermaid-cli`. The render output is only a validation mechanism; this skill only reports lint status and errors.
 
 ## Workflow

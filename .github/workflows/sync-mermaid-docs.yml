@@ -34,7 +34,7 @@ jobs:
         run: uv run --project plugins/mermaid-diagrams --python 3.12 python -m plugin_maintenance.generated_docs
 
       - name: Check generated files are current
-        run: git diff --exit-code -- plugins/mermaid-diagrams/skills/mermaid/SKILL.md plugins/mermaid-diagrams/README.md plugins/mermaid-diagrams/THIRD_PARTY_NOTICES.md
+        run: git diff --exit-code -- plugins/mermaid-diagrams/skills/mermaid/SKILL.md plugins/mermaid-diagrams/README.md plugins/mermaid-diagrams/THIRD_PARTY_NOTICES.md plugins/mermaid-diagrams/plugin_maintenance/mermaid_navigation.json
 
       - name: Validate plugin files
         run: uv run --project plugins/mermaid-diagrams --python 3.12 pytest tests/test_mermaid_diagrams_plugin.py
@@ -83,4 +83,4 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v7
         with:
           commit_message: "docs: sync mermaid syntax and config docs"
-          file_pattern: "plugins/mermaid-diagrams/skills/** plugins/mermaid-diagrams/README.md plugins/mermaid-diagrams/THIRD_PARTY_NOTICES.md"
+          file_pattern: "plugins/mermaid-diagrams/skills/** plugins/mermaid-diagrams/README.md plugins/mermaid-diagrams/THIRD_PARTY_NOTICES.md plugins/mermaid-diagrams/plugin_maintenance/mermaid_navigation.json"
