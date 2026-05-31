@@ -44,10 +44,10 @@ Validate Mermaid diagrams by running `mmdc` from `@mermaid-js/mermaid-cli`. The 
 
    Do not auto-update Mermaid CLI.
 
-5. If the input is a Markdown file, pass it directly to `mmdc`; Mermaid CLI treats `.md` input as Markdown and extracts fenced Mermaid charts itself.
-6. If the input is raw Mermaid code, write it to a temporary `.mmd` file.
-7. Render the input with `mmdc` into temporary output paths. For Markdown input, write a temporary rendered Markdown file and a temporary artefacts directory. Discard those files after collecting the result.
-6. Report results using the schema in `references/linter_output_schema.json`:
+4. If the input is a Markdown file, pass it directly to `mmdc`; Mermaid CLI treats `.md` input as Markdown and extracts fenced Mermaid charts itself.
+5. If the input is raw Mermaid code, write it to a temporary `.mmd` file.
+6. Render the input with `mmdc` into temporary output paths. For Markdown input, write a temporary rendered Markdown file and a temporary artefacts directory. Discard those files after collecting the result.
+7. Report results using the schema in `references/linter_output_schema.json`:
    - `status: "passed"` with `errors: null` when `mmdc` exits successfully.
    - `status: "failed"` with `errors` set to the non-empty list of `mmdc` parser/runtime messages when linting fails.
 8. Do not report generated SVG or Markdown artefacts as deliverables; return the errors so the agent can fix the Mermaid source and rerun linting.
