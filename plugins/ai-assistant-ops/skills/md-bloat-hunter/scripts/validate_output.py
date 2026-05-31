@@ -11,6 +11,7 @@ SKILL_DIR = Path(__file__).resolve().parents[1]
 SCHEMAS = {
     "detector": SKILL_DIR / "references" / "detector-output.schema.json",
     "file-reduction": SKILL_DIR / "references" / "file-reduction.schema.json",
+    "size-report": SKILL_DIR / "references" / "size-report.schema.json",
 }
 
 

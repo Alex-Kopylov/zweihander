@@ -270,8 +270,7 @@ review comments, ticket branches, status updates, version bumps, or spec checks.
 
 ### `mermaid-diagrams`
 
-<details>
-<summary>Generate and validate Mermaid diagrams with synced syntax references.</summary>
+Generate and validate Mermaid diagrams with synced syntax references.
 
 **Use when:** you want to create Mermaid diagrams from requirements or validate
 Mermaid code blocks with the Mermaid CLI.
@@ -327,6 +326,7 @@ reduce Markdown bloat.
 | `md-bloat-hunter` | `file-orchestrator` | Coordinates per-file Markdown cleanup. |
 | `md-bloat-hunter` | `filler-eliminator` | Removes low-value filler language. |
 | `md-bloat-hunter` | `redundancy-detector` | Spots repeated content inside files. |
+| `md-bloat-hunter` | `size-budget-reporter` | Reports Markdown size and token budget status. |
 | `md-bloat-hunter` | `verbosity-pruner` | Compresses overlong explanations. |
 | `md-bloat-hunter` | `vocab-compressor` | Replaces inflated wording with direct wording. |
 

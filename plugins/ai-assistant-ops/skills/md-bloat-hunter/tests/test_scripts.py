@@ -188,6 +188,85 @@ def test_validate_output_reports_missing_jsonschema(monkeypatch) -> None:
     assert status == 127
 
 
+def test_measure_size_uses_tiktoken_count_when_encoder_is_available(tmp_path: Path) -> None:
+    measure_size = load_script("measure_size")
+    target = tmp_path / "doc.md"
+    target.write_text("alpha beta gamma\n", encoding="utf-8")
+
+    class FakeEncoder:
+        def encode(self, text: str) -> list[int]:
+            return [1, 2, 3]
+
+    report = measure_size.measure_file(
+        target,
+        soft_budget_tokens=4,
+        hard_budget_tokens=8,
+        encoder=FakeEncoder(),
+        tokenizer_name="tiktoken:test",
+    )
+
+    assert report["tokens"] == 3
+    assert report["token_source"] == "tiktoken:test"
+    assert report["status"] == "ok"
+
+
+def test_measure_size_fallback_uses_conservative_char_word_estimate(tmp_path: Path) -> None:
+    measure_size = load_script("measure_size")
+    target = tmp_path / "doc.md"
+    target.write_text(("word " * 900).strip(), encoding="utf-8")
+
+    report = measure_size.measure_file(target, soft_budget_tokens=1000, hard_budget_tokens=2000)
+
+    assert report["tokens"] == 1200
+    assert report["token_source"] == "estimate:max(chars/4,words/0.75)"
+    assert report["characters"] == 4499
+    assert report["words"] == 900
+    assert report["status"] == "warning"
+
+
+def test_measure_size_marks_hard_budget_exceeded(tmp_path: Path) -> None:
+    measure_size = load_script("measure_size")
+    target = tmp_path / "doc.md"
+    target.write_text("x" * 9000, encoding="utf-8")
+
+    report = measure_size.measure_file(target, soft_budget_tokens=1000, hard_budget_tokens=2000)
+
+    assert report["tokens"] == 2250
+    assert report["status"] == "over_budget"
+
+
+def test_size_budget_markdown_delegates_calculation_to_script() -> None:
+    markdown_files = [
+        SKILL_DIR / "SKILL.md",
+        SKILL_DIR / "agents" / "size-budget-reporter.md",
+        SKILL_DIR / "docs" / "SPEC.md",
+    ]
+    forbidden_calculation_fragments = [
+        "ceil(",
+        "characters / 4",
+        "words / 0.75",
+        "1 token ~=",
+        "1 token ≈",
+        "fallback tokens =",
+    ]
+
+    combined = "\n".join(path.read_text(encoding="utf-8") for path in markdown_files)
+
+    assert "@scripts/measure_size.py" in combined
+    assert "scripts/measure_size.py" not in combined.replace("@scripts/measure_size.py", "")
+    for fragment in forbidden_calculation_fragments:
+        assert fragment not in combined
+
+
+def test_tiktoken_optional_requirement_uses_compatibility_frontmatter() -> None:
+    skill_text = (SKILL_DIR / "SKILL.md").read_text(encoding="utf-8")
+    frontmatter = skill_text.split("---", 2)[1]
+
+    assert "compatibility:" in frontmatter
+    assert "Optional `tiktoken`" in frontmatter
+    assert "allowed-tools:" not in frontmatter
+
+
 def test_preflight_validate_target_accepts_clean_tracked_markdown(tmp_path: Path) -> None:
     preflight = load_script("preflight")
     repo, target = clean_git_repo(tmp_path)
