@@ -4,6 +4,9 @@ version: 1.0.0
 description: "Tailor my resume, customize CV for a job, optimize resume for a role, update resume for a position, rewrite resume for this JD, generate a targeted CV, fit my resume to this posting, tailor CV for job description, batch resumes for multiple jobs, multi-job resume tailoring."
 argument-hint: <job description text or URL>
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch, AskUserQuestion, Skill, Agent
+metadata:
+  ai-assistant-harness-adaptation.claude-code: references/ai-assistant-harnesses/claude-code.md
+  ai-assistant-harness-adaptation.codex: references/ai-assistant-harnesses/codex.md
 ---
 
 # Resume Tailoring
@@ -18,6 +21,10 @@ Generate tailored, multi-format resumes optimized for specific job descriptions 
 - **`references/matching-strategies.md`** - Weighted scoring formula (Direct 40%, Transferable 30%, Adjacent 20%, Impact 10%), confidence bands, reframing strategies, gap handling options
 - **`references/branching-questions.md`** - Technical/soft-skill/recent-work question trees, branching logic, multi-job context framing, capture structure
 - **`references/multi-job-workflow.md`** - Batch initialization, aggregate gap analysis, shared discovery, per-job processing, incremental batch addition, pause/resume support
+
+## Harness Adaptation
+
+Identify the active assistant harness before running this skill. When harness-specific adaptation is needed for tool names or workflow surfaces, load exactly one matching metadata-linked harness reference for the active harness and skip every non-matching harness file. If no harness-specific adaptation is needed, continue with the shared workflow as written.
 
 ## Requirements
 

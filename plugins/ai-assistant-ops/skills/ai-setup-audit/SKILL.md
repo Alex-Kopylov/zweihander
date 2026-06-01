@@ -5,9 +5,19 @@ disable-model-invocation: false
 context: fork
 agent: Explore
 allowed-tools: Read, Grep, Glob
+metadata:
+  ai-assistant-harness-adaptation.claude-code: references/ai-assistant-harnesses/claude-code.md
+  ai-assistant-harness-adaptation.codex: references/ai-assistant-harnesses/codex.md
 ---
 
 # AI Setup Audit
+
+## Harness Adaptation
+
+Identify the active assistant harness before using harness-specific execution
+wording. When harness-specific adaptation is needed, load exactly one matching
+metadata-linked harness reference for the active harness and skip all
+non-matching harness files.
 
 Read the entire setup before responding.
 

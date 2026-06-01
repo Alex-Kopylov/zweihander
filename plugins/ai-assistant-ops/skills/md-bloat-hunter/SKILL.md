@@ -2,6 +2,9 @@
 name: md-bloat-hunter
 description: Use when the user asks to audit, trim, compress, or reduce bloat, verbosity, redundancy, filler, or over-expanded vocabulary in Markdown loaded into AI agent or LLM context, especially skills, agent prompts, command prompts, and assistant instruction files.
 compatibility: Optional `tiktoken` for exact token counts; falls back if missing.
+metadata:
+  ai-assistant-harness-adaptation.claude-code: references/ai-assistant-harnesses/claude-code.md
+  ai-assistant-harness-adaptation.codex: references/ai-assistant-harnesses/codex.md
 ---
 
 # md-bloat-hunter
@@ -38,6 +41,19 @@ Read these during normal invocation:
 Detector agents read `references/detector-output.schema.json` themselves.
 
 During normal invocation, `docs/` and `tests/` are skill-dev artifacts only.
+Do not read `references/ai-assistant-harnesses/*.md` by default; load exactly
+one matching metadata-linked file only when harness-specific adaptation is
+needed.
+
+## Harness Adaptation
+
+Identify the active assistant harness before using harness-specific
+user-question or agent-dispatch tools.
+
+When harness-specific adaptation is needed, load exactly one metadata-linked
+harness reference matching the active harness. Skip non-matching harness files.
+If no matching metadata link exists, use the shared Claude Code-baseline
+workflow and report any unsupported parallel dispatch in the final report.
 
 ## Safety
 
@@ -50,13 +66,15 @@ medium/high semantic-risk edit.
 
 ## Host Tool Mapping
 
-Use the host's native tools for the same workflow:
+Use Claude Code-baseline tool names in this shared workflow:
 
-- AI Assistant questions: use the active AI Assistant's structured user-input
-  tool when available; otherwise ask the user in a normal response and wait.
-- Parallel dispatch: use the host's subagent or task tool. If tools are
-  discoverable, expose the multi-agent tools first, then spawn the current
-  fan-out in one batch and wait on the full spawned set.
+- User approval questions: use `AskUserQuestion` when a structured question is
+  useful; otherwise ask the user in chat and wait.
+- Parallel dispatch: use `Agent` to spawn the current fan-out in one batch and
+  wait on the full spawned set.
+
+For Codex or another active harness, translate only these operations through
+the loaded matching harness reference.
 
 ## Preflight
 
@@ -96,7 +114,8 @@ context, and directory-level agents for cross-file comparisons.
 Size-budget pass:
 
 - Dispatch one `agents/size-budget-reporter.md` worker per target file.
-- Run it in parallel with file-local orchestrators when the host supports it.
+- Run it in parallel with file-local orchestrators when the active harness
+  supports it.
 - Treat its output as report-only. Never convert size warnings into edit
   findings.
 - Default budgets are `4096` soft-warning tokens and `8192` hard-warning
@@ -122,7 +141,7 @@ Directory-level pass:
   reductions.
 
 Run all file-local orchestrators in parallel. Run the directory-level pass in
-parallel with them when the host supports it.
+parallel with them when the active harness supports it.
 
 ## Validation
 

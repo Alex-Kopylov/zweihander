@@ -2,11 +2,19 @@
 name: interview
 description: This skill should be used when the user asks to "walk through items", "review items one by one", "go through the list", "interview me on these", "let's address each item", "explore findings", says "/interview", or wants to systematically work through a presented list of items (code review findings, errors, contradictions, action items) ensuring nothing is missed.
 allowed-tools: AskUserQuestion, Read, Edit, Write, Bash
+metadata:
+  ai-assistant-harness-adaptation.claude-code: references/ai-assistant-harnesses/claude-code.md
+  ai-assistant-harness-adaptation.codex: references/ai-assistant-harnesses/codex.md
 ---
 
 # Item-by-Item Interview
 
 Walk through a list of items one by one using AskUserQuestion, ensuring every item gets a deliberate decision.
+
+When harness-specific adaptation is needed, first identify the active assistant
+harness. Load exactly one matching metadata-linked harness reference and skip
+non-matching harness files. If no harness-specific adaptation is needed, use
+this shared Claude Code-baseline workflow as-is.
 
 ## Workflow
 

@@ -1,6 +1,6 @@
 {
   "name": "work-session-tools",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Productivity and orchestration inside an assistant session.",
   "author": {
     "name": "Alex Kopylov"

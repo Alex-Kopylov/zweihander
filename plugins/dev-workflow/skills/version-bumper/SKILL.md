@@ -1,10 +1,17 @@
 ---
 name: version-bumper
-description: Bump version in project config files (pyproject.toml, FastAPI app, __init__.py, etc.). Activate when user asks to bump version, release, or says /version-bumper.
+description: Bump version in project config files (pyproject.toml, FastAPI app, __init__.py, etc.). Activate when user asks to bump version, release, or invokes this skill by name.
 argument-hint: "[version] — e.g. 1.2.3, patch, minor, major. If omitted, auto-detected from recent commits."
+metadata:
+  ai-assistant-harness-adaptation.claude-code: references/ai-assistant-harnesses/claude-code.md
+  ai-assistant-harness-adaptation.codex: references/ai-assistant-harnesses/codex.md
 ---
 
 # Version Bumper
+
+## Harness Adaptation
+
+Identify the active assistant harness before applying command arguments, slash-command wording, subagent delegation, edit tooling, or skill-invocation wording. When harness-specific adaptation is needed, load exactly one matching metadata-linked harness reference from `metadata.ai-assistant-harness-adaptation.<harness-id>`. Apply only that file and skip non-matching harness files.
 
 ## Supported Files
 
@@ -20,7 +27,7 @@ argument-hint: "[version] — e.g. 1.2.3, patch, minor, major. If omitted, auto-
 
 ## Version Resolution
 
-If `$ARGUMENTS` is `1.2.3`, use it directly; if it is `patch`, `minor`, or `major`, increment the current version accordingly.
+If an explicit version argument is `1.2.3`, use it directly; if it is `patch`, `minor`, or `major`, increment the current version accordingly.
 
 If no argument is provided, run `git log --oneline -20`: `feat!:` or `BREAKING CHANGE` means **major**, `feat:` means **minor**, otherwise use **patch**.
 
@@ -31,9 +38,9 @@ If no argument is provided, run `git log --oneline -20`: `feat!:` or `BREAKING C
 3. **Confirm with user** — show current version, target version, and files to update. Wait for approval.
 4. **Apply changes** — edit each file, replacing the old version with the new one.
 5. **Verify** — re-run the discovery script to confirm all files show the new version.
-6. **Commit** — dispatch a subagent (Agent tool) to:
+6. **Commit** — use the active harness's subagent and skill-invocation conventions, if available, to:
    - Stage all changed version files with `git add`
-   - Invoke the `/commit` skill with type `bump` and description `vOLD → vNEW`
+   - Invoke the commit skill with type `bump` and description `vOLD -> vNEW`
 
 ## Additional Resources
 

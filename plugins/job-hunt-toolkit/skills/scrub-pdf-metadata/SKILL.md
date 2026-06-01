@@ -3,11 +3,18 @@ name: scrub-pdf-metadata
 description: Use when the user asks to "scrub PDF metadata", "clean the PDF", "strip CV metadata", "remove author from PDF", "sanitize PDF", "wipe PDF info", "clear PDF properties", "clean up before sending", "remove creation date", or after exporting a PDF that will be sent to a recruiter. Strips Author, Title, Producer, Creator, CreationDate, ModifyDate, XMP, and custom metadata fields using exiftool, then sets a clean Author field back. Called automatically by export-pdf as its final step.
 argument-hint: <pdf-file> [--author="Full Name"]
 allowed-tools: Read, Bash, AskUserQuestion
+metadata:
+  ai-assistant-harness-adaptation.claude-code: references/ai-assistant-harnesses/claude-code.md
+  ai-assistant-harness-adaptation.codex: references/ai-assistant-harnesses/codex.md
 ---
 
 # Scrub PDF Metadata
 
 Some PDF metadata can leak export tools, suspicious timestamps, source HTML filenames, and device names. Strip it with `exiftool`, then reset a clean Author.
+
+## Harness adaptation
+
+When harness-specific adaptation is needed, identify the active assistant harness and load exactly one matching metadata-linked reference from this skill's frontmatter. Skip non-matching harness files. If the shared instructions work as written in the active harness, do not load any harness reference.
 
 ## When to use
 

@@ -3,11 +3,18 @@ name: new-application
 description: Use when the user asks to "apply to <company>", "start a new application", "new company folder", "scaffold application for", "I'm applying to", "track this job", "set up application for", "create folder for", or provides a JD and wants to set up a tracked application. Creates a per-company folder in the workspace, scaffolds company.md with YAML frontmatter, saves the job description, copies the master HTML for tailoring, and optionally hands off to the resume-tailoring skill.
 argument-hint: <company-slug> [role]
 allowed-tools: Read, Write, Edit, Bash, WebFetch, AskUserQuestion, Skill
+metadata:
+  ai-assistant-harness-adaptation.claude-code: references/ai-assistant-harnesses/claude-code.md
+  ai-assistant-harness-adaptation.codex: references/ai-assistant-harnesses/codex.md
 ---
 
 # New Application
 
 Scaffold a per-company application folder inside the workspace and set up everything needed to start tailoring.
+
+## Harness adaptation
+
+Identify the active assistant harness before applying harness-specific tool or command wording. When harness-specific adaptation is needed, load exactly one metadata-linked harness reference matching the active harness and skip all non-matching harness files.
 
 ## When to use
 

@@ -3,11 +3,18 @@ name: init-workspace
 description: Use when the user asks to "initialize job hunt workspace", "set up job seeking folder", "create CV workspace", "bootstrap resume folder", "prepare job search folder", "start job hunt setup", "create application tracking workspace", "first time setup for job applications", or is starting the job-hunt-toolkit for the first time. Creates the workspace directory structure, generates README/AGENTS.md/NAMING.md from plugin templates, copies master HTML CV into workspace, and primes the workspace for per-company folders.
 argument-hint: "[workspace-path] (optional, defaults to ~/Documents/job_seeking)"
 allowed-tools: Read, Write, Edit, Bash, AskUserQuestion
+metadata:
+  ai-assistant-harness-adaptation.claude-code: references/ai-assistant-harnesses/claude-code.md
+  ai-assistant-harness-adaptation.codex: references/ai-assistant-harnesses/codex.md
 ---
 
 # Initialize Workspace
 
 One-time setup for a job-hunt workspace: create the folder structure, generate docs from plugin templates, and copy the master CV.
+
+## Harness adaptation
+
+At invocation start, identify the active AI assistant harness. When tool names, file edit mechanics, user-prompt mechanics, or command references need harness-specific adaptation, load exactly one metadata-linked harness reference matching the active harness. Skip every non-matching harness file. If no matching metadata key exists, continue with the shared Claude Code-baseline workflow in this file.
 
 ## When to use
 

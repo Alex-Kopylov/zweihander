@@ -4,9 +4,16 @@ description: >-
   This skill should be used when the user asks to discover datasets, list datasets, find what datasets exist,
   browse dataset items, inspect dataset contents, check dataset schemas, or explore dataset metadata in their
   Langfuse project. It enumerates all datasets with their items, runs, and schema configurations.
+metadata:
+  ai-assistant-harness-adaptation.claude-code: references/ai-assistant-harnesses/claude-code.md
+  ai-assistant-harness-adaptation.codex: references/ai-assistant-harnesses/codex.md
 ---
 
 Enumerate all datasets in the Langfuse project and present findings in organized tables.
+
+## Harness Adaptation
+
+Use this shared workflow as the Claude Code baseline. Identify the active assistant harness before applying instructions that involve harness-specific delegation or named agents. When harness-specific adaptation is needed, load exactly one matching metadata-linked harness reference and skip non-matching harness files.
 
 ## Step 1: List All Datasets
 
