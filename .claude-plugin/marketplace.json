@@ -37,14 +37,16 @@
     {
       "name": "llm-application-dev",
       "source": "./plugins/llm-application-dev",
-      "description": "LLM application design and schema-guided reasoning patterns.",
+      "description": "LLM application design, agent pattern selection, and schema-guided reasoning patterns.",
       "category": "development",
       "tags": [
         "llm",
         "structured-output",
         "pydantic",
         "schemas",
-        "reasoning"
+        "reasoning",
+        "agent-patterns",
+        "architecture"
       ]
     },
     {

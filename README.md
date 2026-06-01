@@ -91,8 +91,8 @@ subgraph RowOne[" "]
   List and inspect OpenAPI endpoints
   on running services`"]:::openapi
   LLMApplicationDev["`**llm-application-dev**
-  Schema-guided reasoning patterns
-  for LLM application design`"]:::llm
+  Agent pattern selection and
+  schema-guided reasoning`"]:::llm
   PythonDevWorkflow["`**python-dev-workflow**
   Pytest, Redis test patterns,
   Celery, and unit-test review agents`"]:::python
@@ -211,13 +211,21 @@ available endpoints or inspect operation details.
 
 ### `llm-application-dev`
 
-LLM application design and schema-guided reasoning patterns.
+<details>
+<summary>LLM application design, agent pattern selection, and schema-guided reasoning patterns.</summary>
+
+**Use when:** you need to choose LLM workflow patterns, compare agent
+architecture trade-offs, or design structured schemas that guide model
+reasoning.
 
 **Skills**
 
 | Skill | Description |
 |---|---|
+| `select-agent-patterns` | Choose LLM workflow and agent design patterns by decomposing a problem into stages and comparing candidates. Based on [A Two-Dimensional Framework for AI Agent Design Patterns](https://arxiv.org/pdf/2605.13850). |
 | `schema-guided-reasoning` | Design structured Pydantic schemas that guide LLM reasoning. |
+
+</details>
 
 ### `python-dev-workflow`
 
