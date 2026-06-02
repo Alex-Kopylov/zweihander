@@ -7,6 +7,77 @@ It collects practical tools for Codex and Claude Code across LLM observability,
 API exploration, development workflows, assistant operations, cloud storage,
 local automation, and job-search workflows.
 
+## Plugin Catalog
+
+```mermaid
+flowchart TB
+
+subgraph RowOne[" "]
+  direction LR
+  Langfuse["`**langfuse**
+  Trace exploration, datasets,
+  evaluators, dashboards, and experiments`"]:::langfuse
+  OpenAPITools["`**openapi-tools**
+  List and inspect OpenAPI endpoints
+  on running services`"]:::openapi
+  LLMApplicationDev["`**llm-application-dev**
+  Agent pattern selection and
+  schema-guided reasoning`"]:::llm
+  PythonDevWorkflow["`**python-dev-workflow**
+  Pytest, Redis test patterns,
+  Celery, and unit-test review agents`"]:::python
+  DevWorkflow["`**dev-workflow**
+  Commits, PRs, tickets, releases,
+  and review-comment workflows`"]:::dev
+end
+
+subgraph RowTwo[" "]
+  direction LR
+  WorkSessionTools["`**work-session-tools**
+  Daily notes, task tracking,
+  interviews, and team planning`"]:::session
+  AIAssistantOps["`**ai-assistant-ops**
+  Assistant setup audits, harness adaptation,
+  memory capture, and Markdown cleanup`"]:::ops
+  OSTools["`**os-tools**
+  Local macOS automation utilities
+  for assistant workflows`"]:::os
+  CloudStorageTools["`**cloud-storage-tools**
+  User-file storage workflows for
+  Dropbox, Drive, OneDrive, and MEGA`"]:::storage
+  JobHuntToolkit["`**job-hunt-toolkit**
+  Versioned job applications with
+  resume tailoring and PDF checks`"]:::job
+end
+
+subgraph RowThree[" "]
+  direction LR
+  MermaidDiagrams["`**mermaid-diagrams**
+  Mermaid generation,
+  syntax references, and linting`"]:::mermaid
+end
+
+Langfuse ~~~ OpenAPITools ~~~ LLMApplicationDev ~~~ PythonDevWorkflow ~~~ DevWorkflow
+WorkSessionTools ~~~ AIAssistantOps ~~~ OSTools ~~~ CloudStorageTools ~~~ JobHuntToolkit
+RowOne ~~~ RowTwo
+RowTwo ~~~ RowThree
+
+classDef langfuse fill:#dff7ff,stroke:#0284c7,stroke-width:2px,color:#0f172a;
+classDef openapi fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#052e16;
+classDef llm fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#451a03;
+classDef python fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#2e1065;
+classDef dev fill:#fee2e2,stroke:#dc2626,stroke-width:2px,color:#450a0a;
+classDef session fill:#ccfbf1,stroke:#0f766e,stroke-width:2px,color:#042f2e;
+classDef ops fill:#fce7f3,stroke:#db2777,stroke-width:2px,color:#500724;
+classDef os fill:#e0e7ff,stroke:#4f46e5,stroke-width:2px,color:#1e1b4b;
+classDef storage fill:#ecfccb,stroke:#65a30d,stroke-width:2px,color:#1a2e05;
+classDef job fill:#ffedd5,stroke:#ea580c,stroke-width:2px,color:#431407;
+classDef mermaid fill:#f0fdf4,stroke:#059669,stroke-width:2px,color:#052e16;
+style RowOne fill:transparent,stroke:transparent,color:transparent;
+style RowTwo fill:transparent,stroke:transparent,color:transparent;
+style RowThree fill:transparent,stroke:transparent,color:transparent;
+```
+
 ## Notes for Users
 
 Use this README when you want to install the marketplace, install a plugin, or
@@ -78,76 +149,7 @@ claude plugin marketplace update zweihander
 4. Ask the assistant naturally for the workflow you want. The installed plugin
    contributes skills, agents, or both.
 
-## Plugin Catalog
 
-```mermaid
-flowchart TB
-
-subgraph RowOne[" "]
-  direction LR
-  Langfuse["`**langfuse**
-  Trace exploration, datasets,
-  evaluators, dashboards, and experiments`"]:::langfuse
-  OpenAPITools["`**openapi-tools**
-  List and inspect OpenAPI endpoints
-  on running services`"]:::openapi
-  LLMApplicationDev["`**llm-application-dev**
-  Agent pattern selection and
-  schema-guided reasoning`"]:::llm
-  PythonDevWorkflow["`**python-dev-workflow**
-  Pytest, Redis test patterns,
-  Celery, and unit-test review agents`"]:::python
-  DevWorkflow["`**dev-workflow**
-  Commits, PRs, tickets, releases,
-  and review-comment workflows`"]:::dev
-end
-
-subgraph RowTwo[" "]
-  direction LR
-  WorkSessionTools["`**work-session-tools**
-  Daily notes, task tracking,
-  interviews, and team planning`"]:::session
-  AIAssistantOps["`**ai-assistant-ops**
-  Assistant setup audits, harness adaptation,
-  memory capture, and Markdown cleanup`"]:::ops
-  OSTools["`**os-tools**
-  Local macOS automation utilities
-  for assistant workflows`"]:::os
-  CloudStorageTools["`**cloud-storage-tools**
-  User-file storage workflows for
-  Dropbox, Drive, OneDrive, and MEGA`"]:::storage
-  JobHuntToolkit["`**job-hunt-toolkit**
-  Versioned job applications with
-  resume tailoring and PDF checks`"]:::job
-end
-
-subgraph RowThree[" "]
-  direction LR
-  MermaidDiagrams["`**mermaid-diagrams**
-  Mermaid generation,
-  syntax references, and linting`"]:::mermaid
-end
-
-Langfuse ~~~ OpenAPITools ~~~ LLMApplicationDev ~~~ PythonDevWorkflow ~~~ DevWorkflow
-WorkSessionTools ~~~ AIAssistantOps ~~~ OSTools ~~~ CloudStorageTools ~~~ JobHuntToolkit
-RowOne ~~~ RowTwo
-RowTwo ~~~ RowThree
-
-classDef langfuse fill:#dff7ff,stroke:#0284c7,stroke-width:2px,color:#0f172a;
-classDef openapi fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#052e16;
-classDef llm fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#451a03;
-classDef python fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#2e1065;
-classDef dev fill:#fee2e2,stroke:#dc2626,stroke-width:2px,color:#450a0a;
-classDef session fill:#ccfbf1,stroke:#0f766e,stroke-width:2px,color:#042f2e;
-classDef ops fill:#fce7f3,stroke:#db2777,stroke-width:2px,color:#500724;
-classDef os fill:#e0e7ff,stroke:#4f46e5,stroke-width:2px,color:#1e1b4b;
-classDef storage fill:#ecfccb,stroke:#65a30d,stroke-width:2px,color:#1a2e05;
-classDef job fill:#ffedd5,stroke:#ea580c,stroke-width:2px,color:#431407;
-classDef mermaid fill:#f0fdf4,stroke:#059669,stroke-width:2px,color:#052e16;
-style RowOne fill:transparent,stroke:transparent,color:transparent;
-style RowTwo fill:transparent,stroke:transparent,color:transparent;
-style RowThree fill:transparent,stroke:transparent,color:transparent;
-```
 
 ## Plugins
 
