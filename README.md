@@ -1,6 +1,6 @@
-# Zweihander
+# 🗡️ Zweihander
 
-🗡️ Zweihander is a simple, robust, and versatile marketplace for agent plugins,
+Simple, robust, and versatile marketplace for agent plugins,
 forged for the chaos of the AI world.
 
 It collects practical tools for Codex and Claude Code across LLM observability,
