@@ -1,7 +1,7 @@
 {
-  "name": "my-marketplace",
+  "name": "zweihander",
   "interface": {
-    "displayName": "My Marketplace"
+    "displayName": "Zweihander"
   },
   "plugins": [
     {

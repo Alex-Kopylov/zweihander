@@ -1,10 +1,10 @@
 {
-  "name": "my-marketplace",
+  "name": "zweihander",
   "owner": {
     "name": "Alex Kopylov"
   },
   "metadata": {
-    "description": "A collection of agent plugins for LLM observability, API exploration, and development workflows"
+    "description": "🗡️ Zweihander is a simple, robust, and versatile marketplace for agent plugins, forged for the chaos of the AI world."
   },
   "plugins": [
     {

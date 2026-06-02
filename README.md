@@ -1,10 +1,11 @@
-# My Marketplace
+# Zweihander
 
-A personal marketplace of agent plugins for Codex and Claude Code.
+🗡️ Zweihander is a simple, robust, and versatile marketplace for agent plugins,
+forged for the chaos of the AI world.
 
-This marketplace collects practical plugins for LLM observability, API
-exploration, development workflows, assistant operations, cloud storage, local
-automation, and job-search workflows.
+It collects practical tools for Codex and Claude Code across LLM observability,
+API exploration, development workflows, assistant operations, cloud storage,
+local automation, and job-search workflows.
 
 ## Notes for Users
 
@@ -19,13 +20,13 @@ choose what each plugin is for. Developer and maintenance notes live in
 Add the marketplace:
 
 ```shell
-codex plugin marketplace add Alex-Kopylov/my-marketplace
+codex plugin marketplace add Alex-Kopylov/zweihander
 ```
 
 Install a plugin:
 
 ```shell
-codex plugin add langfuse@my-marketplace
+codex plugin add langfuse@zweihander
 ```
 
 List available plugins:
@@ -37,7 +38,7 @@ codex plugin list
 Update the installed marketplace:
 
 ```shell
-codex plugin marketplace upgrade my-marketplace
+codex plugin marketplace upgrade zweihander
 ```
 
 ### Claude Code
@@ -45,35 +46,35 @@ codex plugin marketplace upgrade my-marketplace
 Add the marketplace from inside Claude Code:
 
 ```shell
-/plugin marketplace add Alex-Kopylov/my-marketplace
+/plugin marketplace add Alex-Kopylov/zweihander
 ```
 
 Install a plugin:
 
 ```shell
-/plugin install langfuse@my-marketplace
+/plugin install langfuse@zweihander
 ```
 
 Update the installed marketplace:
 
 ```shell
-/plugin marketplace update my-marketplace
+/plugin marketplace update zweihander
 ```
 
 For scripts or automation, use the non-interactive CLI:
 
 ```shell
-claude plugin marketplace add Alex-Kopylov/my-marketplace
-claude plugin install langfuse@my-marketplace
-claude plugin marketplace update my-marketplace
+claude plugin marketplace add Alex-Kopylov/zweihander
+claude plugin install langfuse@zweihander
+claude plugin marketplace update zweihander
 ```
 
 ## How to Use
 
 1. Add this marketplace to Codex or Claude Code.
 2. Pick a plugin from the catalog below.
-3. Install the plugin with `plugin@my-marketplace`, for example
-   `langfuse@my-marketplace`.
+3. Install the plugin with `plugin@zweihander`, for example
+   `langfuse@zweihander`.
 4. Ask the assistant naturally for the workflow you want. The installed plugin
    contributes skills, agents, or both.
 
