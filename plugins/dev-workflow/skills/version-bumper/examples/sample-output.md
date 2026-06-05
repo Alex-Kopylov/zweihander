@@ -5,10 +5,18 @@
 ```
 $ python find_versions.py .
 [
-  {"file": "pyproject.toml", "version": "0.4.0", "line": 5, "pattern": "project"},
-  {"file": "src/myapp/main.py", "version": "0.4.0", "line": 8, "pattern": "fastapi"},
-  {"file": ".claude-plugin/plugin.json", "version": "0.4.0", "line": 3, "pattern": "plugin"}
+  {"file": "pyproject.toml", "version": "0.4.0", "line": 5, "pattern": "project", "reference": "references/python-project-files.md"},
+  {"file": "src/myapp/main.py", "version": "0.4.0", "line": 8, "pattern": "fastapi", "reference": "references/fastapi-apps.md"},
+  {"file": ".claude-plugin/plugin.json", "version": "0.4.0", "line": 3, "pattern": "plugin", "reference": "references/plugin-manifests.md"}
 ]
+```
+
+## References loaded
+
+```
+references/python-project-files.md
+references/fastapi-apps.md
+references/plugin-manifests.md
 ```
 
 ## Confirmation prompt
@@ -30,8 +38,8 @@ Proceed? [y/N]
 ```
 $ python find_versions.py .
 [
-  {"file": "pyproject.toml", "version": "0.5.0", "line": 5, "pattern": "project"},
-  {"file": "src/myapp/main.py", "version": "0.5.0", "line": 8, "pattern": "fastapi"},
-  {"file": ".claude-plugin/plugin.json", "version": "0.5.0", "line": 3, "pattern": "plugin"}
+  {"file": "pyproject.toml", "version": "0.5.0", "line": 5, "pattern": "project", "reference": "references/python-project-files.md"},
+  {"file": "src/myapp/main.py", "version": "0.5.0", "line": 8, "pattern": "fastapi", "reference": "references/fastapi-apps.md"},
+  {"file": ".claude-plugin/plugin.json", "version": "0.5.0", "line": 3, "pattern": "plugin", "reference": "references/plugin-manifests.md"}
 ]
 ```

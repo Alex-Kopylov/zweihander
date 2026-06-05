@@ -1,22 +1,28 @@
 ---
 name: version-bumper
-description: Bump version in project config files (pyproject.toml, FastAPI app, __init__.py, etc.). Activate when user asks to bump version, release, or says /version-bumper.
+description: Bump version strings in project, package, plugin, and marketplace files. Activate when user asks to bump version, release, or says /version-bumper.
 argument-hint: "[version] — e.g. 1.2.3, patch, minor, major. If omitted, auto-detected from recent commits."
 ---
 
 # Version Bumper
 
-## Supported Files
+## Runtime Loading
 
-| File | Pattern |
-|------|---------|
-| `pyproject.toml` | `version = "X.Y.Z"` under `[project]` or `[tool.poetry]` |
-| FastAPI/app `version` | `version="X.Y.Z"` kwarg in `FastAPI(...)` or app constructor |
-| `__init__.py` | `__version__ = "X.Y.Z"` |
-| `plugin.json` | `"version": "X.Y.Z"` (plugin manifests) |
-| `package.json` | `"version": "X.Y.Z"` |
-| `setup.cfg` | `version = X.Y.Z` under `[metadata]` |
-| `marketplace.json` | `"version": "X.Y.Z"` (marketplace manifests) |
+At invocation start, load only this file and `scripts/find_versions.py`.
+Do not read `references/` until discovery output names the needed files.
+
+Discovery returns a `reference` field for each match. Deduplicate those paths,
+read only the referenced files, and use them as the file-type-specific edit
+rules.
+
+| Pattern | Load when discovered |
+|---|---|
+| `project`, `metadata` | `references/python-project-files.md` |
+| `dunder` | `references/python-module-versions.md` |
+| `fastapi` | `references/fastapi-apps.md` |
+| `package` | `references/node-packages.md` |
+| `plugin`, `plugin-manifest` | `references/plugin-manifests.md` |
+| `marketplace`, `marketplace-manifest` | `references/marketplace-manifests.md` |
 
 ## Version Resolution
 
@@ -27,15 +33,15 @@ If no argument is provided, run `git log --oneline -20`: `feat!:` or `BREAKING C
 ## Instructions
 
 1. **Discover current version** — run `python scripts/find_versions.py .`.
-2. **Resolve target version** using the rules above.
-3. **Confirm with user** — show current version, target version, and files to update. Wait for approval.
-4. **Apply changes** — edit each file, replacing the old version with the new one.
-5. **Verify** — re-run the discovery script to confirm all files show the new version.
-6. **Commit** — dispatch a subagent (Agent tool) to:
-   - Stage all changed version files with `git add`
-   - Invoke the `/commit` skill with type `bump` and description `vOLD → vNEW`
+2. **Load targeted rules** — read only the unique `reference` files reported by discovery.
+3. **Resolve target version** using the rules above.
+4. **Confirm with user** — show current version, target version, files to update, and loaded references. Wait for approval.
+5. **Apply changes** — edit each discovered file according to its loaded reference.
+6. **Verify** — re-run the discovery script to confirm the selected files show the new version.
+7. **Commit when requested** — stage only changed version files and invoke the `/commit` skill with type `bump` and description `vOLD → vNEW`.
 
 ## Additional Resources
 
 - [scripts/find_versions.py](scripts/find_versions.py)
+- [references/](references/)
 - [examples/](examples/)

@@ -29,3 +29,24 @@ def test_detects_claude_and_codex_plugin_manifests(tmp_path: Path) -> None:
         Path(".claude-plugin/plugin.json"),
         Path(".codex-plugin/plugin.json"),
     }
+    assert {item["reference"] for item in versions} == {"references/plugin-manifests.md"}
+
+
+def test_reports_only_python_project_reference_without_fastapi(tmp_path: Path) -> None:
+    (tmp_path / "pyproject.toml").write_text('[project]\nversion = "1.2.3"\n')
+
+    versions = load_find_versions()(tmp_path)
+
+    assert [item["pattern"] for item in versions] == ["project"]
+    assert {item["reference"] for item in versions} == {"references/python-project-files.md"}
+
+
+def test_reports_fastapi_reference_only_when_fastapi_version_detected(tmp_path: Path) -> None:
+    src = tmp_path / "src" / "service"
+    src.mkdir(parents=True)
+    (src / "main.py").write_text('from fastapi import FastAPI\napp = FastAPI(version="1.2.3")\n')
+
+    versions = load_find_versions()(tmp_path)
+
+    assert [item["pattern"] for item in versions] == ["fastapi"]
+    assert {item["reference"] for item in versions} == {"references/fastapi-apps.md"}
