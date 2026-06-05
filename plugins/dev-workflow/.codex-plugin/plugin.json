@@ -1,6 +1,6 @@
 {
   "name": "dev-workflow",
-  "version": "0.2.2",
+  "version": "0.2.5",
   "description": "Git, PRs, tickets, releases, and review-comment workflows.",
   "author": {
     "name": "Alex Kopylov"
