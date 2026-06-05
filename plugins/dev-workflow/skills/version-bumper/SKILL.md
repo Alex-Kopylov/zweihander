@@ -40,9 +40,10 @@ If no argument is provided, run `git log --oneline -20`: `feat!:` or `BREAKING C
 2. **Load targeted rules** — read only the unique `reference` files reported by discovery.
 3. **Resolve target version** using the rules above.
 4. **Confirm with user** — show current version, target version, files to update, and loaded references. Wait for approval.
-5. **Apply changes** — edit each discovered file according to its loaded reference.
-6. **Verify** — re-run the discovery script to confirm the selected files show the new version.
-7. **Commit when requested** — stage only changed version files and invoke the `dev-workflow:commit` skill with type `bump` and description `vOLD → vNEW`.
+5. **Parallelize broad bumps** — if more than one independent version-bearing file must be bumped, dispatch parallel background agents using a minor LLM. Give each agent only its assigned files and relevant reference files; do not pass Codex context to Claude Code files or Claude Code context to Codex files.
+6. **Apply changes** — edit each discovered file according to its loaded reference.
+7. **Verify** — re-run the discovery script to confirm the selected files show the new version.
+8. **Commit when requested** — stage only changed version files and invoke the `dev-workflow:commit` skill with type `bump` and description `vOLD → vNEW`.
 
 ## Additional Resources
 
