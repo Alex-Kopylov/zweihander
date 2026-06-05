@@ -14,13 +14,15 @@ All paths below are relative to `<unit-dir>/`.
 
 ## Prerequisites
 
-<System-level requirements. The exact `apt-get install` line you ran —
-not a generic list, the one that actually worked. Target Ubuntu.>
+<System-level requirements. Include the exact package install command you ran.
+For example, on Ubuntu:>
 
 ```bash
 sudo apt-get update
 sudo apt-get install -y <packages-you-actually-installed>
 ```
+
+<Adapt the package manager and package names to the target OS.>
 
 <Runtime versions if they matter:>
 

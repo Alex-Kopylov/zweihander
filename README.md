@@ -295,6 +295,9 @@ Inspired by Claude Code's bundled run and verify app workflow, this plugin
 brings three coordinated skills to Codex. It is Codex-only; Claude Code users
 can use Claude Code's built-in run and verify skills.
 
+This is an opinionated adaptation, not a 1-to-1 port. It reflects this
+marketplace's preferences for runtime evidence and reusable project run skills.
+
 | Skill | Purpose |
 |---|---|
 | `run` | Launch and drive your app to see a change working. |

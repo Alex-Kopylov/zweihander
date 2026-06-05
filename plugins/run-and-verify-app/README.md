@@ -6,6 +6,9 @@ Inspired by Claude Code's bundled run and verify app workflow, this Codex plugin
 launches an app, confirms a code change against the running app, and records a
 reusable per-project launch recipe.
 
+This is an opinionated adaptation, not a 1-to-1 port. It reflects this
+marketplace's preferences for runtime evidence and reusable project run skills.
+
 Claude Code users can use Claude Code's built-in run and verify skills.
 
 <details>

@@ -295,7 +295,8 @@ authoring a new one, the example is your starting template.
 | TUI / interactive terminal | tmux wrapper: `send-keys` / `capture-pane` | [references/run-examples/tui.md](../../references/run-examples/tui.md) |
 | Electron / desktop GUI | Playwright `_electron` REPL driver under xvfb, screenshots, tmux-wrapped | [references/run-examples/electron.md](../../references/run-examples/electron.md) |
 | Browser-driven | dev server + `chromium-cli` script | [references/run-examples/playwright.md](../../references/run-examples/playwright.md) |
-| Library / SDK | Import-and-call smoke script | [references/run-examples/library.md](../../references/run-examples/library.md) |
+| Python SDK / library | `uv` import-and-call smoke script | [references/run-examples/sdk_or_library/python.md](../../references/run-examples/sdk_or_library/python.md) |
+| Go SDK / library | Temporary consumer module that imports the public module path | [references/run-examples/sdk_or_library/go.md](../../references/run-examples/sdk_or_library/go.md) |
 
 For a web app, start from [references/run-examples/playwright.md](../../references/run-examples/playwright.md)
 — drive it with `chromium-cli`, no custom driver needed. For a desktop
@@ -305,8 +306,9 @@ and the catalog of obstacles you'll hit.
 
 ## What to include
 
-- **Prerequisites** — OS packages, runtimes, tools. Ubuntu `apt-get`
-  lines. The exact ones.
+- **Prerequisites** — OS packages, runtimes, tools. For example, include
+  exact Ubuntu `apt-get` lines when you used Ubuntu; adapt commands and
+  package names to the target OS.
 - **Setup** — install deps, configure, any patches.
 - **Build** — compile/bundle.
 - **Run (agent path)** — the driver. Commands. Screenshot location.

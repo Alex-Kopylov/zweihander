@@ -51,7 +51,8 @@ section — you're using the recipe, not authoring one.
 | TUI / interactive terminal | tmux `send-keys` / `capture-pane` | [references/run-examples/tui.md](../../references/run-examples/tui.md) |
 | Electron / desktop GUI | Playwright `_electron` REPL under xvfb | [references/run-examples/electron.md](../../references/run-examples/electron.md) |
 | Browser-driven | dev server + `chromium-cli` script | [references/run-examples/playwright.md](../../references/run-examples/playwright.md) |
-| Library / SDK | import-and-call smoke script at the package boundary | [references/run-examples/library.md](../../references/run-examples/library.md) |
+| Python SDK / library | `uv` import-and-call smoke script at the package boundary | [references/run-examples/sdk_or_library/python.md](../../references/run-examples/sdk_or_library/python.md) |
+| Go SDK / library | temporary consumer module that imports the public module path | [references/run-examples/sdk_or_library/go.md](../../references/run-examples/sdk_or_library/go.md) |
 
 If nothing fits, start from the closest match and adapt. For a web
 app, [references/run-examples/playwright.md](../../references/run-examples/playwright.md)

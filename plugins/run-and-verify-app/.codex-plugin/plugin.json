@@ -1,6 +1,6 @@
 {
   "name": "run-and-verify-app",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Launch real app surfaces, verify runtime behavior, and generate project-specific run skills.",
   "author": {
     "name": "Alex Kopylov"
