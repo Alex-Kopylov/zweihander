@@ -1,0 +1,27 @@
+{
+  "name": "run-and-verify-app",
+  "version": "0.1.0",
+  "description": "Launch real app surfaces, verify runtime behavior, and generate project-specific run skills.",
+  "author": {
+    "name": "Alex Kopylov"
+  },
+  "license": "UNLICENSED",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Run And Verify App",
+    "shortDescription": "Run apps and verify live behavior",
+    "longDescription": "Launch and drive applications through their real runtime surface, verify code changes with runtime evidence instead of tests alone, and generate reusable project run skills.",
+    "developerName": "Alex Kopylov",
+    "category": "Development",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Use run-and-verify-app:run to launch this app and capture runtime evidence.",
+      "Use run-and-verify-app:verify to confirm this change works in the running app.",
+      "Use run-and-verify-app:run-skill-generator to record how to build, launch, and drive this project."
+    ]
+  }
+}

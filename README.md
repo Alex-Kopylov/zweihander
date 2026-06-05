@@ -5,7 +5,7 @@ forged for the chaos of the AI world.
 
 It collects practical tools for Codex and Claude Code across LLM observability,
 API exploration, development workflows, assistant operations, cloud storage,
-local automation, and job-search workflows.
+local automation, runtime app verification, and job-search workflows.
 
 ## Notes for Users
 
@@ -123,6 +123,9 @@ end
 
 subgraph RowThree[" "]
   direction LR
+  RunAndVerifyApp["`**run-and-verify-app**
+  Launch apps, verify runtime behavior,
+  and record run recipes`"]:::runverify
   MermaidDiagrams["`**mermaid-diagrams**
   Mermaid generation,
   syntax references, and linting`"]:::mermaid
@@ -132,12 +135,14 @@ Langfuse ~~~ OpenAPITools ~~~ LLMApplicationDev ~~~ PythonDevWorkflow ~~~ DevWor
 WorkSessionTools ~~~ AIAssistantOps ~~~ OSTools ~~~ CloudStorageTools ~~~ JobHuntToolkit
 RowOne ~~~ RowTwo
 RowTwo ~~~ RowThree
+RunAndVerifyApp ~~~ MermaidDiagrams
 
 classDef langfuse fill:#dff7ff,stroke:#0284c7,stroke-width:2px,color:#0f172a;
 classDef openapi fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#052e16;
 classDef llm fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#451a03;
 classDef python fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#2e1065;
 classDef dev fill:#fee2e2,stroke:#dc2626,stroke-width:2px,color:#450a0a;
+classDef runverify fill:#e0f2fe,stroke:#0369a1,stroke-width:2px,color:#082f49;
 classDef session fill:#ccfbf1,stroke:#0f766e,stroke-width:2px,color:#042f2e;
 classDef ops fill:#fce7f3,stroke:#db2777,stroke-width:2px,color:#500724;
 classDef os fill:#e0e7ff,stroke:#4f46e5,stroke-width:2px,color:#1e1b4b;
@@ -277,6 +282,27 @@ review comments, ticket branches, status updates, version bumps, or spec checks.
 | `structural-contradiction-hunter` | Finds deeper logical and scope conflicts. |
 | `surface-contradiction-hunter` | Finds direct, explicit contradictions. |
 
+### `run-and-verify-app`
+
+<details>
+<summary>Runtime app launch, verification, and run-skill generation inspired by Claude Code.</summary>
+
+**Use when:** you want to launch an app, verify a change against the
+running app instead of just tests, or record a reusable build and launch
+recipe for a project.
+
+Inspired by Claude Code's bundled run and verify app workflow, this plugin
+brings three coordinated skills to Codex. It is Codex-only; Claude Code users
+can use Claude Code's built-in run and verify skills.
+
+| Skill | Purpose |
+|---|---|
+| `run` | Launch and drive your app to see a change working. |
+| `verify` | Build and run your app to confirm a code change does what it should, without falling back to tests or type checks. |
+| `run-skill-generator` | Teach `run` and `verify` how to build and launch your project by recording a verified project-specific recipe. |
+
+</details>
+
 ### `mermaid-diagrams`
 
 Generate and validate Mermaid diagrams with synced syntax references.
@@ -290,8 +316,6 @@ Mermaid code blocks with the Mermaid CLI.
 |---|---|
 | `mermaid` | Generate Mermaid diagrams from user requirements with local syntax references. |
 | `mermaid-lint` | Validate Mermaid code blocks with `mmdc` and report lint status and errors. |
-
-</details>
 
 ### `work-session-tools`
 
