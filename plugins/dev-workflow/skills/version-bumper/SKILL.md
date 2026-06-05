@@ -21,8 +21,12 @@ rules.
 | `dunder` | `references/python-module-versions.md` |
 | `fastapi` | `references/fastapi-apps.md` |
 | `package` | `references/node-packages.md` |
-| `plugin`, `plugin-manifest` | `references/plugin-manifests.md` |
-| `marketplace`, `marketplace-manifest` | `references/marketplace-manifests.md` |
+| `plugin` | `references/generic-plugin-manifests.md` |
+| `codex-plugin-manifest` | `references/codex-plugin-manifests.md` |
+| `claude-code-plugin-manifest` | `references/claude-code-plugin-manifests.md` |
+| `marketplace` | `references/marketplace-manifests.md` |
+| `codex-marketplace-manifest` | `references/codex-marketplace-manifests.md` |
+| `claude-code-marketplace-manifest` | `references/claude-code-marketplace-manifests.md` |
 
 ## Version Resolution
 
@@ -38,7 +42,7 @@ If no argument is provided, run `git log --oneline -20`: `feat!:` or `BREAKING C
 4. **Confirm with user** — show current version, target version, files to update, and loaded references. Wait for approval.
 5. **Apply changes** — edit each discovered file according to its loaded reference.
 6. **Verify** — re-run the discovery script to confirm the selected files show the new version.
-7. **Commit when requested** — stage only changed version files and invoke the `/commit` skill with type `bump` and description `vOLD → vNEW`.
+7. **Commit when requested** — stage only changed version files and invoke the `dev-workflow:commit` skill with type `bump` and description `vOLD → vNEW`.
 
 ## Additional Resources
 

@@ -6,6 +6,21 @@ Use only when discovery reports `fastapi`.
 
 - `**/app.py` or `**/main.py`: update the `version="X.Y.Z"` keyword passed to `FastAPI(...)` or the local app constructor.
 
+## Example
+
+```python
+from fastapi import FastAPI
+
+app = FastAPI(
+    title="Example Service",
+    version="1.2.3",
+)
+```
+
+If the app is built from a shared config object, update that object's `version`
+field instead of introducing a second version constant. FastAPI treats this as
+the version of the application itself, not the OpenAPI spec.
+
 ## Edit Rules
 
 - Preserve quote style and spacing around the keyword argument.

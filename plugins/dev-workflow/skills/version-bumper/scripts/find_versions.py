@@ -41,7 +41,7 @@ PATTERNS: list[tuple[str, str, str, re.Pattern[str]]] = [
     (
         "plugin.json",
         "plugin",
-        "references/plugin-manifests.md",
+        "references/generic-plugin-manifests.md",
         re.compile(r'"version"\s*:\s*"(\d+\.\d+\.\d+)"'),
     ),
     (
@@ -73,12 +73,28 @@ GLOB_PATTERNS: list[tuple[str, str, str, re.Pattern[str]]] = [
         "references/fastapi-apps.md",
         re.compile(r'version\s*=\s*["\'](\d+\.\d+\.\d+)["\']'),
     ),
-    ("**/.claude-plugin/plugin.json", "plugin-manifest", "references/plugin-manifests.md", VERSION_JSON_RE),
-    ("**/.codex-plugin/plugin.json", "plugin-manifest", "references/plugin-manifests.md", VERSION_JSON_RE),
+    (
+        "**/.claude-plugin/plugin.json",
+        "claude-code-plugin-manifest",
+        "references/claude-code-plugin-manifests.md",
+        VERSION_JSON_RE,
+    ),
+    (
+        "**/.codex-plugin/plugin.json",
+        "codex-plugin-manifest",
+        "references/codex-plugin-manifests.md",
+        VERSION_JSON_RE,
+    ),
     (
         "**/.claude-plugin/marketplace.json",
-        "marketplace-manifest",
-        "references/marketplace-manifests.md",
+        "claude-code-marketplace-manifest",
+        "references/claude-code-marketplace-manifests.md",
+        VERSION_JSON_RE,
+    ),
+    (
+        "**/.agents/plugins/marketplace.json",
+        "codex-marketplace-manifest",
+        "references/codex-marketplace-manifests.md",
         VERSION_JSON_RE,
     ),
 ]
