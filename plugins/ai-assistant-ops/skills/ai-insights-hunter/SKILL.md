@@ -1,12 +1,19 @@
 ---
 name: ai-insights-hunter
 description: Use this skill when the user says "/ai-insights-hunter", "extract insights from conversation", "harvest this session", "what should we remember from this chat", "save insights from this conversation", or provides a path to an AI Assistant conversation log and wants to capture decisions, patterns, and preferences for future sessions. This skill reads a full conversation log (or finds it automatically), extracts valuable insights using parallel agents, interviews the user about what to keep, then stores the chosen insights in the right places to improve future AI Assistant interactions. Use PROACTIVELY when a long or complex session is wrapping up and the user wants to preserve learnings.
+metadata:
+  ai-assistant-harness-adaptation.claude-code: references/ai-assistant-harnesses/claude-code.md
+  ai-assistant-harness-adaptation.codex: references/ai-assistant-harnesses/codex.md
 allowed-tools: AskUserQuestion, Read, Write, Agent, TaskCreate, TaskGet, TaskList, TaskUpdate, TaskOutput, TaskStop, Glob, Bash
 ---
 
 # AI Insights Hunter
 
 Extract valuable, reusable knowledge from an AI Assistant conversation log and store it in the right places so future AI Assistant sessions start smarter.
+
+## Harness adaptation
+
+Before any step that depends on runtime-specific tooling or storage paths, identify the active AI Assistant harness. If harness-specific adaptation is needed and a matching `metadata.ai-assistant-harness-adaptation.<harness-id>` entry exists, load exactly that one metadata-linked reference and skip every non-matching file under `references/ai-assistant-harnesses/`.
 
 ## References
 

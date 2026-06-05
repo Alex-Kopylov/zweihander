@@ -6,11 +6,16 @@ description: >
   user wants a task to keep running permanently (not just 7 days), mentions launchd, says "run this
   every day", "schedule this on macOS", "make this persistent", "set this up for good", "keep this
   running forever", or is frustrated that /loop expired. Also triggers on /loop_macos.
+metadata:
+  ai-assistant-harness-adaptation.claude-code: references/ai-assistant-harnesses/claude-code.md
+  ai-assistant-harness-adaptation.codex: references/ai-assistant-harnesses/codex.md
 ---
 
 # loop_macos
 
 Use macOS launchd for recurring tasks that persist across reboots. Calendar schedules catch up missed runs after sleep.
+
+If harness-specific adaptation is needed, identify the active assistant harness, load exactly one matching metadata-linked harness reference, and skip non-matching harness files. Do not load both Claude Code and Codex harness references in the same invocation.
 
 ## Step 1 — Parse the input
 
@@ -125,7 +130,7 @@ mkdir -p ~/Library/Logs/loop-macos
 # Unload first if label already exists (silent if not)
 launchctl unload ~/Library/LaunchAgents/<label>.plist 2>/dev/null || true
 
-# Write the plist (use Write tool, not echo)
+# Write the plist with the active harness's file-writing capability, not echo
 # Then load:
 launchctl load ~/Library/LaunchAgents/<label>.plist
 

@@ -3,11 +3,18 @@ argument-hint: [topic or paste the information to analyze]
 name: spec-contradiction-hunter
 description: This skill should be used when the user wants to "find contradictions", "check consistency", "validate my spec", "cross-check requirements", "spot inconsistencies", or has provided a body of information (spec, requirements, design doc) that needs consistency validation. Spawns parallel agents to hunt obvious and deeper contradictions.
 allowed-tools: AskUserQuestion, Write, Read, Agent
+metadata:
+  ai-assistant-harness-adaptation.claude-code: references/ai-assistant-harnesses/claude-code.md
+  ai-assistant-harness-adaptation.codex: references/ai-assistant-harnesses/codex.md
 ---
 
 # Spec Contradiction Hunter
 
 Analyze user-provided specs, requirements, and design notes for internal contradictions, inconsistencies, and logical conflicts by dispatching parallel agents, each with a different analytical lens.
+
+## Harness Adaptation
+
+This skill uses Claude Code wording as the shared baseline. Identify the active assistant harness before translating tool names, agent dispatch, file writing, or user-question behavior. When harness-specific adaptation is needed, load exactly one matching metadata-linked harness reference for the active harness and skip all non-matching harness files.
 
 ## Process
 

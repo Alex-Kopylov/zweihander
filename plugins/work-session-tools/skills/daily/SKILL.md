@@ -1,11 +1,18 @@
 ---
 name: daily
 description: Generate a daily note summarizing recent activity across all detected project sources. Use this skill whenever the user asks for a daily note, daily summary, standup report, daily digest, "what happened today/yesterday", end-of-day recap, or wants to capture progress across git, PRs, tasks, and communication channels. Trigger even for casual phrasing like "write up what I did" or "catch me up on the project".
+metadata:
+  ai-assistant-harness-adaptation.claude-code: references/ai-assistant-harnesses/claude-code.md
+  ai-assistant-harness-adaptation.codex: references/ai-assistant-harnesses/codex.md
 ---
 
 # Daily Note Generator
 
 Create a markdown daily note by gathering activity from every source detected in the project.
+
+## Harness Adaptation
+
+Use the shared workflow as the baseline. When invocation, assistant instruction files, assistant settings files, or MCP tool exposure requires harness-specific handling, identify the active harness, load exactly one matching metadata-linked harness reference, and skip non-matching harness files.
 
 ## Usage
 

@@ -2,11 +2,18 @@
 name: pr-address-comments
 description: This skill should be used when the user asks to "address PR comments", "fix PR feedback", "resolve PR threads", "handle review comments", "address review feedback", "respond to PR comments", "fix code review comments", "fix what reviewers said", "work on PR comments", "iterate on PR", or "rework PR". It fetches unresolved PR review threads, presents them for user confirmation, then makes code fixes, replies to threads, and resolves them.
 allowed-tools: AskUserQuestion, Agent, Skill(dev-workflow:commit, dev-workflow:pr-comment)
+metadata:
+  ai-assistant-harness-adaptation.claude-code: references/ai-assistant-harnesses/claude-code.md
+  ai-assistant-harness-adaptation.codex: references/ai-assistant-harnesses/codex.md
 ---
 
 # PR Address Comments
 
 Fetch reviewer comments from a pull request, present them for confirmation, then make code fixes, reply to threads, and resolve them.
+
+## Harness Adaptation
+
+Identify the active assistant harness before executing this skill. When harness-specific adaptation is needed for tool names, skill invocation, or delegation, load exactly one matching metadata-linked harness reference for the active harness, then skip all non-matching harness files. If no harness-specific adaptation is needed, continue with the shared workflow below.
 
 ## Arguments
 

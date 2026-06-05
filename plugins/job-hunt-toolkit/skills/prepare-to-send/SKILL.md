@@ -3,11 +3,18 @@ name: prepare-to-send
 description: Use when the user asks to "prepare to send", "final check", "ready to send", "pre-send checklist", "is this ready", "is this clean", "can I attach this", "run the checklist", "verify the CV", or "check before sending". Runs the complete pre-send audit — filename sanity, HTML↔PDF parity, metadata scrub, visible content scan, sensitive file presence, content correctness, final sanity — and fails loudly on any issue. Nothing ships with warnings.
 argument-hint: "[pdf-file] (optional; defaults to most recently modified CV PDF in current company folder)"
 allowed-tools: Read, Bash, Glob, Grep, Skill, AskUserQuestion
+metadata:
+  ai-assistant-harness-adaptation.claude-code: references/ai-assistant-harnesses/claude-code.md
+  ai-assistant-harness-adaptation.codex: references/ai-assistant-harnesses/codex.md
 ---
 
 # Prepare to Send
 
 The last gate before a PDF goes out. This skill drives the checklist section-by-section, delegates metadata scrubbing to `scrub-pdf-metadata`, collects results, and refuses to declare "ready" unless every gate passes.
+
+## Harness adaptation
+
+Identify the active assistant harness before running this skill. When harness-specific adaptation is needed, load exactly one matching metadata-linked harness reference for the active harness and skip non-matching harness files. Use the shared workflow below as the source of truth and apply only the narrow tool or command translations from the loaded reference.
 
 ## When to use
 

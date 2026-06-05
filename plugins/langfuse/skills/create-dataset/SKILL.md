@@ -4,9 +4,18 @@ description: >-
   This skill should be used when the user wants to create a new Langfuse dataset,
   set up a dataset for benchmarking, or create a dataset with input/output schema validation.
   Trigger phrases include "create dataset", "new dataset", "set up dataset", "add dataset".
+metadata:
+  ai-assistant-harness-adaptation.claude-code: references/ai-assistant-harnesses/claude-code.md
+  ai-assistant-harness-adaptation.codex: references/ai-assistant-harnesses/codex.md
 ---
 
 Create a Langfuse dataset via REST API, optionally with input and expected output JSON schemas for item validation.
+
+## Harness Adaptation
+
+Identify the active assistant harness before using harness-specific workflow language.
+When adaptation is needed, load exactly one matching metadata-linked harness
+reference and follow it. Skip all non-matching harness files.
 
 ## Step 1: Gather Requirements
 

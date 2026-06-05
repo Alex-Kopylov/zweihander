@@ -3,11 +3,18 @@ name: export-pdf
 description: Use when the user asks to "export the PDF", "regenerate PDF", "build PDF from HTML", "convert HTML CV to PDF", "refresh the PDF", "HTML to PDF", "render CV to PDF", "produce PDF from HTML", "generate PDF", or after editing a CV HTML and needs a fresh PDF. Converts an HTML CV into a PDF using headless Chromium, ensuring consistent rendering across all applications.
 argument-hint: "[html-file] (optional; defaults to the current file context or detected CV)"
 allowed-tools: Read, Bash, Glob, AskUserQuestion
+metadata:
+  ai-assistant-harness-adaptation.claude-code: references/ai-assistant-harnesses/claude-code.md
+  ai-assistant-harness-adaptation.codex: references/ai-assistant-harnesses/codex.md
 ---
 
 # Export PDF
 
 Convert an HTML CV to PDF using headless Chromium; every workspace PDF should use this skill for consistent rendering.
+
+## Harness adaptation
+
+Identify the active assistant harness before relying on harness-specific tool names or plugin invocation syntax. When a step needs harness-specific adaptation, load exactly one matching metadata-linked harness reference for the active harness, then skip all non-matching harness files. If no matching metadata link exists, use the shared workflow only.
 
 ## When to use
 
@@ -75,7 +82,7 @@ Where `${PLUGIN_ROOT}` resolves to the plugin's root directory.
 
 ### 3b. Sanity-check PDF content
 
-Use Read to inspect the produced PDF text. These strings almost certainly mean Chromium rendered a browser error page rather than the CV:
+Inspect the produced PDF text using the active harness's file/PDF text inspection mechanism. These strings almost certainly mean Chromium rendered a browser error page rather than the CV:
 
 - `This page isn't working`
 - `ERR_CONNECTION_REFUSED`
@@ -93,11 +100,7 @@ Do NOT report success or proceed to scrubbing if this check fails.
 
 ### 4. Scrub metadata
 
-Auto-invoke `scrub-pdf-metadata` on the produced PDF as the final step:
-
-```
-/job-hunt-toolkit:scrub-pdf-metadata <pdf-absolute-path>
-```
+Auto-invoke the `scrub-pdf-metadata` skill on the produced PDF as the final step. Use the active harness notes for invocation syntax when needed.
 
 Every exported PDF is scrubbed, even when attached directly without `prepare-to-send`.
 
@@ -131,4 +134,4 @@ Every exported PDF is scrubbed, even when attached directly without `prepare-to-
 Remind user:
 1. Visually review the PDF (open it, check layout)
 2. Metadata has already been scrubbed by this skill
-3. Run `/job-hunt-toolkit:prepare-to-send` before attaching to any application for a final freshness and content check
+3. Run the `prepare-to-send` skill before attaching to any application for a final freshness and content check
