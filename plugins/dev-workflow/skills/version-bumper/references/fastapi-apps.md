@@ -4,7 +4,7 @@ Use only when discovery reports `fastapi`.
 
 ## Files
 
-- `**/app.py` or `**/main.py`: update the `version="X.Y.Z"` keyword passed to `FastAPI(...)` or the local app constructor.
+- `**/app.py` or `**/main.py`: update the `version="X.Y.Z"` keyword in `FastAPI(...)` or the local app constructor.
 
 ## Example
 
@@ -19,7 +19,7 @@ app = FastAPI(
 
 If the app is built from a shared config object, update that object's `version`
 field instead of introducing a second version constant. FastAPI treats this as
-the version of the application itself, not the OpenAPI spec.
+the application version, not the OpenAPI spec version.
 
 ## Edit Rules
 

@@ -10,4 +10,4 @@ Use only when discovery reports `dunder`.
 
 - Preserve quote style and surrounding module exports.
 - Change only the `__version__` assignment.
-- If package metadata also exists, keep the module constant aligned with the selected project version unless the user narrows the scope.
+- If package metadata exists, keep the module constant aligned with the selected project version unless the user narrows the scope.

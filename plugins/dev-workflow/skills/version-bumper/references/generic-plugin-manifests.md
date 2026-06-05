@@ -9,5 +9,5 @@ Use only when discovery reports `plugin`.
 ## Edit Rules
 
 - Update only the manifest `"version": "X.Y.Z"` field.
-- Do not infer Codex or Claude Code manifest requirements from this generic file.
+- Do not infer platform-specific manifest requirements from this generic file.
 - Validate changed JSON with `jq empty`.

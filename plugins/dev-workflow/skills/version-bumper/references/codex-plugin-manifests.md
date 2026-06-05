@@ -9,7 +9,5 @@ Use only when discovery reports `codex-plugin-manifest`.
 ## Edit Rules
 
 - Update only the Codex manifest `"version": "X.Y.Z"` field.
-- If a sibling Claude Code manifest exists for the same plugin, mention it in the
-  confirmation step but do not load Claude Code rules unless discovery also
-  reports `claude-code-plugin-manifest`.
+- Keep confirmation scoped to discovered files and loaded references; do not load sibling-runtime rules unless discovery reports them separately.
 - Validate changed JSON with `jq empty`.
