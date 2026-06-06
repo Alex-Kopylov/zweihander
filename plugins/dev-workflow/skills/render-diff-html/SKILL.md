@@ -13,11 +13,12 @@ Generate a visual diff report with `scripts/render_diff_html.sh`, which wraps
 Use the wrapper first. Pass git pathspecs after `--` when narrowing a git diff:
 
 ```bash
-bash plugins/dev-workflow/skills/render-diff-html/scripts/render_diff_html.sh --scope working
-bash plugins/dev-workflow/skills/render-diff-html/scripts/render_diff_html.sh --scope staged -- README.md
-bash plugins/dev-workflow/skills/render-diff-html/scripts/render_diff_html.sh --range origin/main...HEAD --style side
-bash plugins/dev-workflow/skills/render-diff-html/scripts/render_diff_html.sh --files old.txt new.txt
-bash plugins/dev-workflow/skills/render-diff-html/scripts/render_diff_html.sh --diff-file change.patch
+SCRIPT=plugins/dev-workflow/skills/render-diff-html/scripts/render_diff_html.sh
+bash "$SCRIPT" --scope working
+bash "$SCRIPT" --scope staged -- README.md
+bash "$SCRIPT" --range origin/main...HEAD --style side
+bash "$SCRIPT" --files old.txt new.txt
+bash "$SCRIPT" --diff-file change.patch
 ```
 
 Report the absolute output path to the user. If the user asks to preview it,
