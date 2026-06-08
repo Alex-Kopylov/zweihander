@@ -92,10 +92,10 @@ Or point the active runtime at a local path:
 ## Typical flow
 
 ```
-1. /job-hunt-toolkit:init-workspace                 # once, ever
+1. $job-hunt-toolkit:init-workspace                 # once, ever
 2. Edit master HTML, export PDF                     # establish canonical version
-3. /job-hunt-toolkit:new-application acme-robotics  # per application
+3. $job-hunt-toolkit:new-application acme-robotics  # per application
 4. Walk through resume-tailoring                    # per application
-5. /job-hunt-toolkit:prepare-to-send                # before attaching PDF
+5. $job-hunt-toolkit:prepare-to-send                # before attaching PDF
 6. Send PDF                                         # ship it
 ```

@@ -72,7 +72,7 @@ mcp__azure-devops__repo_list_pull_request_thread_comments(
 
 ## Replying to a Thread
 
-Delegate to `Skill(dev-workflow:pr-comment)` with the PR ID and reply text.
+Delegate to `$dev-workflow:pr-comment` with the PR ID and reply text.
 
 Alternatively, use MCP directly:
 

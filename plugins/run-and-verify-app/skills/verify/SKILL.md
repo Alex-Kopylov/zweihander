@@ -100,7 +100,7 @@ done
   primitives as your handle.
 - **Neither** → cold start from README/package.json/Makefile. Timebox
   ~15min. Stuck → BLOCKED with exactly where, plus a filled-in
-  `run-and-verify-app:run-skill-generator` prompt. Got through → note
+  `$run-and-verify-app:run-skill-generator` prompt. Got through → note
   the working build/launch recipe so it can become a `verifier-*` skill.
 
 ## Drive it
@@ -236,7 +236,7 @@ sticking out is itself rare.>
 - **BLOCKED** — couldn't reach a state where the change is observable.
   Build broke, env missing a dep, handle wouldn't come up. Not a
   verdict on the change. Say exactly where it stopped +
-  `run-and-verify-app:run-skill-generator` prompt.
+  `$run-and-verify-app:run-skill-generator` prompt.
 - **SKIP** — no runtime surface exists. Docs-only, types-only,
   tests-only. Nothing went wrong; there's just nothing here to run.
   One line why.
@@ -248,5 +248,5 @@ explained away.
 costs one more human look. Ambiguous output is FAIL with the raw
 capture attached — don't interpret.
 
-Use `run-and-verify-app:run` when the immediate task is launch-only
+Use `$run-and-verify-app:run` when the immediate task is launch-only
 runtime observation rather than a change verdict.
