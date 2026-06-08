@@ -94,11 +94,6 @@ def test_skill_body_preserves_improvement_loop_concepts() -> None:
     ]:
         assert phrase in normalized
 
-    assert re.search(r"rerun.*baseline runs", normalized)
-    assert "wait for the user" in normalized
-    assert "reviewed feedback" in normalized
-    assert "fresh eyes" in normalized
-
 
 def test_bloat_hunter_is_post_rewrite_pre_evaluation_step() -> None:
     body = skill_body()

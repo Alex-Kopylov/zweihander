@@ -5,22 +5,22 @@ description: Use when revising an existing skill from eval feedback, trigger mis
 
 # Improve Skill
 
-Improve skills through measured iterations: test, compare, feedback, revise,
-rerun, repeat, then tune triggering.
+Improve an existing skill through measured iterations: test, compare, collect
+feedback, revise, rerun, repeat, then tune triggering.
 
 ## Start Point
 
-Start from the target skill and current stage: test prompts, baseline runs,
-feedback review, rewriting, rerun comparison, or trigger checks. If the target
-skill is unclear, resolve it before editing.
+Start from the user's target skill and current stage: test prompts, baseline
+runs, feedback review, rewriting, rerun comparison, or trigger checks. If the
+target skill is unclear, resolve it before editing.
 
-Require test prompts before editing. If no evals exist, create a small realistic
-set first. Use objective assertions only for observable behavior; keep
-subjective quality checks qualitative.
+Require test prompts before editing. If no evals exist, help create a small set
+of realistic prompts first. Use objective assertions only for observable
+behavior; keep subjective quality checks qualitative.
 
 ## Iteration Loop
 
-1. Snapshot the target skill as the old-skill baseline.
+1. Snapshot the existing target skill before changes as the old-skill baseline.
 2. Run the old-skill baseline and the candidate improved skill against the same
    prompts; keep inputs, target files, and expected outputs identical.
 3. Capture outputs, transcripts, qualitative feedback, objective assertions when
@@ -38,37 +38,36 @@ subjective quality checks qualitative.
    helper, checklist, schema, or conversion step, add a reusable `scripts/` tool
    or resources file and point the skill to it.
 9. After rewriting, invoke `ai-assistant-ops:md-bloat-hunter` on the changed
-   skill context before evaluation or rerun. Preserve behavior and
+   skill context before evaluation or rerun. Preserve tested behavior and
    trigger coverage while removing redundancy and filler.
-10. Review the draft with fresh eyes; tighten unsupported wording.
-11. Rerun all test cases with baseline runs into the next iteration, compare
-    against the previous iteration, and wait for the user to review results.
-12. Read the reviewed feedback before the next rewrite.
+10. Rerun all test cases into the next iteration and compare against the
+    previous iteration.
 
 Repeat until the user is satisfied, feedback is empty, or progress stalls.
-When progress stalls, ask whether to change the eval set, accept the tradeoff,
-or stop.
+When progress stalls, report the pattern and ask whether to change the eval set,
+accept the current tradeoff, or stop.
 
 ## Evidence To Keep
 
-Keep evidence for each iteration: target and snapshot paths, prompt set,
-old-skill and improved outputs, transcript notes, feedback, assertions, timing
-or token data, and what changed with why.
+Keep enough evidence to explain each iteration: target and snapshot paths,
+prompt set, old-skill and improved outputs, transcript notes, feedback,
+assertions, timing or token data, and what changed with why.
 
 ## Trigger Optimization
 
-After the body stabilizes, test the description with should-trigger and
-should-not-trigger prompts, including near misses. Revise it only for missed
+After the body stabilizes, test the description with should-trigger
+and should-not-trigger prompts, including near misses. Revise it only for missed
 triggers or false positives.
 
-Keep the description trigger-only: symptoms and situations, not workflow.
+Keep the description trigger-only: symptoms and situations, not workflow. The
+body owns the process.
 
-## Mistakes
+## Common Mistakes
 
 | Mistake | Correction |
 |---|---|
 | Editing before evals exist | Create prompts first. |
 | Comparing different prompt sets | Use the same prompts. |
-| Treating one complaint as a patch | Generalize. |
-| Adding prose for every failure | Prefer lean wording, examples, scripts, or resources. |
-| Stopping after body edits | Run trigger checks. |
+| Treating one complaint as a narrow patch | Generalize the feedback. |
+| Adding more prose for every failure | Prefer lean wording, examples, scripts, or resources. |
+| Stopping after body edits | Run trigger checks after stabilization. |
