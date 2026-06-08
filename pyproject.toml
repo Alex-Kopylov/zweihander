@@ -1,0 +1,11 @@
+[project]
+name = "ai-agents-marketplace"
+version = "0.1.0"
+description = "Personal plugin marketplace for AI agents."
+requires-python = ">=3.11"
+dependencies = []
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.3",
+]

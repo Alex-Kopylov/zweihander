@@ -124,7 +124,7 @@
     {
       "name": "ai-assistant-ops",
       "source": "./plugins/ai-assistant-ops",
-      "description": "Assistant setup, instruction hygiene, memory capture, harness adaptation, and markdown/prompt maintenance.",
+      "description": "Assistant setup, instruction hygiene, memory capture, skill improvement, harness adaptation, and markdown/prompt maintenance.",
       "category": "utilities",
       "tags": [
         "agents-md",
@@ -133,7 +133,8 @@
         "memory",
         "markdown",
         "prompts",
-        "harness-adaptation"
+        "harness-adaptation",
+        "skill-improvement"
       ]
     },
     {
