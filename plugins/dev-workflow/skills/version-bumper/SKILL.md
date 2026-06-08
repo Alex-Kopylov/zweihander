@@ -43,7 +43,7 @@ If no argument is provided, run `git log --oneline -20`: `feat!:` or `BREAKING C
 5. **Parallelize broad bumps** — if multiple independent version-bearing files must be bumped, dispatch parallel background agents using a minor LLM. Give each agent only its assigned files and relevant reference files; do not pass Codex context to Claude Code files or Claude Code context to Codex files.
 6. **Apply changes** — edit each discovered file according to its loaded reference.
 7. **Verify** — re-run the discovery script to confirm the selected files show the new version.
-8. **Commit when requested** — stage only changed version files and invoke the `dev-workflow:commit` skill with type `bump` and description `vOLD → vNEW`.
+8. **Commit when requested** — stage only changed version files and invoke the `$dev-workflow:commit` skill with type `bump` and description `vOLD → vNEW`.
 
 ## Additional Resources
 

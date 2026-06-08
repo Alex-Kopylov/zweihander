@@ -1,6 +1,6 @@
 {
   "name": "llm-application-dev",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "LLM application design, agent pattern selection, and schema-guided reasoning patterns.",
   "author": {
     "name": "Alex Kopylov"

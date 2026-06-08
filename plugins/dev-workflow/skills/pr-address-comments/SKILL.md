@@ -48,7 +48,7 @@ For each selected comment:
 1. **Read the relevant code** — open the file at the referenced lines (or broader context if needed)
 2. **Understand the ask** — interpret what the reviewer wants changed
 3. **Make the fix** — edit the code to address the feedback
-4. **Reply to the thread** — invoke `Skill(dev-workflow:pr-comment)` to post a reply explaining what was done (e.g. `"Fixed: extracted validation into helper"`)
+4. **Reply to the thread** — invoke `$dev-workflow:pr-comment` to post a reply explaining what was done (e.g. `"Fixed: extracted validation into helper"`)
 5. **Resolve the thread** — mark the thread status as "fixed" via platform tools (see platform reference files for status codes)
 
 If a comment is unclear or requires a judgment call, use **AskUserQuestion** to clarify before making changes.
@@ -57,7 +57,7 @@ If a comment is unclear or requires a judgment call, use **AskUserQuestion** to 
 
 After addressing selected comments, present options via **AskUserQuestion**:
 
-- **Commit changes** — invoke `Skill(dev-workflow:commit)`
+- **Commit changes** — invoke `$dev-workflow:commit`
 - **Push to remote** — push the current branch
 - **Done for now** — leave changes uncommitted
 

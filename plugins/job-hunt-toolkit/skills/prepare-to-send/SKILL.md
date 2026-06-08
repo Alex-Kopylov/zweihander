@@ -72,7 +72,7 @@ Validate the PDF filename against `${PLUGIN_ROOT}/references/naming-rules.md`.
 
 ```bash
 if [[ "$(stat -f%m "$html")" -gt "$(stat -f%m "$pdf")" ]]; then
-  echo "FAIL: HTML edited after PDF exported. Re-run /job-hunt-toolkit:export-pdf."
+  echo 'FAIL: HTML edited after PDF exported. Re-run $job-hunt-toolkit:export-pdf.'
   exit 1
 fi
 ```

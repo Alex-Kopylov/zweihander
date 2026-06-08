@@ -1,6 +1,6 @@
 {
   "name": "run-and-verify-app",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Launch real app surfaces, verify runtime behavior, and generate project-specific run skills.",
   "author": {
     "name": "Alex Kopylov"
@@ -19,9 +19,9 @@
       "Write"
     ],
     "defaultPrompt": [
-      "Use run-and-verify-app:run to launch this app and capture runtime evidence.",
-      "Use run-and-verify-app:verify to confirm this change works in the running app.",
-      "Use run-and-verify-app:run-skill-generator to record how to build, launch, and drive this project."
+      "Use $run-and-verify-app:run to launch this app and capture runtime evidence.",
+      "Use $run-and-verify-app:verify to confirm this change works in the running app.",
+      "Use $run-and-verify-app:run-skill-generator to record how to build, launch, and drive this project."
     ]
   }
 }

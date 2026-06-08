@@ -124,7 +124,7 @@ the frontmatter `name:` should match — that's the project skill name.
 
 ### 0. Find any existing skill about running this app
 
-List the project's skills with their descriptions (same probe `run-and-verify-app:run`
+List the project's skills with their descriptions (same probe `$run-and-verify-app:run`
 uses — users name these variously, so match on description, not name):
 
 ```bash
@@ -284,7 +284,7 @@ line-by-line without deviating. Any improvisation = a gap. Fix it.
 ## Project-type patterns
 
 Pick a starting shape for your driver. These examples are shared with
-the `run-and-verify-app:run` skill (same per-project-type patterns are used as the
+the `$run-and-verify-app:run` skill (same per-project-type patterns are used as the
 fallback when no project-specific run skill exists) — if you're
 authoring a new one, the example is your starting template.
 
@@ -353,5 +353,5 @@ Stop and reconsider if:
 - **Everything worked first try.** Either this project is trivially
   simple, or you ran the test suite and called it done.
 
-Generated run skills are consumed by `run-and-verify-app:run` and
-`run-and-verify-app:verify`.
+Generated run skills are consumed by `$run-and-verify-app:run` and
+`$run-and-verify-app:verify`.
