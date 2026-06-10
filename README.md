@@ -4,8 +4,9 @@ Simple, robust, and versatile marketplace for agent plugins,
 forged for the chaos of the AI world.
 
 It collects practical tools for Codex and Claude Code across LLM observability,
-API exploration, development workflows, assistant operations, cloud storage,
-local automation, runtime app verification, and job-search workflows.
+API exploration, development workflows, assistant operations, research notes,
+cloud storage, local automation, runtime app verification, and job-search
+workflows.
 
 ## Plugin Catalog
 
@@ -39,6 +40,9 @@ subgraph RowTwo[" "]
   AIAssistantOps["`**ai-assistant-ops**
   Assistant setup audits, harness adaptation,
   memory capture, and Markdown cleanup`"]:::ops
+  Research["`**research**
+  Research wiki and Obsidian vault
+  note workflows`"]:::research
   OSTools["`**os-tools**
   Local macOS automation utilities
   for assistant workflows`"]:::os
@@ -61,7 +65,7 @@ subgraph RowThree[" "]
 end
 
 Langfuse ~~~ OpenAPITools ~~~ LLMApplicationDev ~~~ PythonDevWorkflow ~~~ DevWorkflow
-WorkSessionTools ~~~ AIAssistantOps ~~~ OSTools ~~~ CloudStorageTools ~~~ JobHuntToolkit
+WorkSessionTools ~~~ AIAssistantOps ~~~ Research ~~~ OSTools ~~~ CloudStorageTools ~~~ JobHuntToolkit
 RowOne ~~~ RowTwo
 RowTwo ~~~ RowThree
 RunAndVerifyApp ~~~ MermaidDiagrams
@@ -74,6 +78,7 @@ classDef dev fill:#fee2e2,stroke:#dc2626,stroke-width:2px,color:#450a0a;
 classDef runverify fill:#e0f2fe,stroke:#0369a1,stroke-width:2px,color:#082f49;
 classDef session fill:#ccfbf1,stroke:#0f766e,stroke-width:2px,color:#042f2e;
 classDef ops fill:#fce7f3,stroke:#db2777,stroke-width:2px,color:#500724;
+classDef research fill:#fef9c3,stroke:#ca8a04,stroke-width:2px,color:#422006;
 classDef os fill:#e0e7ff,stroke:#4f46e5,stroke-width:2px,color:#1e1b4b;
 classDef storage fill:#ecfccb,stroke:#65a30d,stroke-width:2px,color:#1a2e05;
 classDef job fill:#ffedd5,stroke:#ea580c,stroke-width:2px,color:#431407;
@@ -333,6 +338,29 @@ designed multi-agent team for a larger work session.
 | `daily` | Generate a daily note from project activity. |
 | `interview` | Walk through a list of items one by one. |
 | `task-management` | Track, split, and orchestrate session tasks. |
+
+### `research`
+
+<details>
+<summary>Research wiki and Obsidian vault workflows for agent-maintained notes.</summary>
+
+**Use when:** you want to create or query an interlinked research wiki, ingest
+sources into a knowledge base, lint wiki health, or work with Obsidian notes.
+
+**Origin:** ports MIT-licensed skills from
+[NousResearch/hermes-agent](https://github.com/NousResearch/hermes-agent):
+[`llm-wiki`](https://raw.githubusercontent.com/NousResearch/hermes-agent/refs/heads/main/skills/research/llm-wiki/SKILL.md)
+and
+[`obsidian`](https://raw.githubusercontent.com/NousResearch/hermes-agent/refs/heads/main/skills/note-taking/obsidian/SKILL.md).
+
+**Skills**
+
+| Skill | Description |
+|---|---|
+| `llm-wiki` | Build, query, ingest into, and lint an interlinked Markdown research wiki inspired by Andrej Karpathy's LLM Wiki pattern. |
+| `obsidian` | Read, search, create, append to, and edit notes in a filesystem-first Obsidian vault. |
+
+</details>
 
 ### `ai-assistant-ops`
 
