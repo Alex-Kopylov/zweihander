@@ -38,11 +38,8 @@ subgraph RowTwo[" "]
   Daily notes, task tracking,
   interviews, and team planning`"]:::session
   AIAssistantOps["`**ai-assistant-ops**
-  Assistant setup audits, harness adaptation,
-  memory capture, and Markdown cleanup`"]:::ops
-  Research["`**research**
-  Research wiki and Obsidian vault
-  note workflows`"]:::research
+  Assistant setup audits, skill improvement,
+  harness adaptation, and Markdown cleanup`"]:::ops
   OSTools["`**os-tools**
   Local macOS automation utilities
   for assistant workflows`"]:::os
@@ -365,8 +362,8 @@ and
 ### `ai-assistant-ops`
 
 **Use when:** you want to audit assistant instructions, improve AGENTS.md files,
-adapt skills for assistant harnesses, capture useful session insights, or
-reduce Markdown bloat.
+improve existing skills, adapt skills for assistant harnesses, capture useful
+session insights, or reduce Markdown bloat.
 
 **Skills**
 
@@ -376,6 +373,7 @@ reduce Markdown bloat.
 | `agents-md-improver` | Audit and improve repository AGENTS.md files. |
 | `ai-insights-hunter` | Extract reusable decisions, patterns, and preferences from a session. |
 | `ai-setup-audit` | Audit assistant configuration files for conflicts and bloat. |
+| `improve-skill` | Improve existing skills through eval feedback, baseline comparison, iteration, and trigger checks. |
 | `md-bloat-hunter` | Trim redundancy, verbosity, and filler in Markdown. |
 
 **Skill Agents**
