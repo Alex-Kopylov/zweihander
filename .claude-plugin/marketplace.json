@@ -108,6 +108,20 @@
       ]
     },
     {
+      "name": "research",
+      "source": "./plugins/research",
+      "description": "Research knowledge-base and Obsidian vault workflows for agent-maintained notes.",
+      "category": "productivity",
+      "tags": [
+        "research",
+        "wiki",
+        "knowledge-base",
+        "obsidian",
+        "notes",
+        "markdown"
+      ]
+    },
+    {
       "name": "ai-assistant-ops",
       "source": "./plugins/ai-assistant-ops",
       "description": "Assistant setup, instruction hygiene, memory capture, harness adaptation, and markdown/prompt maintenance.",

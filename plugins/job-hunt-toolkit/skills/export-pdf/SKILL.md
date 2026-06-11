@@ -96,7 +96,7 @@ Do NOT report success or proceed to scrubbing if this check fails.
 Auto-invoke `scrub-pdf-metadata` on the produced PDF as the final step:
 
 ```
-/job-hunt-toolkit:scrub-pdf-metadata <pdf-absolute-path>
+$job-hunt-toolkit:scrub-pdf-metadata <pdf-absolute-path>
 ```
 
 Every exported PDF is scrubbed, even when attached directly without `prepare-to-send`.
@@ -131,4 +131,4 @@ Every exported PDF is scrubbed, even when attached directly without `prepare-to-
 Remind user:
 1. Visually review the PDF (open it, check layout)
 2. Metadata has already been scrubbed by this skill
-3. Run `/job-hunt-toolkit:prepare-to-send` before attaching to any application for a final freshness and content check
+3. Run `$job-hunt-toolkit:prepare-to-send` before attaching to any application for a final freshness and content check

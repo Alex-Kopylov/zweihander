@@ -35,7 +35,7 @@ done
 - **Mega-repo, several plausible, no clear match** → ask the user
   which unit to run.
 - **Stale** (fails on mechanics unrelated to your task) → tell the
-  user; offer to refresh it via `run-and-verify-app:run-skill-generator`.
+  user; offer to refresh it via `$run-and-verify-app:run-skill-generator`.
 - **Nothing about running** → fall back to the patterns below.
 
 ## Otherwise: match the shape, use the pattern
@@ -74,7 +74,7 @@ a point where a user would see something:
 
 If the fallback pattern didn't work out of the box — you had to
 install packages, set env vars, patch config, or write a driver —
-recommend `run-and-verify-app:run-skill-generator` in your report so
+recommend `$run-and-verify-app:run-skill-generator` in your report so
 that work gets captured as a project skill. If it just worked, don't.
 
-For change-specific proof, use `run-and-verify-app:verify` instead.
+For change-specific proof, use `$run-and-verify-app:verify` instead.

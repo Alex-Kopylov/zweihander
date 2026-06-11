@@ -122,7 +122,7 @@ If any hits: the HTML template probably renders a path in a header/footer via `@
   Producer / Creator: empty
   Content scan: no path leaks detected
 
-Ready for sending. Run /job-hunt-toolkit:prepare-to-send for the full pre-send checklist.
+Ready for sending. Run $job-hunt-toolkit:prepare-to-send for the full pre-send checklist.
 ```
 
 ## Hard rules
