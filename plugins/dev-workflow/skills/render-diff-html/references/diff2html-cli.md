@@ -10,12 +10,8 @@ Useful raw options from `diff2html --help`:
 
 | Option | Purpose |
 |---|---|
-| `--style line|side` | Inline or side-by-side layout. |
-| `--format html|json` | Render HTML or JSON. |
 | `--input file|command|stdin` | Select diff input source. |
 | `--file <path>` | Write output to a file. |
-| `--title <text>` | Set the HTML page title. |
-| `--ignore <path>` | Ignore a path in the rendered output. |
 | `--summary closed|open|hidden` | Control the file summary. |
 | `--colorScheme auto|dark|light` | Control report color scheme. |
 
