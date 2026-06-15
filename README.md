@@ -10,20 +10,10 @@ workflows.
 
 ## Plugin Catalog
 
+### General User Productivity
+
 ```mermaid
 kanban
-  work_session_tools[work-session-tools]
-    wst_daily[daily]
-    wst_task_management[task-management]
-    wst_interview[interview]
-    wst_create_team[create-team]
-  ai_assistant_ops[ai-assistant-ops]
-    aao_agents_md_improver[agents-md-improver]
-    aao_ai_setup_audit[ai-setup-audit]
-    aao_ai_insights_hunter[ai-insights-hunter]
-    aao_md_bloat_hunter[md-bloat-hunter]
-    aao_improve_skill[improve-skill]
-    aao_adapt_skill_for_ai_harness[adapt-skill-for-ai-harness]
   job_hunt_toolkit[job-hunt-toolkit]
     jht_init_workspace[init-workspace]
     jht_new_application[new-application]
@@ -38,9 +28,33 @@ kanban
     research_llm_wiki[llm-wiki]
   os_tools[os-tools]
     os_loop_macos[loop_macos]
+```
+
+### General AI User Productivity
+
+```mermaid
+kanban
+  work_session_tools[work-session-tools]
+    wst_daily[daily]
+    wst_task_management[task-management]
+    wst_interview[interview]
+    wst_create_team[create-team]
+  ai_assistant_ops[ai-assistant-ops]
+    aao_agents_md_improver[agents-md-improver]
+    aao_ai_setup_audit[ai-setup-audit]
+    aao_ai_insights_hunter[ai-insights-hunter]
+    aao_md_bloat_hunter[md-bloat-hunter]
+    aao_improve_skill[improve-skill]
+    aao_adapt_skill_for_ai_harness[adapt-skill-for-ai-harness]
   mermaid_diagrams[mermaid-diagrams]
     md_mermaid[mermaid]
     md_mermaid_lint[mermaid-lint]
+```
+
+### Programming
+
+```mermaid
+kanban
   dev_workflow[dev-workflow]
     dw_commit[commit]
     dw_create_pr[create-pr]
@@ -63,6 +77,12 @@ kanban
   openapi_tools[openapi-tools]
     oat_openapi_list[openapi-list]
     oat_openapi_inspect[openapi-inspect]
+```
+
+### AI Engineer
+
+```mermaid
+kanban
   llm_application_dev[llm-application-dev]
     lad_select_agent_patterns[select-agent-patterns]
     lad_schema_guided_reasoning[schema-guided-reasoning]
