@@ -11,78 +11,89 @@ workflows.
 ## Plugin Catalog
 
 ```mermaid
-flowchart TB
-
-subgraph RowOne[" "]
-  direction LR
-  Langfuse["`**langfuse**
-  Trace exploration, datasets,
-  evaluators, dashboards, and experiments`"]:::langfuse
-  OpenAPITools["`**openapi-tools**
-  List and inspect OpenAPI endpoints
-  on running services`"]:::openapi
-  LLMApplicationDev["`**llm-application-dev**
-  Agent pattern selection and
-  schema-guided reasoning`"]:::llm
-  PythonDevWorkflow["`**python-dev-workflow**
-  Pytest, Redis test patterns,
-  Celery, and unit-test review agents`"]:::python
-  DevWorkflow["`**dev-workflow**
-  Commits, PRs, tickets, releases,
-  and review-comment workflows`"]:::dev
-end
-
-subgraph RowTwo[" "]
-  direction LR
-  WorkSessionTools["`**work-session-tools**
-  Daily notes, task tracking,
-  interviews, and team planning`"]:::session
-  AIAssistantOps["`**ai-assistant-ops**
-  Assistant setup audits, skill improvement,
-  harness adaptation, and Markdown cleanup`"]:::ops
-  OSTools["`**os-tools**
-  Local macOS automation utilities
-  for assistant workflows`"]:::os
-  CloudStorageTools["`**cloud-storage-tools**
-  User-file storage workflows for
-  Dropbox, Drive, OneDrive, and MEGA`"]:::storage
-  JobHuntToolkit["`**job-hunt-toolkit**
-  Versioned job applications with
-  resume tailoring and PDF checks`"]:::job
-end
-
-subgraph RowThree[" "]
-  direction LR
-  RunAndVerifyApp["`**run-and-verify-app**
-  Launch apps, verify runtime behavior,
-  and record run recipes`"]:::runverify
-  MermaidDiagrams["`**mermaid-diagrams**
-  Mermaid generation,
-  syntax references, and linting`"]:::mermaid
-end
-
-Langfuse ~~~ OpenAPITools ~~~ LLMApplicationDev ~~~ PythonDevWorkflow ~~~ DevWorkflow
-WorkSessionTools ~~~ AIAssistantOps ~~~ Research ~~~ OSTools ~~~ CloudStorageTools ~~~ JobHuntToolkit
-RowOne ~~~ RowTwo
-RowTwo ~~~ RowThree
-RunAndVerifyApp ~~~ MermaidDiagrams
-
-classDef langfuse fill:#dff7ff,stroke:#0284c7,stroke-width:2px,color:#0f172a;
-classDef openapi fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#052e16;
-classDef llm fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#451a03;
-classDef python fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#2e1065;
-classDef dev fill:#fee2e2,stroke:#dc2626,stroke-width:2px,color:#450a0a;
-classDef runverify fill:#e0f2fe,stroke:#0369a1,stroke-width:2px,color:#082f49;
-classDef session fill:#ccfbf1,stroke:#0f766e,stroke-width:2px,color:#042f2e;
-classDef ops fill:#fce7f3,stroke:#db2777,stroke-width:2px,color:#500724;
-classDef research fill:#fef9c3,stroke:#ca8a04,stroke-width:2px,color:#422006;
-classDef os fill:#e0e7ff,stroke:#4f46e5,stroke-width:2px,color:#1e1b4b;
-classDef storage fill:#ecfccb,stroke:#65a30d,stroke-width:2px,color:#1a2e05;
-classDef job fill:#ffedd5,stroke:#ea580c,stroke-width:2px,color:#431407;
-classDef mermaid fill:#f0fdf4,stroke:#059669,stroke-width:2px,color:#052e16;
-style RowOne fill:transparent,stroke:transparent,color:transparent;
-style RowTwo fill:transparent,stroke:transparent,color:transparent;
-style RowThree fill:transparent,stroke:transparent,color:transparent;
+kanban
+  work_session_tools[work-session-tools]
+    wst_daily[daily]
+    wst_task_management[task-management]
+    wst_interview[interview]
+    wst_create_team[create-team]
+  ai_assistant_ops[ai-assistant-ops]
+    aao_agents_md_improver[agents-md-improver]
+    aao_ai_setup_audit[ai-setup-audit]
+    aao_ai_insights_hunter[ai-insights-hunter]
+    aao_md_bloat_hunter[md-bloat-hunter]
+    aao_improve_skill[improve-skill]
+    aao_adapt_skill_for_ai_harness[adapt-skill-for-ai-harness]
+  job_hunt_toolkit[job-hunt-toolkit]
+    jht_init_workspace[init-workspace]
+    jht_new_application[new-application]
+    jht_resume_tailoring[resume-tailoring]
+    jht_export_pdf[export-pdf]
+    jht_scrub_pdf_metadata[scrub-pdf-metadata]
+    jht_prepare_to_send[prepare-to-send]
+  cloud_storage_tools[cloud-storage-tools]
+    cst_mega_cmd[mega-cmd]
+  research[research]
+    research_obsidian[obsidian]
+    research_llm_wiki[llm-wiki]
+  os_tools[os-tools]
+    os_loop_macos[loop_macos]
+  mermaid_diagrams[mermaid-diagrams]
+    md_mermaid[mermaid]
+    md_mermaid_lint[mermaid-lint]
+  dev_workflow[dev-workflow]
+    dw_commit[commit]
+    dw_create_pr[create-pr]
+    dw_pr_checkout[pr-checkout]
+    dw_pr_comment[pr-comment]
+    dw_pr_address_comments[pr-address-comments]
+    dw_ticket_branch[ticket-branch]
+    dw_ticket_comment_status[ticket-comment-status]
+    dw_version_bumper[version-bumper]
+    dw_spec_interview[spec-interview]
+    dw_spec_contradiction_hunter[spec-contradiction-hunter]
+  run_and_verify_app[run-and-verify-app]
+    rva_run[run]
+    rva_verify[verify]
+    rva_run_skill_generator[run-skill-generator]
+  python_dev_workflow[python-dev-workflow]
+    pdw_writing_unit_tests[writing-unit-tests]
+    pdw_pytest_redis[pytest-redis]
+    pdw_celery_expert[celery-expert]
+  openapi_tools[openapi-tools]
+    oat_openapi_list[openapi-list]
+    oat_openapi_inspect[openapi-inspect]
+  llm_application_dev[llm-application-dev]
+    lad_select_agent_patterns[select-agent-patterns]
+    lad_schema_guided_reasoning[schema-guided-reasoning]
+  langfuse[langfuse]
+    lf_discover_traces[discover-traces]
+    lf_discover_scores[discover-scores]
+    lf_discover_datasets[discover-datasets]
+    lf_list_dataset_runs[list-dataset-runs]
+    lf_analyze_experiment_results[analyze-experiment-results]
+    lf_compare_experiments[compare-experiments]
+    lf_trigger_experiment[trigger-experiment]
+    lf_configure_remote_experiment[configure-remote-experiment]
+    lf_create_dataset[create-dataset]
+    lf_design_dataset_schema[design-dataset-schema]
+    lf_manage_dataset_items[manage-dataset-items]
+    lf_create_evaluator[create-evaluator]
+    lf_inspect_evaluator[inspect-evaluator]
+    lf_list_evaluators[list-evaluators]
+    lf_update_evaluator[update-evaluator]
+    lf_toggle_evaluator_status[toggle-evaluator-status]
+    lf_delete_evaluator[delete-evaluator]
+    lf_manage_dashboard[manage-dashboard]
+    lf_list_widgets[list-widgets]
+    lf_suggest_widgets[suggest-widgets]
+    lf_layout_widgets[layout-widgets]
+    lf_create_widget[create-widget]
+    lf_update_widget[update-widget]
+    lf_delete_widget[delete-widget]
+    lf_query_metrics[query-metrics]
+    lf_discover_filter_options[discover-filter-options]
+    lf_discover_models[discover-models]
 ```
 
 ## Notes for Users
