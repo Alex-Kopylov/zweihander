@@ -56,6 +56,7 @@ kanban
 ```mermaid
 kanban
   dev_workflow[dev-workflow]
+    dw_approve_pr[approve-pr]
     dw_commit[commit]
     dw_create_pr[create-pr]
     dw_pr_checkout[pr-checkout]
@@ -64,6 +65,7 @@ kanban
     dw_ticket_branch[ticket-branch]
     dw_ticket_comment_status[ticket-comment-status]
     dw_version_bumper[version-bumper]
+    dw_yolo_push[yolo-push]
     dw_spec_interview[spec-interview]
     dw_spec_contradiction_hunter[spec-contradiction-hunter]
   run_and_verify_app[run-and-verify-app]
@@ -295,6 +297,7 @@ review comments, ticket branches, status updates, version bumps, or spec checks.
 
 | Skill | Description |
 |---|---|
+| `approve-pr` | Approve and merge PRs with current checks and policy gates. |
 | `commit` | Create single-line Conventional Commits. |
 | `create-pr` | Open pull requests from the current branch. |
 | `pr-address-comments` | Fetch, fix, reply to, and resolve PR feedback. |
@@ -305,6 +308,7 @@ review comments, ticket branches, status updates, version bumps, or spec checks.
 | `ticket-branch` | Create a git branch from a ticket ID or URL. |
 | `ticket-comment-status` | Post status updates to tickets or work items. |
 | `version-bumper` | Bump versions in plugin and package metadata. |
+| `yolo-push` | Slash-command gated commit, PR, CI, merge, and CD workflow. |
 
 **Agents**
 
