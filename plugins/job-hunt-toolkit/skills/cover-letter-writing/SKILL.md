@@ -22,13 +22,14 @@ If evidence is missing for a claim the JD wants, ask or mark it as a gap. If the
 
 ## Workflow
 
-1. Read workspace rules: local `README.md`, `AGENTS.md`, `CLAUDE.md`, and `NAMING.md` when present.
-2. Read `USER.md`, `company.md`, the JD, and the tailored CV HTML.
-3. Extract: target role, company motivation, 3 strongest evidence-backed fit points, and any gaps the letter should handle honestly.
-4. Draft a short letter: direct opening, evidence body, honest gap framing if needed, concise close.
-5. Save HTML in the company folder using `references/naming-rules.md`: `<First>_<Last>_<Role>_Cover_Letter.html`. No company name in the filename.
-6. Export PDF next to the HTML with the same stem by invoking `job-hunt-toolkit:export-pdf`.
-7. Run `job-hunt-toolkit:prepare-to-send` on the PDF before calling it ready.
+Progress:
+- [ ] Step 1: Read workspace rules (`README.md`, `AGENTS.md`, `CLAUDE.md`, and `NAMING.md` when present)
+- [ ] Step 2: Read source materials (`USER.md`, `company.md`, the JD, and the tailored CV HTML)
+- [ ] Step 3: Extract evidence (target role, company motivation, 3 strongest fit points, and honest gap handling)
+- [ ] Step 4: Draft the letter (direct opening, evidence body, honest gap framing if needed, concise close)
+- [ ] Step 5: Save the HTML (`<First>_<Last>_<Role>_Cover_Letter.html` in the company folder, with no company name)
+- [ ] Step 6: Export the PDF (invoke `job-hunt-toolkit:export-pdf`)
+- [ ] Step 7: Run pre-send checks (invoke `job-hunt-toolkit:prepare-to-send` before calling it ready)
 
 ## Content Rules
 

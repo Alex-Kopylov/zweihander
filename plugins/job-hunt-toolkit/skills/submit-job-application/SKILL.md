@@ -44,17 +44,18 @@ If neither Playwright nor a real browser path can safely operate the portal, sto
 
 ## Fill Workflow
 
-1. Resolve or create the company folder. Save the portal URL in `company.md`.
-2. If the portal is the only JD or document-requirement source, open it read-only first to capture the JD, required uploads, and field list. Do not fill or submit during discovery.
-3. Prepare artifacts through the hard gates.
-4. Open the portal without submitting. Capture screenshots or DOM notes for field names.
-5. Fill only fields backed by the approved sources.
-6. For uploads, use the prepared PDF paths; do not upload master CV files.
-7. Pause on every legally meaningful, sensitive, paid, or consent field that is not explicitly answered in `USER.md`.
-8. For background check consent, data processing consent, legal attestations, and other acknowledgements, show the portal wording and ask for fresh field-specific approval even if `USER.md` has a generic prior answer.
-9. If any required field remains unanswered, stop before final submission and report it as `required unanswered`; do not work around it with a placeholder.
-10. Produce the filled-value report in the exact format below.
-11. Ask for explicit final approval.
+Progress:
+- [ ] Step 1: Resolve the company folder (create it if needed and save the portal URL in `company.md`)
+- [ ] Step 2: Discover portal requirements (open read-only if the portal is the only JD or upload source; do not fill or submit)
+- [ ] Step 3: Prepare artifacts (complete the hard gates for tailored CV, cover letter when required, and `job-hunt-toolkit:prepare-to-send`)
+- [ ] Step 4: Open the portal for filling (capture screenshots or DOM notes for field names without submitting)
+- [ ] Step 5: Fill supported fields (use only approved sources)
+- [ ] Step 6: Upload prepared PDFs (use company-folder PDFs only, never master CV files)
+- [ ] Step 7: Pause on unsupported sensitive fields (legal, demographic, paid, consent, or availability fields missing from `USER.md`)
+- [ ] Step 8: Confirm attestations (show background check, data processing, legal, or acknowledgement wording and ask for field-specific approval)
+- [ ] Step 9: Stop on unanswered required fields (report `required unanswered`; do not use placeholders)
+- [ ] Step 10: Produce the filled-value report (use the exact `**entity_name**: value` format below)
+- [ ] Step 11: Ask for explicit final approval (do not click final submit before approval)
 
 For dry runs, tests, or reviews, describe choices and report shape without opening the portal or editing files.
 
