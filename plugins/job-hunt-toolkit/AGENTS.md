@@ -35,6 +35,8 @@ Match user intent to the right skill:
 |---|---|
 | "start a new application at X", "apply to Y" | `new-application` |
 | "tailor my CV for this JD" | `resume-tailoring` |
+| "write a cover letter", "draft cover letter" | `cover-letter-writing` |
+| "fill this application portal", "submit this application" | `submit-job-application` |
 | "export the PDF", "rebuild the PDF", "regenerate" | `export-pdf` |
 | "ready to send", "final check", "what's the checklist" | `prepare-to-send` |
 | "scrub metadata", "clean the PDF" | `scrub-pdf-metadata` |
@@ -43,6 +45,7 @@ Match user intent to the right skill:
 ## Skill chaining
 
 - `new-application` should copy master HTML, then hand off to `resume-tailoring`.
+- `submit-job-application` should prepare a tailored CV and required cover letter before uploading, then stop for explicit final approval before submission.
 - `export-pdf` auto-invokes `scrub-pdf-metadata` as its final step. Every exported PDF is scrubbed.
 - `prepare-to-send` verifies scrubbing as a gate before declaring the file ready.
 - `export-pdf` is a utility any skill can call after HTML edits.

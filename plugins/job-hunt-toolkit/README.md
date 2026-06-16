@@ -23,6 +23,8 @@ Turns your chaotic Downloads folder into a disciplined, structured workspace:
 | `init-workspace` | slash command | One-time setup: scaffolds `~/Documents/job_seeking/` (or configured path) with README, AGENTS.md, and NAMING.md |
 | `new-application` | slash command | Start a new company application: create folder, scaffold `company.md`, copy master HTML, invoke tailoring |
 | `resume-tailoring` | conversational | Tailor the CV against a JD. Research → template → discovery → assembly → export. |
+| `cover-letter-writing` | conversational | Write an evidence-backed cover letter as HTML, then export and check the PDF. |
+| `submit-job-application` | conversational | Fill employer portals from workspace data and stop for explicit approval before final submission. |
 | `export-pdf` | slash command or auto | HTML → PDF via headless Chromium. Consistent rendering across applications. |
 | `scrub-pdf-metadata` | auto (after export) | Strip PDF metadata with exiftool. Required before sending any PDF. |
 | `prepare-to-send` | slash command | Run the full pre-send checklist: naming, metadata, visible content, and HTML↔PDF parity. |
@@ -36,6 +38,8 @@ You can invoke skills conversationally — The assistant recognizes these phrase
 | "set up my job search workspace", "first-time setup", "initialise the workspace", "create the job hunt folder", "bootstrap my applications folder", "I'm starting fresh, set things up" | `init-workspace` |
 | "start a new application at Acme", "apply to Stripe", "new job application for Shopify", "create a folder for FAANG", "I want to apply to this company", "kick off an application" | `new-application` |
 | "tailor my CV for this JD", "customise my resume for this role", "optimise my CV against this job description", "adapt my CV to this posting", "rewrite my CV for this position", "help me tailor my resume" | `resume-tailoring` |
+| "write a cover letter", "draft a cover letter", "make a cover letter for this role", "generate a cover letter" | `cover-letter-writing` |
+| "fill this application portal", "submit this job application", "apply through this portal", "upload my CV to this application" | `submit-job-application` |
 | "export the PDF", "rebuild the PDF", "regenerate my CV PDF", "convert HTML to PDF", "re-export", "refresh the PDF" | `export-pdf` |
 | "scrub PDF metadata", "clean the PDF", "strip metadata before sending", "remove author from PDF", "sanitise the PDF", "wipe exif data" | `scrub-pdf-metadata` |
 | "ready to send", "final check", "run the pre-send checklist", "is my CV ready?", "check before I apply", "validate before sending", "am I good to go?" | `prepare-to-send` |

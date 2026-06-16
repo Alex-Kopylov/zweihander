@@ -452,12 +452,14 @@ HTML-to-PDF export, PDF metadata scrubbing, or a final pre-send checklist.
 
 | Skill | Description |
 |---|---|
+| `cover-letter-writing` | Write an evidence-backed cover letter as HTML and PDF. |
 | `export-pdf` | Render HTML CVs to PDF with headless Chromium. |
 | `init-workspace` | Scaffold the job application workspace. |
 | `new-application` | Create a company application folder and starter files. |
 | `prepare-to-send` | Run final filename, metadata, and content checks. |
 | `resume-tailoring` | Tailor a CV to a job description without fabrication. |
 | `scrub-pdf-metadata` | Strip sensitive PDF metadata before sending. |
+| `submit-job-application` | Fill employer portals and require approval before final submission. |
 
 ## Recommended Third-Party Plugins
 
