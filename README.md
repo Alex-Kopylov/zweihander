@@ -57,16 +57,30 @@ kanban
 kanban
   dev_workflow[dev-workflow]
     dw_approve_pr[approve-pr]
+    dw_brainstorming[brainstorming]
     dw_commit[commit]
     dw_create_pr[create-pr]
+    dw_dispatching_parallel_agents[dispatching-parallel-agents]
+    dw_executing_plans[executing-plans]
+    dw_finishing_development_branch[finishing-a-development-branch]
     dw_pr_checkout[pr-checkout]
     dw_pr_comment[pr-comment]
     dw_pr_address_comments[pr-address-comments]
     dw_render_diff_html[render-diff-html]
+    dw_receiving_code_review[receiving-code-review]
+    dw_requesting_code_review[requesting-code-review]
+    dw_subagent_driven_development[subagent-driven-development]
+    dw_systematic_debugging[systematic-debugging]
+    dw_test_driven_development[test-driven-development]
     dw_ticket_branch[ticket-branch]
     dw_ticket_comment_status[ticket-comment-status]
+    dw_using_git_worktrees[using-git-worktrees]
+    dw_using_superpowers[using-superpowers]
+    dw_verification_before_completion[verification-before-completion]
     dw_version_bumper[version-bumper]
     dw_yolo_push[yolo-push]
+    dw_writing_plans[writing-plans]
+    dw_writing_skills[writing-skills]
     dw_spec_interview[spec-interview]
     dw_spec_contradiction_hunter[spec-contradiction-hunter]
   run_and_verify_app[run-and-verify-app]
@@ -240,27 +254,45 @@ for production behavior.
 
 ### `dev-workflow`
 
-**Use when:** you need structured development workflow support: commits, PRs,
-visual diff reports, review comments, ticket branches, status updates, version
-bumps, or spec checks.
+**Use when:** you need structured development workflow support: planning,
+TDD, debugging, visual diff reports, review, commits, PRs, ticket branches,
+status updates, version bumps, or spec checks.
+
+**Origin note:** several methodology skills in this plugin were copied from the
+MIT-licensed [Superpowers](https://github.com/obra/superpowers) project by
+Jesse Vincent. See `ACKNOWLEDGEMENTS.md` for skill-by-skill provenance.
 
 **Skills**
 
 | Skill | Description |
 |---|---|
 | `approve-pr` | Approve and merge PRs with current checks and policy gates. |
+| `brainstorming` | Refine ideas into approved designs before implementation. |
 | `commit` | Create single-line Conventional Commits. |
 | `create-pr` | Open pull requests from the current branch. |
+| `dispatching-parallel-agents` | Coordinate independent subagent tasks that can run concurrently. |
+| `executing-plans` | Execute written implementation plans with review checkpoints. |
+| `finishing-a-development-branch` | Verify completion and choose merge, PR, keep, or cleanup actions. |
 | `pr-address-comments` | Fetch, fix, reply to, and resolve PR feedback. |
 | `pr-checkout` | Switch to a PR branch for review or changes. |
 | `pr-comment` | Post general or inline PR comments. |
 | `render-diff-html` | Render git diffs and file comparisons as HTML reports. |
+| `receiving-code-review` | Handle review feedback with technical rigor before making changes. |
+| `requesting-code-review` | Request focused review before task completion or merge. |
 | `spec-contradiction-hunter` | Find contradictions and inconsistencies in specs. |
 | `spec-interview` | Interview the user and produce an implementation spec. |
+| `subagent-driven-development` | Execute implementation plans with one subagent per task and review gates. |
+| `systematic-debugging` | Investigate bugs through evidence, patterns, hypotheses, and fixes. |
+| `test-driven-development` | Enforce red-green-refactor for features, bug fixes, and behavior changes. |
 | `ticket-branch` | Create a git branch from a ticket ID or URL. |
 | `ticket-comment-status` | Post status updates to tickets or work items. |
+| `using-git-worktrees` | Set up isolated workspace branches for feature work. |
+| `using-superpowers` | Establish the copied Superpowers skill-discovery workflow. |
+| `verification-before-completion` | Verify claims before reporting work as complete or fixed. |
 | `version-bumper` | Bump versions in plugin and package metadata. |
 | `yolo-push` | Slash-command gated commit, PR, CI, merge, and CD workflow. |
+| `writing-plans` | Turn approved specs into detailed task-by-task implementation plans. |
+| `writing-skills` | Create and test skills using TDD-style pressure scenarios. |
 
 **Agents**
 
