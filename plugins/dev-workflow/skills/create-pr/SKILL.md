@@ -32,9 +32,16 @@ description: Create a pull request from the current branch. Activate when user a
    - No ticket: just `<concise summary>`
    - Keep it short and descriptive
 
-5. **Create PR**:
-   - Use `<platform-cli>` to create the PR with the generated title and empty body
-   - Alternatives: `gh` for GitHub, `glab` for GitLab
+5. **Generate PR body**:
+   - Explain why the change exists: the problem, intent, or intuition behind the change
+   - Summarize the material code/documentation changes
+   - Use a Markdown checklist only for validation:
+     - Checked items (`- [x]`) are validations already completed
+     - Unchecked items (`- [ ]`) are validations still to be completed
+   - Keep the body factual and scoped to observed changes; do not invent product impact or ticket details
+
+6. **Create PR**:
+   - Use `<platform-cli>` to create the PR with the generated title and generated body
 
 ## Examples
 
@@ -52,7 +59,6 @@ description: Create a pull request from the current branch. Activate when user a
 
 ## Notes
 
-- PR body is always empty
 - Never mention the assistant runtime in the PR title
 - Ticket context is optional by default; do not ask for a ticket unless the user explicitly requests ticket-backed PR behavior
 - After creating the PR, display a clickable hyperlink to the PR URL in the final message
