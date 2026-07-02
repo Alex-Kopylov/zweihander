@@ -110,6 +110,6 @@ After success, print:
 ✓ Docs generated from plugin templates
 
 Next:
-  /job-hunt-toolkit:new-application <company-slug>   # start an application
-  /job-hunt-toolkit:export-pdf                       # generate master PDF from HTML
+  $job-hunt-toolkit:new-application <company-slug>   # start an application
+  $job-hunt-toolkit:export-pdf                       # generate master PDF from HTML
 ```

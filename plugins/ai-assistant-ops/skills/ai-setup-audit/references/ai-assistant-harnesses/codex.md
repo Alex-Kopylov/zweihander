@@ -7,4 +7,3 @@ Use available file-reading and search tools instead of Claude Code tool names:
 If delegated exploration is useful and the current tool list supports it,
 discover and use the Codex multi-agent capability; otherwise perform the audit
 in the current context.
-

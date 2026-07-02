@@ -1,7 +1,7 @@
 {
-  "name": "my-marketplace",
+  "name": "zweihander",
   "interface": {
-    "displayName": "My Marketplace"
+    "displayName": "Zweihander"
   },
   "plugins": [
     {
@@ -65,6 +65,18 @@
       "category": "Development"
     },
     {
+      "name": "run-and-verify-app",
+      "source": {
+        "source": "local",
+        "path": "./plugins/run-and-verify-app"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Development"
+    },
+    {
       "name": "mermaid-diagrams",
       "source": {
         "source": "local",
@@ -81,6 +93,18 @@
       "source": {
         "source": "local",
         "path": "./plugins/work-session-tools"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    },
+    {
+      "name": "research",
+      "source": {
+        "source": "local",
+        "path": "./plugins/research"
       },
       "policy": {
         "installation": "AVAILABLE",

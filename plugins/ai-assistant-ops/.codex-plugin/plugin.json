@@ -1,7 +1,7 @@
 {
   "name": "ai-assistant-ops",
-  "version": "0.1.5",
-  "description": "Assistant setup, instruction hygiene, memory capture, harness adaptation, and markdown/prompt maintenance.",
+  "version": "0.1.7",
+  "description": "Assistant setup, instruction hygiene, memory capture, skill improvement, harness adaptation, and markdown/prompt maintenance.",
   "author": {
     "name": "Alex Kopylov"
   },
@@ -9,8 +9,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "AI Assistant Ops",
-    "shortDescription": "Assistant setup and harness maintenance",
-    "longDescription": "Assistant setup, instruction hygiene, memory capture, AI assistant harness adaptation, and markdown or prompt maintenance for agent workflows.",
+    "shortDescription": "Assistant setup and skill maintenance",
+    "longDescription": "Assistant setup, instruction hygiene, memory capture, skill improvement, AI assistant harness adaptation, and markdown or prompt maintenance for agent workflows.",
     "developerName": "Alex Kopylov",
     "category": "Utilities",
     "capabilities": [
@@ -21,6 +21,7 @@
     "defaultPrompt": [
       "Audit my assistant setup.",
       "Trim verbosity in these skill docs.",
+      "Improve this skill from eval feedback.",
       "Adapt this skill using the assistant harness action matrix."
     ]
   }

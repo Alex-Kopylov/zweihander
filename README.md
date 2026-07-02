@@ -1,10 +1,122 @@
-# My Marketplace
+# 🗡️ Zweihander
 
-A personal marketplace of agent plugins for Codex and Claude Code.
+Simple, robust, and versatile marketplace for agent plugins,
+forged for the chaos of the AI world.
 
-This marketplace collects practical plugins for LLM observability, API
-exploration, development workflows, assistant operations, cloud storage, local
-automation, and job-search workflows.
+It collects practical tools for Codex and Claude Code across LLM observability,
+API exploration, development workflows, assistant operations, research notes,
+cloud storage, local automation, runtime app verification, and job-search
+workflows.
+
+## Plugin Catalog
+
+### General User Productivity
+
+```mermaid
+kanban
+  job_hunt_toolkit[job-hunt-toolkit]
+    jht_init_workspace[init-workspace]
+    jht_new_application[new-application]
+    jht_resume_tailoring[resume-tailoring]
+    jht_export_pdf[export-pdf]
+    jht_scrub_pdf_metadata[scrub-pdf-metadata]
+    jht_prepare_to_send[prepare-to-send]
+  cloud_storage_tools[cloud-storage-tools]
+    cst_mega_cmd[mega-cmd]
+  research[research]
+    research_obsidian[obsidian]
+    research_llm_wiki[llm-wiki]
+  os_tools[os-tools]
+    os_loop_macos[loop_macos]
+```
+
+### General AI User Productivity
+
+```mermaid
+kanban
+  work_session_tools[work-session-tools]
+    wst_daily[daily]
+    wst_task_management[task-management]
+    wst_interview[interview]
+    wst_create_team[create-team]
+  ai_assistant_ops[ai-assistant-ops]
+    aao_agents_md_improver[agents-md-improver]
+    aao_ai_setup_audit[ai-setup-audit]
+    aao_ai_insights_hunter[ai-insights-hunter]
+    aao_md_bloat_hunter[md-bloat-hunter]
+    aao_improve_skill[improve-skill]
+    aao_adapt_skill_for_ai_harness[adapt-skill-for-ai-harness]
+  mermaid_diagrams[mermaid-diagrams]
+    md_mermaid[mermaid]
+    md_mermaid_lint[mermaid-lint]
+```
+
+### Programming
+
+```mermaid
+kanban
+  dev_workflow[dev-workflow]
+    dw_approve_pr[approve-pr]
+    dw_commit[commit]
+    dw_create_pr[create-pr]
+    dw_pr_checkout[pr-checkout]
+    dw_pr_comment[pr-comment]
+    dw_pr_address_comments[pr-address-comments]
+    dw_ticket_branch[ticket-branch]
+    dw_ticket_comment_status[ticket-comment-status]
+    dw_version_bumper[version-bumper]
+    dw_yolo_push[yolo-push]
+    dw_spec_interview[spec-interview]
+    dw_spec_contradiction_hunter[spec-contradiction-hunter]
+  run_and_verify_app[run-and-verify-app]
+    rva_run[run]
+    rva_verify[verify]
+    rva_run_skill_generator[run-skill-generator]
+  python_dev_workflow[python-dev-workflow]
+    pdw_writing_unit_tests[writing-unit-tests]
+    pdw_pytest_redis[pytest-redis]
+    pdw_celery_expert[celery-expert]
+  openapi_tools[openapi-tools]
+    oat_openapi_list[openapi-list]
+    oat_openapi_inspect[openapi-inspect]
+```
+
+### AI Engineer
+
+```mermaid
+kanban
+  llm_application_dev[llm-application-dev]
+    lad_select_agent_patterns[select-agent-patterns]
+    lad_schema_guided_reasoning[schema-guided-reasoning]
+  langfuse[langfuse]
+    lf_discover_traces[discover-traces]
+    lf_discover_scores[discover-scores]
+    lf_discover_datasets[discover-datasets]
+    lf_list_dataset_runs[list-dataset-runs]
+    lf_analyze_experiment_results[analyze-experiment-results]
+    lf_compare_experiments[compare-experiments]
+    lf_trigger_experiment[trigger-experiment]
+    lf_configure_remote_experiment[configure-remote-experiment]
+    lf_create_dataset[create-dataset]
+    lf_design_dataset_schema[design-dataset-schema]
+    lf_manage_dataset_items[manage-dataset-items]
+    lf_create_evaluator[create-evaluator]
+    lf_inspect_evaluator[inspect-evaluator]
+    lf_list_evaluators[list-evaluators]
+    lf_update_evaluator[update-evaluator]
+    lf_toggle_evaluator_status[toggle-evaluator-status]
+    lf_delete_evaluator[delete-evaluator]
+    lf_manage_dashboard[manage-dashboard]
+    lf_list_widgets[list-widgets]
+    lf_suggest_widgets[suggest-widgets]
+    lf_layout_widgets[layout-widgets]
+    lf_create_widget[create-widget]
+    lf_update_widget[update-widget]
+    lf_delete_widget[delete-widget]
+    lf_query_metrics[query-metrics]
+    lf_discover_filter_options[discover-filter-options]
+    lf_discover_models[discover-models]
+```
 
 ## Notes for Users
 
@@ -19,13 +131,13 @@ choose what each plugin is for. Developer and maintenance notes live in
 Add the marketplace:
 
 ```shell
-codex plugin marketplace add Alex-Kopylov/my-marketplace
+codex plugin marketplace add Alex-Kopylov/zweihander
 ```
 
 Install a plugin:
 
 ```shell
-codex plugin add langfuse@my-marketplace
+codex plugin add langfuse@zweihander
 ```
 
 List available plugins:
@@ -37,7 +149,7 @@ codex plugin list
 Update the installed marketplace:
 
 ```shell
-codex plugin marketplace upgrade my-marketplace
+codex plugin marketplace upgrade zweihander
 ```
 
 ### Claude Code
@@ -45,108 +157,37 @@ codex plugin marketplace upgrade my-marketplace
 Add the marketplace from inside Claude Code:
 
 ```shell
-/plugin marketplace add Alex-Kopylov/my-marketplace
+/plugin marketplace add Alex-Kopylov/zweihander
 ```
 
 Install a plugin:
 
 ```shell
-/plugin install langfuse@my-marketplace
+/plugin install langfuse@zweihander
 ```
 
 Update the installed marketplace:
 
 ```shell
-/plugin marketplace update my-marketplace
+/plugin marketplace update zweihander
 ```
 
 For scripts or automation, use the non-interactive CLI:
 
 ```shell
-claude plugin marketplace add Alex-Kopylov/my-marketplace
-claude plugin install langfuse@my-marketplace
-claude plugin marketplace update my-marketplace
+claude plugin marketplace add Alex-Kopylov/zweihander
+claude plugin install langfuse@zweihander
+claude plugin marketplace update zweihander
 ```
 
 ## How to Use
 
 1. Add this marketplace to Codex or Claude Code.
 2. Pick a plugin from the catalog below.
-3. Install the plugin with `plugin@my-marketplace`, for example
-   `langfuse@my-marketplace`.
+3. Install the plugin with `plugin@zweihander`, for example
+   `langfuse@zweihander`.
 4. Ask the assistant naturally for the workflow you want. The installed plugin
    contributes skills, agents, or both.
-
-## Plugin Catalog
-
-```mermaid
-flowchart TB
-
-subgraph RowOne[" "]
-  direction LR
-  Langfuse["`**langfuse**
-  Trace exploration, datasets,
-  evaluators, dashboards, and experiments`"]:::langfuse
-  OpenAPITools["`**openapi-tools**
-  List and inspect OpenAPI endpoints
-  on running services`"]:::openapi
-  LLMApplicationDev["`**llm-application-dev**
-  Schema-guided reasoning patterns
-  for LLM application design`"]:::llm
-  PythonDevWorkflow["`**python-dev-workflow**
-  Pytest, Redis test patterns,
-  Celery, and unit-test review agents`"]:::python
-  DevWorkflow["`**dev-workflow**
-  Commits, PRs, tickets, releases,
-  and review-comment workflows`"]:::dev
-end
-
-subgraph RowTwo[" "]
-  direction LR
-  WorkSessionTools["`**work-session-tools**
-  Daily notes, task tracking,
-  interviews, and team planning`"]:::session
-  AIAssistantOps["`**ai-assistant-ops**
-  Assistant setup audits, harness adaptation,
-  memory capture, and Markdown cleanup`"]:::ops
-  OSTools["`**os-tools**
-  Local macOS automation utilities
-  for assistant workflows`"]:::os
-  CloudStorageTools["`**cloud-storage-tools**
-  User-file storage workflows for
-  Dropbox, Drive, OneDrive, and MEGA`"]:::storage
-  JobHuntToolkit["`**job-hunt-toolkit**
-  Versioned job applications with
-  resume tailoring and PDF checks`"]:::job
-end
-
-subgraph RowThree[" "]
-  direction LR
-  MermaidDiagrams["`**mermaid-diagrams**
-  Mermaid generation,
-  syntax references, and linting`"]:::mermaid
-end
-
-Langfuse ~~~ OpenAPITools ~~~ LLMApplicationDev ~~~ PythonDevWorkflow ~~~ DevWorkflow
-WorkSessionTools ~~~ AIAssistantOps ~~~ OSTools ~~~ CloudStorageTools ~~~ JobHuntToolkit
-RowOne ~~~ RowTwo
-RowTwo ~~~ RowThree
-
-classDef langfuse fill:#dff7ff,stroke:#0284c7,stroke-width:2px,color:#0f172a;
-classDef openapi fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#052e16;
-classDef llm fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#451a03;
-classDef python fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#2e1065;
-classDef dev fill:#fee2e2,stroke:#dc2626,stroke-width:2px,color:#450a0a;
-classDef session fill:#ccfbf1,stroke:#0f766e,stroke-width:2px,color:#042f2e;
-classDef ops fill:#fce7f3,stroke:#db2777,stroke-width:2px,color:#500724;
-classDef os fill:#e0e7ff,stroke:#4f46e5,stroke-width:2px,color:#1e1b4b;
-classDef storage fill:#ecfccb,stroke:#65a30d,stroke-width:2px,color:#1a2e05;
-classDef job fill:#ffedd5,stroke:#ea580c,stroke-width:2px,color:#431407;
-classDef mermaid fill:#f0fdf4,stroke:#059669,stroke-width:2px,color:#052e16;
-style RowOne fill:transparent,stroke:transparent,color:transparent;
-style RowTwo fill:transparent,stroke:transparent,color:transparent;
-style RowThree fill:transparent,stroke:transparent,color:transparent;
-```
 
 ## Plugins
 
@@ -211,13 +252,21 @@ available endpoints or inspect operation details.
 
 ### `llm-application-dev`
 
-LLM application design and schema-guided reasoning patterns.
+<details>
+<summary>LLM application design, agent pattern selection, and schema-guided reasoning patterns.</summary>
+
+**Use when:** you need to choose LLM workflow patterns, compare agent
+architecture trade-offs, or design structured schemas that guide model
+reasoning.
 
 **Skills**
 
 | Skill | Description |
 |---|---|
+| `select-agent-patterns` | Choose LLM workflow and agent design patterns by decomposing a problem into stages and comparing candidates. Based on [A Two-Dimensional Framework for AI Agent Design Patterns](https://arxiv.org/pdf/2605.13850). |
 | `schema-guided-reasoning` | Design structured Pydantic schemas that guide LLM reasoning. |
+
+</details>
 
 ### `python-dev-workflow`
 
@@ -248,6 +297,7 @@ review comments, ticket branches, status updates, version bumps, or spec checks.
 
 | Skill | Description |
 |---|---|
+| `approve-pr` | Approve and merge PRs with current checks and policy gates. |
 | `commit` | Create single-line Conventional Commits. |
 | `create-pr` | Open pull requests from the current branch. |
 | `pr-address-comments` | Fetch, fix, reply to, and resolve PR feedback. |
@@ -258,6 +308,7 @@ review comments, ticket branches, status updates, version bumps, or spec checks.
 | `ticket-branch` | Create a git branch from a ticket ID or URL. |
 | `ticket-comment-status` | Post status updates to tickets or work items. |
 | `version-bumper` | Bump versions in plugin and package metadata. |
+| `yolo-push` | Slash-command gated commit, PR, CI, merge, and CD workflow. |
 
 **Agents**
 
@@ -267,6 +318,30 @@ review comments, ticket branches, status updates, version bumps, or spec checks.
 | `release-manager` | Coordinates version bump and commit workflows. |
 | `structural-contradiction-hunter` | Finds deeper logical and scope conflicts. |
 | `surface-contradiction-hunter` | Finds direct, explicit contradictions. |
+
+### `run-and-verify-app`
+
+<details>
+<summary>Runtime app launch, verification, and run-skill generation inspired by Claude Code.</summary>
+
+**Use when:** you want to launch an app, verify a change against the
+running app instead of just tests, or record a reusable build and launch
+recipe for a project.
+
+Inspired by Claude Code's bundled run and verify app workflow, this plugin
+brings three coordinated skills to Codex. It is Codex-only; Claude Code users
+can use Claude Code's built-in run and verify skills.
+
+This is an opinionated adaptation, not a 1-to-1 port. It reflects this
+marketplace's preferences for runtime evidence and reusable project run skills.
+
+| Skill | Purpose |
+|---|---|
+| `run` | Launch and drive your app to see a change working. |
+| `verify` | Build and run your app to confirm a code change does what it should, without falling back to tests or type checks. |
+| `run-skill-generator` | Teach `run` and `verify` how to build and launch your project by recording a verified project-specific recipe. |
+
+</details>
 
 ### `mermaid-diagrams`
 
@@ -282,8 +357,6 @@ Mermaid code blocks with the Mermaid CLI.
 | `mermaid` | Generate Mermaid diagrams from user requirements with local syntax references. |
 | `mermaid-lint` | Validate Mermaid code blocks with `mmdc` and report lint status and errors. |
 
-</details>
-
 ### `work-session-tools`
 
 **Use when:** you want daily notes, task tracking, structured interviews, or a
@@ -298,11 +371,34 @@ designed multi-agent team for a larger work session.
 | `interview` | Walk through a list of items one by one. |
 | `task-management` | Track, split, and orchestrate session tasks. |
 
+### `research`
+
+<details>
+<summary>Research wiki and Obsidian vault workflows for agent-maintained notes.</summary>
+
+**Use when:** you want to create or query an interlinked research wiki, ingest
+sources into a knowledge base, lint wiki health, or work with Obsidian notes.
+
+**Origin:** ports MIT-licensed skills from
+[NousResearch/hermes-agent](https://github.com/NousResearch/hermes-agent):
+[`llm-wiki`](https://raw.githubusercontent.com/NousResearch/hermes-agent/refs/heads/main/skills/research/llm-wiki/SKILL.md)
+and
+[`obsidian`](https://raw.githubusercontent.com/NousResearch/hermes-agent/refs/heads/main/skills/note-taking/obsidian/SKILL.md).
+
+**Skills**
+
+| Skill | Description |
+|---|---|
+| `llm-wiki` | Build, query, ingest into, and lint an interlinked Markdown research wiki inspired by Andrej Karpathy's LLM Wiki pattern. |
+| `obsidian` | Read, search, create, append to, and edit notes in a filesystem-first Obsidian vault. |
+
+</details>
+
 ### `ai-assistant-ops`
 
 **Use when:** you want to audit assistant instructions, improve AGENTS.md files,
-adapt skills for assistant harnesses, capture useful session insights, or
-reduce Markdown bloat.
+improve existing skills, adapt skills for assistant harnesses, capture useful
+session insights, or reduce Markdown bloat.
 
 **Skills**
 
@@ -312,6 +408,7 @@ reduce Markdown bloat.
 | `agents-md-improver` | Audit and improve repository AGENTS.md files. |
 | `ai-insights-hunter` | Extract reusable decisions, patterns, and preferences from a session. |
 | `ai-setup-audit` | Audit assistant configuration files for conflicts and bloat. |
+| `improve-skill` | Improve existing skills through eval feedback, baseline comparison, iteration, and trigger checks. |
 | `md-bloat-hunter` | Trim redundancy, verbosity, and filler in Markdown. |
 
 **Skill Agents**

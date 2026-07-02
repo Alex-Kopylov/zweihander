@@ -261,3 +261,16 @@ Report concisely:
 
 If no findings are approved or the mode is `Audit+Report`, report that no files
 were changed.
+
+## PR Comment Follow-up
+
+After reporting, if the current git branch has exactly one open PR and the user
+has not asked to skip PR comments, invoke `$dev-workflow:pr-comment` for each
+finding whose semantic risk is in the configured posting levels. Default posting
+levels are `medium` and `high`.
+
+Post one concise comment per finding. Prefer inline file/range comments when
+the finding can be anchored safely. Include the validated replacement or
+deletion as the offered solution so `$dev-workflow:pr-comment` can post a
+platform-native suggestion block by default. Do not post skipped findings,
+invalid findings, failed-validation outputs, or size-budget-only warnings.

@@ -43,7 +43,22 @@ When harness-specific adaptation is needed, identify the active assistant harnes
 
 ### 2. Compose the comment
 
-Take the user's message and append the signature:
+Use readable review formatting by default:
+
+- Start with the issue and impact in one or two sentences.
+- Put metadata such as severity, risk, validation, or recommendation in short
+  labeled lines.
+- Keep prose compact; do not bury the suggested fix inside a paragraph or a
+  table.
+- When the comment proposes a concrete replacement and a file/line range is
+  available, include a platform-native inline suggestion by default. Omit it
+  only when the user explicitly asks for no suggestion, the platform cannot
+  support it, or the target range cannot be anchored safely.
+- For GitHub-specific review-comment and suggestion syntax, read
+  `references/github.MD`.
+
+Take the user's message after applying the formatting rules above and append
+the signature:
 
 ```
 {user's comment text}

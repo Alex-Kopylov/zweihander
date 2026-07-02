@@ -1,0 +1,27 @@
+{
+  "name": "research",
+  "version": "0.1.0",
+  "description": "Research knowledge-base and Obsidian vault workflows for agent-maintained notes.",
+  "author": {
+    "name": "Alex Kopylov"
+  },
+  "license": "MIT",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Research",
+    "shortDescription": "Research notes and wiki workflows",
+    "longDescription": "Research knowledge-base and Obsidian vault workflows for building, querying, linting, and maintaining agent-curated Markdown notes.",
+    "developerName": "Alex Kopylov",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Create a research wiki.",
+      "Ingest this source into my wiki.",
+      "Search my Obsidian vault."
+    ]
+  }
+}

@@ -80,6 +80,8 @@ Prefer compact fields:
 - `discovery`: how to find deferred or optional capabilities.
 - `nuances`: short compatibility notes that matter during translation.
 
+For `InvokeSkill`, keep user-facing direct-invocation forms explicit: Codex uses `$skill-name` or `$plugin-name:skill-name`; Claude Code uses `/skill-name` or `/plugin-name:skill-name`, while `Skill(name)` or `Skill(plugin-name:skill-name)` is Claude Code tool and permission syntax for model-driven invocation.
+
 Preserve `lookup_order: ["action", "assistant"]` so scripts can keep using `matrix["actions"][action_key][assistant_key]`.
 
 ## Safety Rules

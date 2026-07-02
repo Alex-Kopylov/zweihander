@@ -34,7 +34,7 @@ Identify the active assistant harness before applying harness-specific tool or c
 
 Read `JOB_HUNT_WORKSPACE` env var; fall back to `~/Documents/job_seeking`. Resolve `~`.
 
-If the workspace doesn't exist or lacks a master CV, stop and direct user to run `/job-hunt-toolkit:init-workspace` first.
+If the workspace doesn't exist or lacks a master CV, stop and direct user to run `$job-hunt-toolkit:init-workspace` first.
 
 ### 2. Validate company slug
 
@@ -98,8 +98,8 @@ Prompt user:
 Next:
   - Edit company.md with company details
   - Run resume-tailoring to tailor the CV
-  - /job-hunt-toolkit:export-pdf to regenerate PDF
-  - /job-hunt-toolkit:prepare-to-send before sending
+  - $job-hunt-toolkit:export-pdf to regenerate PDF
+  - $job-hunt-toolkit:prepare-to-send before sending
 ```
 
 ## Hard rules

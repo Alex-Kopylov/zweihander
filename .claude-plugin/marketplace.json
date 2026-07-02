@@ -1,10 +1,10 @@
 {
-  "name": "my-marketplace",
+  "name": "zweihander",
   "owner": {
     "name": "Alex Kopylov"
   },
   "metadata": {
-    "description": "A collection of agent plugins for LLM observability, API exploration, and development workflows"
+    "description": "🗡️ Zweihander is a simple, robust, and versatile marketplace for agent plugins, forged for the chaos of the AI world."
   },
   "plugins": [
     {
@@ -37,14 +37,16 @@
     {
       "name": "llm-application-dev",
       "source": "./plugins/llm-application-dev",
-      "description": "LLM application design and schema-guided reasoning patterns.",
+      "description": "LLM application design, agent pattern selection, and schema-guided reasoning patterns.",
       "category": "development",
       "tags": [
         "llm",
         "structured-output",
         "pydantic",
         "schemas",
-        "reasoning"
+        "reasoning",
+        "agent-patterns",
+        "architecture"
       ]
     },
     {
@@ -106,9 +108,23 @@
       ]
     },
     {
+      "name": "research",
+      "source": "./plugins/research",
+      "description": "Research knowledge-base and Obsidian vault workflows for agent-maintained notes.",
+      "category": "productivity",
+      "tags": [
+        "research",
+        "wiki",
+        "knowledge-base",
+        "obsidian",
+        "notes",
+        "markdown"
+      ]
+    },
+    {
       "name": "ai-assistant-ops",
       "source": "./plugins/ai-assistant-ops",
-      "description": "Assistant setup, instruction hygiene, memory capture, harness adaptation, and markdown/prompt maintenance.",
+      "description": "Assistant setup, instruction hygiene, memory capture, skill improvement, harness adaptation, and markdown/prompt maintenance.",
       "category": "utilities",
       "tags": [
         "agents-md",
@@ -117,7 +133,8 @@
         "memory",
         "markdown",
         "prompts",
-        "harness-adaptation"
+        "harness-adaptation",
+        "skill-improvement"
       ]
     },
     {

@@ -1,4 +1,4 @@
-# My Marketplace
+# Zweihander
 
 ## Notes for Developers
 
@@ -13,7 +13,8 @@ Keep development, maintenance, and release workflow guidance in this file.
 | Codex | `.agents/plugins/marketplace.json` | `plugins/*/.codex-plugin/plugin.json` |
 | Claude Code | `.claude-plugin/marketplace.json` | `plugins/*/.claude-plugin/plugin.json` |
 
-The marketplace name is `my-marketplace`.
+The marketplace install identifier is `zweihander`; the display name is
+`Zweihander`.
 
 ## Repository Layout
 

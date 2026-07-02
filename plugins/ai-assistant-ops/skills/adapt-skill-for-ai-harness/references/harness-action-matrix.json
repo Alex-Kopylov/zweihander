@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "checked": "2026-05-30",
+  "checked": "2026-06-16",
   "lookup_order": [
     "action",
     "assistant"
@@ -33,9 +33,12 @@
       "kind": "skill",
       "intent": "Load or activate a skill by name or path.",
       "ClaudeCode": {
-        "surface": "skill",
+        "surface": "tool-or-command",
         "terms": [
           "Skill",
+          "Skill(name)",
+          "Skill(plugin-name:skill-name)",
+          "/skill-name",
           "/plugin-name:skill-name"
         ],
         "aliases": [],
@@ -43,20 +46,26 @@
           "available skills list"
         ],
         "nuances": [
-          "plugin skills can be invoked with plugin namespace"
+          "direct user invocation uses /skill-name or /plugin-name:skill-name",
+          "Skill(name) is tool and permission syntax for programmatic invocation",
+          "plugin skills use the plugin-name:skill-name namespace"
         ]
       },
       "Codex": {
         "surface": "skill",
         "terms": [
           "SKILL.md",
-          "skill"
+          "skill",
+          "$skill-name",
+          "$plugin-name:skill-name"
         ],
         "aliases": [],
         "discovery": [
-          "available skills list"
+          "available skills list",
+          "/skills"
         ],
         "nuances": [
+          "explicit user invocation uses $skill-name or $plugin-name:skill-name",
           "frontmatter name and description are in context before body load"
         ]
       }

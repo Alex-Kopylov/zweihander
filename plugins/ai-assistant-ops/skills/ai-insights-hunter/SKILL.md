@@ -205,11 +205,11 @@ If the user explores an item, asks questions, or revisits a decision, continue t
 
 ## Step 7 — Targeted Quality Check on Modified Files
 
-Use `ai-assistant-ops:agents-md-improver` when available, scoped only to the files written during Step 6.
+Use `$ai-assistant-ops:agents-md-improver` when available, scoped only to the files written during Step 6.
 
 Before it runs, tell it explicitly: "Focus only on these files that were just modified: [list]. Do not audit pre-existing content — only check whether the new additions conflict with, duplicate, or contradict what was already there."
 
-The `ai-assistant-ops:agents-md-improver` skill will read the files, score the additions, and flag any issues. Its quality criteria (conciseness, actionability, no obvious info) apply directly to what we just wrote.
+The `$ai-assistant-ops:agents-md-improver` skill will read the files, score the additions, and flag any issues. Its quality criteria (conciseness, actionability, no obvious info) apply directly to what we just wrote.
 
 If no issues are found, it will say so — no further action needed.
 
@@ -235,4 +235,4 @@ Stored [n] insights, skipped [n].
 
 - Never store secrets, credentials, tokens, or API keys.
 - Keep it concise — one line per concept.
-- Step 7 with `ai-assistant-ops:agents-md-improver` is mandatory when the skill is available and must be scoped to only files modified during this session — never a full repo audit of pre-existing content.
+- Step 7 with `$ai-assistant-ops:agents-md-improver` is mandatory when the skill is available and must be scoped to only files modified during this session — never a full repo audit of pre-existing content.

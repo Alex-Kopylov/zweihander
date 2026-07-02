@@ -6,15 +6,15 @@ End-to-end flow from spotting a JD to signing an offer.
 
 Run once. Never again unless you wipe and restart.
 
-- `/job-hunt-toolkit:init-workspace` — creates folder structure and generates docs.
+- `$job-hunt-toolkit:init-workspace` — creates folder structure and generates docs.
 - Drop your master HTML CV in the root.
-- Run `/job-hunt-toolkit:export-pdf` to create the master PDF.
+- Run `$job-hunt-toolkit:export-pdf` to create the master PDF.
 
 ## Stage 1: New application
 
 Triggered by finding a JD worth applying to.
 
-1. `/job-hunt-toolkit:new-application <company-slug>` (e.g. `acme_robotics`).
+1. `$job-hunt-toolkit:new-application <company-slug>` (e.g. `acme_robotics`).
 2. Paste or link the JD — saved to `<company>/job_description.md`.
 3. `company.md` scaffolded with frontmatter — fill in snapshot, stack, comp band.
 4. Master HTML copied into `<company>/` as the tailoring starting point.
@@ -38,7 +38,7 @@ Capture findings in `company.md`. This context drives tailoring decisions.
 
 ## Stage 4: Export
 
-- `/job-hunt-toolkit:export-pdf` — HTML → PDF via headless Chromium.
+- `$job-hunt-toolkit:export-pdf` — HTML → PDF via headless Chromium.
 - PDF written next to HTML with the same stem.
 - Visual review: open the PDF, scan for layout breakage.
 
@@ -46,7 +46,7 @@ Capture findings in `company.md`. This context drives tailoring decisions.
 
 **Mandatory before attaching.**
 
-- `/job-hunt-toolkit:prepare-to-send` runs the full checklist:
+- `$job-hunt-toolkit:prepare-to-send` runs the full checklist:
   1. Filename sanity (no company tag, no spaces, matches `naming-rules.md`).
   2. `scrub-pdf-metadata` — strip Title/Author/Producer/CreationDate.
   3. Visible content scan (stray drafts, wrong company names in body, placeholders).

@@ -1,0 +1,9 @@
+{
+  "name": "research",
+  "description": "Research knowledge-base and Obsidian vault workflows for agent-maintained notes.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Alex Kopylov"
+  },
+  "skills": "./skills/"
+}
