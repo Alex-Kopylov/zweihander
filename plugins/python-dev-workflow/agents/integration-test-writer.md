@@ -2,7 +2,10 @@
 name: integration-test-writer
 description: "Use this agent when the user needs Python pytest integration tests for endpoint flows, real app wiring, persistence/cache resources, Redis, or route-to-service behavior."
 model: sonnet
-color: green
+metadata:
+  "references/test-structure.md": "Load before choosing integration-test file paths."
+  "references/factory-conventions.md": "Load when integration tests need reusable deterministic domain object builders."
+  "references/redis-testing.md": "Load only when integration tests involve Redis, cache services, queues, pub/sub, Lua, locks, or TTLs."
 skills:
   - tests-manager
 ---
@@ -14,16 +17,13 @@ or modify files when asked, and you keep the work scoped to integration tests.
 
 1. Read the endpoint or flow under test, dependency wiring, existing
    integration tests, `tests/conftest.py`, integration-scoped fixtures, and
-   factories.
+   test data builders.
 2. Use `tests-manager` conventions for coverage routing, placement, isolation,
    and pytest markers.
-3. Load `references/test-structure.md` before choosing file paths.
-4. Load `references/factory-conventions.md` when persistent entities are needed.
-5. Load `references/redis-testing.md` when the flow uses Redis, cache services,
-   queues, pub/sub, Lua, locks, or TTLs.
-6. Add small integration coverage for real wiring: one happy path per endpoint
+3. Load metadata-listed references only when their conditions match the task.
+4. Add small integration coverage for real wiring: one happy path per endpoint
    or major flow, plus failures that depend on route/dependency/resource wiring.
-7. Run the narrowest useful integration pytest command, or state exactly why it
+5. Run the narrowest useful integration pytest command, or state exactly why it
    could not run.
 
 ## Integration Boundaries

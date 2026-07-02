@@ -1,6 +1,14 @@
 ---
 name: tests-manager
-description: Use when writing, adding, reviewing, or planning Python pytest tests, including unit tests, integration tests, FastAPI endpoint tests, factory_boy test data, Redis-backed code, conftest hierarchy, mocks, and deciding when a change needs both unit and integration coverage.
+description: Use when writing, editing, adding, reviewing, or planning Python unit and/or integration tests, mocks, fixtures, pytest structure, or test coverage.
+metadata:
+  "references/test-structure.md": "Load when choosing pytest directories, file names, or source-to-test mirroring."
+  "references/factory-conventions.md": "Load when tests need reusable deterministic entity builders or persisted domain objects."
+  "references/redis-testing.md": "Load only when tests involve Redis, cache services, queues, pub/sub, Lua, locks, or TTLs."
+  "agents/unit-test-writer.md": "Use for substantial Python pytest unit-test generation."
+  "agents/integration-test-writer.md": "Use for substantial Python pytest integration-test generation."
+  "agents/test-unit-reviewer.md": "Use for read-only review of existing unit tests."
+  "agents/test-runner.md": "Use for focused pytest execution and failure reporting."
 ---
 
 # Tests Manager
@@ -18,32 +26,17 @@ For a behavior change, decide the minimum useful coverage before writing tests:
 | Change | Unit tests | Integration tests |
 |---|---|---|
 | Pure function, schema, validation, branch, or error handling | Required | Usually not needed |
-| Service or repository behavior behind an interface | Required | Add when real DB/cache/query wiring matters |
-| New or changed API endpoint | Required for handler/service branches | Required for route -> dependency -> persistence wiring |
-| Redis cache, queue, lock, pub/sub, Lua, or TTL behavior | Required with `fakeredis` or injected fake | Required with real Redis/testcontainers when parity matters |
+| Service or repository behavior behind an interface | Required | Add when real dependency or query wiring matters |
+| New or changed endpoint or feature | Required for local branches and edge cases | Required for real route, dependency, or resource wiring |
 | Bug fix | Required reproduction test | Add only if the bug was caused by integration wiring |
 
-For a new endpoint, normally write both:
-
-1. Unit tests for validation, auth/permission branches, service calls, error
-   mapping, and edge cases.
-2. Integration tests for one happy path through the real route stack and any
-   wiring-sensitive failure path.
+For a new endpoint or feature in general, normally write both unit and
+integration coverage.
 
 ## Reference Loading
 
-Load only the references needed for the current task:
-
-- `references/test-structure.md` - test directory layout, file placement, and
-  how unit and integration trees mirror `src/`.
-- `references/factory-conventions.md` - `factory_boy` conventions, deterministic
-  defaults, and when to use factories instead of pytest fixtures.
-- `references/redis-testing.md` - Redis fixtures, fakeredis, testcontainers,
-  isolation, CI services, pub/sub, TTL, and Lua tests.
-- `references/redis/*.md` - detailed Redis CI and isolation patterns when
-  `redis-testing.md` points there.
-- `examples/redis/` - working Redis pytest examples when implementing similar
-  tests.
+Use the frontmatter metadata as the routing table. Load only the reference or
+agent whose metadata value matches the current task, and skip the rest.
 
 ## Shared Pytest Rules
 
@@ -59,45 +52,12 @@ Load only the references needed for the current task:
   and expected output.
 - Put shared fixtures in the narrowest useful `conftest.py`.
 - Put static payloads under `tests/fixtures/`.
-- Use deterministic factories or builders for reusable test entities.
-
-## Unit Test Rules
-
-- Mock I/O boundaries, not pure functions.
-- Use `unittest.mock` or `pytest-mock`; prefer `create_autospec()` when
-  signatures matter.
-- Patch the name used by the module under test.
-- Mock DB, cache, and external API clients at the client-factory or injected
-  dependency level; do not mock individual SQL strings or Redis commands unless
-  that command is the behavior under test.
-- Assert behavior and output first. Verify mock calls only when the interaction
-  is the behavior.
-- Use `pytest.raises(ExpectedError, match="...")` for exceptions.
-- Freeze wall-clock time with `freezegun` or a narrow datetime patch.
-- Avoid `time.sleep()` and `asyncio.sleep()` in tests.
-
-## Integration Test Rules
-
-- Mark integration tests with `pytestmark = pytest.mark.integration` when the
-  project uses markers.
-- Prefer real app wiring, real dependency injection, and real persistence/cache
-  test resources.
-- Keep endpoint integration tests small: one happy path per endpoint or major
-  flow, plus only the wiring-sensitive failures.
-- Use transaction rollback, disposable containers, test DBs, or key prefixes for
-  isolation.
-- Do not duplicate unit branch matrices in integration tests.
+- Use deterministic helpers for reusable test entities.
 
 ## Delegation
 
-Use focused agents when the caller needs substantial test generation:
-
-- `unit-test-writer` for unit tests, branch coverage, mocks, fixtures, and
-  factories.
-- `integration-test-writer` for route-to-persistence flows, real services,
-  Redis/testcontainers, and endpoint smoke coverage.
-- `test-unit-reviewer` for read-only review of existing unit tests.
-- `test-runner` for focused pytest execution and failure reporting.
+Use metadata-listed agents when the caller needs substantial test generation,
+read-only review, or focused pytest execution.
 
 When both unit and integration tests are needed, use the same source change as
 input for both writer agents and keep their scopes separate.
@@ -109,8 +69,7 @@ input for both writer agents and keep their scopes separate.
 - Unit tests cover branches, guard clauses, exceptions, and edge values.
 - Integration tests cover wiring-sensitive paths without repeating every unit
   case.
-- Factories and fixtures are reused instead of duplicated inline data.
-- Redis tests load `references/redis-testing.md` and use isolation appropriate
-  to unit or integration scope.
+- Fixtures and reusable builders are reused instead of duplicated inline data.
+- Task-specific references were loaded only when metadata matched the task.
 - Focused pytest command has been run, or the reason it could not run is
   reported.

@@ -1,24 +1,23 @@
-# Test Data Factories
-
-Source: adapted from `aishajv/claude-everything` FastAPI test conventions.
+# Test Data Builders
 
 ## Rule
 
-Use `factory_boy` factories for persisted test entities. Do not use pytest
-fixtures as entity builders unless the project already has a stronger local
-convention.
+Use small deterministic builders for persisted test entities. Prefer the
+project's existing helper style when one exists; otherwise use plain functions
+or lightweight classes.
 
 ## Placement
 
-- Put factories in `tests/factories/`.
-- Use one factory file per domain/module.
-- Export one factory class per entity, such as `UserFactory` or
-  `TenantFactory`.
-- Keep relationship creation inside factories when a valid entity requires it.
+- Put reusable builders in `tests/factories/`, `tests/builders/`, or the
+  project's existing helper location.
+- Use one helper file per domain/module.
+- Export one builder per entity, such as `build_user()` or `UserBuilder`.
+- Keep required relationship creation inside builders when a valid entity
+  requires it.
 
 ## Defaults
 
-Factories should create valid, boring entities by default. Override only fields
+Builders should create valid, boring entities by default. Override only fields
 that matter to the behavior under test.
 
 Use fixed, obviously fake defaults:
@@ -35,15 +34,15 @@ Use fixed, obviously fake defaults:
 | Boolean | Neutral valid value, usually `True` for `is_active` |
 | Enum | First or most common valid variant |
 
-Avoid random defaults. Do not use `factory.Faker` unless the test is explicitly
-about varied generated data; randomness makes failures harder to read and
-reproduce.
+Avoid random defaults. Do not use faker-style generated data unless the test is
+explicitly about varied generated data; randomness makes failures harder to read
+and reproduce.
 
 ## Inline Values
 
-Inline values inside a test should be visually distinct from factory defaults.
+Inline values inside a test should be visually distinct from builder defaults.
 For UUIDs in test bodies, use realistic-looking values instead of the zeroed
-factory-default pattern.
+builder-default pattern.
 
 Good:
 
@@ -51,5 +50,5 @@ Good:
 user_id = UUID("a1b2c3d4-5678-9abc-def0-1234567890ab")
 ```
 
-Factory defaults can use zeroed IDs because each test should run with isolated
+Builder defaults can use zeroed IDs because each test should run with isolated
 state, such as transaction rollback or a fresh test container.

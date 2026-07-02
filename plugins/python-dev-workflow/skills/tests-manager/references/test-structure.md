@@ -1,7 +1,5 @@
 # Test Structure
 
-Source: adapted from `aishajv/claude-everything` FastAPI test conventions.
-
 ## Rule
 
 Mirror the `src/` package structure under both `tests/unit/` and
@@ -10,7 +8,7 @@ Mirror the `src/` package structure under both `tests/unit/` and
 Create folders only when adding tests for that area; do not pre-create empty
 trees.
 
-## Layout
+## Example Layout
 
 ```text
 tests/
@@ -46,25 +44,6 @@ tests/
       users/
         test_user.py
 ```
-
-## Unit Tests
-
-- Place `src/services/users/user.py` tests in
-  `tests/unit/services/users/test_user.py`.
-- Place `src/api/routes/users/user.py` handler tests in
-  `tests/unit/api/routes/users/test_user.py`.
-- Place Pydantic schema tests under the mirrored `tests/unit/api/schemas/...`
-  path.
-- Place repository and model tests under the mirrored `tests/unit/persistence/`
-  path. These can use a real DB if that is the local convention for persistence
-  unit tests.
-
-## Integration Tests
-
-- Place endpoint integration tests under `tests/integration/api/...`.
-- Cover route -> dependencies -> service -> persistence/cache wiring.
-- Keep integration coverage intentionally small: one happy path per endpoint or
-  major flow, plus failures that depend on real wiring.
 
 ## Naming
 
