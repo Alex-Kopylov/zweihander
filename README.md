@@ -73,8 +73,7 @@ kanban
     rva_verify[verify]
     rva_run_skill_generator[run-skill-generator]
   python_dev_workflow[python-dev-workflow]
-    pdw_writing_unit_tests[writing-unit-tests]
-    pdw_pytest_redis[pytest-redis]
+    pdw_tests_manager[tests-manager]
     pdw_celery_expert[celery-expert]
   openapi_tools[openapi-tools]
     oat_openapi_list[openapi-list]
@@ -270,23 +269,25 @@ reasoning.
 
 ### `python-dev-workflow`
 
-**Use when:** you are writing or reviewing Python tests, working with Redis test
-isolation, or configuring Celery for production behavior.
+**Use when:** you are writing or reviewing Python tests, deciding unit vs
+integration coverage, working with Redis test isolation, or configuring Celery
+for production behavior.
 
 **Skills**
 
 | Skill | Description |
 |---|---|
 | `celery-expert` | Configure Celery, workers, retries, schedules, and tests. |
-| `pytest-redis` | Test Redis code with fakeredis, fixtures, or containers. |
-| `writing-unit-tests` | Write pytest unit tests with reliable mocks and fixtures. |
+| `tests-manager` | Plan and write pytest unit/integration tests with fixtures, factories, mocks, and Redis references. |
 
 **Agents**
 
 | Agent | Description |
 |---|---|
+| `integration-test-writer` | Write endpoint and real-wiring integration tests. |
 | `test-runner` | Run focused pytest or `uv run pytest` commands. |
 | `test-unit-reviewer` | Review unit tests for quality, coverage, and patterns. |
+| `unit-test-writer` | Write focused unit tests with mocks, fixtures, and factories. |
 
 ### `dev-workflow`
 

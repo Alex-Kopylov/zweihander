@@ -1,17 +1,13 @@
----
-name: pytest-redis
-description: This skill should be used when the user asks to "test Redis", "write Redis tests", "add Redis integration tests", "mock Redis in tests", "use fakeredis", "set up testcontainers for Redis", "test pub/sub", "test Lua scripts in Redis", "redis fixture", "redis conftest", or when test code involves redis-py, fakeredis, or testcontainers Redis fixtures.
----
-
-# Testing Redis with pytest
+# Redis Testing with pytest
 
 ## Overview
 
 Guidance for Redis unit and integration tests in Python projects using pytest: fixtures, isolation, fakeredis, testcontainers, pub/sub, Lua scripts, and concurrency.
 
-## When to Apply
+## When to Load
 
-Activate when any of the following appear in test code or user intent:
+Load this reference when any of the following appear in test code or user
+intent:
 
 - `import redis` or `from redis import ...` in test files or fixtures
 - `fakeredis`, `testcontainers.redis`, or `RedisContainer` imports
@@ -135,11 +131,12 @@ def test_prefix():
     return f"test:{uuid.uuid4().hex[:8]}:"
 ```
 
-Wrap the client to auto-prefix all keys. See `references/isolation-patterns.md` for the full `PrefixedRedis` wrapper.
+Wrap the client to auto-prefix all keys. See
+`references/redis/isolation-patterns.md` for the full `PrefixedRedis` wrapper.
 
 ## Test Structure
 
-Follow the same conventions as the `writing-unit-tests` skill:
+Follow the same conventions as `tests-manager`:
 
 - File naming: `test_*.py` under `tests/unit/` or `tests/integration/`
 - Class grouping: `class TestCacheService:`
@@ -183,15 +180,19 @@ def test_set_with_ttl(self, cache_service, redis_client):
 
 ### Concurrency (atomic increments)
 
-Use `threading` for parallel `INCR` calls and assert the final count. See `examples/test_cache.py`.
+Use `threading` for parallel `INCR` calls and assert the final count. See
+`examples/redis/test_cache.py`.
 
 ### Pub/Sub
 
-Subscribe in a background thread, publish messages, join with a timeout, assert received messages match. See `examples/test_pubsub.py`.
+Subscribe in a background thread, publish messages, join with a timeout, assert
+received messages match. See `examples/redis/test_pubsub.py`.
 
 ### Lua scripts
 
-Register scripts via `redis_client.register_script()`, invoke with `keys` and `args`, and assert return values and side-effects. See `examples/test_lua_scripts.py`.
+Register scripts via `redis_client.register_script()`, invoke with `keys` and
+`args`, and assert return values and side-effects. See
+`examples/redis/test_lua_scripts.py`.
 
 ## CI/CD Integration
 
@@ -212,7 +213,9 @@ services:
       --health-retries 5
 ```
 
-Set env vars `REDIS_HOST=localhost` and `REDIS_PORT=6379`; see `references/ci-config.md` for GitHub Actions and GitLab CI examples. Use `references/azure-devops-ci.md` for Azure DevOps Pipelines.
+Set env vars `REDIS_HOST=localhost` and `REDIS_PORT=6379`; see
+`references/redis/ci-config.md` for GitHub Actions and GitLab CI examples. Use
+`references/redis/azure-devops-ci.md` for Azure DevOps Pipelines.
 
 ## Dependencies
 
@@ -226,16 +229,16 @@ Set env vars `REDIS_HOST=localhost` and `REDIS_PORT=6379`; see `references/ci-co
 
 ### Reference Files
 
-- **`references/isolation-patterns.md`** -- Key-prefix wrapper, DB-per-suite rotation, and parallel-safe patterns
-- **`references/ci-config.md`** -- GitHub Actions and GitLab CI service container configs
-- **`references/azure-devops-ci.md`** -- Azure DevOps Pipelines service container configs
+- **`references/redis/isolation-patterns.md`** -- Key-prefix wrapper, DB-per-suite rotation, and parallel-safe patterns
+- **`references/redis/ci-config.md`** -- GitHub Actions and GitLab CI service container configs
+- **`references/redis/azure-devops-ci.md`** -- Azure DevOps Pipelines service container configs
 
 ### Example Files
 
 Working test examples in `examples/`:
 
-- **`examples/test_cache.py`** -- CRUD, TTL, increment, hash operations, concurrency
-- **`examples/test_pubsub.py`** -- Channel subscribe, pattern subscribe
-- **`examples/test_lua_scripts.py`** -- Rate limiter, atomic transfer scripts
-- **`examples/conftest_fakeredis.py`** -- fakeredis-based conftest for unit tests
-- **`examples/conftest_testcontainers.py`** -- testcontainers-based conftest for integration tests
+- **`examples/redis/test_cache.py`** -- CRUD, TTL, increment, hash operations, concurrency
+- **`examples/redis/test_pubsub.py`** -- Channel subscribe, pattern subscribe
+- **`examples/redis/test_lua_scripts.py`** -- Rate limiter, atomic transfer scripts
+- **`examples/redis/conftest_fakeredis.py`** -- fakeredis-based conftest for unit tests
+- **`examples/redis/conftest_testcontainers.py`** -- testcontainers-based conftest for integration tests

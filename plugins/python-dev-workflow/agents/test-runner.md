@@ -4,7 +4,7 @@ description: "Use this agent when you need to execute tests using pytest or uv r
 model: sonnet
 color: purple
 skills:
-  - pytest-redis
+  - tests-manager
 ---
 
 You are an expert test execution specialist focused on running pytest-based test suites with precision and clarity.

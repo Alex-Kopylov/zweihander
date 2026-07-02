@@ -1,3 +1,4 @@
 # python-dev-workflow
 
-Python-specific pytest, Redis test patterns, Celery, and unit-test review/execution agents.
+Python-specific pytest planning, unit and integration test writing, Redis test
+references, Celery guidance, and test review/execution agents.

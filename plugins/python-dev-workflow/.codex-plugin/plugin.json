@@ -1,7 +1,7 @@
 {
   "name": "python-dev-workflow",
-  "version": "0.12.1",
-  "description": "Python-specific pytest, Redis test patterns, Celery, and unit-test review/execution agents.",
+  "version": "0.12.2",
+  "description": "Python-specific pytest planning, unit/integration test writing, Redis test references, Celery, and test agents.",
   "author": {
     "name": "Alex Kopylov"
   },
@@ -10,7 +10,7 @@
   "interface": {
     "displayName": "Python Dev Workflow",
     "shortDescription": "Python testing and runtime workflow skills",
-    "longDescription": "Python-specific pytest execution and review helpers, Redis testing patterns, Celery workflow guidance, and unit-test review agents.",
+    "longDescription": "Python-specific pytest planning, unit and integration test writing, Redis testing references, Celery workflow guidance, and test review/execution agents.",
     "developerName": "Alex Kopylov",
     "category": "Development",
     "capabilities": [
@@ -20,7 +20,8 @@
     ],
     "defaultPrompt": [
       "Run the focused pytest suite.",
-      "Review these Python unit tests."
+      "Review these Python unit tests.",
+      "Write unit and integration tests for this endpoint."
     ]
   }
 }

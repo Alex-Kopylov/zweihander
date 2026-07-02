@@ -1,7 +1,7 @@
 {
   "name": "python-dev-workflow",
-  "description": "Python-specific pytest, Redis test patterns, Celery, and unit-test review/execution agents.",
-  "version": "0.12.1",
+  "description": "Python-specific pytest planning, unit/integration test writing, Redis test references, Celery, and test agents.",
+  "version": "0.12.2",
   "author": {
     "name": "Alex Kopylov"
   },
