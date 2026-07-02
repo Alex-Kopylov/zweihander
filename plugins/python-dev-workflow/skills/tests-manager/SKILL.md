@@ -2,6 +2,8 @@
 name: tests-manager
 description: Use when writing, editing, adding, reviewing, or planning Python unit and/or integration tests, mocks, fixtures, pytest structure, or test coverage.
 metadata:
+  "references/unit-testing.md": "Load when writing, reviewing, or planning unit-test behavior, mocks, or branch coverage."
+  "references/integration-testing.md": "Load when writing, reviewing, or planning integration-test behavior, real wiring, or resource isolation."
   "references/test-structure.md": "Load when choosing pytest directories, file names, or source-to-test mirroring."
   "references/factory-conventions.md": "Load when tests need reusable deterministic entity builders or persisted domain objects."
   "references/redis-testing.md": "Load only when tests involve Redis, cache services, queues, pub/sub, Lua, locks, or TTLs."

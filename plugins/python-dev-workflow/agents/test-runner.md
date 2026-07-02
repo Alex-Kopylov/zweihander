@@ -1,7 +1,6 @@
 ---
 name: test-runner
 description: "Use this agent when you need to execute tests using pytest or uv run pytest. Supports focused runs, coverage reporting, unit tests, and integration tests."
-model: sonnet
 skills:
   - tests-manager
 ---
