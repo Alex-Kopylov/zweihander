@@ -2,7 +2,6 @@
 name: submit-job-application
 description: Use when filling, reviewing, automating, uploading files to, or preparing final submission for an employer job application portal or candidate profile form.
 argument-hint: <application-portal-url-or-company-folder>
-allowed-tools: Read, Write, Edit, Bash, WebFetch, AskUserQuestion, Skill
 ---
 
 # Submit Job Application
@@ -64,7 +63,7 @@ For dry runs, tests, or reviews, describe choices and report shape without openi
 Report every touched field, upload, skipped sensitive field, and required unanswered field:
 
 ```markdown
-**legal_name**: Aleksei Kopylov
+**legal_name**: ExampleName ExampleSurname
 **email**: <value filled>
 **resume_upload**: <absolute PDF path uploaded>
 **cover_letter_upload**: <absolute PDF path uploaded>

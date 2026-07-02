@@ -2,7 +2,6 @@
 name: cover-letter-writing
 description: Use when drafting, tailoring, generating, exporting, or preparing a cover letter for a tracked job application, especially when a JD, company folder, tailored CV, or application portal asks for a letter.
 argument-hint: <company-folder-or-jd>
-allowed-tools: Read, Write, Edit, Bash, WebFetch, AskUserQuestion, Skill
 ---
 
 # Cover Letter Writing
