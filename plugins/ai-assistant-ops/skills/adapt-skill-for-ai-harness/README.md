@@ -4,7 +4,7 @@ This skill maintains the AI Assistant Harness Adaptation policy for explicitly n
 
 `references/harness-action-matrix.json` is the scriptable source of truth for translating shared workflows, skills, tools, and commands across harnesses. Lookups are action-first, then assistant: `matrix["actions"]["CreateAgent"]["Codex"]`.
 
-End-result target skills can still use metadata-linked files under `references/ai-assistant-harnesses/` when host-specific wording, tool names, command names, and workflow details need to stay out of shared `SKILL.md`.
+End-result target skills can still use metadata-linked files under `references/ai-assistant-harnesses/` when host-specific wording, mechanism tool names, command names, and workflow details need to stay out of shared `SKILL.md`. Baseline capabilities (file reading, searching, editing, writing, shell execution) are never mapped or coached: every harness handles them natively, and matrix actions marked `"adaptation": "baseline"` never become reference content.
 
 Claude Code and Codex tool surfaces are moving targets. When the matrix or a target harness reference contains researched names or version-sensitive behavior, include:
 

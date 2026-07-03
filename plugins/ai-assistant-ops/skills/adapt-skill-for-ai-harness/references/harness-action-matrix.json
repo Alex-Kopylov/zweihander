@@ -31,6 +31,7 @@
   "actions": {
     "InvokeSkill": {
       "kind": "skill",
+      "adaptation": "map",
       "intent": "Load or activate a skill by name or path.",
       "ClaudeCode": {
         "surface": "tool-or-command",
@@ -72,6 +73,7 @@
     },
     "CreateAgent": {
       "kind": "workflow",
+      "adaptation": "map",
       "intent": "Delegate work to an isolated agent or subagent context.",
       "ClaudeCode": {
         "surface": "tool",
@@ -108,6 +110,7 @@
     },
     "AskUser": {
       "kind": "workflow",
+      "adaptation": "map",
       "intent": "Ask the user for clarification or a bounded choice.",
       "ClaudeCode": {
         "surface": "tool-or-chat",
@@ -140,6 +143,7 @@
     },
     "TrackTasks": {
       "kind": "workflow",
+      "adaptation": "map",
       "intent": "Track a multi-step task list during a work session.",
       "ClaudeCode": {
         "surface": "tool",
@@ -176,6 +180,7 @@
     },
     "SearchFiles": {
       "kind": "tool",
+      "adaptation": "baseline",
       "intent": "Find files or text in the current workspace.",
       "ClaudeCode": {
         "surface": "tool",
@@ -210,6 +215,7 @@
     },
     "ReadFile": {
       "kind": "tool",
+      "adaptation": "baseline",
       "intent": "Read a workspace file or file section.",
       "ClaudeCode": {
         "surface": "tool",
@@ -240,6 +246,7 @@
     },
     "EditFile": {
       "kind": "tool",
+      "adaptation": "baseline",
       "intent": "Create or modify workspace files.",
       "ClaudeCode": {
         "surface": "tool",
@@ -274,6 +281,7 @@
     },
     "RunShell": {
       "kind": "tool",
+      "adaptation": "baseline",
       "intent": "Run shell commands.",
       "ClaudeCode": {
         "surface": "tool",
@@ -305,6 +313,7 @@
     },
     "ParallelTools": {
       "kind": "workflow",
+      "adaptation": "baseline",
       "intent": "Run independent tool calls concurrently.",
       "ClaudeCode": {
         "surface": "tool-calling",
@@ -335,6 +344,7 @@
     },
     "FetchWeb": {
       "kind": "tool",
+      "adaptation": "baseline",
       "intent": "Fetch or search external web content.",
       "ClaudeCode": {
         "surface": "tool",
@@ -369,6 +379,7 @@
     },
     "PluginManifest": {
       "kind": "command",
+      "adaptation": "map",
       "intent": "Locate plugin and marketplace metadata files.",
       "ClaudeCode": {
         "surface": "file",
@@ -397,6 +408,7 @@
     },
     "SlashCommand": {
       "kind": "command",
+      "adaptation": "map",
       "intent": "Refer to slash-command workflows.",
       "ClaudeCode": {
         "surface": "slash-command",

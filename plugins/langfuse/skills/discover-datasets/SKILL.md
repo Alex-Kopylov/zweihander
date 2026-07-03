@@ -4,9 +4,16 @@ description: >-
   This skill should be used when the user asks to discover datasets, list datasets, find what datasets exist,
   browse dataset items, inspect dataset contents, check dataset schemas, or explore dataset metadata in their
   Langfuse project. It enumerates all datasets with their items, runs, and schema configurations.
+metadata:
+  ai-assistant-harness-adaptation.claude-code: references/ai-assistant-harnesses/claude-code.md
+  ai-assistant-harness-adaptation.codex: references/ai-assistant-harnesses/codex.md
 ---
 
 Enumerate all datasets in the Langfuse project and present findings in organized tables.
+
+## Harness Adaptation
+
+Depending on who you are as an AI agent, load exactly one metadata-linked reference and skip every non-matching file.
 
 ## Step 1: List All Datasets
 
@@ -88,9 +95,9 @@ Current version has `valid_to IS NULL`.
 
 Based on discovered data, suggest:
 
-- If dataset has no items → "Use the `langfuse-dataset-expert` agent to populate it."
-- If dataset has items but no runs → "Use the `langfuse-experiment-manager` agent to run experiments."
+- If dataset has no items → "Use or suggest the `langfuse:langfuse-dataset-expert` agent to populate it."
+- If dataset has items but no runs → "Use or suggest the `langfuse:langfuse-experiment-manager` agent to run experiments."
 - If dataset has no schema → "Consider adding input/output schemas for validation."
-- If remote experiment URL is not configured → "Use the `langfuse-experiment-manager` agent to configure remote triggering."
+- If remote experiment URL is not configured → "Use or suggest the `langfuse:langfuse-experiment-manager` agent to configure remote triggering."
 
 Refer to `references/datasets-api-reference.md` for complete API details.

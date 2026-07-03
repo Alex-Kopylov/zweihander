@@ -3,7 +3,9 @@ name: resume-tailoring
 version: 1.0.0
 description: "Tailor my resume, customize CV for a job, optimize resume for a role, update resume for a position, rewrite resume for this JD, generate a targeted CV, fit my resume to this posting, tailor CV for job description, batch resumes for multiple jobs, multi-job resume tailoring."
 argument-hint: <job description text or URL>
-allowed-tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch, AskUserQuestion, Skill, Agent
+metadata:
+  ai-assistant-harness-adaptation.claude-code: references/ai-assistant-harnesses/claude-code.md
+  ai-assistant-harness-adaptation.codex: references/ai-assistant-harnesses/codex.md
 ---
 
 # Resume Tailoring
@@ -19,6 +21,10 @@ Generate tailored, multi-format resumes optimized for specific job descriptions 
 - **`references/branching-questions.md`** - Technical/soft-skill/recent-work question trees, branching logic, multi-job context framing, capture structure
 - **`references/multi-job-workflow.md`** - Batch initialization, aggregate gap analysis, shared discovery, per-job processing, incremental batch addition, pause/resume support
 
+## Harness Adaptation
+
+Depending on who you are as an AI agent, load exactly one metadata-linked reference and skip every non-matching file.
+
 ## Requirements
 
 **From user:**
@@ -26,7 +32,7 @@ Generate tailored, multi-format resumes optimized for specific job descriptions 
 2. Resume library location (defaults to `<workspace>/library/` where workspace = `${JOB_HUNT_WORKSPACE:-$HOME/Documents/job_seeking}`)
 
 **Sub-skill dependencies:**
-- `export-pdf` - HTML → PDF export via `${PLUGIN_ROOT}/skills/export-pdf/scripts/html-to-pdf.sh`
+- `job-hunt-toolkit:export-pdf` - HTML → PDF export via `${PLUGIN_ROOT}/skills/export-pdf/scripts/html-to-pdf.sh`
 
 ## Workflow
 
@@ -37,7 +43,7 @@ Before starting, check if the user provides 2+ JDs, mentions "multiple jobs", "b
 ### Phase 0: Library Initialization
 
 1. Locate resume library directory (user-provided or `${JOB_HUNT_WORKSPACE:-$HOME/Documents/job_seeking}/library/`)
-2. Scan for HTML and markdown files using Glob
+2. Scan for HTML and markdown files
 3. Parse each resume: extract roles, bullets, skills, education
 4. Build in-memory experience database - tag each bullet with themes, metrics, keywords, and source resume
 5. Announce library size to user
@@ -47,8 +53,8 @@ Before starting, check if the user provides 2+ JDs, mentions "multiple jobs", "b
 Follow templates in `references/research-prompts.md`.
 
 1. Parse JD: extract requirements (must-have vs nice-to-have), keywords, implicit preferences, red flags, role archetype
-2. Research company via WebSearch: mission, values, culture, recent news, engineering blog
-3. Benchmark role via WebSearch/WebFetch: LinkedIn profiles of similar role holders, common backgrounds, terminology
+2. Research company: mission, values, culture, recent news, engineering blog
+3. Benchmark role: LinkedIn profiles of similar role holders, common backgrounds, terminology
 4. Synthesize into a **success profile**: core requirements, valued capabilities, cultural fit signals, narrative themes, terminology map, risk factors
 
 **Checkpoint:** Present success profile summary to user. Wait for confirmation before proceeding.
@@ -92,16 +98,10 @@ Follow scoring from `references/matching-strategies.md`.
 Output directory: `${JOB_HUNT_WORKSPACE:-$HOME/Documents/job_seeking}/<company>/`
 Filename format: `<First>_<Last>_<Role>_CV.<ext>` — NO company name in the filename.
 
-**Edit-guard:** If this skill needs to modify the master HTML at `${JOB_HUNT_WORKSPACE:-$HOME/Documents/job_seeking}/<First>_<Last>_<Role>_CV.html`, call `AskUserQuestion` for explicit confirmation before doing so.
+**Edit-guard:** If this skill needs to modify the master HTML at `${JOB_HUNT_WORKSPACE:-$HOME/Documents/job_seeking}/<First>_<Last>_<Role>_CV.html`, ask the user for explicit confirmation before doing so.
 
 1. **HTML:** Compile mapped content into a tailored HTML file following the master CV's template. Save as `<First>_<Last>_<Role>_CV.html` inside the company subfolder.
-2. **PDF:** Run the export-pdf skill:
-   ```
-   bash "${PLUGIN_ROOT}/skills/export-pdf/scripts/html-to-pdf.sh" \
-     "<workspace>/<company>/<First>_<Last>_<Role>_CV.html" \
-     "<workspace>/<company>/<First>_<Last>_<Role>_CV.pdf"
-   ```
-   Always use absolute paths for both arguments.
+2. **PDF:** Invoke the `job-hunt-toolkit:export-pdf` skill for the generated HTML. Always use absolute paths.
 3. **Report:** Generate metadata file with coverage stats, reframings, source resumes, gap analysis before/after, interview prep recommendations. Save as `<First>_<Last>_<Role>_CV_Report.md` inside the company subfolder.
 
 Present files and quality metrics to user.
@@ -122,7 +122,7 @@ Present three options:
 | Research failures (WebSearch unavailable, sparse results) | Fall back to JD-only analysis; ask user for additional context |
 | Vague JD | Flag missing areas; ask user for context; proceed with best-effort |
 | Content exceeds page limit | Rank bullets by relevance; suggest pruning lowest-scored; let user decide |
-| PDF export failure (html-to-pdf.sh non-zero exit) | HTML is still saved; report error with exit code; user can re-run export-pdf separately |
+| PDF export failure | HTML is still saved; report error with exit code; user can use the `job-hunt-toolkit:export-pdf` skill separately |
 
 ## Hard Rules
 

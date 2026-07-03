@@ -5,9 +5,16 @@ description: >-
   for Langfuse dataset items. This includes deciding what fields to include, how to structure item
   inputs for specific pipelines, and creating JSON Schema validation rules. Trigger phrases include
   "design schema", "item format", "what should my dataset items look like", "dataset item structure".
+metadata:
+  ai-assistant-harness-adaptation.claude-code: references/ai-assistant-harnesses/claude-code.md
+  ai-assistant-harness-adaptation.codex: references/ai-assistant-harnesses/codex.md
 ---
 
 Help the user design dataset item `input` structures and optional `expectedOutput` structures that fit the target pipeline and produce meaningful experiment results.
+
+## Harness Adaptation
+
+Depending on who you are as an AI agent, load exactly one metadata-linked reference and skip every non-matching file.
 
 ## Step 1: Identify the Target Pipeline
 
@@ -129,7 +136,7 @@ Common patterns:
 
 ### No Expected Output
 
-You can omit `expectedOutput`; experiments still produce traces that Langfuse LLM-as-Judge evaluators can score (via the `langfuse-eval-manager` agent).
+You can omit `expectedOutput`; experiments still produce traces that Langfuse LLM-as-Judge evaluators can score. If the user asks to configure those evaluators next, suggest or delegate to the `langfuse:langfuse-eval-manager` agent.
 
 ## Step 4: Create JSON Schema (Optional)
 

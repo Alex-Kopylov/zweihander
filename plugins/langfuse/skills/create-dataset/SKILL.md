@@ -4,16 +4,22 @@ description: >-
   This skill should be used when the user wants to create a new Langfuse dataset,
   set up a dataset for benchmarking, or create a dataset with input/output schema validation.
   Trigger phrases include "create dataset", "new dataset", "set up dataset", "add dataset".
+metadata:
+  ai-assistant-harness-adaptation.claude-code: references/ai-assistant-harnesses/claude-code.md
 ---
 
 Create a Langfuse dataset via REST API, optionally with input and expected output JSON schemas for item validation.
+
+## Harness Adaptation
+
+Depending on who you are as an AI agent, load exactly one metadata-linked reference and skip every non-matching file.
 
 ## Step 1: Gather Requirements
 
 Ask the user:
 1. **Dataset name** — follow the naming conventions below.
 2. **Description** — brief purpose description.
-3. **Input schema** — whether to enforce JSON Schema on item inputs; if yes, help design it (delegate to `design-dataset-schema` skill).
+3. **Input schema** — whether to enforce JSON Schema on item inputs; if yes, invoke the `langfuse:design-dataset-schema` skill to help design it.
 4. **Expected output schema** — whether to enforce expected output structure.
 
 ## Step 2: Check for Existing Dataset
@@ -63,8 +69,8 @@ Provide:
 1. The dataset ID and name.
 2. The Langfuse UI URL: `{HOST}/project/{PROJECT_ID}/datasets/{DATASET_ID}`.
 3. Suggest next steps:
-   - "Use the `langfuse-dataset-expert` agent to add items."
-   - "Use the `design-dataset-schema` skill if you want to add schemas later."
+   - "Use or suggest the `langfuse:langfuse-dataset-expert` agent to add items."
+   - "Invoke the `langfuse:design-dataset-schema` skill if you want to add schemas later."
 
 ## Naming Conventions
 

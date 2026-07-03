@@ -1,6 +1,9 @@
 ---
 name: agents-md-improver
 description: "Audit and improve AGENTS.md files in repositories. Use when user asks to check, audit, update, improve, or fix AGENTS.md files. Scans for all AGENTS.md files, evaluates quality against templates, outputs quality report, then makes targeted updates. Also use when the user mentions \"AGENTS.md maintenance\" or \"project memory optimization\"."
+metadata:
+  ai-assistant-harness-adaptation.claude-code: references/ai-assistant-harnesses/claude-code.md
+  ai-assistant-harness-adaptation.codex: references/ai-assistant-harnesses/codex.md
 ---
 
 # AGENTS.md Improver
@@ -9,6 +12,10 @@ Audit, evaluate, and improve AGENTS.md files so AI Assistant has useful project 
 
 **This skill can write targeted AGENTS.md updates after reporting and user approval.**
 
+## Harness Adaptation
+
+Depending on who you are as an AI agent, load exactly one metadata-linked reference and skip every non-matching file.
+
 ## Workflow
 
 ### Phase 1: Discovery
@@ -16,7 +23,7 @@ Audit, evaluate, and improve AGENTS.md files so AI Assistant has useful project 
 Find all AGENTS.md files in the repository:
 
 ```bash
-find . -name "AGENTS.md" -o -name ".codex.md" -o -name ".codex.local.md" 2>/dev/null | head -50
+find . -name "AGENTS.md" 2>/dev/null | head -50
 ```
 
 **File Types & Locations:**
@@ -24,12 +31,8 @@ find . -name "AGENTS.md" -o -name ".codex.md" -o -name ".codex.local.md" 2>/dev/
 | Type | Location | Purpose |
 |------|----------|---------|
 | Project root | `./AGENTS.md` | Primary project context (checked into git, shared with team) |
-| Local overrides | `./.codex.local.md` | Personal/local settings (gitignored, not shared) |
-| Global defaults | `~/.codex/AGENTS.md` | User-wide defaults across all projects |
 | Package-specific | `./packages/*/AGENTS.md` | Module-level context in monorepos |
 | Subdirectory | Any nested location | Feature/domain-specific context |
-
-**Note:** AI Assistant auto-discovers AGENTS.md files in parent directories, making monorepo setups work automatically.
 
 ### Phase 2: Quality Assessment
 
@@ -134,7 +137,7 @@ After outputting the quality report, ask user for confirmation before updating.
 
 ### Phase 5: Apply Updates
 
-After user approval, apply changes using the Edit tool. Preserve existing content structure.
+After user approval, apply changes. Preserve existing content structure.
 
 ## Templates
 
@@ -153,11 +156,9 @@ See [references/templates.md](references/templates.md) for AGENTS.md templates b
 
 When presenting recommendations, remind users:
 
-- **`#` key shortcut**: During an AI Assistant session, press `#` to have AI Assistant auto-incorporate learnings into AGENTS.md
 - **Keep it concise**: AGENTS.md should be human-readable; dense is better than verbose
 - **Actionable commands**: All documented commands should be copy-paste ready
-- **Use `.codex.local.md`**: For personal preferences not shared with team (add to `.gitignore`)
-- **Global defaults**: Put user-wide preferences in `~/.codex/AGENTS.md`
+- **Separate personal preferences**: Keep local or user-scoped preferences out of shared project context unless the AI agent's runtime expects them there
 
 ## What Makes a Great AGENTS.md
 

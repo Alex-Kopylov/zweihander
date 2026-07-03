@@ -1,12 +1,16 @@
 ---
 name: interview
 description: This skill should be used when the user asks to "walk through items", "review items one by one", "go through the list", "interview me on these", "let's address each item", "explore findings", says "/interview", or wants to systematically work through a presented list of items (code review findings, errors, contradictions, action items) ensuring nothing is missed.
-allowed-tools: AskUserQuestion, Read, Edit, Write, Bash
+metadata:
+  ai-assistant-harness-adaptation.claude-code: references/ai-assistant-harnesses/claude-code.md
+  ai-assistant-harness-adaptation.codex: references/ai-assistant-harnesses/codex.md
 ---
 
 # Item-by-Item Interview
 
-Walk through a list of items one by one using AskUserQuestion, ensuring every item gets a deliberate decision.
+Walk through a list of items one by one by asking the user one bounded question per item, ensuring every item gets a deliberate decision.
+
+Depending on who you are as an AI agent, load exactly one metadata-linked reference and skip every non-matching file.
 
 ## Workflow
 
@@ -23,7 +27,7 @@ Starting walk-through. Each item will be presented for your decision.
 
 ### 3. Walk Through Each Item
 
-Present each item one at a time via AskUserQuestion.
+Present each item one at a time as a bounded user question.
 
 #### Item-to-Question Mapping
 
@@ -38,26 +42,18 @@ When an item involves code or config, use `preview` on options to show what each
 #### Example
 
 ```
-AskUserQuestion({
-  questions: [{
-    question: "Missing null check in parse_config(): Line 42 dereferences config.timeout without None check — How to address?",
-    header: "#3 HIGH",
-    options: [
-      {
-        label: "Fix now (Recommended)",
-        description: "Add null check with sensible default",
-        preview: "def parse_config(path: str) -> Config:\n    config = load_yaml(path)\n    if config is None:\n        return Config(timeout=30)\n    return Config(timeout=config.timeout)"
-      },
-      {
-        label: "Raise error",
-        description: "Fail explicitly instead of defaulting",
-        preview: "def parse_config(path: str) -> Config:\n    config = load_yaml(path)\n    if config is None:\n        raise ConfigError(f\"Missing: {path}\")\n    return Config(timeout=config.timeout)"
-      },
-      { label: "Skip", description: "Accept the risk" }
-    ],
-    multiSelect: false
-  }]
-})
+Question: "Missing null check in parse_config(): Line 42 dereferences config.timeout without None check — How to address?"
+Header: "#3 HIGH"
+Options:
+- Label: "Fix now (Recommended)"
+  Description: "Add null check with sensible default"
+  Preview: "def parse_config(path: str) -> Config:\n    config = load_yaml(path)\n    if config is None:\n        return Config(timeout=30)\n    return Config(timeout=config.timeout)"
+- Label: "Raise error"
+  Description: "Fail explicitly instead of defaulting"
+  Preview: "def parse_config(path: str) -> Config:\n    config = load_yaml(path)\n    if config is None:\n        raise ConfigError(f\"Missing: {path}\")\n    return Config(timeout=config.timeout)"
+- Label: "Skip"
+  Description: "Accept the risk"
+Multi-select: false
 ```
 
 ### 4. Track Progress

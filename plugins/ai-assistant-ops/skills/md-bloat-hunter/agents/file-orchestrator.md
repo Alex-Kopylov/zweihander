@@ -44,16 +44,16 @@ file, the detector agent files, and the top-orchestrator input.
 
 ## Detector Dispatch
 
-Spawn the file-local detector agents in parallel with the host's subagent or
-task tool. Give each agent the same absolute file path, `run_id`, private run
-output directory, absolute skill directory, and absolute detector agent file
-path. Instruct each detector to read that agent file path instead of inferring a
-relative location.
+Delegate to the file-local detector agents in parallel with your
+agent-delegation mechanism. Give each agent the same absolute file path,
+`run_id`, private run output directory, absolute skill directory, and absolute
+detector agent file path. Instruct each detector to read that agent file path
+instead of inferring a relative location.
 
-If tools are discoverable, use `tool_search` to expose multi-agent tools if
-needed, then issue all spawn calls in one response and wait on the full spawned
-set. The dispatch requirements are the same: all selected detectors run in
-parallel and all results are collected before reduction.
+When batch delegation is available, issue all dispatch calls in one response and
+wait on the full delegated set. The dispatch requirements are the same: all
+selected detectors run in parallel and all results are collected before
+reduction.
 
 Always dispatch:
 

@@ -2,19 +2,25 @@
 name: export-pdf
 description: Use when the user asks to "export the PDF", "regenerate PDF", "build PDF from HTML", "convert HTML CV to PDF", "refresh the PDF", "HTML to PDF", "render CV to PDF", "produce PDF from HTML", "generate PDF", or after editing a CV HTML and needs a fresh PDF. Converts an HTML CV into a PDF using headless Chromium, ensuring consistent rendering across all applications.
 argument-hint: "[html-file] (optional; defaults to the current file context or detected CV)"
-allowed-tools: Read, Bash, Glob, AskUserQuestion
+metadata:
+  ai-assistant-harness-adaptation.claude-code: references/ai-assistant-harnesses/claude-code.md
+  ai-assistant-harness-adaptation.codex: references/ai-assistant-harnesses/codex.md
 ---
 
 # Export PDF
 
 Convert an HTML CV to PDF using headless Chromium; every workspace PDF should use this skill for consistent rendering.
 
+## Harness Adaptation
+
+Depending on who you are as an AI agent, load exactly one metadata-linked reference and skip every non-matching file.
+
 ## When to use
 
 - After any edit to a CV HTML file
 - When regenerating the master PDF after the master HTML changes
 - When initial scaffolding needs a PDF export
-- Invoked manually by the user after editing HTML. Also called by `prepare-to-send` to verify PDF freshness. NOT called by `new-application` (user tailors HTML first, then runs export-pdf).
+- Invoked manually by the user after editing HTML. Also called by the `job-hunt-toolkit:prepare-to-send` skill to verify PDF freshness. NOT called by the `job-hunt-toolkit:new-application` skill (user tailors HTML first, then exports the PDF).
 
 ## Inputs
 
@@ -75,7 +81,7 @@ Where `${PLUGIN_ROOT}` resolves to the plugin's root directory.
 
 ### 3b. Sanity-check PDF content
 
-Use Read to inspect the produced PDF text. These strings almost certainly mean Chromium rendered a browser error page rather than the CV:
+Inspect the produced PDF text. These strings almost certainly mean Chromium rendered a browser error page rather than the CV:
 
 - `This page isn't working`
 - `ERR_CONNECTION_REFUSED`
@@ -93,13 +99,9 @@ Do NOT report success or proceed to scrubbing if this check fails.
 
 ### 4. Scrub metadata
 
-Auto-invoke `scrub-pdf-metadata` on the produced PDF as the final step:
+Invoke the `job-hunt-toolkit:scrub-pdf-metadata` skill on the produced PDF as the final step.
 
-```
-$job-hunt-toolkit:scrub-pdf-metadata <pdf-absolute-path>
-```
-
-Every exported PDF is scrubbed, even when attached directly without `prepare-to-send`.
+Every exported PDF is scrubbed, even when attached directly without the `job-hunt-toolkit:prepare-to-send` skill.
 
 ### 5. Report
 
@@ -113,7 +115,7 @@ Every exported PDF is scrubbed, even when attached directly without `prepare-to-
 
 - **Use Chromium every time.** Never fall back to weasyprint or wkhtmltopdf; prompt the user to install Chrome or Chromium if missing.
 - **Use absolute paths.** Chromium's `--print-to-pdf` writes to CWD otherwise, which is unpredictable across tool calls.
-- **Always scrub metadata after export.** Auto-invoke `scrub-pdf-metadata`; `prepare-to-send` also verifies scrubbing.
+- **Always scrub metadata after export.** Invoke the `job-hunt-toolkit:scrub-pdf-metadata` skill; the `job-hunt-toolkit:prepare-to-send` skill also verifies scrubbing.
 - **Warn if the HTML has never-rendered markers** like `TODO`, `<!-- draft -->`, `[placeholder]` — these will appear in the PDF unless scrubbed at HTML level.
 
 ## Error handling
@@ -131,4 +133,4 @@ Every exported PDF is scrubbed, even when attached directly without `prepare-to-
 Remind user:
 1. Visually review the PDF (open it, check layout)
 2. Metadata has already been scrubbed by this skill
-3. Run `$job-hunt-toolkit:prepare-to-send` before attaching to any application for a final freshness and content check
+3. Run the `job-hunt-toolkit:prepare-to-send` skill before attaching to any application for a final freshness and content check

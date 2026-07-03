@@ -6,15 +6,20 @@ description: >
   user wants a task to keep running permanently (not just 7 days), mentions launchd, says "run this
   every day", "schedule this on macOS", "make this persistent", "set this up for good", "keep this
   running forever", or is frustrated that /loop expired. Also triggers on /loop_macos.
+metadata:
+  ai-assistant-harness-adaptation.claude-code: references/ai-assistant-harnesses/claude-code.md
+  ai-assistant-harness-adaptation.codex: references/ai-assistant-harnesses/codex.md
 ---
 
 # loop_macos
 
 Use macOS launchd for recurring tasks that persist across reboots. Calendar schedules catch up missed runs after sleep.
 
+Depending on who you are as an AI agent, load exactly one metadata-linked reference and skip every non-matching file.
+
 ## Step 1 — Parse the input
 
-Same rules as built-in `/loop`:
+Use these parsing rules:
 
 1. **Leading token** — if the first whitespace-delimited token matches `^\d+[smhd]$` (e.g. `5m`, `2h`, `1d`), that is the interval; everything after is the task.
 2. **Trailing "every" clause** — if the input ends with `every <N><unit>` or `every <N> <unit-word>` (e.g. `every 20m`, `every 2 hours`), extract that as the interval and strip it from the task.
@@ -137,7 +142,7 @@ A `-  0  <label>` line means registered and idle (not currently running). That's
 
 ## Step 6 — Run immediately, then report
 
-After loading, run the task once right away so the user sees it work immediately — same as built-in `/loop`:
+After loading, run the task once right away so the user sees it work immediately:
 
 ```bash
 launchctl start <label>

@@ -1,9 +1,16 @@
 ---
 name: create-pr
 description: Create a pull request from the current branch. Activate when user asks to create a PR, open a pull request, submit for review, or says /create-pr.
+metadata:
+  ai-assistant-harness-adaptation.claude-code: references/ai-assistant-harnesses/claude-code.md
+  ai-assistant-harness-adaptation.codex: references/ai-assistant-harnesses/codex.md
 ---
 
 # Create Pull Request
+
+## Harness Adaptation
+
+Depending on who you are as an AI agent, load exactly one metadata-linked reference and skip every non-matching file.
 
 ## Instructions
 
@@ -59,6 +66,6 @@ description: Create a pull request from the current branch. Activate when user a
 
 ## Notes
 
-- Never mention the assistant runtime in the PR title
+- Never mention the AI agent in the PR title
 - Ticket context is optional by default; do not ask for a ticket unless the user explicitly requests ticket-backed PR behavior
 - After creating the PR, display a clickable hyperlink to the PR URL in the final message

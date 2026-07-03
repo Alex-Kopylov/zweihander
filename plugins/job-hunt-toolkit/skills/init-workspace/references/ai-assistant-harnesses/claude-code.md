@@ -1,0 +1,5 @@
+# Claude Code Harness Notes
+
+Use these notes only when the active harness is Claude Code.
+
+- User decisions: use `AskUserQuestion` (supports bounded options, multiSelect, previews).

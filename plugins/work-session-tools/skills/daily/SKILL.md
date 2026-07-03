@@ -1,17 +1,22 @@
 ---
 name: daily
 description: Generate a daily note summarizing recent activity across all detected project sources. Use this skill whenever the user asks for a daily note, daily summary, standup report, daily digest, "what happened today/yesterday", end-of-day recap, or wants to capture progress across git, PRs, tasks, and communication channels. Trigger even for casual phrasing like "write up what I did" or "catch me up on the project".
+metadata:
+  ai-assistant-harness-adaptation.claude-code: references/ai-assistant-harnesses/claude-code.md
+  ai-assistant-harness-adaptation.codex: references/ai-assistant-harnesses/codex.md
 ---
 
 # Daily Note Generator
 
 Create a markdown daily note by gathering activity from every source detected in the project.
 
+## Harness Adaptation
+
+Depending on who you are as an AI agent, load exactly one metadata-linked reference and skip every non-matching file.
+
 ## Usage
 
-```
-/daily [output-dir]
-```
+Invoke the `work-session-tools:daily` skill with optional `output-dir`.
 
 - `output-dir` — where to save the note (default: current working directory)
 - The **source detection** always runs from the project root (where you are), not the output dir

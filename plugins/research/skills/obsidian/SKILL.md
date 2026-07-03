@@ -5,8 +5,6 @@ platforms: [linux, macos, windows]
 metadata:
   origin.url: https://raw.githubusercontent.com/NousResearch/hermes-agent/refs/heads/main/skills/note-taking/obsidian/SKILL.md
   origin.repository: NousResearch/hermes-agent
-  ai-assistant-harness-adaptation.claude-code: references/ai-assistant-harnesses/claude-code.md
-  ai-assistant-harness-adaptation.codex: references/ai-assistant-harnesses/codex.md
 ---
 
 # Obsidian Vault
@@ -14,14 +12,6 @@ metadata:
 Use this skill for filesystem-first Obsidian vault work: reading notes, listing
 notes, searching note files, creating notes, appending content, targeted edits,
 and adding wikilinks.
-
-## Harness Adaptation
-
-Before using harness-specific tools, identify the active assistant harness. When
-the active harness matches one metadata-linked reference above, load exactly
-that one reference and skip the non-matching harness files. Use the shared
-workflow below for decisions and the harness reference only to translate file,
-search, shell, and edit operations into the active toolset.
 
 ## Vault Path
 
@@ -37,7 +27,7 @@ carefully quoted shell commands.
 
 If the vault path is unknown, use a shell command to resolve
 `OBSIDIAN_VAULT_PATH` or check whether the fallback path exists. Once the path
-is known, switch back to the harness's preferred file tools.
+is known, switch back to your preferred file tools.
 
 ## Operations
 

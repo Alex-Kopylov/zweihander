@@ -2,6 +2,9 @@
 name: mermaid-lint
 description: Validate Mermaid code blocks by rendering them with the mmdc CLI. Fails loudly if mmdc is not installed.
 compatibility: Requires the mmdc command from @mermaid-js/mermaid-cli; Markdown input support is expected from modern Mermaid CLI versions.
+metadata:
+  ai-assistant-harness-adaptation.claude-code: references/ai-assistant-harnesses/claude-code.md
+  ai-assistant-harness-adaptation.codex: references/ai-assistant-harnesses/codex.md
 ---
 
 # Mermaid Linter
@@ -9,6 +12,10 @@ compatibility: Requires the mmdc command from @mermaid-js/mermaid-cli; Markdown 
 > Note: check current Mermaid version first and ask to upgrade if outdated.
 
 Validate Mermaid diagrams by running `mmdc` from `@mermaid-js/mermaid-cli`. The render output is only a validation mechanism; this skill only reports lint status and errors.
+
+## Harness Adaptation
+
+Depending on who you are as an AI agent, load exactly one metadata-linked reference and skip every non-matching file.
 
 ## Workflow
 
@@ -22,15 +29,15 @@ Validate Mermaid diagrams by running `mmdc` from `@mermaid-js/mermaid-cli`. The 
 
 2. If `mmdc` is missing, stop and ask the user whether to install it:
 
-   ```bash
-   AskUserQuestion: "mmdc is missing. Install with npm install -g @mermaid-js/mermaid-cli@latest before linting? (yes/no)"
+   ```text
+   Ask: "mmdc is missing. Install with npm install -g @mermaid-js/mermaid-cli@latest before linting? (yes/no)"
    If yes: npm install -g @mermaid-js/mermaid-cli@latest
    ```
 
-3. If `CURR_VERSION` is not empty and differs from `LATEST_VERSION`, pause the process and run `AskUserQuestion` for permission to update or continue without it:
+3. If `CURR_VERSION` is not empty and differs from `LATEST_VERSION`, pause the process and ask the user whether to update or continue without it:
 
-   ```bash
-   AskUserQuestion: "mmdc is outdated ($CURR_VERSION -> $LATEST_VERSION). Update now, or proceed without it? (update/continue)"
+   ```text
+   Ask: "mmdc is outdated ($CURR_VERSION -> $LATEST_VERSION). Update now, or proceed without it? (update/continue)"
    ```
 
    If the user answers `update`, run:
