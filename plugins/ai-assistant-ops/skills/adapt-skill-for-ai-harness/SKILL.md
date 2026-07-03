@@ -29,7 +29,7 @@ Adapted target skills may still receive `references/ai-assistant-harnesses/claud
 
 ## Target Adaptation Policy
 
-Shared target `SKILL.md` content is harness-agnostic. It names no harness and no harness's mechanism tools. It states intent in generalized language: "ask the user (bounded options)", "invoke the `plugin-name:skill-name` skill", "delegate to the `plugin-name:agent-name` agent", "track the work as plan items". Slash commands are treated as regular skills and referenced the same generalized way. Trigger phrases inside frontmatter `description` fields are exempt.
+Shared target `SKILL.md` content is harness-agnostic. It names no harness and no harness's mechanism tools. It states intent in generalized language: "ask the user (bounded options)", "invoke the `plugin-name:skill-name` skill", "delegate to the `plugin-name:agent-name` agent", "track the work as plan items". Slash commands are treated as regular skills and referenced the same generalized way. Trigger phrases inside frontmatter `description` fields are exempt. One harness's dialect in shared prose forces every other harness to translate and leaks foreign names into references; agnostic wording removes the translation step entirely.
 
 Adapted skills carry no `allowed-tools` frontmatter; delete the key when adapting.
 
@@ -50,6 +50,8 @@ Store target harness adaptation files under `references/ai-assistant-harnesses/<
 Never instruct baseline capabilities. Every harness reads, searches, creates, edits, and writes files and runs shell commands natively with its own tools (`Read`, `Grep`, `Glob`, `Bash`, `Write`, `Edit`, `MultiEdit`, `exec_command`, `apply_patch`, `sed`, `nl`, `rg`, and similar). Assistants handle these unaided; telling them which of their own basic tools to use only pollutes context. Do not write harness-reference instructions for these actions and do not translate them between harnesses. Matrix actions marked `"adaptation": "baseline"` exist for lookup completeness and never become reference content.
 
 Map only differently named shared mechanisms where an explicit nudge changes behavior, marked `"adaptation": "map"` in the matrix: asking the user (`AskUserQuestion` / `request_user_input`), subagent delegation (`Agent` / `spawn_agent`), skill and slash-command invocation (`Skill(...)` and `/plugin-name:skill-name` / `$plugin-name:skill-name`), task tracking (`TaskCreate` / `update_plan`), and harness-specific facts such as context-file or storage locations. For every mapped mechanism the target workflow uses, each supported harness's reference carries the nudge in its own vocabulary: `AskUserQuestion` in `claude-code.md` / `request_user_input` in `codex.md`; `Agent` / `spawn_agent`; `Skill(plugin:skill)` / `$plugin:skill`; `TaskCreate` / `update_plan`. References carry no general instructions; anything harness-independent belongs in the shared `SKILL.md`.
+
+A capability gap never licenses tool coaching. When a harness genuinely cannot perform a workflow step natively, state the gap as a fact only if it changes the workflow, and never name specific tools or commands to work around it — the AI agent picks its own workaround.
 
 Write each harness reference purely in its own harness's vocabulary. A harness reference must never name another harness or another harness's tools, frontmatter keys, or invocation syntax, and must never use translate-from framing such as "treat X as Y" or "translate X to Y". Anchor each instruction on the workflow action it adapts — asking the user, task tracking, delegation, skill invocation — stated directly in the target harness's own terms. Tokens quoted from the shared skill text (such as `$plugin-name:skill-name` invocation strings) are allowed anchors when the mapping needs them.
 
@@ -85,7 +87,7 @@ Do not create `references/ai-assistant-harnesses/` inside this skill. That direc
 10. Move Claude Code-specific details to the target `references/ai-assistant-harnesses/claude-code.md`.
 11. If per-assistant instructions exist, reorganize them into the target `references/ai-assistant-harnesses/` format and remove duplicated old adaptation information.
 12. Add or update the flat metadata links in the target `SKILL.md`.
-13. Add or update focused static tests or evals when the repository has a test/eval convention that can enforce the policy.
+13. Encode every policy decision from the adaptation as a focused static test or eval when the repository has that convention. Prose-only policy regresses on the next edit; a failing test does not.
 14. Report the exact files changed and the verification commands run.
 
 ## Matrix Maintenance
