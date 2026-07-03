@@ -11,10 +11,7 @@ Write a concise, PM/customer-friendly status update and post it as a comment on 
 
 ## Harness Adaptation
 
-Identify the active assistant harness before following this workflow. When
-harness-specific adaptation is needed, load exactly one matching metadata-linked
-harness reference and skip every non-matching harness file. A harness with no
-matching metadata link uses the shared Claude Code-baseline workflow as written.
+Depending on who you are as an AI agent, load exactly one metadata-linked reference and skip every non-matching file.
 
 ## Instructions
 

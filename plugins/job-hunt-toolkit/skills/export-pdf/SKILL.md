@@ -12,9 +12,9 @@ metadata:
 
 Convert an HTML CV to PDF using headless Chromium; every workspace PDF should use this skill for consistent rendering.
 
-## Harness adaptation
+## Harness Adaptation
 
-Identify the active assistant harness before relying on harness-specific tool names or plugin invocation syntax. When a step needs harness-specific adaptation, load exactly one matching metadata-linked harness reference for the active harness, then skip all non-matching harness files. If no matching metadata link exists, use the shared workflow only.
+Depending on who you are as an AI agent, load exactly one metadata-linked reference and skip every non-matching file.
 
 ## When to use
 

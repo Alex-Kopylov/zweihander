@@ -10,7 +10,7 @@ metadata:
 
 Design a multi-agent team blueprint with clear role separation and interaction patterns.
 
-Identify the active AI assistant harness. When harness-specific tool mapping is needed, load exactly one matching metadata-linked harness reference for the active harness and skip non-matching harness files. If no exact harness match exists or no harness-specific adaptation is needed, load none.
+Depending on who you are as an AI agent, load exactly one metadata-linked reference and skip every non-matching file.
 
 ## Process
 

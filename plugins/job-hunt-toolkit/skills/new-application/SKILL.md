@@ -12,9 +12,9 @@ metadata:
 
 Scaffold a per-company application folder inside the workspace and set up everything needed to start tailoring.
 
-## Harness adaptation
+## Harness Adaptation
 
-Identify the active assistant harness before applying harness-specific tool or command wording. When harness-specific adaptation is needed, load exactly one metadata-linked harness reference matching the active harness and skip all non-matching harness files.
+Depending on who you are as an AI agent, load exactly one metadata-linked reference and skip every non-matching file.
 
 ## When to use
 

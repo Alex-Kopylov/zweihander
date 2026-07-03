@@ -12,13 +12,9 @@ metadata:
 
 Validate Mermaid diagrams by running `mmdc` from `@mermaid-js/mermaid-cli`. The render output is only a validation mechanism; this skill only reports lint status and errors.
 
-## AI Assistant Harness Adaptation
+## Harness Adaptation
 
-Identify the active assistant harness before following this skill. When a
-workflow step needs harness-specific user-question tooling, load exactly one
-matching metadata-linked harness reference for the active harness and follow it
-for that operation. Skip non-matching harness files. A harness with no matching
-metadata link uses the shared baseline workflow as written.
+Depending on who you are as an AI agent, load exactly one metadata-linked reference and skip every non-matching file.
 
 ## Workflow
 

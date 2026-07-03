@@ -23,13 +23,7 @@ Generate tailored, multi-format resumes optimized for specific job descriptions 
 
 ## Harness Adaptation
 
-Identify the active assistant harness before running this skill. When
-harness-specific adaptation is needed for tool names or workflow surfaces, load
-exactly one matching metadata-linked harness reference for the active harness
-and skip every non-matching harness file. A harness with no matching metadata
-link uses the shared Claude Code-baseline workflow as written. If no
-harness-specific adaptation is needed, continue with the shared workflow as
-written.
+Depending on who you are as an AI agent, load exactly one metadata-linked reference and skip every non-matching file.
 
 ## Requirements
 

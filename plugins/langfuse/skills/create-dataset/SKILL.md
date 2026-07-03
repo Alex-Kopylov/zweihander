@@ -13,9 +13,7 @@ Create a Langfuse dataset via REST API, optionally with input and expected outpu
 
 ## Harness Adaptation
 
-Identify the active assistant harness before using harness-specific workflow language.
-When adaptation is needed, load exactly one matching metadata-linked harness
-reference and follow it. Skip all non-matching harness files.
+Depending on who you are as an AI agent, load exactly one metadata-linked reference and skip every non-matching file.
 
 ## Step 1: Gather Requirements
 

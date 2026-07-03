@@ -14,7 +14,7 @@ Analyze user-provided specs, requirements, and design notes for internal contrad
 
 ## Harness Adaptation
 
-This skill uses Claude Code wording as the shared baseline. Identify the active assistant harness before translating tool names, agent dispatch, file writing, or user-question behavior. When harness-specific adaptation is needed, load exactly one matching metadata-linked harness reference for the active harness and skip all non-matching harness files.
+Depending on who you are as an AI agent, load exactly one metadata-linked reference and skip every non-matching file.
 
 ## Process
 

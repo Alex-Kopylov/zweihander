@@ -1,7 +1,6 @@
 # Codex Harness
 
-Translate the shared Claude Code-baseline workflow to Codex surfaces only where
-needed.
+Codex-specific behavior for this workflow:
 
 - Use `request_user_input` for bounded item decisions when available; otherwise
   ask in chat.

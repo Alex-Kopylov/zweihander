@@ -12,9 +12,9 @@ metadata:
 
 One-time setup for a job-hunt workspace: create the folder structure, generate docs from plugin templates, and copy the master CV.
 
-## Harness adaptation
+## Harness Adaptation
 
-At invocation start, identify the active AI assistant harness. When tool names, file edit mechanics, user-prompt mechanics, or command references need harness-specific adaptation, load exactly one metadata-linked harness reference matching the active harness. Skip every non-matching harness file. If no matching metadata key exists, continue with the shared Claude Code-baseline workflow in this file.
+Depending on who you are as an AI agent, load exactly one metadata-linked reference and skip every non-matching file.
 
 ## When to use
 

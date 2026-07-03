@@ -14,7 +14,7 @@ Help the user design dataset item `input` structures and optional `expectedOutpu
 
 ## Harness Adaptation
 
-Identify the active assistant harness before using harness-specific workflow instructions. When a step needs harness-specific adaptation, load exactly one matching metadata-linked harness reference for the active harness and skip non-matching harness files.
+Depending on who you are as an AI agent, load exactly one metadata-linked reference and skip every non-matching file.
 
 ## Step 1: Identify the Target Pipeline
 

@@ -14,11 +14,7 @@ Audit, evaluate, and improve AGENTS.md files so AI Assistant has useful project 
 
 ## Harness Adaptation
 
-Identify the active assistant harness before applying harness-specific file names,
-shortcuts, or editing tools. When harness-specific adaptation is needed, load
-exactly one matching metadata-linked harness reference from
-`metadata.ai-assistant-harness-adaptation.<harness-id>` and skip non-matching
-harness files.
+Depending on who you are as an AI agent, load exactly one metadata-linked reference and skip every non-matching file.
 
 ## Workflow
 

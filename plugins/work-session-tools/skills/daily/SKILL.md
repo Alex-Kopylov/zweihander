@@ -12,7 +12,7 @@ Create a markdown daily note by gathering activity from every source detected in
 
 ## Harness Adaptation
 
-Use the shared workflow as the baseline. When invocation, assistant instruction files, assistant settings files, or MCP tool exposure requires harness-specific handling, identify the active harness, load exactly one matching metadata-linked harness reference, and skip non-matching harness files.
+Depending on who you are as an AI agent, load exactly one metadata-linked reference and skip every non-matching file.
 
 ## Usage
 

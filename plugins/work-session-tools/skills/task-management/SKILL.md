@@ -12,12 +12,7 @@ Use native task tools to track work, manage dependencies, and orchestrate backgr
 
 ## Harness Adaptation
 
-The shared workflow below uses Claude Code task and Agent tool vocabulary as
-the baseline. Identify the active assistant harness before applying
-harness-specific wording. When harness-specific adaptation is needed, load
-exactly one matching metadata-linked harness reference for the active harness,
-then skip all non-matching harness files. If no matching metadata link is
-available or no adaptation is needed, continue with the shared workflow.
+Depending on who you are as an AI agent, load exactly one metadata-linked reference and skip every non-matching file.
 
 ## When to Use Task Tools
 

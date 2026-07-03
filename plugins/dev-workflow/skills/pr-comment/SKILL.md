@@ -12,12 +12,7 @@ Post review comments to pull requests — general or inline on specific lines.
 
 ## Harness Adaptation
 
-When harness-specific adaptation is needed, identify the active assistant
-harness, load exactly one matching metadata-linked reference, and follow it for
-harness tool names. Skip non-matching harness reference files. A harness with no
-matching metadata link uses the shared Claude Code-baseline workflow as written.
-If no harness-specific adaptation is needed, continue with the shared workflow
-only.
+Depending on who you are as an AI agent, load exactly one metadata-linked reference and skip every non-matching file.
 
 ## Arguments
 

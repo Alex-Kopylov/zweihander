@@ -11,10 +11,7 @@ Follow the [Conventional Commits v1.0.0](https://www.conventionalcommits.org/en/
 
 ## Harness Adaptation
 
-When harness-specific adaptation is needed, identify the active assistant
-harness, load exactly one matching metadata-linked harness reference, and skip
-all non-matching harness files. A harness with no matching metadata link uses
-the shared Claude Code-baseline workflow as written.
+Depending on who you are as an AI agent, load exactly one metadata-linked reference and skip every non-matching file.
 
 ## Format
 

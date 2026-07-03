@@ -11,7 +11,7 @@ metadata:
 
 ## Harness Adaptation
 
-Identify the active assistant harness before applying command arguments, slash-command wording, subagent delegation, edit tooling, or skill-invocation wording. When harness-specific adaptation is needed, load exactly one matching metadata-linked harness reference from `metadata.ai-assistant-harness-adaptation.<harness-id>`. Apply only that file and skip non-matching harness files.
+Depending on who you are as an AI agent, load exactly one metadata-linked reference and skip every non-matching file.
 
 ## Runtime Loading
 

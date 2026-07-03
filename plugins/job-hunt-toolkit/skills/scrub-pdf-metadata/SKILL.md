@@ -12,9 +12,9 @@ metadata:
 
 Some PDF metadata can leak export tools, suspicious timestamps, source HTML filenames, and device names. Strip it with `exiftool`, then reset a clean Author.
 
-## Harness adaptation
+## Harness Adaptation
 
-When harness-specific adaptation is needed, identify the active assistant harness and load exactly one matching metadata-linked reference from this skill's frontmatter. Skip non-matching harness files. If the shared instructions work as written in the active harness, do not load any harness reference.
+Depending on who you are as an AI agent, load exactly one metadata-linked reference and skip every non-matching file.
 
 ## When to use
 

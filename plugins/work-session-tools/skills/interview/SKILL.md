@@ -11,10 +11,7 @@ metadata:
 
 Walk through a list of items one by one using AskUserQuestion, ensuring every item gets a deliberate decision.
 
-When harness-specific adaptation is needed, first identify the active assistant
-harness. Load exactly one matching metadata-linked harness reference and skip
-non-matching harness files. If no harness-specific adaptation is needed, use
-this shared Claude Code-baseline workflow as-is.
+Depending on who you are as an AI agent, load exactly one metadata-linked reference and skip every non-matching file.
 
 ## Workflow
 

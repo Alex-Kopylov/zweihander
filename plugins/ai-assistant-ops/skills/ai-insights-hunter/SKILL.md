@@ -11,9 +11,9 @@ allowed-tools: AskUserQuestion, Read, Write, Agent, TaskCreate, TaskGet, TaskLis
 
 Extract valuable, reusable knowledge from an AI Assistant conversation log and store it in the right places so future AI Assistant sessions start smarter.
 
-## Harness adaptation
+## Harness Adaptation
 
-Before any step that depends on runtime-specific tooling or storage paths, identify the active AI Assistant harness. If harness-specific adaptation is needed and a matching `metadata.ai-assistant-harness-adaptation.<harness-id>` entry exists, load exactly that one metadata-linked reference and skip every non-matching file under `references/ai-assistant-harnesses/`.
+Depending on who you are as an AI agent, load exactly one metadata-linked reference and skip every non-matching file.
 
 ## References
 

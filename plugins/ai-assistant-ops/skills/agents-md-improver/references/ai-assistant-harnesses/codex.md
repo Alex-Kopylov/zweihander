@@ -16,5 +16,5 @@ Use these notes only when the active harness is Codex.
 
 ## User Tips
 
-- Do not mention Claude Code's `#` shortcut. For personal preferences, point
-  users to `.codex.local.md` or `~/.codex/AGENTS.md`.
+- For personal preferences, point users to `.codex.local.md` or
+  `~/.codex/AGENTS.md`.

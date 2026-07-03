@@ -47,13 +47,7 @@ needed.
 
 ## Harness Adaptation
 
-Identify the active assistant harness before using harness-specific
-user-question or agent-dispatch tools.
-
-When harness-specific adaptation is needed, load exactly one metadata-linked
-harness reference matching the active harness. Skip non-matching harness files.
-If no matching metadata link exists, use the shared Claude Code-baseline
-workflow and report any unsupported parallel dispatch in the final report.
+Depending on who you are as an AI agent, load exactly one metadata-linked reference and skip every non-matching file.
 
 ## Safety
 

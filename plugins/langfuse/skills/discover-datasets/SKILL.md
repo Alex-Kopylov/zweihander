@@ -13,7 +13,7 @@ Enumerate all datasets in the Langfuse project and present findings in organized
 
 ## Harness Adaptation
 
-Use this shared workflow as the Claude Code baseline. Identify the active assistant harness before applying instructions that involve harness-specific delegation or named agents. When harness-specific adaptation is needed, load exactly one matching metadata-linked harness reference and skip non-matching harness files.
+Depending on who you are as an AI agent, load exactly one metadata-linked reference and skip every non-matching file.
 
 ## Step 1: List All Datasets
 

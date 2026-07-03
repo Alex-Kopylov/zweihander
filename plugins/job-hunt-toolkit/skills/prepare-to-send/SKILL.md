@@ -12,9 +12,9 @@ metadata:
 
 The last gate before a PDF goes out. This skill drives the checklist section-by-section, delegates metadata scrubbing to `scrub-pdf-metadata`, collects results, and refuses to declare "ready" unless every gate passes.
 
-## Harness adaptation
+## Harness Adaptation
 
-Identify the active assistant harness before running this skill. When harness-specific adaptation is needed, load exactly one matching metadata-linked harness reference for the active harness and skip non-matching harness files. Use the shared workflow below as the source of truth and apply only the narrow tool or command translations from the loaded reference.
+Depending on who you are as an AI agent, load exactly one metadata-linked reference and skip every non-matching file.
 
 ## When to use
 

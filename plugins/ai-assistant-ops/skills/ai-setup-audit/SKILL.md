@@ -13,11 +13,7 @@ metadata:
 
 ## Harness Adaptation
 
-Identify the active assistant harness before using harness-specific execution
-wording. When harness-specific adaptation is needed, load exactly one matching
-metadata-linked harness reference for the active harness and skip all
-non-matching harness files. A harness with no matching metadata link uses the
-shared Claude Code-baseline workflow as written.
+Depending on who you are as an AI agent, load exactly one metadata-linked reference and skip every non-matching file.
 
 Read the entire setup before responding.
 

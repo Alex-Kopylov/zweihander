@@ -15,7 +15,7 @@ metadata:
 
 Use macOS launchd for recurring tasks that persist across reboots. Calendar schedules catch up missed runs after sleep.
 
-If harness-specific adaptation is needed, identify the active assistant harness, load exactly one matching metadata-linked harness reference, and skip non-matching harness files. Do not load both Claude Code and Codex harness references in the same invocation.
+Depending on who you are as an AI agent, load exactly one metadata-linked reference and skip every non-matching file.
 
 ## Step 1 — Parse the input
 
