@@ -62,6 +62,7 @@ kanban
     dw_pr_checkout[pr-checkout]
     dw_pr_comment[pr-comment]
     dw_pr_address_comments[pr-address-comments]
+    dw_render_diff_html[render-diff-html]
     dw_ticket_branch[ticket-branch]
     dw_ticket_comment_status[ticket-comment-status]
     dw_version_bumper[version-bumper]
@@ -291,7 +292,8 @@ isolation, or configuring Celery for production behavior.
 ### `dev-workflow`
 
 **Use when:** you need structured development workflow support: commits, PRs,
-review comments, ticket branches, status updates, version bumps, or spec checks.
+visual diff reports, review comments, ticket branches, status updates, version
+bumps, or spec checks.
 
 **Skills**
 
@@ -303,6 +305,7 @@ review comments, ticket branches, status updates, version bumps, or spec checks.
 | `pr-address-comments` | Fetch, fix, reply to, and resolve PR feedback. |
 | `pr-checkout` | Switch to a PR branch for review or changes. |
 | `pr-comment` | Post general or inline PR comments. |
+| `render-diff-html` | Render git diffs and file comparisons as HTML reports. |
 | `spec-contradiction-hunter` | Find contradictions and inconsistencies in specs. |
 | `spec-interview` | Interview the user and produce an implementation spec. |
 | `ticket-branch` | Create a git branch from a ticket ID or URL. |
@@ -456,12 +459,14 @@ HTML-to-PDF export, PDF metadata scrubbing, or a final pre-send checklist.
 
 | Skill | Description |
 |---|---|
+| `cover-letter-writing` | Write an evidence-backed cover letter as HTML and PDF. |
 | `export-pdf` | Render HTML CVs to PDF with headless Chromium. |
 | `init-workspace` | Scaffold the job application workspace. |
 | `new-application` | Create a company application folder and starter files. |
 | `prepare-to-send` | Run final filename, metadata, and content checks. |
 | `resume-tailoring` | Tailor a CV to a job description without fabrication. |
 | `scrub-pdf-metadata` | Strip sensitive PDF metadata before sending. |
+| `submit-job-application` | Fill employer portals and require approval before final submission. |
 
 ## Recommended Third-Party Plugins
 

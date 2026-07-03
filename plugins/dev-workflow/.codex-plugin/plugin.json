@@ -1,7 +1,7 @@
 {
   "name": "dev-workflow",
-  "version": "0.2.10",
-  "description": "Git, PRs, tickets, releases, and review-comment workflows.",
+  "version": "0.3.1",
+  "description": "Git, PRs, tickets, releases, visual diffs, and review-comment workflows.",
   "author": {
     "name": "Alex Kopylov"
   },
@@ -10,7 +10,7 @@
   "interface": {
     "displayName": "Dev Workflow",
     "shortDescription": "Git, PR, ticket, and release workflows",
-    "longDescription": "Git, PRs, tickets, releases, and review-comment workflows, including conventional commits, PR creation, PR feedback handling, spec interviews, and spec contradiction checks.",
+    "longDescription": "Git, PRs, tickets, releases, visual diff reports, and review-comment workflows, including conventional commits, PR creation, PR feedback handling, spec interviews, and spec contradiction checks.",
     "developerName": "Alex Kopylov",
     "category": "Development",
     "capabilities": [
@@ -20,6 +20,7 @@
     ],
     "defaultPrompt": [
       "Create a conventional commit for these changes.",
+      "Render this git diff as an HTML report.",
       "Address PR review comments.",
       "Interview me to produce an implementation spec."
     ]

@@ -66,7 +66,7 @@
     {
       "name": "dev-workflow",
       "source": "./plugins/dev-workflow",
-      "description": "Git, PRs, tickets, releases, and review-comment workflows.",
+      "description": "Git, PRs, tickets, releases, visual diffs, and review-comment workflows.",
       "category": "development",
       "tags": [
         "git",
@@ -75,6 +75,8 @@
         "pull-requests",
         "tickets",
         "release",
+        "diff",
+        "diff2html",
         "review",
         "spec",
         "requirements"

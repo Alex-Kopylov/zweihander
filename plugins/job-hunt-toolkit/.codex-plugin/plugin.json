@@ -1,6 +1,6 @@
 {
   "name": "job-hunt-toolkit",
-  "version": "0.1.3",
+  "version": "0.2.1",
   "description": "Version-controlled job application workspace with resume tailoring, PDF export, metadata scrubbing, and pre-send checks.",
   "author": {
     "name": "Alex Kopylov",
