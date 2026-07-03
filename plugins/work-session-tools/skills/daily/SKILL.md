@@ -16,9 +16,7 @@ Depending on who you are as an AI agent, load exactly one metadata-linked refere
 
 ## Usage
 
-```
-/daily [output-dir]
-```
+Invoke the `work-session-tools:daily` skill with optional `output-dir`.
 
 - `output-dir` — where to save the note (default: current working directory)
 - The **source detection** always runs from the project root (where you are), not the output dir

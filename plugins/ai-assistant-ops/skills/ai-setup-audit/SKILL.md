@@ -4,16 +4,9 @@ description: This skill should be used when the user asks to "audit my setup", "
 disable-model-invocation: false
 context: fork
 agent: Explore
-allowed-tools: Read, Grep, Glob
-metadata:
-  ai-assistant-harness-adaptation.codex: references/ai-assistant-harnesses/codex.md
 ---
 
 # AI Setup Audit
-
-## Harness Adaptation
-
-Depending on who you are as an AI agent, load exactly one metadata-linked reference and skip every non-matching file.
 
 Read the entire setup before responding.
 

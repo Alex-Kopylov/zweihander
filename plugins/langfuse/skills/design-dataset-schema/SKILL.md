@@ -136,7 +136,7 @@ Common patterns:
 
 ### No Expected Output
 
-You can omit `expectedOutput`; experiments still produce traces that Langfuse LLM-as-Judge evaluators can score. If the user asks to configure those evaluators next, use the active harness adaptation reference before invoking `langfuse-eval-manager`.
+You can omit `expectedOutput`; experiments still produce traces that Langfuse LLM-as-Judge evaluators can score. If the user asks to configure those evaluators next, suggest or delegate to the `langfuse:langfuse-eval-manager` agent.
 
 ## Step 4: Create JSON Schema (Optional)
 

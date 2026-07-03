@@ -1,9 +1,6 @@
 # Codex Harness
 
-Codex-specific behavior for this workflow:
+Use this file only when the active harness is Codex.
 
-- Use `request_user_input` for bounded item decisions when available; otherwise
-  ask in chat.
-- `request_user_input` options support labels and descriptions. Present proposed
-  code/config previews in chat before the request, or fold brief previews into
-  the option description.
+- User decisions: use `request_user_input` when available; otherwise ask in chat.
+- Present proposed code/config previews in chat before the request, or fold brief previews into the option description.

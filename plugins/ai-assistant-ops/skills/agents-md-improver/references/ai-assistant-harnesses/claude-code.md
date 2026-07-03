@@ -12,5 +12,6 @@ Use these notes only when the active harness is Claude Code.
 
 ## User Tips
 
+- User decisions: use `AskUserQuestion` when asking for approval before editing.
 - Mention the `#` shortcut only when it is relevant to capturing Claude Code
   memory in the active session.

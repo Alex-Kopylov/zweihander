@@ -1,5 +1,5 @@
-# Claude Code
+# Claude Code Harness Notes
 
-Use these mappings only when this skill needs harness-specific tooling:
+Use this file only when the active harness is Claude Code.
 
-- For structured clarification, use `AskUserQuestion`; plain chat is acceptable for lightweight follow-ups.
+- User decisions: use `AskUserQuestion` when structured clarification is useful; otherwise ask in chat.

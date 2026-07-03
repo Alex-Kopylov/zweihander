@@ -1,5 +1,5 @@
 # Codex Harness Notes
 
-For the after-commit push prompt, ask in chat or use `request_user_input` when
-available and appropriate. `request_user_input` may be mode-limited, so plain
-chat is acceptable for a simple yes/no question.
+Use this file only when the active harness is Codex.
+
+- User decisions: use `request_user_input` when available; otherwise ask in chat.

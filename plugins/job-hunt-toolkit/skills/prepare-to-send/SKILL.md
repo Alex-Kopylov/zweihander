@@ -2,7 +2,6 @@
 name: prepare-to-send
 description: Use when the user asks to "prepare to send", "final check", "ready to send", "pre-send checklist", "is this ready", "is this clean", "can I attach this", "run the checklist", "verify the CV", or "check before sending". Runs the complete pre-send audit — filename sanity, HTML↔PDF parity, metadata scrub, visible content scan, sensitive file presence, content correctness, final sanity — and fails loudly on any issue. Nothing ships with warnings.
 argument-hint: "[pdf-file] (optional; defaults to most recently modified CV PDF in current company folder)"
-allowed-tools: Read, Bash, Glob, Grep, Skill, AskUserQuestion
 metadata:
   ai-assistant-harness-adaptation.claude-code: references/ai-assistant-harnesses/claude-code.md
   ai-assistant-harness-adaptation.codex: references/ai-assistant-harnesses/codex.md
@@ -10,7 +9,7 @@ metadata:
 
 # Prepare to Send
 
-The last gate before a PDF goes out. This skill drives the checklist section-by-section, delegates metadata scrubbing to `scrub-pdf-metadata`, collects results, and refuses to declare "ready" unless every gate passes.
+The last gate before a PDF goes out. This skill drives the checklist section-by-section, delegates metadata scrubbing to the `job-hunt-toolkit:scrub-pdf-metadata` skill, collects results, and refuses to declare "ready" unless every gate passes.
 
 ## Harness Adaptation
 
@@ -19,7 +18,7 @@ Depending on who you are as an AI agent, load exactly one metadata-linked refere
 ## When to use
 
 - Before attaching a CV PDF to an application form or email
-- After `export-pdf` and before the user hits "send"
+- After the `job-hunt-toolkit:export-pdf` skill and before the user hits "send"
 - On demand when the user wants reassurance the file is clean
 
 ## Inputs
@@ -79,7 +78,7 @@ Validate the PDF filename against `${PLUGIN_ROOT}/references/naming-rules.md`.
 
 ```bash
 if [[ "$(stat -f%m "$html")" -gt "$(stat -f%m "$pdf")" ]]; then
-  echo 'FAIL: HTML edited after PDF exported. Re-run $job-hunt-toolkit:export-pdf.'
+  echo 'FAIL: HTML edited after PDF exported. Re-run the `job-hunt-toolkit:export-pdf` skill.'
   exit 1
 fi
 ```
@@ -88,7 +87,7 @@ fi
 
 ## Section 3 — PDF metadata scrub
 
-**Invoke the `scrub-pdf-metadata` skill** on the PDF; do not inline exiftool commands here.
+**Invoke the `job-hunt-toolkit:scrub-pdf-metadata` skill** on the PDF; do not inline exiftool commands here.
 
 If the skill cannot be invoked as a skill, fall back to the exact commands from `${PLUGIN_ROOT}/skills/scrub-pdf-metadata/references/exiftool-commands.md` under "One-liner: scrub + set + verify" — never improvise.
 
@@ -116,7 +115,7 @@ Fail if `Title` ≠ "CV", if `Keywords` or `Subject` are non-empty, or if any fi
 
 ### 4a. PDF text
 
-Use the `Read` tool on the PDF to extract its text. Scan the extracted content for:
+Extract text from the PDF. Scan the extracted content for:
 
 - `TODO`, `FIXME`, `XXX`, `[placeholder]`, `{{`, `<role>`
 - `draft`, `v1`, `v2`, `v3`, `final` as standalone markers
@@ -183,7 +182,7 @@ If any are found, stop and report them. Do not proceed.
 
 ## Section 6 — PDF rendering sanity
 
-Use the `Read` tool on the PDF and verify:
+Read the PDF text and verify:
 
 - [ ] PDF opens without error
 - [ ] Text is selectable (not rasterized) — required for ATS
@@ -229,7 +228,7 @@ If `status` is still `drafting`, surface it as informational so the user can upd
 
 ## Section 9 — Final sanity
 
-Ask the user to confirm these judgment calls via `AskUserQuestion`; they are not automated gates.
+Ask the user to confirm these judgment calls; they are not automated gates.
 
 - [ ] Open PDF in a different renderer than the one that made it (Preview if exported via Chrome; vice-versa) to catch tool-specific bugs
 - [ ] Re-read the first sentence of the first bullet — does it instantly signal fit for THIS role?
@@ -271,6 +270,6 @@ If any automated section fails, print ONLY the failing section's diagnostic and 
 
 - **Every automated gate must pass — no warnings, no partial pass.** Partial pass = fail.
 - **Require exiftool up front.** No silent degradation. Missing tool = abort.
-- **Always run `scrub-pdf-metadata` in Section 3.** Never skip even if the user says they "just scrubbed" — HTML edits invalidate prior scrubs.
+- **Always run the `job-hunt-toolkit:scrub-pdf-metadata` skill in Section 3.** Never skip even if the user says they "just scrubbed" — HTML edits invalidate prior scrubs.
 - **Cross-company leak = catastrophic.** Any other company name in the PDF text or HTML comments is game-over; block.
-- **Defer metadata specifics to `scrub-pdf-metadata` and its references.** If you need to fall back, use EXACT commands from `exiftool-commands.md` — never improvise.
+- **Defer metadata specifics to the `job-hunt-toolkit:scrub-pdf-metadata` skill and its references.** If you need to fall back, use EXACT commands from `exiftool-commands.md` — never improvise.

@@ -4,7 +4,7 @@ Use this file only when the active harness is Codex.
 
 ## Invocation
 
-Codex may invoke this workflow from the skill trigger or a natural-language request instead of `/daily`. Treat an optional output directory in the user's request as the `output-dir` argument.
+Skill invocation: use `$work-session-tools:daily` or load the skill's `SKILL.md`.
 
 ## Project Context
 

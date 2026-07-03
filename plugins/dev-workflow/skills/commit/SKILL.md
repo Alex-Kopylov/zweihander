@@ -2,6 +2,7 @@
 name: commit
 description: "Commit staged changes following Conventional Commits v1.0.0. Activate when user asks to commit, create a commit, or says /commit."
 metadata:
+  ai-assistant-harness-adaptation.claude-code: references/ai-assistant-harnesses/claude-code.md
   ai-assistant-harness-adaptation.codex: references/ai-assistant-harnesses/codex.md
 ---
 
@@ -73,11 +74,11 @@ feat(auth): add oauth2 support
    git add path/to/file1 path/to/file2 && git commit -m "<scoped message>"
    ```
 6. **Never** include a body, footer, or `Co-Authored-By` trailer
-7. **Never** mention the assistant runtime in the commit message
+7. **Never** mention the AI agent in the commit message
 
 ## After Commit
 
-Ask whether to push via `AskUserQuestion`. Preview = actual output of `git log @{u}..HEAD --oneline`. If no upstream, show only the new commit and note that push will require `--set-upstream`.
+Ask the user whether to push. Preview = actual output of `git log @{u}..HEAD --oneline`. If no upstream, show only the new commit and note that push will require `--set-upstream`.
 
 ## Examples
 

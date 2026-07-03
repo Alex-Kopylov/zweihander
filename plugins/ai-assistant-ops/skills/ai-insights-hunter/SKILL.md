@@ -4,7 +4,6 @@ description: Use this skill when the user says "/ai-insights-hunter", "extract i
 metadata:
   ai-assistant-harness-adaptation.claude-code: references/ai-assistant-harnesses/claude-code.md
   ai-assistant-harness-adaptation.codex: references/ai-assistant-harnesses/codex.md
-allowed-tools: AskUserQuestion, Read, Write, Agent, TaskCreate, TaskGet, TaskList, TaskUpdate, TaskOutput, TaskStop, Glob, Bash
 ---
 
 # AI Insights Hunter
@@ -21,7 +20,7 @@ Depending on who you are as an AI agent, load exactly one metadata-linked refere
 
 ## Agent specs
 
-Read these files before spawning the corresponding agents:
+Read these files before delegating to the corresponding agents:
 
 - `agents/decisions-hunter.md` — technical decisions & architectural choices
 - `agents/preferences-hunter.md` — user preferences & feedback patterns
@@ -48,7 +47,7 @@ Find logs automatically:
 
 ### Multi-agent sessions
 
-If the session used `Agent` with `TeamCreate` or parallel `TaskCreate` subagents, find their separate conversation logs:
+If the session used delegated agents or parallel subagents, find their separate conversation logs:
 
 1. Note the main log's timestamp
 2. List **all** JSONL files across known AI Assistant conversation-log roots modified within ~5 minutes of the main log's mtime
@@ -61,9 +60,9 @@ If the session used `Agent` with `TeamCreate` or parallel `TaskCreate` subagents
 
 ## Step 2 — Parallel Insight Extraction
 
-For each conversation log, read all agent specs defined in `agents/`, then spawn those agents simultaneously in a single message. Pass the full log content to each agent's prompt.
+For each conversation log, read all agent specs defined in `agents/`, then spawn one agent per hunter spec in a single message when your runtime supports parallel delegation. Pass the full log content to each agent's prompt.
 
-If there are multiple logs (multi-agent session), spawn every `agents/` hunter for each log in a single message — all in parallel.
+If there are multiple logs (multi-agent session), spawn every `agents/` hunter for each log in a single message when parallel delegation is available.
 
 Wait for all agents to complete before continuing.
 
@@ -95,21 +94,12 @@ Present the full summary:
 
 ## Step 4 — First Decision: Scope
 
-```
-AskUserQuestion({
-  questions: [{
-    header: "What to store?",
-    question: "Found [n-HIGH] must-store, [n-MEDIUM] medium, [n-LOW] low-value insights across [N] conversation logs. Which do you want to walk through?",
-    options: [
-      { label: "HIGH only", description: "Walk through [n] critical insights" },
-      { label: "HIGH + MEDIUM", description: "Walk through [n] insights" },
-      { label: "HIGH + MEDIUM + LOW", description: "Walk through all [n] insights" },
-      { label: "Skip — store nothing", description: "Exit without saving" }
-    ],
-    multiSelect: false
-  }]
-})
-```
+Ask the user to choose exactly one bounded option:
+
+- `HIGH only`: Walk through `[n]` critical insights.
+- `HIGH + MEDIUM`: Walk through `[n]` insights.
+- `HIGH + MEDIUM + LOW`: Walk through all `[n]` insights.
+- `Skip - store nothing`: Exit without saving.
 
 If "Skip": jump to Step 7.
 
@@ -117,20 +107,20 @@ If "Skip": jump to Step 7.
 
 ## Step 5 — Build Task List
 
-Create a `TaskCreate` for each selected finding. Each task holds:
+Track each selected finding as a plan item. Each item holds:
 - Finding title
 - Category (Decisions / Preferences / Patterns / Project Context)
 - Tier
 - Recommended storage path (your best guess)
 - Status: `pending`
 
-Use `TaskList` to confirm all tasks are created before proceeding.
+Keep exactly one item in progress while interviewing and storing findings.
 
 ---
 
 ## Step 6 — Interview Each Item
 
-Walk through tasks one-by-one using `AskUserQuestion`. For each item, decide: store it? where?
+Walk through plan items one-by-one. Ask the user to decide for each item: store it? where?
 
 **Storage location guide:**
 
@@ -147,35 +137,19 @@ Include a `preview` showing the exact text that will be written.
 
 **Question format:**
 
-```
-AskUserQuestion({
-  questions: [{
-    header: "#[N] [TIER] — [Category]",
-    question: "[Finding title]: [Detail] — Store this?",
-    options: [
-      {
-        label: "Store (Recommended)",
-        description: "→ [recommended file path]",
-        preview: "[exact content to be written]"
-      },
-      {
-        label: "Store elsewhere",
-        description: "I'll tell you where"
-      },
-      {
-        label: "Skip",
-        description: "Not worth keeping"
-      }
-    ],
-    multiSelect: false
-  }]
-})
-```
+Ask the user to choose exactly one bounded option. Use the header
+`#[N] [TIER] - [Category]`, the question
+`[Finding title]: [Detail] - Store this?`, and these options:
+
+- `Store (Recommended)`: description is the recommended file path; preview is
+  the exact content to be written.
+- `Store elsewhere`: user supplies the path.
+- `Skip`: not worth keeping.
 
 **After each response:**
-- **Store**: write immediately, update task to `completed`, acknowledge: `#3 stored -> {path} · 3/8 done`
-- **Store elsewhere**: ask for path, then write and complete
-- **Skip**: mark task `skipped`
+- **Store**: write immediately, mark the item `completed`, acknowledge: `#3 stored -> {path} · 3/8 done`
+- **Store elsewhere**: ask for path, then write and mark complete
+- **Skip**: mark the item `skipped`
 
 **Writing rules:**
 
@@ -199,17 +173,17 @@ Avoid writing:
 - One-off fixes unlikely to recur
 - Verbose explanations — if a one-liner suffices, use it
 
-If the user explores an item, asks questions, or revisits a decision, continue the side conversation, then use `TaskList` to re-orient and resume.
+If the user explores an item, asks questions, or revisits a decision, continue the side conversation, then review the plan items to re-orient and resume.
 
 ---
 
 ## Step 7 — Targeted Quality Check on Modified Files
 
-Use `$ai-assistant-ops:agents-md-improver` when available, scoped only to the files written during Step 6.
+Use the `ai-assistant-ops:agents-md-improver` skill when available, scoped only to the files written during Step 6.
 
 Before it runs, tell it explicitly: "Focus only on these files that were just modified: [list]. Do not audit pre-existing content — only check whether the new additions conflict with, duplicate, or contradict what was already there."
 
-The `$ai-assistant-ops:agents-md-improver` skill will read the files, score the additions, and flag any issues. Its quality criteria (conciseness, actionability, no obvious info) apply directly to what we just wrote.
+The `ai-assistant-ops:agents-md-improver` skill will read the files, score the additions, and flag any issues. Its quality criteria (conciseness, actionability, no obvious info) apply directly to what we just wrote.
 
 If no issues are found, it will say so — no further action needed.
 
@@ -235,4 +209,4 @@ Stored [n] insights, skipped [n].
 
 - Never store secrets, credentials, tokens, or API keys.
 - Keep it concise — one line per concept.
-- Step 7 with `$ai-assistant-ops:agents-md-improver` is mandatory when the skill is available and must be scoped to only files modified during this session — never a full repo audit of pre-existing content.
+- Step 7 with the `ai-assistant-ops:agents-md-improver` skill is mandatory when the skill is available and must be scoped to only files modified during this session — never a full repo audit of pre-existing content.

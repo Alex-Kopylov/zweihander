@@ -65,11 +65,11 @@ Present the team design as a structured document with:
 
 ### Phase 5: Write the Blueprint
 
-After user approval, write the blueprint to the active harness's appropriate task, plan, or project location.
+After user approval, write the blueprint to your task, plan, or project location.
 
 ## Task And Agent Tools
 
-Track progress with the active harness's task or plan mechanism. Spawn parallel agents only when supported and justified by the team design.
+Track progress with your task or plan mechanism. Spawn parallel agents only when supported and justified by the team design.
 
 ## Rules
 

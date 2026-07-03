@@ -1,8 +1,8 @@
 ---
 name: pr-address-comments
 description: This skill should be used when the user asks to "address PR comments", "fix PR feedback", "resolve PR threads", "handle review comments", "address review feedback", "respond to PR comments", "fix code review comments", "fix what reviewers said", "work on PR comments", "iterate on PR", or "rework PR". It fetches unresolved PR review threads, presents them for user confirmation, then makes code fixes, replies to threads, and resolves them.
-allowed-tools: AskUserQuestion, Agent, Skill(dev-workflow:commit, dev-workflow:pr-comment)
 metadata:
+  ai-assistant-harness-adaptation.claude-code: references/ai-assistant-harnesses/claude-code.md
   ai-assistant-harness-adaptation.codex: references/ai-assistant-harnesses/codex.md
 ---
 
@@ -45,7 +45,7 @@ Group remaining threads by file path (general comments grouped separately). For 
 - Comment text (truncated if very long)
 - File path and line range (if inline)
 
-Use **AskUserQuestion** with multiSelect to let the user pick which comments to address. Include an "All of them" option as the first choice.
+Ask the user to choose which comments to address, using a bounded multi-select choice. Include an "All of them" option as the first choice.
 
 ### 4. Address Selected Comments
 
@@ -54,20 +54,20 @@ For each selected comment:
 1. **Read the relevant code** — open the file at the referenced lines (or broader context if needed)
 2. **Understand the ask** — interpret what the reviewer wants changed
 3. **Make the fix** — edit the code to address the feedback
-4. **Reply to the thread** — invoke `$dev-workflow:pr-comment` to post a reply explaining what was done (e.g. `"Fixed: extracted validation into helper"`)
+4. **Reply to the thread** — invoke the `dev-workflow:pr-comment` skill to post a reply explaining what was done (e.g. `"Fixed: extracted validation into helper"`)
 5. **Resolve the thread** — mark the thread status as "fixed" via platform tools (see platform reference files for status codes)
 
-If a comment is unclear or requires a judgment call, use **AskUserQuestion** to clarify before making changes.
+If a comment is unclear or requires a judgment call, ask the user to clarify before making changes.
 
 ### 5. Post-Fix Actions
 
-After addressing selected comments, present options via **AskUserQuestion**:
+After addressing selected comments, ask the user to choose one of these options:
 
-- **Commit changes** — invoke `$dev-workflow:commit`
+- **Commit changes** — invoke the `dev-workflow:commit` skill
 - **Push to remote** — push the current branch
 - **Done for now** — leave changes uncommitted
 
-Do not commit or push without explicit user confirmation via AskUserQuestion.
+Do not commit or push without explicit user confirmation.
 
 ## References
 
@@ -82,4 +82,4 @@ Do not commit or push without explicit user confirmation via AskUserQuestion.
 
 - If no active threads exist — report "No unresolved review comments found" and exit
 - If a referenced file no longer exists — reply to the thread noting the file was removed/renamed, ask user how to proceed
-- If a fix requires architectural discussion — flag via AskUserQuestion rather than making a unilateral decision
+- If a fix requires architectural discussion — ask the user rather than making a unilateral decision

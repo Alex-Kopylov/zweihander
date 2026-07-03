@@ -1,5 +1,5 @@
 # Claude Code Harness
 
-Use the shared `SKILL.md` workflow directly in Claude Code.
+Use this file only when the active harness is Claude Code.
 
-- Keep `preview` content on options when it helps the user compare outcomes.
+- User decisions: use `AskUserQuestion` (supports bounded options, multiSelect, previews).

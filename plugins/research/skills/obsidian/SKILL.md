@@ -27,7 +27,7 @@ carefully quoted shell commands.
 
 If the vault path is unknown, use a shell command to resolve
 `OBSIDIAN_VAULT_PATH` or check whether the fallback path exists. Once the path
-is known, switch back to the harness's preferred file tools.
+is known, switch back to your preferred file tools.
 
 ## Operations
 

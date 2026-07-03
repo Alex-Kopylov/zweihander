@@ -2,8 +2,6 @@
 
 Use this file only when Codex is the active assistant harness.
 
-## AskUser
+User decisions: use `request_user_input` when available; otherwise ask in chat.
 
-User prompts: use `request_user_input` when a bounded choice UI is available; otherwise ask in chat and wait for the answer.
-
-Ask before installing or updating `@mermaid-js/mermaid-cli`; do not auto-update Mermaid CLI.
+Use it before installing or updating `@mermaid-js/mermaid-cli`.

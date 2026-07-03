@@ -2,7 +2,6 @@
 name: new-application
 description: Use when the user asks to "apply to <company>", "start a new application", "new company folder", "scaffold application for", "I'm applying to", "track this job", "set up application for", "create folder for", or provides a JD and wants to set up a tracked application. Creates a per-company folder in the workspace, scaffolds company.md with YAML frontmatter, saves the job description, copies the master HTML for tailoring, and optionally hands off to the resume-tailoring skill.
 argument-hint: <company-slug> [role]
-allowed-tools: Read, Write, Edit, Bash, WebFetch, AskUserQuestion, Skill
 metadata:
   ai-assistant-harness-adaptation.claude-code: references/ai-assistant-harnesses/claude-code.md
   ai-assistant-harness-adaptation.codex: references/ai-assistant-harnesses/codex.md
@@ -34,7 +33,7 @@ Depending on who you are as an AI agent, load exactly one metadata-linked refere
 
 Read `JOB_HUNT_WORKSPACE` env var; fall back to `~/Documents/job_seeking`. Resolve `~`.
 
-If the workspace doesn't exist or lacks a master CV, stop and direct user to run `$job-hunt-toolkit:init-workspace` first.
+If the workspace doesn't exist or lacks a master CV, stop and direct the user to use the `job-hunt-toolkit:init-workspace` skill first.
 
 ### 2. Validate company slug
 
@@ -83,8 +82,8 @@ Copy to `<slug>/<First>_<Last>_<NewRole>_CV.html`. The role in the filename matc
 
 ### 8. Offer to chain
 
-Prompt user:
-- **Tailor now** → invoke `resume-tailoring` skill with the JD and this company's HTML as context
+Ask the user to choose:
+- **Tailor now** → invoke the `job-hunt-toolkit:resume-tailoring` skill with the JD and this company's HTML as context
 - **Tailor later** → stop here; user can run tailoring manually
 
 ### 9. Output summary
@@ -97,9 +96,9 @@ Prompt user:
 
 Next:
   - Edit company.md with company details
-  - Run resume-tailoring to tailor the CV
-  - $job-hunt-toolkit:export-pdf to regenerate PDF
-  - $job-hunt-toolkit:prepare-to-send before sending
+  - Use the `job-hunt-toolkit:resume-tailoring` skill to tailor the CV
+  - Use the `job-hunt-toolkit:export-pdf` skill to regenerate the PDF
+  - Use the `job-hunt-toolkit:prepare-to-send` skill before sending
 ```
 
 ## Hard rules
@@ -114,8 +113,8 @@ Next:
 
 | Scenario | Action |
 |---|---|
-| Workspace doesn't exist | Stop; direct user to `init-workspace` |
-| Master HTML not found | Stop; ask user to create one or run `init-workspace` |
+| Workspace doesn't exist | Stop; direct user to the `job-hunt-toolkit:init-workspace` skill |
+| Master HTML not found | Stop; ask user to create one or use the `job-hunt-toolkit:init-workspace` skill |
 | WebFetch fails on JD URL | Ask user to paste the JD text instead |
 | Slug contains denied characters | Reject; show deny-list; ask user for corrected slug |
 | Role label contains invalid characters | Reject; show naming rules; ask again |

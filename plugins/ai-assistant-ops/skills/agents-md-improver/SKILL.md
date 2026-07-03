@@ -34,9 +34,6 @@ find . -name "AGENTS.md" 2>/dev/null | head -50
 | Package-specific | `./packages/*/AGENTS.md` | Module-level context in monorepos |
 | Subdirectory | Any nested location | Feature/domain-specific context |
 
-If the active harness uses additional project-context filenames, load the
-matching harness reference before expanding discovery beyond AGENTS.md.
-
 ### Phase 2: Quality Assessment
 
 For each AGENTS.md file, evaluate against quality criteria. See [references/quality-criteria.md](references/quality-criteria.md) for detailed rubrics.
@@ -140,7 +137,7 @@ After outputting the quality report, ask user for confirmation before updating.
 
 ### Phase 5: Apply Updates
 
-After user approval, apply changes using the Edit tool. Preserve existing content structure.
+After user approval, apply changes. Preserve existing content structure.
 
 ## Templates
 
@@ -161,7 +158,7 @@ When presenting recommendations, remind users:
 
 - **Keep it concise**: AGENTS.md should be human-readable; dense is better than verbose
 - **Actionable commands**: All documented commands should be copy-paste ready
-- **Separate personal preferences**: Keep local or user-scoped preferences out of shared project context unless the active harness expects them there
+- **Separate personal preferences**: Keep local or user-scoped preferences out of shared project context unless the AI agent's runtime expects them there
 
 ## What Makes a Great AGENTS.md
 

@@ -4,7 +4,7 @@ Use this file only when the active harness is Claude Code.
 
 ## Invocation
 
-Treat `/daily [output-dir]` as the Claude Code slash-command form for this skill.
+Skill invocation: use `Skill(work-session-tools:daily)`.
 
 ## Project Context
 

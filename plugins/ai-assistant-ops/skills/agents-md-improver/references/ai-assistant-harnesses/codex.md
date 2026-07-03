@@ -16,5 +16,7 @@ Use these notes only when the active harness is Codex.
 
 ## User Tips
 
+- User decisions: use `request_user_input` when available; otherwise ask in
+  chat.
 - For personal preferences, point users to `.codex.local.md` or
   `~/.codex/AGENTS.md`.

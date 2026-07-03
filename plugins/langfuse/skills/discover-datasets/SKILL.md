@@ -95,9 +95,9 @@ Current version has `valid_to IS NULL`.
 
 Based on discovered data, suggest:
 
-- If dataset has no items → "Use the `langfuse-dataset-expert` agent to populate it."
-- If dataset has items but no runs → "Use the `langfuse-experiment-manager` agent to run experiments."
+- If dataset has no items → "Use or suggest the `langfuse:langfuse-dataset-expert` agent to populate it."
+- If dataset has items but no runs → "Use or suggest the `langfuse:langfuse-experiment-manager` agent to run experiments."
 - If dataset has no schema → "Consider adding input/output schemas for validation."
-- If remote experiment URL is not configured → "Use the `langfuse-experiment-manager` agent to configure remote triggering."
+- If remote experiment URL is not configured → "Use or suggest the `langfuse:langfuse-experiment-manager` agent to configure remote triggering."
 
 Refer to `references/datasets-api-reference.md` for complete API details.

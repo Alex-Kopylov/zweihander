@@ -2,4 +2,4 @@
 
 Use these notes only when the active harness is Claude Code.
 
-- Preserve `/job-hunt-toolkit:<skill-name>` references in generated next steps and user-facing workflow text.
+- User decisions: use `AskUserQuestion` (supports bounded options, multiSelect, previews).

@@ -2,7 +2,6 @@
 name: scrub-pdf-metadata
 description: Use when the user asks to "scrub PDF metadata", "clean the PDF", "strip CV metadata", "remove author from PDF", "sanitize PDF", "wipe PDF info", "clear PDF properties", "clean up before sending", "remove creation date", or after exporting a PDF that will be sent to a recruiter. Strips Author, Title, Producer, Creator, CreationDate, ModifyDate, XMP, and custom metadata fields using exiftool, then sets a clean Author field back. Called automatically by export-pdf as its final step.
 argument-hint: <pdf-file> [--author="Full Name"]
-allowed-tools: Read, Bash, AskUserQuestion
 metadata:
   ai-assistant-harness-adaptation.claude-code: references/ai-assistant-harnesses/claude-code.md
   ai-assistant-harness-adaptation.codex: references/ai-assistant-harnesses/codex.md
@@ -25,7 +24,7 @@ Depending on who you are as an AI agent, load exactly one metadata-linked refere
 ## Inputs
 
 - **PDF file** (argument, required): absolute path preferred.
-- **Author** (optional `--author=`): name to set as the clean Author. Infer from memory/context (user's name as it appears on the CV). If unclear, ask the user via AskUserQuestion before proceeding.
+- **Author** (optional `--author=`): name to set as the clean Author. Infer from memory/context (user's name as it appears on the CV). If unclear, ask the user before proceeding.
 
 ## Preconditions
 
@@ -107,7 +106,7 @@ exiftool -CreateDate= -ModifyDate= -MetadataDate= -overwrite_original "$pdf"
 
 ### 5. Scan PDF text for leaks
 
-Metadata scrub does not cover PDF *content*. Use Read, then scan extracted text for:
+Metadata scrub does not cover PDF *content*. Extract PDF text, then scan for:
 
 - `file:`
 - `/Users/`
@@ -129,7 +128,7 @@ If any hits: the HTML template probably renders a path in a header/footer via `@
   Producer / Creator: empty
   Content scan: no path leaks detected
 
-Ready for sending. Run $job-hunt-toolkit:prepare-to-send for the full pre-send checklist.
+Ready for sending. Run the `job-hunt-toolkit:prepare-to-send` skill for the full pre-send checklist.
 ```
 
 ## Hard rules

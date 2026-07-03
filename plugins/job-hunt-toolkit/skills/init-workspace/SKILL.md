@@ -2,7 +2,6 @@
 name: init-workspace
 description: Use when the user asks to "initialize job hunt workspace", "set up job seeking folder", "create CV workspace", "bootstrap resume folder", "prepare job search folder", "start job hunt setup", "create application tracking workspace", "first time setup for job applications", or is starting the job-hunt-toolkit for the first time. Creates the workspace directory structure, generates README/AGENTS.md/NAMING.md from plugin templates, copies master HTML CV into workspace, and primes the workspace for per-company folders.
 argument-hint: "[workspace-path] (optional, defaults to ~/Documents/job_seeking)"
-allowed-tools: Read, Write, Edit, Bash, AskUserQuestion
 metadata:
   ai-assistant-harness-adaptation.claude-code: references/ai-assistant-harnesses/claude-code.md
   ai-assistant-harness-adaptation.codex: references/ai-assistant-harnesses/codex.md
@@ -42,7 +41,7 @@ Depending on who you are as an AI agent, load exactly one metadata-linked refere
 
 ### 2. Gather naming info
 
-Ask via `AskUserQuestion` if not supplied:
+Ask the user for any missing values:
 - First name
 - Last name
 - Default role label (e.g. `AI_LLM_ML_Engineer`, `Senior_ML_Engineer`)
@@ -51,7 +50,7 @@ Validate against `references/naming-rules.md` (underscores only, ASCII only).
 
 ### 3. Prompt for master CV
 
-Use `AskUserQuestion` for the absolute path to the existing master CV HTML file.
+Ask the user for the absolute path to the existing master CV HTML file.
 
 - If the user provides a valid, readable `.html` path: **copy** it into the workspace root as `<First>_<Last>_<Role>_CV.html` and leave the source untouched. Print: `✓ Master CV copied to <workspace>/<First>_<Last>_<Role>_CV.html`.
 - If the user provides no path, an empty value, or a path that does not exist / is not readable: **HARD ERROR** — print exactly:
@@ -110,6 +109,6 @@ After success, print:
 ✓ Docs generated from plugin templates
 
 Next:
-  $job-hunt-toolkit:new-application <company-slug>   # start an application
-  $job-hunt-toolkit:export-pdf                       # generate master PDF from HTML
+  - Use the `job-hunt-toolkit:new-application` skill with <company-slug> to start an application
+  - Use the `job-hunt-toolkit:export-pdf` skill to generate the master PDF from HTML
 ```

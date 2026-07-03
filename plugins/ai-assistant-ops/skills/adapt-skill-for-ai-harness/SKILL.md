@@ -29,7 +29,11 @@ Adapted target skills may still receive `references/ai-assistant-harnesses/claud
 
 ## Target Adaptation Policy
 
-Use Claude Code format, wording, and tool names as the baseline in shared target `SKILL.md` content.
+Shared target `SKILL.md` content is harness-agnostic. It names no harness and no harness's mechanism tools. It states intent in generalized language: "ask the user (bounded options)", "invoke the `plugin-name:skill-name` skill", "delegate to the `plugin-name:agent-name` agent", "track the work as plan items". Slash commands are treated as regular skills and referenced the same generalized way. Trigger phrases inside frontmatter `description` fields are exempt.
+
+Adapted skills carry no `allowed-tools` frontmatter; delete the key when adapting.
+
+The actor is "the AI agent" or "you". "Harness" refers only to the surrounding CLI/runtime infrastructure and appears in shared target content only in the standard Harness Adaptation wording and metadata keys. This skill itself is the documented exception and may discuss harnesses freely.
 
 For target skills, add flat metadata links, one per supported harness:
 
@@ -45,7 +49,7 @@ Store target harness adaptation files under `references/ai-assistant-harnesses/<
 
 Never instruct baseline capabilities. Every harness reads, searches, creates, edits, and writes files and runs shell commands natively with its own tools (`Read`, `Grep`, `Glob`, `Bash`, `Write`, `Edit`, `MultiEdit`, `exec_command`, `apply_patch`, `sed`, `nl`, `rg`, and similar). Assistants handle these unaided; telling them which of their own basic tools to use only pollutes context. Do not write harness-reference instructions for these actions and do not translate them between harnesses. Matrix actions marked `"adaptation": "baseline"` exist for lookup completeness and never become reference content.
 
-Map only differently named shared mechanisms where an explicit nudge changes behavior, marked `"adaptation": "map"` in the matrix: asking the user (`AskUserQuestion` / `request_user_input`), subagent delegation (`Agent` / `spawn_agent`), skill and slash-command invocation (`Skill(...)` and `/plugin-name:skill-name` / `$plugin-name:skill-name`), task tracking (`TaskCreate` / `update_plan`), and harness-specific facts such as context-file or storage locations.
+Map only differently named shared mechanisms where an explicit nudge changes behavior, marked `"adaptation": "map"` in the matrix: asking the user (`AskUserQuestion` / `request_user_input`), subagent delegation (`Agent` / `spawn_agent`), skill and slash-command invocation (`Skill(...)` and `/plugin-name:skill-name` / `$plugin-name:skill-name`), task tracking (`TaskCreate` / `update_plan`), and harness-specific facts such as context-file or storage locations. For every mapped mechanism the target workflow uses, each supported harness's reference carries the nudge in its own vocabulary: `AskUserQuestion` in `claude-code.md` / `request_user_input` in `codex.md`; `Agent` / `spawn_agent`; `Skill(plugin:skill)` / `$plugin:skill`; `TaskCreate` / `update_plan`. References carry no general instructions; anything harness-independent belongs in the shared `SKILL.md`.
 
 Write each harness reference purely in its own harness's vocabulary. A harness reference must never name another harness or another harness's tools, frontmatter keys, or invocation syntax, and must never use translate-from framing such as "treat X as Y" or "translate X to Y". Anchor each instruction on the workflow action it adapts — asking the user, task tracking, delegation, skill invocation — stated directly in the target harness's own terms. Tokens quoted from the shared skill text (such as `$plugin-name:skill-name` invocation strings) are allowed anchors when the mapping needs them.
 
@@ -76,9 +80,9 @@ Do not create `references/ai-assistant-harnesses/` inside this skill. That direc
 5. Detect explicit harness wording, tool names, command names, command-like workflow references, and host-specific instructions.
 6. Map each host-specific operation to an action key such as `CreateAgent`, `AskUser`, `TrackTasks`, or `SlashCommand`. Drop operations whose matrix action is marked `"adaptation": "baseline"`; remove baseline tool coaching from adaptation output instead of translating it.
 7. For each remaining pair, look up `matrix["actions"][action_key][assistant_key]`; for example, use `matrix["actions"]["CreateAgent"]["Codex"]`.
-8. Preserve Claude Code as the shared baseline. Keep broadly valid skill workflow in the target `SKILL.md`.
+8. Make the shared target `SKILL.md` harness-agnostic; keep all broadly valid workflow there.
 9. Move Codex-specific instructions to the target `references/ai-assistant-harnesses/codex.md`.
-10. Move Claude Code-specific details that should not stay in shared prose to the target `references/ai-assistant-harnesses/claude-code.md`.
+10. Move Claude Code-specific details to the target `references/ai-assistant-harnesses/claude-code.md`.
 11. If per-assistant instructions exist, reorganize them into the target `references/ai-assistant-harnesses/` format and remove duplicated old adaptation information.
 12. Add or update the flat metadata links in the target `SKILL.md`.
 13. Add or update focused static tests or evals when the repository has a test/eval convention that can enforce the policy.
@@ -113,7 +117,7 @@ Do not load other target harness references while acting as a specific harness.
 
 Do not leave both old per-assistant instructions and new metadata-linked harness files active for the same behavior.
 
-Do not replace the Claude Code-baseline shared workflow with Codex wording. Put Codex wording in the target `codex.md`.
+Shared workflow content names no harness's mechanisms; each harness's wording lives only in its own reference file.
 
 ## Verification
 
@@ -121,6 +125,8 @@ For each adapted target, check that:
 
 - `SKILL.md` has only flat `metadata.ai-assistant-harness-adaptation.*` links.
 - Every metadata value ends in `.md` and resolves under `references/ai-assistant-harnesses/`.
+- Shared content is harness-agnostic: no harness names or mechanism tool names outside frontmatter `description` fields.
+- No `allowed-tools` frontmatter remains.
 - The target contains the exact standard harness adaptation wording and nothing more about harness selection.
 - The target has no shared table or complete shared list of all harness instructions.
 - Harness references contain no baseline-capability coaching: no instructions naming which file read, search, edit, write, or shell tools to use.

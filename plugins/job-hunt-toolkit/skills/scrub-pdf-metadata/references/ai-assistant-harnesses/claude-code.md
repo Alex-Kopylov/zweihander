@@ -1,3 +1,6 @@
 # Claude Code Harness Notes
 
-`/job-hunt-toolkit:prepare-to-send` is the Claude Code plugin skill invocation form for the final pre-send checklist.
+Use this file only when the active harness is Claude Code.
+
+- User decisions: use `AskUserQuestion` (supports bounded options, multiSelect, previews).
+- Skill invocation: use `Skill(job-hunt-toolkit:prepare-to-send)`.

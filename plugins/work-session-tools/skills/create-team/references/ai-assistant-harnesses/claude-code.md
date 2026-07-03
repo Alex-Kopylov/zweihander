@@ -1,8 +1,7 @@
 # Claude Code
 
-Use Claude Code tools for harness-specific actions:
+Use this file only when the active harness is Claude Code.
 
-- Ask structured clarification questions with `AskUserQuestion` when useful; plain chat is acceptable for simple clarification.
-- Track blueprint work with `TaskCreate`, `TaskUpdate`, `TaskGet`, `TaskList`, and
-  `TaskStop`; avoid deprecated `TaskOutput` when inspecting task output.
-- For live multi-agent work, use `TeamCreate`, `SendMessage`, and `TeamDelete` when creating an agent team, or `Agent` for a single delegated subagent.
+- User decisions: use `AskUserQuestion` (supports bounded options, multiSelect, previews).
+- Task tracking: use `TaskCreate`/`TaskUpdate` (one item in_progress).
+- Delegation: use the `Agent` tool.

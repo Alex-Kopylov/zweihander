@@ -1,5 +1,5 @@
-# Codex
+# Codex Harness Notes
 
-Use these mappings only when this skill needs harness-specific tooling:
+Use this file only when the active harness is Codex.
 
-- For bounded clarification, use `request_user_input` when available; otherwise ask in chat.
+- User decisions: use `request_user_input` when available; otherwise ask in chat.

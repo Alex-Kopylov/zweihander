@@ -9,6 +9,10 @@ Use this file only when the active harness is Claude Code.
 
 ## Runtime operations
 
-- Parallel insight extraction: use `Agent` to run each hunter prompt from `agents/` concurrently.
-- User decisions: use the `AskUserQuestion` examples in the shared workflow.
-- Task tracking: use `TaskCreate`, `TaskList`, `TaskUpdate`, `TaskGet`, `TaskOutput`, and `TaskStop` as needed to track selected findings through storage or skip decisions.
+- Delegation: use the `Agent` tool to run each hunter prompt from `agents/`
+  concurrently.
+- User decisions: use `AskUserQuestion` (supports bounded options,
+  multiSelect, previews).
+- Task tracking: use `TaskCreate`/`TaskUpdate`; keep one selected finding
+  `in_progress` at a time and use `TaskList` to re-orient when needed.
+- Skill invocation: use `Skill(ai-assistant-ops:agents-md-improver)`.
