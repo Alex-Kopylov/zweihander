@@ -6,7 +6,6 @@ context: fork
 agent: Explore
 allowed-tools: Read, Grep, Glob
 metadata:
-  ai-assistant-harness-adaptation.claude-code: references/ai-assistant-harnesses/claude-code.md
   ai-assistant-harness-adaptation.codex: references/ai-assistant-harnesses/codex.md
 ---
 
@@ -17,7 +16,8 @@ metadata:
 Identify the active assistant harness before using harness-specific execution
 wording. When harness-specific adaptation is needed, load exactly one matching
 metadata-linked harness reference for the active harness and skip all
-non-matching harness files.
+non-matching harness files. A harness with no matching metadata link uses the
+shared Claude Code-baseline workflow as written.
 
 Read the entire setup before responding.
 

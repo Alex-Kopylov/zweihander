@@ -4,7 +4,7 @@
     {
       "id": 0,
       "prompt": "Adapt the explicitly named skill plugins/example/skills/deploy-helper for AI Assistant Harness Adaptation so it works for Claude Code and Codex.",
-      "expected_output": "Resolves or asks for the explicitly named skill path, loads the action matrix, maps host-specific operations through matrix[\"actions\"][action_key][assistant_key], keeps Claude Code as the shared target skill SKILL.md baseline, adds flat ai-assistant-harness-adaptation metadata links to the target skill, creates only needed target claude-code.md and codex.md harness references, avoids migrating unrelated skills, reports exact changed files, and runs focused verification.",
+      "expected_output": "Resolves or asks for the explicitly named skill path, loads the action matrix, maps host-specific operations through matrix[\"actions\"][action_key][assistant_key], drops operations whose matrix action is marked adaptation baseline, keeps Claude Code as the shared target skill SKILL.md baseline, adds flat ai-assistant-harness-adaptation metadata links to the target skill, creates only needed target claude-code.md and codex.md harness references without baseline tool coaching, avoids migrating unrelated skills, reports exact changed files, and runs focused verification.",
       "files": [],
       "assertions": [
         {
@@ -46,6 +46,22 @@
         {
           "name": "codex_only_target_reference",
           "check": "loaded files include the target skill codex.md and exclude the target skill claude-code.md"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Adapt the explicitly named skill plugins/example/skills/notes-cleanup for Codex. Its SKILL.md only reads files, searches text, and edits files; it never asks the user structured questions, spawns no agents, tracks no tasks, and invokes no skills or slash commands.",
+      "expected_output": "Detects that every host-specific operation in the target skill maps to matrix actions marked adaptation baseline (ReadFile, SearchFiles, EditFile), so no mechanism mapping remains. Creates no references/ai-assistant-harnesses/ files and no ai-assistant-harness-adaptation metadata links for the target skill, does not tell any harness which basic file, search, edit, or shell tools to use, leaves the shared Claude Code-baseline wording unchanged, and reports that the target skill needs no harness adaptation.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "no_baseline_tool_coaching",
+          "check": "output never instructs which basic file read, search, edit, write, or shell tools to use"
+        },
+        {
+          "name": "no_contentless_references",
+          "check": "creates no harness reference files or metadata links when only baseline actions are present"
         }
       ]
     }

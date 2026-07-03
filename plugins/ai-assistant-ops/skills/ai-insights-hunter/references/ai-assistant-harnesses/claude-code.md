@@ -12,4 +12,3 @@ Use this file only when the active harness is Claude Code.
 - Parallel insight extraction: use `Agent` to run each hunter prompt from `agents/` concurrently.
 - User decisions: use the `AskUserQuestion` examples in the shared workflow.
 - Task tracking: use `TaskCreate`, `TaskList`, `TaskUpdate`, `TaskGet`, `TaskOutput`, and `TaskStop` as needed to track selected findings through storage or skip decisions.
-- File operations: use `Glob`, `Read`, `Write`, and `Bash` with the confirmation flow in the shared writing rules.

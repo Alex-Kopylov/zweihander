@@ -3,7 +3,6 @@ name: mermaid-lint
 description: Validate Mermaid code blocks by rendering them with the mmdc CLI. Fails loudly if mmdc is not installed.
 compatibility: Requires the mmdc command from @mermaid-js/mermaid-cli; Markdown input support is expected from modern Mermaid CLI versions.
 metadata:
-  ai-assistant-harness-adaptation.claude-code: references/ai-assistant-harnesses/claude-code.md
   ai-assistant-harness-adaptation.codex: references/ai-assistant-harnesses/codex.md
 ---
 
@@ -15,7 +14,11 @@ Validate Mermaid diagrams by running `mmdc` from `@mermaid-js/mermaid-cli`. The 
 
 ## AI Assistant Harness Adaptation
 
-Identify the active assistant harness before following this skill. When a workflow step needs harness-specific user-question tooling, load exactly one matching metadata-linked harness reference for the active harness and follow it for that operation. Skip non-matching harness files.
+Identify the active assistant harness before following this skill. When a
+workflow step needs harness-specific user-question tooling, load exactly one
+matching metadata-linked harness reference for the active harness and follow it
+for that operation. Skip non-matching harness files. A harness with no matching
+metadata link uses the shared baseline workflow as written.
 
 ## Workflow
 

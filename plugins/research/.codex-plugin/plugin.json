@@ -1,6 +1,6 @@
 {
   "name": "research",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Research knowledge-base and Obsidian vault workflows for agent-maintained notes.",
   "author": {
     "name": "Alex Kopylov"

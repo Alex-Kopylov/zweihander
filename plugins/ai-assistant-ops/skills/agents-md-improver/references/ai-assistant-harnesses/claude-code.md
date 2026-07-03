@@ -10,11 +10,6 @@ Use these notes only when the active harness is Claude Code.
   check sibling `CLAUDE.md` files for `@AGENTS.md` imports and treat them as
   harness adapters unless the user asks to audit them directly.
 
-## Applying Updates
-
-- After user approval, apply changes with Claude Code's `Edit`, `MultiEdit`, or
-  `Write` tools.
-
 ## User Tips
 
 - Mention the `#` shortcut only when it is relevant to capturing Claude Code

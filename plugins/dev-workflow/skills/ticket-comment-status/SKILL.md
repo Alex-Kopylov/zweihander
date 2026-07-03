@@ -2,7 +2,6 @@
 name: ticket-comment-status
 description: Post a status update comment to a work item or issue. Activate when user asks to update a task, write a status comment, post progress, or says /ticket-comment-status.
 metadata:
-  ai-assistant-harness-adaptation.claude-code: references/ai-assistant-harnesses/claude-code.md
   ai-assistant-harness-adaptation.codex: references/ai-assistant-harnesses/codex.md
 ---
 
@@ -12,7 +11,10 @@ Write a concise, PM/customer-friendly status update and post it as a comment on 
 
 ## Harness Adaptation
 
-Identify the active assistant harness before following this workflow. When harness-specific adaptation is needed, load exactly one matching metadata-linked harness reference and skip every non-matching harness file.
+Identify the active assistant harness before following this workflow. When
+harness-specific adaptation is needed, load exactly one matching metadata-linked
+harness reference and skip every non-matching harness file. A harness with no
+matching metadata link uses the shared Claude Code-baseline workflow as written.
 
 ## Instructions
 

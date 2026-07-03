@@ -5,7 +5,6 @@ description: "Tailor my resume, customize CV for a job, optimize resume for a ro
 argument-hint: <job description text or URL>
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch, AskUserQuestion, Skill, Agent
 metadata:
-  ai-assistant-harness-adaptation.claude-code: references/ai-assistant-harnesses/claude-code.md
   ai-assistant-harness-adaptation.codex: references/ai-assistant-harnesses/codex.md
 ---
 
@@ -24,7 +23,13 @@ Generate tailored, multi-format resumes optimized for specific job descriptions 
 
 ## Harness Adaptation
 
-Identify the active assistant harness before running this skill. When harness-specific adaptation is needed for tool names or workflow surfaces, load exactly one matching metadata-linked harness reference for the active harness and skip every non-matching harness file. If no harness-specific adaptation is needed, continue with the shared workflow as written.
+Identify the active assistant harness before running this skill. When
+harness-specific adaptation is needed for tool names or workflow surfaces, load
+exactly one matching metadata-linked harness reference for the active harness
+and skip every non-matching harness file. A harness with no matching metadata
+link uses the shared Claude Code-baseline workflow as written. If no
+harness-specific adaptation is needed, continue with the shared workflow as
+written.
 
 ## Requirements
 

@@ -14,8 +14,7 @@ Use these notes only when the active harness is Codex.
   `~/.codex/AGENTS.md` as user-wide defaults when explaining context locations.
 - Account for parent-directory and nested `AGENTS.md` discovery in monorepos.
 
-## Applying Updates
+## User Tips
 
-- After user approval, apply manual edits with `apply_patch`.
 - Do not mention Claude Code's `#` shortcut. For personal preferences, point
   users to `.codex.local.md` or `~/.codex/AGENTS.md`.

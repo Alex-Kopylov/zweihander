@@ -2,7 +2,6 @@
 name: commit
 description: "Commit staged changes following Conventional Commits v1.0.0. Activate when user asks to commit, create a commit, or says /commit."
 metadata:
-  ai-assistant-harness-adaptation.claude-code: references/ai-assistant-harnesses/claude-code.md
   ai-assistant-harness-adaptation.codex: references/ai-assistant-harnesses/codex.md
 ---
 
@@ -14,7 +13,8 @@ Follow the [Conventional Commits v1.0.0](https://www.conventionalcommits.org/en/
 
 When harness-specific adaptation is needed, identify the active assistant
 harness, load exactly one matching metadata-linked harness reference, and skip
-all non-matching harness files.
+all non-matching harness files. A harness with no matching metadata link uses
+the shared Claude Code-baseline workflow as written.
 
 ## Format
 
@@ -80,9 +80,7 @@ feat(auth): add oauth2 support
 
 ## After Commit
 
-Ask whether to push using the active harness's ask-user mechanism. Preview =
-actual output of `git log @{u}..HEAD --oneline`. If no upstream, show only the
-new commit and note that push will require `--set-upstream`.
+Ask whether to push via `AskUserQuestion`. Preview = actual output of `git log @{u}..HEAD --oneline`. If no upstream, show only the new commit and note that push will require `--set-upstream`.
 
 ## Examples
 

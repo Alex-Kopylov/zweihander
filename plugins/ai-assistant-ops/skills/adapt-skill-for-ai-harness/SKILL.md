@@ -43,7 +43,15 @@ Metadata values must be file links only. Do not store tool mappings, prose polic
 
 Store target harness adaptation files under `references/ai-assistant-harnesses/<harness-id>.md`. Keep them narrow and include only actions the target skill needs.
 
-The adapted target `SKILL.md` must tell assistants to identify the active harness, load exactly one matching metadata-linked harness reference when harness-specific adaptation is needed, and skip non-matching harness files.
+Never instruct baseline capabilities. Every harness reads, searches, creates, edits, and writes files and runs shell commands natively with its own tools (`Read`, `Grep`, `Glob`, `Bash`, `Write`, `Edit`, `MultiEdit`, `exec_command`, `apply_patch`, `sed`, `nl`, `rg`, and similar). Assistants handle these unaided; telling them which of their own basic tools to use only pollutes context. Do not write harness-reference instructions for these actions and do not translate them between harnesses. Matrix actions marked `"adaptation": "baseline"` exist for lookup completeness and never become reference content.
+
+Map only differently named shared mechanisms where an explicit nudge changes behavior, marked `"adaptation": "map"` in the matrix: asking the user (`AskUserQuestion` / `request_user_input`), subagent delegation (`Agent` / `spawn_agent`), skill and slash-command invocation (`Skill(...)` and `/plugin-name:skill-name` / `$plugin-name:skill-name`), task tracking (`TaskCreate` / `update_plan`), and harness-specific facts such as context-file or storage locations.
+
+Exception: when a tool surface is the target skill's subject matter — a task-management skill teaching task tools, for example — treat that surface as skill content, not harness adaptation.
+
+If nothing non-baseline remains for a harness, do not create that harness reference file or its metadata link. A target skill whose workflow needs no mechanism mapping needs no harness adaptation at all. Do not create a harness reference that only restates the shared baseline.
+
+The adapted target `SKILL.md` must tell assistants to identify the active harness, load exactly one matching metadata-linked harness reference when harness-specific adaptation is needed, and skip non-matching harness files. When some harnesses have no metadata link, it must also say that a harness with no matching link uses the shared Claude Code-baseline workflow as written.
 
 Do not create a shared cross-harness instruction table or a full list of all assistant harness instructions in the shared target `SKILL.md`.
 
@@ -56,8 +64,8 @@ Do not create `references/ai-assistant-harnesses/` inside this skill. That direc
 3. Inspect only files that can enter LLM invocation context: `SKILL.md`, files under `references/`, files under `agents/`, examples, assets directly loaded or described to the model, scripts referenced by the skill, and similar explicitly loaded files.
 4. Ignore README files, tests, docs, generated artifacts, and development-only support files unless the target skill says to load them during normal invocation.
 5. Detect explicit harness wording, tool names, command names, command-like workflow references, and host-specific instructions.
-6. Map each host-specific operation to an action key such as `CreateAgent`, `AskUser`, `TrackTasks`, `EditFile`, or `SlashCommand`.
-7. For each pair, look up `matrix["actions"][action_key][assistant_key]`; for example, use `matrix["actions"]["CreateAgent"]["Codex"]`.
+6. Map each host-specific operation to an action key such as `CreateAgent`, `AskUser`, `TrackTasks`, or `SlashCommand`. Drop operations whose matrix action is marked `"adaptation": "baseline"`; remove baseline tool coaching from adaptation output instead of translating it.
+7. For each remaining pair, look up `matrix["actions"][action_key][assistant_key]`; for example, use `matrix["actions"]["CreateAgent"]["Codex"]`.
 8. Preserve Claude Code as the shared baseline. Keep broadly valid skill workflow in the target `SKILL.md`.
 9. Move Codex-specific instructions to the target `references/ai-assistant-harnesses/codex.md`.
 10. Move Claude Code-specific details that should not stay in shared prose to the target `references/ai-assistant-harnesses/claude-code.md`.
@@ -74,6 +82,7 @@ Each action must have a `kind` value: `workflow`, `skill`, `tool`, or `command`.
 
 Prefer compact fields:
 
+- `adaptation`: `map` for shared mechanisms worth explicit per-harness instructions; `baseline` for native capabilities that must never generate them.
 - `surface`: where the concept appears, such as `tool`, `skill`, `slash-command`, or `workflow`.
 - `terms`: current names the harness uses.
 - `aliases`: older or alternate names.
@@ -104,6 +113,8 @@ For each adapted target, check that:
 - Every metadata value ends in `.md` and resolves under `references/ai-assistant-harnesses/`.
 - The target instructs assistants to load exactly one matching metadata-linked harness reference.
 - The target has no shared table or complete shared list of all harness instructions.
+- Harness references contain no baseline-capability coaching: no instructions naming which file read, search, edit, write, or shell tools to use.
+- Every harness reference carries at least one mapped mechanism, harness-specific fact, or compatibility nuance; contentless references are removed along with their metadata links.
 - Only explicitly requested target skills changed.
 
 For this skill itself, check that:

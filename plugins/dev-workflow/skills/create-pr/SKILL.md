@@ -2,7 +2,6 @@
 name: create-pr
 description: Create a pull request from the current branch. Activate when user asks to create a PR, open a pull request, submit for review, or says /create-pr.
 metadata:
-  ai-assistant-harness-adaptation.claude-code: references/ai-assistant-harnesses/claude-code.md
   ai-assistant-harness-adaptation.codex: references/ai-assistant-harnesses/codex.md
 ---
 
@@ -10,7 +9,10 @@ metadata:
 
 ## Harness Adaptation
 
-Identify the active assistant harness before applying this skill. If harness-specific adaptation is needed, load exactly one matching metadata-linked harness reference, then skip all non-matching harness files.
+Identify the active assistant harness before applying this skill. If
+harness-specific adaptation is needed, load exactly one matching metadata-linked
+harness reference, then skip all non-matching harness files. A harness with no
+matching metadata link uses the shared Claude Code-baseline workflow as written.
 
 ## Instructions
 

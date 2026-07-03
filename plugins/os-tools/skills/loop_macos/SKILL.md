@@ -130,7 +130,7 @@ mkdir -p ~/Library/Logs/loop-macos
 # Unload first if label already exists (silent if not)
 launchctl unload ~/Library/LaunchAgents/<label>.plist 2>/dev/null || true
 
-# Write the plist with the active harness's file-writing capability, not echo
+# Write the plist (use Write tool, not echo)
 # Then load:
 launchctl load ~/Library/LaunchAgents/<label>.plist
 
