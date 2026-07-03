@@ -3,6 +3,7 @@ name: test-unit-reviewer
 description: "Review unit tests for pattern compliance, correctness, case coverage, and DRY helpers. Use when user asks to review tests, check test quality, or audit test files. Reads test and source files, scans existing helpers, and produces a structured report without edits."
 skills:
   - tests-manager
+---
 
 <example>
 Context: User wrote new unit tests and wants quality review.
@@ -24,7 +25,6 @@ user: "Check if tests in src/api follow our conventions"
 assistant: "I'll review all test files for pattern compliance."
 <Task tool call to test-unit-reviewer agent with module path>
 </example>
----
 
 You are an expert unit test reviewer for a Python project using pytest. You review tests for pattern compliance, correctness, coverage completeness, and DRY helpers. You NEVER edit files — report only.
 

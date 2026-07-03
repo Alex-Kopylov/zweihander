@@ -7,10 +7,10 @@ metadata:
   "references/test-structure.md": "Load when choosing pytest directories, file names, or source-to-test mirroring."
   "references/factory-conventions.md": "Load when tests need reusable deterministic entity builders or persisted domain objects."
   "references/redis-testing.md": "Load only when tests involve Redis, cache services, queues, pub/sub, Lua, locks, or TTLs."
-  "agents/unit-test-writer.md": "Use for substantial Python pytest unit-test generation."
-  "agents/integration-test-writer.md": "Use for substantial Python pytest integration-test generation."
-  "agents/test-unit-reviewer.md": "Use for read-only review of existing unit tests."
-  "agents/test-runner.md": "Use for focused pytest execution and failure reporting."
+  "../../agents/unit-test-writer.md": "Use for substantial Python pytest unit-test generation."
+  "../../agents/integration-test-writer.md": "Use for substantial Python pytest integration-test generation."
+  "../../agents/test-unit-reviewer.md": "Use for read-only review of existing unit tests."
+  "../../agents/test-runner.md": "Use for focused pytest execution and failure reporting."
 ---
 
 # Tests Manager
