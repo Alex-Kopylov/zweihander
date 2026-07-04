@@ -89,33 +89,7 @@ kanban
     lad_select_agent_patterns[select-agent-patterns]
     lad_schema_guided_reasoning[schema-guided-reasoning]
   langfuse[langfuse]
-    lf_discover_traces[discover-traces]
-    lf_discover_scores[discover-scores]
-    lf_discover_datasets[discover-datasets]
-    lf_list_dataset_runs[list-dataset-runs]
-    lf_analyze_experiment_results[analyze-experiment-results]
-    lf_compare_experiments[compare-experiments]
-    lf_trigger_experiment[trigger-experiment]
-    lf_configure_remote_experiment[configure-remote-experiment]
-    lf_create_dataset[create-dataset]
-    lf_design_dataset_schema[design-dataset-schema]
-    lf_manage_dataset_items[manage-dataset-items]
-    lf_create_evaluator[create-evaluator]
-    lf_inspect_evaluator[inspect-evaluator]
-    lf_list_evaluators[list-evaluators]
-    lf_update_evaluator[update-evaluator]
-    lf_toggle_evaluator_status[toggle-evaluator-status]
-    lf_delete_evaluator[delete-evaluator]
-    lf_manage_dashboard[manage-dashboard]
-    lf_list_widgets[list-widgets]
-    lf_suggest_widgets[suggest-widgets]
-    lf_layout_widgets[layout-widgets]
-    lf_create_widget[create-widget]
-    lf_update_widget[update-widget]
-    lf_delete_widget[delete-widget]
-    lf_query_metrics[query-metrics]
-    lf_discover_filter_options[discover-filter-options]
-    lf_discover_models[discover-models]
+    lf_langfuse[langfuse]
 ```
 
 ## Notes for Users
@@ -200,33 +174,7 @@ assets, compare experiment runs, or manage dashboard widgets.
 
 | Skill | Description |
 |---|---|
-| `analyze-experiment-results` | Analyze scores and per-item results for a dataset run. |
-| `compare-experiments` | Compare experiment runs and detect regressions. |
-| `configure-remote-experiment` | Configure remote experiment webhooks and payloads. |
-| `create-dataset` | Create Langfuse datasets with optional schemas. |
-| `create-evaluator` | Create LLM-as-a-Judge evaluators. |
-| `create-widget` | Create dashboard widgets. |
-| `delete-evaluator` | Remove evaluators after safety checks. |
-| `delete-widget` | Remove dashboard widgets safely. |
-| `design-dataset-schema` | Design dataset item input and output schemas. |
-| `discover-datasets` | List datasets, items, runs, and metadata. |
-| `discover-filter-options` | Discover trace filter values for evaluators. |
-| `discover-models` | List tracked models and pricing. |
-| `discover-scores` | Enumerate score names, types, and sources. |
-| `discover-traces` | Explore trace names, tags, environments, and users. |
-| `inspect-evaluator` | Show evaluator prompts, versions, and job configs. |
-| `layout-widgets` | Calculate dashboard widget grid placement. |
-| `list-dataset-runs` | Browse experiment runs for datasets. |
-| `list-evaluators` | Summarize evaluator configurations. |
-| `list-widgets` | Inventory dashboard widgets. |
-| `manage-dashboard` | Create, update, delete, and arrange dashboards. |
-| `manage-dataset-items` | Add, update, archive, delete, or import dataset items. |
-| `query-metrics` | Query Langfuse metrics and aggregates. |
-| `suggest-widgets` | Recommend useful dashboard visualizations. |
-| `toggle-evaluator-status` | Enable, disable, pause, or resume evaluators. |
-| `trigger-experiment` | Start dataset runs or remote experiments. |
-| `update-evaluator` | Update evaluator prompts, filters, or model config. |
-| `update-widget` | Modify existing widget configuration. |
+| `langfuse` | Unified Langfuse skill for data discovery, metrics, datasets, experiment runs, evaluators, dashboard widgets, and dashboard management. Former task-specific workflows are bundled as internal references. |
 
 **Agents**
 

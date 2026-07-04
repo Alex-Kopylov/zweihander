@@ -37,11 +37,7 @@ tools:
   - Glob
   - Bash
 skills:
-  - discover-scores
-  - discover-traces
-  - discover-models
-  - query-metrics
-  - list-widgets
+  - langfuse
 ---
 
 You are a Langfuse data discovery agent. Your job is to enumerate and describe what data exists in the user's Langfuse project.
