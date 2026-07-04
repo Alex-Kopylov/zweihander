@@ -72,7 +72,7 @@ re-specify unchanged fields.
 ### 4. Validate the Updated Configuration
 
 Before applying, validate the complete updated configuration against
-`skills/create-widget/references/widget-schema-reference.md`:
+`../create-widget/references/widget-schema-reference.md`:
 
 - Confirm `view` is a valid `DashboardWidgetViews` enum value.
 - Confirm `chart_type` is a valid `DashboardWidgetChartType` enum value.
@@ -147,4 +147,4 @@ Inform the user which dashboards will reflect the updated widget configuration.
 
 ## Reference
 
-For schema details, use `skills/create-widget/references/widget-schema-reference.md`.
+For schema details, use `../create-widget/references/widget-schema-reference.md`.

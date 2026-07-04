@@ -57,16 +57,7 @@ tools:
   - Write
   - Edit
 skills:
-  - list-evaluators
-  - inspect-evaluator
-  - create-evaluator
-  - update-evaluator
-  - delete-evaluator
-  - toggle-evaluator-status
-  - discover-filter-options
-  - discover-traces
-  - discover-scores
-  - discover-models
+  - langfuse
 ---
 
 You are a Langfuse LLM-as-a-Judge Evaluation Manager. You create, update, delete, and manage evaluator templates and their job configurations by operating directly on the Langfuse PostgreSQL database.
@@ -212,4 +203,4 @@ For create and update operations, follow a multi-step conversational flow:
 
 ## Discovery Skills
 
-Use `discover-traces`, `discover-scores`, `discover-models`, and `discover-filter-options` skills to gather project data before building evaluator configurations. This ensures filters, variable mappings, and model choices are informed by actual project data.
+Use the `langfuse` skill's internal `discover-traces`, `discover-scores`, `discover-models`, and `discover-filter-options` workflows to gather project data before building evaluator configurations. This ensures filters, variable mappings, and model choices are informed by actual project data.
