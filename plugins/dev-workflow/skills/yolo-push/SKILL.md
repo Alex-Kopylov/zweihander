@@ -1,5 +1,6 @@
 ---
 name: yolo-push
+description: Run a guarded commit-to-deploy workflow that verifies branch freshness, invokes commit and create-pr, waits for green CI, invokes approve-pr, monitors CD, and reports final deployment state. Use when the user asks to yolo-push, ship current changes, or execute the full PR-to-deployment flow.
 ---
 
 # YOLO Push
