@@ -59,12 +59,18 @@ kanban
     dw_approve_pr[approve-pr]
     dw_commit[commit]
     dw_create_pr[create-pr]
+    dw_dispatching_parallel_agents[dispatching-parallel-agents]
     dw_pr_checkout[pr-checkout]
     dw_pr_comment[pr-comment]
     dw_pr_address_comments[pr-address-comments]
     dw_render_diff_html[render-diff-html]
+    dw_requesting_code_review[requesting-code-review]
+    dw_systematic_debugging[systematic-debugging]
+    dw_test_driven_development[test-driven-development]
     dw_ticket_branch[ticket-branch]
     dw_ticket_comment_status[ticket-comment-status]
+    dw_using_git_worktrees[using-git-worktrees]
+    dw_verification_before_completion[verification-before-completion]
     dw_version_bumper[version-bumper]
     dw_yolo_push[yolo-push]
     dw_spec_interview[spec-interview]
@@ -240,9 +246,13 @@ for production behavior.
 
 ### `dev-workflow`
 
-**Use when:** you need structured development workflow support: commits, PRs,
-visual diff reports, review comments, ticket branches, status updates, version
-bumps, or spec checks.
+**Use when:** you need structured development workflow support: TDD, debugging,
+visual diff reports, review, commits, PRs, ticket branches, status updates,
+version bumps, or spec checks.
+
+**Origin note:** several methodology skills in this plugin were copied from the
+MIT-licensed [Superpowers](https://github.com/obra/superpowers) project by
+Jesse Vincent. See `ACKNOWLEDGEMENTS.md` for skill-by-skill provenance.
 
 **Skills**
 
@@ -251,14 +261,20 @@ bumps, or spec checks.
 | `approve-pr` | Approve and merge PRs with current checks and policy gates. |
 | `commit` | Create single-line Conventional Commits. |
 | `create-pr` | Open pull requests from the current branch. |
+| `dispatching-parallel-agents` | Coordinate independent subagent tasks that can run concurrently. |
 | `pr-address-comments` | Fetch, fix, reply to, and resolve PR feedback. |
 | `pr-checkout` | Switch to a PR branch for review or changes. |
 | `pr-comment` | Post general or inline PR comments. |
 | `render-diff-html` | Render git diffs and file comparisons as HTML reports. |
+| `requesting-code-review` | Request focused review before task completion or merge. |
 | `spec-contradiction-hunter` | Find contradictions and inconsistencies in specs. |
 | `spec-interview` | Interview the user and produce an implementation spec. |
+| `systematic-debugging` | Investigate bugs through evidence, patterns, hypotheses, and fixes. |
+| `test-driven-development` | Enforce red-green-refactor for features, bug fixes, and behavior changes. |
 | `ticket-branch` | Create a git branch from a ticket ID or URL. |
 | `ticket-comment-status` | Post status updates to tickets or work items. |
+| `using-git-worktrees` | Set up isolated workspace branches for feature work. |
+| `verification-before-completion` | Verify claims before reporting work as complete or fixed. |
 | `version-bumper` | Bump versions in plugin and package metadata. |
 | `yolo-push` | Slash-command gated commit, PR, CI, merge, and CD workflow. |
 

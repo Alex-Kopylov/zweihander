@@ -66,7 +66,7 @@
     {
       "name": "dev-workflow",
       "source": "./plugins/dev-workflow",
-      "description": "Git, PRs, tickets, releases, visual diffs, and review-comment workflows.",
+      "description": "Git, PRs, tickets, releases, visual diffs, TDD, debugging, and review workflows.",
       "category": "development",
       "tags": [
         "git",
@@ -79,7 +79,10 @@
         "diff2html",
         "review",
         "spec",
-        "requirements"
+        "requirements",
+        "tdd",
+        "debugging",
+        "code-review"
       ]
     },
     {
