@@ -1,7 +1,7 @@
 {
   "name": "dev-workflow",
   "version": "0.4.0",
-  "description": "Git, PRs, tickets, releases, visual diffs, planning, TDD, debugging, and review workflows.",
+  "description": "Git, PRs, tickets, releases, visual diffs, TDD, debugging, and review workflows.",
   "author": {
     "name": "Alex Kopylov"
   },
@@ -9,8 +9,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "Dev Workflow",
-    "shortDescription": "Git, PR, planning, TDD, debugging, visual diff, and review workflows",
-    "longDescription": "Git, PRs, tickets, releases, visual diff reports, planning, TDD, debugging, and review workflows, including conventional commits, PR creation, PR feedback handling, spec interviews, spec contradiction checks, PR approval, slash-command push flows, implementation planning, systematic debugging, development completion workflows, and HTML diff reports.",
+    "shortDescription": "Git, PR, TDD, debugging, visual diff, and review workflows",
+    "longDescription": "Git, PRs, tickets, releases, visual diff reports, TDD, debugging, and review workflows, including conventional commits, PR creation, PR feedback handling, spec interviews, spec contradiction checks, PR approval, slash-command push flows, systematic debugging, and HTML diff reports.",
     "developerName": "Alex Kopylov",
     "category": "Development",
     "capabilities": [
@@ -23,8 +23,7 @@
       "Render this git diff as an HTML report.",
       "Address PR review comments.",
       "Interview me to produce an implementation spec.",
-      "Use TDD for this bug fix.",
-      "Help me plan and execute this feature."
+      "Use TDD for this bug fix."
     ]
   }
 }

@@ -20,20 +20,12 @@ Superpowers distribution.
 | Local plugin/skill | Relationship | Upstream source |
 |---|---|---|
 | `dev-workflow` | Existing plugin integrating copied skills | https://github.com/obra/superpowers |
-| `dev-workflow:brainstorming` | Copied skill | https://github.com/obra/superpowers/tree/main/skills/brainstorming |
 | `dev-workflow:dispatching-parallel-agents` | Copied skill | https://github.com/obra/superpowers/tree/main/skills/dispatching-parallel-agents |
-| `dev-workflow:executing-plans` | Copied skill | https://github.com/obra/superpowers/tree/main/skills/executing-plans |
-| `dev-workflow:finishing-a-development-branch` | Copied skill | https://github.com/obra/superpowers/tree/main/skills/finishing-a-development-branch |
-| `dev-workflow:receiving-code-review` | Copied skill | https://github.com/obra/superpowers/tree/main/skills/receiving-code-review |
 | `dev-workflow:requesting-code-review` | Copied skill | https://github.com/obra/superpowers/tree/main/skills/requesting-code-review |
-| `dev-workflow:subagent-driven-development` | Copied skill | https://github.com/obra/superpowers/tree/main/skills/subagent-driven-development |
 | `dev-workflow:systematic-debugging` | Copied skill | https://github.com/obra/superpowers/tree/main/skills/systematic-debugging |
 | `dev-workflow:test-driven-development` | Copied skill | https://github.com/obra/superpowers/tree/main/skills/test-driven-development |
 | `dev-workflow:using-git-worktrees` | Copied skill | https://github.com/obra/superpowers/tree/main/skills/using-git-worktrees |
-| `dev-workflow:using-superpowers` | Copied skill | https://github.com/obra/superpowers/tree/main/skills/using-superpowers |
 | `dev-workflow:verification-before-completion` | Copied skill | https://github.com/obra/superpowers/tree/main/skills/verification-before-completion |
-| `dev-workflow:writing-plans` | Copied skill | https://github.com/obra/superpowers/tree/main/skills/writing-plans |
-| `dev-workflow:writing-skills` | Copied skill | https://github.com/obra/superpowers/tree/main/skills/writing-skills |
 
 ### MIT License Notice
 
