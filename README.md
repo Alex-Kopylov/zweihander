@@ -440,6 +440,7 @@ this marketplace:
 
 - [browser-harness](https://github.com/browser-use/browser-harness) - direct browser control through CDP.
 - [plannotator](https://github.com/backnotprop/plannotator) - browser-based plan review, annotation, and visual explanation workflows.
+- [ponytail](https://github.com/DietrichGebert/ponytail) - lazy senior developer mode that favors the simplest solution that works.
 - [worktrunk](https://github.com/max-sixty/worktrunk) - worktree and branch workflow support.
 - [ralphex](https://github.com/umputun/ralphex) - AI-assisted development planning and project workflow tools.
 - [wshobson/agents](https://github.com/wshobson/agents) - Claude Code workflow skills for Python, LLM applications, debugging, testing, and PR work.
