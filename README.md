@@ -18,9 +18,11 @@ kanban
     jht_init_workspace[init-workspace]
     jht_new_application[new-application]
     jht_resume_tailoring[resume-tailoring]
+    jht_cover_letter_writing[cover-letter-writing]
     jht_export_pdf[export-pdf]
     jht_scrub_pdf_metadata[scrub-pdf-metadata]
     jht_prepare_to_send[prepare-to-send]
+    jht_submit_job_application[submit-job-application]
   cloud_storage_tools[cloud-storage-tools]
     cst_mega_cmd[mega-cmd]
   research[research]
@@ -219,6 +221,12 @@ reasoning.
 |---|---|
 | `select-agent-patterns` | Choose LLM workflow and agent design patterns by decomposing a problem into stages and comparing candidates. Based on [A Two-Dimensional Framework for AI Agent Design Patterns](https://arxiv.org/pdf/2605.13850). |
 | `schema-guided-reasoning` | Design structured Pydantic schemas that guide LLM reasoning. |
+
+**Skill Agents**
+
+| Skill | Agent | Description |
+|---|---|---|
+| `select-agent-patterns` | `pattern-fit-reviewer` | Independently review one candidate pattern for one workflow stage. |
 
 </details>
 
@@ -440,7 +448,7 @@ this marketplace:
 
 - [browser-harness](https://github.com/browser-use/browser-harness) - direct browser control through CDP.
 - [plannotator](https://github.com/backnotprop/plannotator) - browser-based plan review, annotation, and visual explanation workflows.
-- [ponytail](https://github.com/DietrichGebert/ponytail) - lazy senior developer mode that favors the simplest solution that works.
+- [ponytail](https://github.com/DietrichGebert/ponytail/) - lazy senior developer mode that favors the simplest solution that works.
 - [worktrunk](https://github.com/max-sixty/worktrunk) - worktree and branch workflow support.
 - [ralphex](https://github.com/umputun/ralphex) - AI-assisted development planning and project workflow tools.
 - [wshobson/agents](https://github.com/wshobson/agents) - Claude Code workflow skills for Python, LLM applications, debugging, testing, and PR work.
