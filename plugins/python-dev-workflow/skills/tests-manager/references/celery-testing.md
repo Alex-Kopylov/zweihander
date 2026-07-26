@@ -42,24 +42,24 @@ See `examples/celery/test_tasks.py` for task-adapter examples.
 ## Live-Worker Integration Tests
 
 Use `celery.contrib.pytest` when a test must cross the task-message-worker
-boundary. Install the plugin with:
-
-```shell
-uv add --dev "celery[pytest]"
-```
+boundary. It ships with celery itself; no extra dependency is required beyond
+`celery` and `pytest`.
 
 Register `celery.contrib.pytest`, provide a `celery_config` fixture, and request
 both `celery_app` and `celery_worker` in the test. After defining a task on
 `celery_app`, call `celery_worker.reload()` before dispatching it.
 
 Always use a timeout with `AsyncResult.get()` so a failed worker cannot hang the
-suite. See `examples/celery/conftest.py` for a focused setup.
+suite. See `examples/celery/conftest_celery.py` for a focused setup; copy it to
+the project's `tests/conftest.py`.
 
 ## Production-Like Smoke Tests
 
 Use `pytest-celery` only when Docker-based workers, brokers, and result backends
-must resemble production. Its fixtures and configuration are separate from
-`celery.contrib.pytest`; do not mix both APIs in one test setup.
+must resemble production; install it with `uv add --dev "celery[pytest]"`. Its
+fixtures and configuration are separate from `celery.contrib.pytest`, and
+installing it auto-registers its own pytest plugin, so do not mix both APIs in
+one test setup.
 
 Keep this layer small. Cover representative delivery, readiness, and
 broker/backend compatibility paths rather than repeating unit cases.
@@ -87,5 +87,5 @@ broker/backend compatibility paths rather than repeating unit cases.
 
 ## Example Files
 
-- **`examples/celery/conftest.py`** — embedded-worker pytest plugin and broker/backend configuration
+- **`examples/celery/conftest_celery.py`** — embedded-worker pytest plugin and broker/backend configuration; copy to `tests/conftest.py`
 - **`examples/celery/test_tasks.py`** — task-adapter unit tests and a live-worker integration test

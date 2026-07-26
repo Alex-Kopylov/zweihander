@@ -10,18 +10,20 @@ from myapp.tasks import process_order
 
 class TestProcessOrder:
     @patch("myapp.tasks.perform_order_processing")
-    def test_task_delegates_order_to_service(self, process_order_mock):
-        process_order_mock.return_value = {"status": "success"}
+    def test_task_delegates_order_to_service(self, perform_order_processing_mock):
+        perform_order_processing_mock.return_value = {"status": "success"}
 
         result = process_order(order_id=123)
 
-        process_order_mock.assert_called_once_with(order_id=123)
+        perform_order_processing_mock.assert_called_once_with(order_id=123)
         assert result == {"status": "success"}
 
     @patch("myapp.tasks.process_order.retry")
     @patch("myapp.tasks.perform_order_processing")
-    def test_retryable_failure_raises_retry(self, process_order_mock, retry_mock):
-        process_order_mock.side_effect = ConnectionError("timeout")
+    def test_retryable_failure_raises_retry(
+        self, perform_order_processing_mock, retry_mock
+    ):
+        perform_order_processing_mock.side_effect = ConnectionError("timeout")
         retry_mock.side_effect = Retry()
 
         with pytest.raises(Retry):
