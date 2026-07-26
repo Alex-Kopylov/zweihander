@@ -48,6 +48,48 @@ def test_tests_manager_metadata_paths_resolve_from_declaring_file() -> None:
     assert missing_paths == []
 
 
+def test_celery_testing_guidance_is_owned_by_tests_manager() -> None:
+    celery_skill_root = PLUGIN_ROOT / "skills" / "celery-expert"
+    tests_manager_root = PLUGIN_ROOT / "skills" / "tests-manager"
+    celery_skill_path = celery_skill_root / "SKILL.md"
+    celery_skill = celery_skill_path.read_text(encoding="utf-8")
+    celery_frontmatter = frontmatter(celery_skill_path)
+    celery_description = next(
+        line for line in celery_frontmatter.splitlines() if line.startswith("description:")
+    )
+    tests_manager_skill = (tests_manager_root / "SKILL.md").read_text(
+        encoding="utf-8"
+    )
+
+    assert (tests_manager_root / "references" / "celery-testing.md").is_file()
+    assert (tests_manager_root / "examples" / "celery" / "conftest.py").is_file()
+    assert (tests_manager_root / "examples" / "celery" / "test_tasks.py").is_file()
+    assert '"references/celery-testing.md"' in frontmatter(
+        tests_manager_root / "SKILL.md"
+    )
+    assert not (celery_skill_root / "examples" / "conftest_celery.py").exists()
+
+    celery_testing_tokens = (
+        "## TDD Workflow",
+        "## Testing Boundary",
+        "task_always_eager",
+        "pytest-celery",
+        "examples/conftest_celery.py",
+    )
+    assert all(token not in celery_skill for token in celery_testing_tokens)
+    assert "tests-manager" not in celery_description
+    assert (
+        '"python-dev-workflow:tests-manager": "Use for Celery test planning, '
+        'pytest fixtures, eager-mode decisions, live-worker integration tests, '
+        'and test isolation."'
+    ) in celery_frontmatter
+    assert (
+        "- [ ] Write a failing test for task behavior "
+        "(use `python-dev-workflow:tests-manager`)"
+    ) in celery_skill
+    assert "Celery" in tests_manager_skill
+
+
 def test_python_dev_workflow_agent_frontmatter_excludes_examples() -> None:
     agent_files = sorted((PLUGIN_ROOT / "agents").glob("*.md"))
 
