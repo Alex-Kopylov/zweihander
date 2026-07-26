@@ -25,23 +25,6 @@ references/claude-code-plugin-manifests.md
 references/codex-plugin-manifests.md
 ```
 
-## Confirmation prompt
-
-```
-Current version: 0.4.0
-Target version:  0.5.0  (minor — detected `feat:` commits)
-
-Files to update:
-  - pyproject.toml:5
-  - src/myapp/main.py:8
-  - .agents/plugins/marketplace.json:3
-  - .claude-plugin/marketplace.json:3
-  - .claude-plugin/plugin.json:3
-  - .codex-plugin/plugin.json:3
-
-Proceed? [y/N]
-```
-
 ## After bump
 
 ```
@@ -54,4 +37,22 @@ $ python find_versions.py .
   {"file": ".claude-plugin/plugin.json", "version": "0.5.0", "line": 3, "pattern": "claude-code-plugin-manifest", "reference": "references/claude-code-plugin-manifests.md"},
   {"file": ".codex-plugin/plugin.json", "version": "0.5.0", "line": 3, "pattern": "codex-plugin-manifest", "reference": "references/codex-plugin-manifests.md"}
 ]
+```
+
+## Completion summary template
+
+Present this only after the bump is applied and verified.
+
+```
+Version bumped: 0.4.0 → 0.5.0 (minor — detected `feat:` commits)
+
+Updated files:
+  - pyproject.toml:5
+  - src/myapp/main.py:8
+  - .agents/plugins/marketplace.json:3
+  - .claude-plugin/marketplace.json:3
+  - .claude-plugin/plugin.json:3
+  - .codex-plugin/plugin.json:3
+
+Verification: all discovered version fields report 0.5.0.
 ```
