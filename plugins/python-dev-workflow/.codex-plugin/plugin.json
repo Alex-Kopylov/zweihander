@@ -1,6 +1,6 @@
 {
   "name": "python-dev-workflow",
-  "version": "0.13.0",
+  "version": "0.14.0",
   "description": "Python pytest planning, unit/integration test writing, Celery and Redis test references, production Celery guidance, and test agents.",
   "author": {
     "name": "Alex Kopylov"
