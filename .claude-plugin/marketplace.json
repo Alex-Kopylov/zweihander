@@ -52,7 +52,7 @@
     {
       "name": "python-dev-workflow",
       "source": "./plugins/python-dev-workflow",
-      "description": "Python-specific pytest planning, unit/integration test writing, Redis test references, Celery, and test agents.",
+      "description": "Python pytest planning, unit/integration test writing, Celery and Redis test references, production Celery guidance, and test agents.",
       "category": "development",
       "tags": [
         "python",

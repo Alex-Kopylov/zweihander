@@ -11,6 +11,12 @@ def frontmatter(path: Path) -> str:
     return text.split("---\n", 2)[1]
 
 
+def body(path: Path) -> str:
+    text = path.read_text(encoding="utf-8")
+    assert text.startswith("---\n"), f"{path} must start with YAML frontmatter"
+    return text.split("---\n", 2)[2]
+
+
 def metadata_path_keys(path: Path) -> list[str]:
     keys: list[str] = []
     in_metadata = False
@@ -46,6 +52,48 @@ def test_tests_manager_metadata_paths_resolve_from_declaring_file() -> None:
                 )
 
     assert missing_paths == []
+
+
+def test_celery_expert_carries_no_testing_guidance() -> None:
+    celery_skill_root = PLUGIN_ROOT / "skills" / "celery-expert"
+    celery_skill = (celery_skill_root / "SKILL.md").read_text(encoding="utf-8")
+
+    testing_tokens = (
+        "## TDD Workflow",
+        "task_always_eager",
+        "pytest-celery",
+        "conftest_celery.py",
+    )
+    leftover_tokens = [token for token in testing_tokens if token in celery_skill]
+
+    assert leftover_tokens == []
+    assert not (celery_skill_root / "examples" / "conftest_celery.py").exists()
+
+
+def test_tests_manager_owns_celery_testing_assets() -> None:
+    tests_manager_root = PLUGIN_ROOT / "skills" / "tests-manager"
+    celery_examples = tests_manager_root / "examples" / "celery"
+
+    assert (tests_manager_root / "references" / "celery-testing.md").is_file()
+    assert (celery_examples / "conftest_celery.py").is_file()
+    assert (celery_examples / "test_tasks.py").is_file()
+    assert '"references/celery-testing.md"' in frontmatter(
+        tests_manager_root / "SKILL.md"
+    )
+
+    # A real conftest.py here would be auto-loaded as a non-top-level conftest
+    # and apply its pytest_plugins to the whole suite. The example carries a
+    # neutral name so it is only ever read, never executed as config.
+    assert not (celery_examples / "conftest.py").exists()
+
+
+def test_celery_expert_routes_test_work_to_tests_manager() -> None:
+    celery_skill_path = PLUGIN_ROOT / "skills" / "celery-expert" / "SKILL.md"
+    routing_target = "python-dev-workflow:tests-manager"
+
+    assert (PLUGIN_ROOT / "skills" / "tests-manager" / "SKILL.md").is_file()
+    assert routing_target in frontmatter(celery_skill_path)
+    assert routing_target in body(celery_skill_path)
 
 
 def test_python_dev_workflow_agent_frontmatter_excludes_examples() -> None:

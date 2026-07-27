@@ -1,22 +1,23 @@
 ---
 name: celery-expert
 description: This skill should be used when the user asks to "configure Celery", "set up Celery with Redis", "write Celery tasks", "add background tasks with Celery", "celery beat schedule", "celery task retry", "celery performance tuning", "celery TDD", "test Celery tasks", "celery worker config", "celery monitoring", "celery security", or when code imports celery or the project uses a celeryconfig/celery.py module.
-model: opus
+metadata:
+  "python-dev-workflow:tests-manager": "Use for Celery test planning, pytest fixtures, eager-mode decisions, live-worker integration tests, and test isolation."
 ---
 
 # Celery Expert (Redis Broker)
 
 ## Overview
 
-Guidance for production Celery with Redis as broker/result backend, covering task design, workflows, Beat scheduling, performance, monitoring, and security.
+Guide production Celery with Redis as broker/result backend, covering task
+design, workflows, Beat scheduling, performance, monitoring, and security.
 
 **Core Principles:**
 
-1. **TDD First** — write tests before implementation; verify task behavior with pytest-celery
+1. **Reliability** — task retries, acknowledgment strategies, no task loss
 2. **Performance Aware** — optimize throughput with chunking, pooling, and proper prefetch
-3. **Reliability** — task retries, acknowledgment strategies, no task loss
-4. **Security** — safe serialization (JSON only, never pickle), broker authentication
-5. **Observable** — monitoring, metrics, tracing, alerting
+3. **Security** — safe serialization (JSON only, never pickle), broker authentication
+4. **Observable** — monitoring, metrics, tracing, alerting
 
 **Pydantic models in tasks:** Do not manually serialize Pydantic models (`.dict()`, `.model_dump()`, `**kwargs`). Use `celery-pydantic` so tasks can accept models directly.
 
@@ -28,41 +29,6 @@ Activate when any of the following appear:
 - `celeryconfig.py`, `celery.py`, or `beat_schedule` in project files
 - User asks about background tasks, task queues, async processing, or distributed workers
 - User mentions Flower, Celery Beat, task retries, or task routing
-
-## TDD Workflow
-
-Follow this 4-step cycle for every task:
-
-1. **Write failing test** — use `task_always_eager=True` for unit tests
-2. **Implement minimum to pass** — task with `bind=True`, proper error handling
-3. **Refactor** — add time limits, observability, retry strategy
-4. **Verify** — run full test suite with coverage
-
-```python
-@pytest.fixture
-def celery_config():
-    return {
-        'broker_url': 'memory://',
-        'result_backend': 'cache+memory://',
-        'task_always_eager': True,
-        'task_eager_propagates': True,
-    }
-
-class TestProcessOrder:
-    def test_process_order_success(self, celery_app, celery_worker):
-        from myapp.tasks import process_order
-        result = process_order.delay(order_id=123)
-        assert result.get(timeout=10) == {'order_id': 123, 'status': 'success'}
-
-    def test_process_order_idempotent(self, celery_app, celery_worker):
-        from myapp.tasks import process_order
-        result1 = process_order.delay(order_id=123).get(timeout=10)
-        result2 = process_order.delay(order_id=123).get(timeout=10)
-        assert result1['status'] in ['success', 'already_processed']
-        assert result2['status'] in ['success', 'already_processed']
-```
-
-See `examples/conftest_celery.py` for complete pytest fixture setup.
 
 ## Task Design Principles
 
@@ -146,7 +112,7 @@ workflow = chord(group(process_item.s(item) for item in items))(aggregate_result
 ## Pre-Implementation Checklist
 
 **Before writing code:**
-- [ ] Write failing test for task behavior
+- [ ] Write a failing test for task behavior (use `python-dev-workflow:tests-manager`)
 - [ ] Define idempotency strategy
 - [ ] Choose queue routing for task priority
 - [ ] Plan retry strategy and error handling
@@ -182,4 +148,3 @@ Working code examples in `examples/`:
 - **`examples/celery_app.py`** — App factory with Redis broker and recommended defaults
 - **`examples/tasks.py`** — Task definitions: retry, chunking, idempotency patterns
 - **`examples/celery_beat_schedule.py`** — Crontab and interval periodic task config
-- **`examples/conftest_celery.py`** — Pytest fixtures for eager and integration testing

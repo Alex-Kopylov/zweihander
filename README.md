@@ -233,15 +233,15 @@ reasoning.
 ### `python-dev-workflow`
 
 **Use when:** you are writing or reviewing Python tests, deciding unit vs
-integration coverage, working with Redis test isolation, or configuring Celery
+integration coverage, testing Celery or Redis behavior, or configuring Celery
 for production behavior.
 
 **Skills**
 
 | Skill | Description |
 |---|---|
-| `celery-expert` | Configure Celery, workers, retries, schedules, and tests. |
-| `tests-manager` | Plan and write pytest unit/integration tests with fixtures, factories, mocks, and Redis references. |
+| `celery-expert` | Configure Celery tasks, workers, retries, schedules, performance, and security. |
+| `tests-manager` | Plan and write pytest unit/integration tests with fixtures, factories, mocks, and Celery/Redis references. |
 
 **Agents**
 
