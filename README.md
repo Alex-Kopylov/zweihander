@@ -106,6 +106,9 @@ Use this README when you want to install the marketplace, install a plugin, or
 choose what each plugin is for. Developer and maintenance notes live in
 `AGENTS.md`.
 
+Third-party provenance and license notices live in
+`third_party/`.
+
 ## Quick Install
 
 ### Codex
@@ -260,7 +263,8 @@ version bumps, or spec checks.
 
 **Origin note:** several methodology skills in this plugin were copied from the
 MIT-licensed [Superpowers](https://github.com/obra/superpowers) project by
-Jesse Vincent. See `ACKNOWLEDGEMENTS.md` for skill-by-skill provenance.
+Jesse Vincent. See `third_party/THIRD_PARTY_NOTICES.md` for skill-by-skill
+provenance.
 
 **Skills**
 
