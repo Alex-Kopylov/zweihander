@@ -1,6 +1,9 @@
 ---
 name: test-driven-development
 description: Use when implementing any feature or bugfix, before writing implementation code
+metadata:
+  ai-assistant-harness-adaptation.claude-code: references/ai-assistant-harnesses/claude-code.md
+  ai-assistant-harness-adaptation.codex: references/ai-assistant-harnesses/codex.md
 ---
 
 # Test-Driven Development (TDD)
@@ -28,6 +31,10 @@ Write the test first. Watch it fail. Write minimal code to pass.
 
 Thinking "skip TDD just this once"? Stop. That's rationalization.
 
+## Harness Adaptation
+
+Depending on who you are as an AI agent, load exactly one metadata-linked reference and skip every non-matching file.
+
 ## The Iron Law
 
 ```
@@ -43,6 +50,23 @@ Write code before the test? Delete it. Start over.
 - Delete means delete
 
 Implement fresh from tests. Period.
+
+## Existing Code Gate
+
+Before choosing a test:
+
+1. Inspect the callers and existing tests for the behavior being changed.
+2. If an existing test owns that contract, update it for the intended behavior.
+   Do not add a parallel ad hoc test just to create RED.
+3. If coverage is missing, add the focused case to the nearest responsible test
+   suite and follow its existing conventions.
+4. For a behavior-preserving refactor with adequate coverage, use the existing
+   tests unchanged: verify the focused suite is green, refactor, then keep it
+   green. Do not invent a failing test for unchanged behavior.
+
+For Python work, invoke the `python-dev-workflow:tests-manager` skill before
+choosing or editing tests. Use its routing for test placement, unit versus
+integration coverage, fixtures, and reuse of the existing suite.
 
 ## Red-Green-Refactor
 
@@ -69,8 +93,6 @@ digraph tdd_cycle {
 ```
 
 ### RED - Write Failing Test
-
-Write one minimal test showing what should happen.
 
 <Good>
 ```typescript
