@@ -1,6 +1,6 @@
 ---
 name: tests-manager
-description: Use when writing, editing, adding, reviewing, or planning Python unit and/or integration tests, including Celery task and worker tests, Redis-backed behavior, mocks, fixtures, pytest structure, or test coverage.
+description: Use when applying TDD to Python work, or writing, editing, adding, reviewing, or planning Python unit and/or integration tests, including Celery task and worker tests, Redis-backed behavior, mocks, fixtures, pytest structure, or test coverage.
 metadata:
   "references/unit-testing.md": "Load when writing, reviewing, or planning unit-test behavior, mocks, or branch coverage."
   "references/integration-testing.md": "Load when writing, reviewing, or planning integration-test behavior, real wiring, or resource isolation."
