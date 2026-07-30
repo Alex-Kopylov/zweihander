@@ -95,7 +95,7 @@ Read the **source file** and verify:
 - All **if/else branches**, **match/case** arms
 - **Edge cases**: empty lists, `None` inputs, boundary values, zero, empty strings
 - **Negative cases**: what should NOT happen (`mock.assert_not_called()`, etc.)
-- **List operations**: multiple items / single item / no items
+- **List operations**: cardinalities that change required behavior
 - **`@pytest.mark.parametrize`** for parameterized scenarios (same logic, multiple inputs: statuses, currencies, etc.)
 - **DB writes**: verify correct data passed to insert/update/delete mocks
 
@@ -113,7 +113,8 @@ Read the **source file** and verify:
 - **Repeated mock setups / objects** across test functions → extract to fixtures in `conftest.py` or factory functions
 - **Check existing helpers** in `tests/conftest.py`, `tests/unit/conftest.py`, `tests/unit/factories.py`, `tests/factories/`, `tests/fixtures/` — if a helper exists, flag inline re-implementations as "use existing helper at `<path>`"
 - **Common extractable patterns**: client mock factories, fixture objects, `create_*` factory functions
-- **Suggest new helpers** only when pattern repeats 3+ times across test files
+- **Suggest new helpers** only when established repetition makes the suite
+  clearer and smaller
 
 ## Output Format
 

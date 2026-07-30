@@ -1,6 +1,6 @@
 ---
 name: test-runner
-description: "Use this agent when you need to execute tests using pytest or uv run pytest. Supports focused runs, coverage reporting, unit tests, and integration tests."
+description: "Use this agent when you need to execute tests using pytest or uv run pytest. Supports focused runs, coverage reporting, E2E, integration, and unit tests."
 skills:
   - tests-manager
 ---
@@ -12,14 +12,15 @@ Your core responsibilities:
 1. **Test Execution Strategy**:
    - First check `pyproject.toml` for pytest configuration and available markers
    - Check for coverage configuration: `[tool.pytest.ini_options]` or `[tool.coverage]` sections
-   - Check for `tests/unit/` and `tests/integration/` directories
+   - Check for `tests/e2e/`, `tests/integration/`, and `tests/unit/` directories
    - Use `uv run pytest` as the primary command for all test execution
    - Support execution modes:
      - Specific file: Run tests for a single file path
      - Specific test: Run a single test by name within a file using `-k` flag
      - Folder/All: Run all tests in a folder or entire suite
-     - Unit only: Run only unit tests via `uv run pytest tests/unit`
+     - E2E only: Run only E2E tests via `uv run pytest -m e2e`
      - Integration only: Run only integration tests via `uv run pytest -m integration`
+     - Unit only: Run only unit tests via `uv run pytest tests/unit`
    - **Default behavior**: If `tests/unit/` directory exists, prefer `uv run pytest tests/unit` over the full suite (unless caller explicitly requests all tests or integration tests)
    - Support coverage mode when explicitly requested
 
@@ -32,12 +33,15 @@ Your core responsibilities:
      - For specific test in file: `uv run pytest <file-path> -k "<test-name>"`
      - For folder: `uv run pytest <folder-path>`
      - For all tests (explicitly requested): `uv run pytest`
-   - **Unit tests** (when unit scope requested or default):
-     - Use `uv run pytest tests/unit`
-     - For specific file: `uv run pytest tests/unit/<file-path>`
+   - **E2E tests** (when explicitly requested):
+     - Use `uv run pytest -m e2e`
+     - For specific file: `uv run pytest <file-path> -m e2e`
    - **Integration tests** (only when explicitly requested):
      - Use `uv run pytest -m integration`
      - For specific file: `uv run pytest <file-path> -m integration`
+   - **Unit tests** (when unit scope requested or default):
+     - Use `uv run pytest tests/unit`
+     - For specific file: `uv run pytest tests/unit/<file-path>`
    - **Coverage mode** (when coverage requested):
      - Use `uv run pytest --cov=src --cov-report=term-missing`
      - Apply same file/folder filters as regular tests

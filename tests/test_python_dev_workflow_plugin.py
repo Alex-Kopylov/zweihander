@@ -3,6 +3,14 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 PLUGIN_ROOT = REPO_ROOT / "plugins" / "python-dev-workflow"
+TDD_SKILL = (
+    REPO_ROOT
+    / "plugins"
+    / "dev-workflow"
+    / "skills"
+    / "test-driven-development"
+    / "SKILL.md"
+)
 
 
 def frontmatter(path: Path) -> str:
@@ -107,3 +115,37 @@ def test_python_dev_workflow_agent_frontmatter_excludes_examples() -> None:
     ]
 
     assert invalid_files == []
+
+
+def test_tests_manager_e2e_contract() -> None:
+    skill_path = PLUGIN_ROOT / "skills" / "tests-manager" / "SKILL.md"
+    manager_body = body(skill_path)
+    metadata_keys = set(metadata_path_keys(skill_path))
+
+    assert {
+        "references/e2e-testing.md",
+        "../../agents/test-scenario-planner.md",
+    } <= metadata_keys
+    assert "E2E → Integration → Unit" in manager_body
+    assert "E2E → Integration → Unit" in body(TDD_SKILL)
+    assert "mock" in manager_body and "observable behavior" in manager_body
+    assert "one happy path per endpoint" not in (
+        PLUGIN_ROOT
+        / "skills"
+        / "tests-manager"
+        / "references"
+        / "integration-testing.md"
+    ).read_text(encoding="utf-8")
+    assert "normally write both unit and\nintegration coverage" not in manager_body
+
+    planner = body(PLUGIN_ROOT / "agents" / "test-scenario-planner.md")
+    assert all(
+        expected in planner
+        for expected in (
+            "task description",
+            "specifications",
+            "business requirements",
+            "corner cases",
+            "Do not choose test levels",
+        )
+    )

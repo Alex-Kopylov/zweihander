@@ -108,8 +108,8 @@ For real timeouts, retries, and pool exhaustion, use Testcontainers.
 
 ## Limitations
 
-Documented divergences and structural gaps. Anything here needs at least one
-real-Redis test:
+Documented divergences and structural gaps. Validate affected behavior against
+real Redis:
 
 | Area | fakeredis behaviour |
 |---|---|

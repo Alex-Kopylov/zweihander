@@ -24,8 +24,8 @@ Place unit tests under the mirrored `tests/unit/...` path:
   is the behavior under test.
 - Prefer dependency injection or patching the name used by the module under
   test.
-- Do not create integration tests unless the caller explicitly requests both
-  scopes; use `integration-test-writer` for that work.
+- Stay within the unit scope assigned by Tests Manager. Report cross-layer gaps
+  instead of adding integration or E2E coverage from this reference.
 
 ## Assertions
 

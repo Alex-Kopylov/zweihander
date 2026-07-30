@@ -65,10 +65,29 @@ Before choosing a test:
    green. Do not invent a failing test for unchanged behavior.
 
 For Python work, invoke the `python-dev-workflow:tests-manager` skill before
-choosing or editing tests. Use its routing for test placement, unit versus
-integration coverage, fixtures, and reuse of the existing suite.
+choosing or editing tests. Use its routing for scenario discovery, E2E,
+integration, and unit coverage, fixtures, and reuse of the existing suite.
+
+## Outside-In Test Levels
+
+When a behavior needs multiple test levels, work one scenario at a time and
+author selected coverage from the outside in:
+
+```text
+E2E → Integration → Unit
+```
+
+Verify each selected test fails for the missing behavior before production
+code. Then implement the smallest change required by the selected tests,
+keeping the RED-GREEN-REFACTOR loop for each level.
+
+Skip a level when it adds no distinct evidence.
 
 ## Red-Green-Refactor
+
+The cycle applies to one scenario. When that scenario has multiple selected
+levels, author the tests in the outer-to-inner order above and keep each level
+within its own RED-GREEN-REFACTOR cycle.
 
 ```dot
 digraph tdd_cycle {
@@ -124,11 +143,11 @@ test('retry works', async () => {
   expect(mock).toHaveBeenCalledTimes(3);
 });
 ```
-Vague name, tests mock not code
+Vague name, asserts only on mock interaction instead of observable behavior
 </Bad>
 
 **Requirements:**
-- One behavior
+- One coherent behavior
 - Clear name
 - Real code (no mocks unless unavoidable)
 
@@ -221,7 +240,7 @@ Next failing test for next feature.
 
 | Quality | Good | Bad |
 |---------|------|-----|
-| **Minimal** | One thing. "and" in name? Split it. | `test('validates email and domain and whitespace')` |
+| **Minimal** | One coherent behavior. Split independently meaningful failures. | `test('validates email and domain and whitespace')` |
 | **Clear** | Name describes behavior | `test('test1')` |
 | **Shows intent** | Demonstrates desired API | Obscures what code should do |
 
@@ -350,7 +369,8 @@ Extract validation for multiple fields if needed.
 
 Before marking work complete:
 
-- [ ] Every new function/method has a test
+- [ ] Changed behavior is covered by the responsible suite
+- [ ] Selected levels were authored E2E → Integration → Unit
 - [ ] Watched each test fail before implementing
 - [ ] Each test failed for expected reason (feature missing, not typo)
 - [ ] Wrote minimal code to pass each test

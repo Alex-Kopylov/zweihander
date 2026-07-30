@@ -235,22 +235,23 @@ reasoning.
 
 ### `python-dev-workflow`
 
-**Use when:** you are writing or reviewing Python tests, deciding unit vs
-integration coverage, testing Celery or Redis behavior, or configuring Celery
-for production behavior.
+**Use when:** you are deriving scenarios from requirements, writing or reviewing
+Python tests, deciding E2E vs integration vs unit coverage, testing Celery or
+Redis behavior, or configuring Celery for production behavior.
 
 **Skills**
 
 | Skill | Description |
 |---|---|
 | `celery-expert` | Configure Celery tasks, workers, retries, schedules, performance, and security. |
-| `tests-manager` | Plan and write pytest unit/integration tests with fixtures, factories, mocks, and Celery/Redis references. |
+| `tests-manager` | Plan scenarios and write pytest E2E, integration, and unit tests with focused references. |
 
 **Agents**
 
 | Agent | Description |
 |---|---|
 | `integration-test-writer` | Write endpoint and real-wiring integration tests. |
+| `test-scenario-planner` | Derive requirement-linked scenarios and corner cases before coverage routing. |
 | `test-runner` | Run focused pytest or `uv run pytest` commands. |
 | `test-unit-reviewer` | Review unit tests for quality, coverage, and patterns. |
 | `unit-test-writer` | Write focused unit tests with mocks, fixtures, and factories. |

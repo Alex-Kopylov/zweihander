@@ -1,0 +1,85 @@
+{
+  "skill_name": "tests-manager",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "Plan tests for a password-reset feature from this task and its business requirements: a registered user requests a reset, receives a single-use link, expired or reused links are rejected, and the account remains unchanged after rejection. Do not write test code yet.",
+      "expected_output": "Uses the test-scenario planner to derive requirement-linked business scenarios, negative paths, corner cases, assumptions, and specification gaps without prescribing a fixed number of tests. Tests Manager then owns coverage routing rather than making the scenario planner assign test levels.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "scenario_planning_precedes_coverage",
+          "check": "derives scenarios and corner cases from the task and business requirements before choosing test layers"
+        },
+        {
+          "name": "planner_manager_boundary",
+          "check": "keeps scenario discovery separate from test-level routing and test implementation"
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "prompt": "Plan test coverage for a new authenticated checkout endpoint whose observable result is an order confirmation and inventory reservation.",
+      "expected_output": "Selects only layers that provide distinct evidence and orders selected tests outer-to-inner: E2E, then integration, then unit. E2E covers the user-visible business outcome, integration covers route and resource wiring, and unit tests cover local branches without duplicating the same assertions.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "outer_to_inner_order",
+          "check": "writes selected coverage in E2E then integration then unit order"
+        },
+        {
+          "name": "no_cross_layer_duplication",
+          "check": "assigns distinct evidence to each selected layer instead of repeating the same scenario at every layer"
+        },
+        {
+          "name": "observable_checkout_outcome",
+          "check": "requires evidence of both the observable order confirmation and inventory reservation"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Add tests for a pure normalize_currency_code(value) helper with no I/O or application wiring.",
+      "expected_output": "Uses focused unit coverage only because E2E and integration add no distinct evidence. It preserves the E2E to integration to unit ordering rule without manufacturing irrelevant higher-level tests.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "yagni_layer_skipping",
+          "check": "skips E2E and integration when they add no distinct evidence"
+        },
+        {
+          "name": "no_fixed_test_counts",
+          "check": "does not prescribe a fixed number of tests or require every test layer"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "My test configures a repository mock to return success, calls the service, asserts repository.save was called, and passes. Can I claim the feature works?",
+      "expected_output": "Rejects the claim: a configured mock plus mock-call assertion proves only the mock interaction, not real system behavior. Requires an observable assertion over real code and permits interaction assertions only when the interaction itself is the contract.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "rejects_mock_only_pass",
+          "check": "does not accept a passing mock-only assertion as proof that the feature works"
+        },
+        {
+          "name": "requires_observable_real_code_evidence",
+          "check": "requires observable evidence from real code while allowing interaction assertions when the interaction is the contract"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Rewrite the README introduction for clarity; no runtime behavior, test assets, or test guidance changes.",
+      "expected_output": "Does not invoke tests-manager or invent test scenarios because the request is unrelated to Python test planning, authoring, review, or execution.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "should_not_trigger_for_copy_edit",
+          "check": "does not trigger tests-manager for an unrelated documentation-only copy edit"
+        }
+      ]
+    }
+  ]
+}
