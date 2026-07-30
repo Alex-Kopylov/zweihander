@@ -12,8 +12,8 @@ than mirroring source modules.
 
 Use only local, test, or development resources; never point E2E tests at
 production data or services. Follow the project's established test flow. If
-the safe flow or resource boundary is unclear, stop and ask the user before
-writing or running the test.
+that flow or its safe resource boundary is unclear, stop immediately. Do not
+write or run E2E tests; ask the user to confirm both before proceeding.
 
 ## Boundaries
 

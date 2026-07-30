@@ -80,6 +80,38 @@
           "check": "does not trigger tests-manager for an unrelated documentation-only copy edit"
         }
       ]
+    },
+    {
+      "id": 5,
+      "prompt": "An existing checkout E2E test already owns the changed confirmation contract. Plan the necessary coverage without adding tests merely to increase test count or code coverage.",
+      "expected_output": "Adapts the existing contract-owning test and adds coverage only for requirement-linked scenarios or corner cases that still lack distinct evidence.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "adapts_existing_contract_test",
+          "check": "updates the existing test instead of adding parallel coverage for the same contract"
+        },
+        {
+          "name": "scenario_evidence_over_counts",
+          "check": "judges completeness by proven scenarios and corner cases rather than test count or code coverage percentage"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "Run the project's E2E suite, but the established execution flow and whether its configured resources are production or development are unclear.",
+      "expected_output": "Stops immediately without writing or running E2E tests and asks the user to confirm the established safe flow and resource boundary through the active harness's user-question mechanism.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "e2e_resource_circuit_breaker",
+          "check": "does not write or run E2E tests while the safe resource flow is unclear"
+        },
+        {
+          "name": "harness_specific_user_question",
+          "check": "uses the active harness's mapped user-question mechanism before proceeding"
+        }
+      ]
     }
   ]
 }

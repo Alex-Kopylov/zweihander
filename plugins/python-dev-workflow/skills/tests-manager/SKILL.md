@@ -2,6 +2,8 @@
 name: tests-manager
 description: Use when applying TDD to Python work, deriving test scenarios from requirements, or planning, writing, editing, reviewing, or running Python E2E, integration, or unit tests, including Celery, Redis, mocks, fixtures, pytest structure, or test coverage.
 metadata:
+  ai-assistant-harness-adaptation.claude-code: references/ai-assistant-harnesses/claude-code.md
+  ai-assistant-harness-adaptation.codex: references/ai-assistant-harnesses/codex.md
   "references/e2e-testing.md": "Load when writing, reviewing, or planning externally observable business flows across the real system boundary."
   "references/integration-testing.md": "Load when writing, reviewing, or planning integration-test behavior, real wiring, or resource isolation."
   "references/unit-testing.md": "Load when writing, reviewing, or planning unit-test behavior, mocks, or branch coverage."
@@ -24,6 +26,10 @@ Use this skill as the entry point for Python pytest work. It defines the shared
 testing rules, then routes to focused references or agents only when the project
 needs them.
 
+## Harness Adaptation
+
+Depending on who you are as an AI agent, load exactly one metadata-linked reference and skip every non-matching file.
+
 ## Scenario Discovery
 
 When requirements need interpretation, use `test-scenario-planner` before
@@ -42,7 +48,9 @@ Plan and author selected coverage from the outside in:
 E2E → Integration → Unit
 ```
 
-Skip irrelevant layers instead of manufacturing coverage.
+Select only layers that add distinct evidence. Judge completeness by proven
+requirement-linked scenarios and corner cases, not by test count or code
+coverage percentage.
 
 | Level | Owns | Select when |
 |---|---|---|
