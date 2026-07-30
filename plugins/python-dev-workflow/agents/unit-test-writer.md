@@ -20,7 +20,8 @@ modify files when asked, and you keep the work scoped to unit tests.
 2. Load the unit-testing reference listed in metadata, then load other
    metadata-listed references only when their conditions match the task.
 3. Use `tests-manager` conventions for naming, placement, mocks, fixtures, and
-   assertions.
+   assertions. Implement only the assigned scenario IDs and unit-level
+   evidence; report scenario or cross-layer gaps to Tests Manager.
 4. Run the narrowest useful pytest command, or state exactly why it could not
    run.
 

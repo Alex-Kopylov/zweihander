@@ -66,12 +66,12 @@ Redis only when it touches a divergence.
 Scope instead:
 
 - Application logic -- fakeredis only, tested exhaustively.
-- Divergent behaviour -- at least one Testcontainers test.
-- Shared assumptions (serialization, expiry, basic commands) -- one small
-  contract suite run against both.
+- Divergent behaviour -- targeted Testcontainers coverage.
+- Shared assumptions (serialization, expiry, basic commands) -- a focused
+  contract suite against both.
 
 Rule of thumb: most tests use fakeredis; every behaviour that depends on actual
-Redis semantics gets at least one Testcontainers test.
+Redis semantics gets targeted Testcontainers coverage.
 
 ## Contract Suite Against Both Backends
 

@@ -3,6 +3,14 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 PLUGIN_ROOT = REPO_ROOT / "plugins" / "python-dev-workflow"
+TDD_SKILL = (
+    REPO_ROOT
+    / "plugins"
+    / "dev-workflow"
+    / "skills"
+    / "test-driven-development"
+    / "SKILL.md"
+)
 
 
 def frontmatter(path: Path) -> str:
@@ -107,3 +115,53 @@ def test_python_dev_workflow_agent_frontmatter_excludes_examples() -> None:
     ]
 
     assert invalid_files == []
+
+
+def test_tests_manager_e2e_contract() -> None:
+    skill_path = PLUGIN_ROOT / "skills" / "tests-manager" / "SKILL.md"
+    manager_body = body(skill_path)
+    manager_frontmatter = frontmatter(skill_path)
+    metadata_keys = set(metadata_path_keys(skill_path))
+    references = skill_path.parent / "references"
+    e2e_reference = (references / "e2e-testing.md").read_text(encoding="utf-8")
+
+    assert {
+        "references/e2e-testing.md",
+        "../../agents/test-scenario-planner.md",
+    } <= metadata_keys
+    assert (
+        "ai-assistant-harness-adaptation.claude-code: "
+        "references/ai-assistant-harnesses/claude-code.md"
+    ) in manager_frontmatter
+    assert (
+        "ai-assistant-harness-adaptation.codex: "
+        "references/ai-assistant-harnesses/codex.md"
+    ) in manager_frontmatter
+    assert "E2E → Integration → Unit" in manager_body
+    assert "E2E → Integration → Unit" in body(TDD_SKILL)
+    assert "not by test count or code\ncoverage percentage" in manager_body
+    assert "mock" in manager_body and "observable behavior" in manager_body
+    assert "stop immediately" in e2e_reference
+    assert "Do not\nwrite or run E2E tests" in e2e_reference
+    assert "AskUserQuestion" in (
+        references / "ai-assistant-harnesses" / "claude-code.md"
+    ).read_text(encoding="utf-8")
+    assert "request_user_input" in (
+        references / "ai-assistant-harnesses" / "codex.md"
+    ).read_text(encoding="utf-8")
+    assert "one happy path per endpoint" not in (
+        references / "integration-testing.md"
+    ).read_text(encoding="utf-8")
+    assert "normally write both unit and\nintegration coverage" not in manager_body
+
+    planner = body(PLUGIN_ROOT / "agents" / "test-scenario-planner.md")
+    assert all(
+        expected in planner
+        for expected in (
+            "task description",
+            "specifications",
+            "business requirements",
+            "corner cases",
+            "Do not choose test levels",
+        )
+    )

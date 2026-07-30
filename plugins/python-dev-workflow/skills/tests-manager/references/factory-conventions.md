@@ -10,8 +10,9 @@ or lightweight classes.
 
 - Put reusable builders in `tests/factories/`, `tests/builders/`, or the
   project's existing helper location.
-- Use one helper file per domain/module.
-- Export one builder per entity, such as `build_user()` or `UserBuilder`.
+- Group helpers by cohesive domain/module.
+- Export only the deterministic entity builders the suite uses, such as
+  `build_user()` or `UserBuilder`.
 - Keep required relationship creation inside builders when a valid entity
   requires it.
 

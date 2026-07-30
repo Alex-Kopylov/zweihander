@@ -61,6 +61,9 @@ fixtures and configuration are separate from `celery.contrib.pytest`, and
 installing it auto-registers its own pytest plugin, so do not mix both APIs in
 one test setup.
 
+Treat this as integration smoke coverage. It becomes E2E only when exercised
+through a complete externally observable business journey.
+
 Keep this layer small. Cover representative delivery, readiness, and
 broker/backend compatibility paths rather than repeating unit cases.
 
