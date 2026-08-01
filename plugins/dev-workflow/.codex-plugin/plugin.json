@@ -1,6 +1,6 @@
 {
   "name": "dev-workflow",
-  "version": "0.7.0",
+  "version": "0.7.7",
   "description": "Git, PRs, tickets, releases, visual diffs, TDD, debugging, and review workflows.",
   "author": {
     "name": "Alex Kopylov"
