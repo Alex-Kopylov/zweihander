@@ -6,6 +6,12 @@ disable-model-invocation: true
 
 # YOLO Push
 
+## Invocation Gate
+
+Proceed only when the user explicitly invokes this skill by name using the
+harness's direct skill-command syntax. Do not invoke it for generic requests
+to commit, push, open a PR, merge, deploy, or ship changes.
+
 ## Workflow
 
 Progress:
