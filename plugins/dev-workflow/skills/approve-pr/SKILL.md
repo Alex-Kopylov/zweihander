@@ -49,7 +49,9 @@ Progress:
 - [ ] Step 3: Fetch PR metadata and record current head SHA.
 - [ ] Step 4: Show the actual target branch. If `target_branch` was supplied,
   compare it before approval and treat a mismatch as a hard stop.
-- [ ] Step 5: Approve the PR.
+- [ ] Step 5: Approve the PR when the current user is not its author. If the
+  current user authored it, skip self-approval and continue only if no
+  approval is required.
 - [ ] Step 6: Re-fetch review, approval, check, and mergeability state.
 - [ ] Step 7: Merge with a head/SHA guard when available. Use the repository's
   configured merge behavior unless the user specified a merge method.
