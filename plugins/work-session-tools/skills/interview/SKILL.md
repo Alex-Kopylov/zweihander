@@ -58,11 +58,11 @@ Multi-select: false
 
 ### 4. Track Progress
 
-After each response, acknowledge briefly and state progress:
+Show `▰`/`▱` per addressed/remaining item, then two spaces and `[addressed]/[total]`:
 
 ```
 #3 HIGH — Missing null check: **Fix now** (add null check with default)
-Progress: 3/10 items addressed
+▰▰▰▱▱▱▱▱▱▱  3/10
 ```
 
 ### 5. Execute Decisions
