@@ -7,6 +7,11 @@ Machine-readable graph: [`mattpocock-skills-graph.json`](./mattpocock-skills-gra
 Only `name` / `description` frontmatter was read. Skill bodies were scanned for
 cross-references, not loaded.
 
+Tracked in [#58](https://github.com/Alex-Kopylov/zweihander/issues/58), one
+sub-issue per bucket. Bucket A's decisions are settled in
+[#59](https://github.com/Alex-Kopylov/zweihander/issues/59) — that issue is the
+authority where it and this document differ. Buckets B, C and D are still open.
+
 ## 1. What the graph says
 
 45 invocation edges; 25 once the router `ask-matt` (which points at all 20 other
@@ -82,7 +87,9 @@ same hazard.
 
 ### Bucket A — take nearly as-is (no equivalent, zero out-edges)
 
-| Their skill | Assets | Zweihander gap | Suggested home |
+Homes below are settled, not proposed. See #59.
+
+| Their skill | Assets | Zweihander gap | Home |
 |---|---|---|---|
 | `resolving-merge-conflicts` | — | none | `dev-workflow` |
 | `codebase-design` | `DEEPENING.md`, `DESIGN-IT-TWICE.md` | none (closest is third-party `ponytail`) | new `engineering-design` |
@@ -90,6 +97,20 @@ same hazard.
 | `teach` | 4 format docs | none | `work-session-tools` |
 | `handoff` | — | partial (`ai-insights-hunter` is long-term memory, not next-session handoff) | `work-session-tools` |
 | `grilling` | — | we have interview *flows*, not the interrogation *vocabulary* | `work-session-tools` |
+
+Two decisions changed the shape of this bucket:
+
+- **`grilling` inverts the upstream dependency.** Upstream it is a leaf primitive
+  with in-degree 5. Here it becomes the questioning *strategy* and delegates the
+  mechanical loop to our existing `work-session-tools:interview`, which is
+  refactored to do one thing: run the cycle and emit state. Both sit in the same
+  plugin, so no cross-plugin dependency appears. The `interview` refactor is a
+  hard prerequisite of the import, so it lands in Bucket A rather than B.
+- **`prototype` keeps its name and stays model-invokable**, matching upstream,
+  because it is also a ticket-type string in `wayfinder`'s label vocabulary
+  (`wayfinder:prototype`) and a rename would fork that vocabulary in Bucket D.
+  The collision is handled by a repo rule instead: skill names are always written
+  `/name` or in backticks, never bare.
 
 ### Bucket B — strong overlap, take the idea and merge
 
@@ -143,10 +164,17 @@ Ordered by value-to-effort. All four depend on the Bucket C #1 config contract.
 
 ## 5. Proposed waves
 
-**Wave 0 — legal and scaffolding.** MIT requires attribution. Add
-`third_party/mattpocock-skills-LICENSE.txt`, entries in
-`third_party/THIRD_PARTY_NOTICES.md` and `ACKNOWLEDGEMENTS.md`, matching the
-existing `superpowers` / `hermes-agent` pattern. Decide plugin placement (below).
+**Wave 0 — legal and scaffolding.** MIT requires attribution. Three files, matching
+the existing `superpowers` / `hermes-agent` pattern:
+`third_party/mattpocock-skills-LICENSE.txt`, a row in `third_party/README.md`, and
+a section in `third_party/THIRD_PARTY_NOTICES.md`. `ACKNOWLEDGEMENTS.md` is only a
+pointer to `third_party/README.md` and takes no per-project entry.
+
+The notices section pins both `Upstream version: 1.1.0` and
+`Upstream commit: 2ab9580 (2026-07-28)`. Version alone would drift — they ship
+skills continuously — and the SHA is what makes a future re-sync diffable.
+
+Also in this wave: add `.scratch/` to `.gitignore` (see house conventions below).
 
 **Wave 1 — Bucket A, free wins.** Six standalone skills, no dependency untangling.
 Manifest + marketplace + README updates per `CLAUDE.md`, version bump via
@@ -178,13 +206,31 @@ Two new plugins keeps the tracker-coupled flows (which all share the setup
 contract) behind one install boundary, so cherry-picking one of them without the
 label vocabulary is not possible.
 
-## 6. Open questions for the next pass
+## 6. House conventions settled in Bucket A
+
+These bind the later buckets, so they are recorded here rather than in #59 alone.
+
+- **`.scratch/` is the scratch directory.** Adopted as-is from upstream and added to
+  `.gitignore`. Every Bucket C and D import that touches `.scratch/` —
+  `setup-<x>`, `to-tickets`, `code-review`, `ask-matt` — therefore stays verbatim
+  with no path rewriting. `interview` writes its state to
+  `.scratch/interview/<slug>.json`, recording both chosen and rejected options per
+  item so a later `grilling` run can read the full transcript back.
+- **Codex metadata rides along with imports.** The upstream `agents/openai.yaml`
+  files are kept on all six Bucket A skills. They are already correct, and they
+  give Bucket C a working reference for the 53-skill backfill instead of designing
+  the convention from scratch. Accepts a temporary state where 6 of 59 skills carry
+  Codex metadata. Broader harness-agnostic adaptation is deferred.
+- **Skill names are never written bare.** Always `/name` or backticks. This is what
+  makes the cheap graph scan in §3 reliable, and it is why `prototype` can keep a
+  colliding name.
+
+## 7. Open questions for the next pass
 
 1. Does `setup-matt-pocock-skills` write to `docs/agents/` in a shape that fits our
    `AGENTS.md` + sibling `CLAUDE.md` convention?
 2. `ask-matt` is a router over *one* repo's skills. Does a Zweihander router live at
    the marketplace level, or one per plugin?
-3. `grilling` vs `spec-interview` vs `interview` vs `spec-contradiction-hunter` —
-   four interrogation skills after the merge. Which survive?
-4. Their skills assume a `.scratch/` directory for the local-tracker mode. Compatible
-   with our `.gitignore`?
+3. After Bucket A, `grilling` and `interview` have clean roles — strategy and loop.
+   That leaves `spec-interview` and `spec-contradiction-hunter` to reconcile in
+   Bucket B: does `spec-interview` become a caller of `grilling`, or stay separate?
