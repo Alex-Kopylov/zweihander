@@ -102,6 +102,49 @@ def test_action_matrix_supports_action_then_assistant_lookup() -> None:
     assert "guidance" not in json.dumps(matrix)
 
 
+def test_action_matrix_exposes_exact_invocation_syntax() -> None:
+    matrix = json.loads(MATRIX_FILE.read_text(encoding="utf-8"))
+
+    expected = {
+        "InvokeSkill": {
+            "ClaudeCode": {
+                "user": ["/skill-name", "/plugin-name:skill-name"],
+                "agent": [
+                    "Skill(name)",
+                    "Skill(plugin-name:skill-name)",
+                ],
+            },
+            "Codex": {
+                "user": ["$skill-name", "$plugin-name:skill-name"],
+            },
+        },
+        "CreateAgent": {
+            "ClaudeCode": {"agent": ["Agent"]},
+            "Codex": {"agent": ["spawn_agent"]},
+        },
+        "AskUser": {
+            "ClaudeCode": {"agent": ["AskUserQuestion"]},
+            "Codex": {"agent": ["request_user_input"]},
+        },
+        "TrackTasks": {
+            "ClaudeCode": {
+                "agent": ["TaskCreate", "TaskGet", "TaskList", "TaskUpdate"]
+            },
+            "Codex": {"agent": ["update_plan"]},
+        },
+    }
+
+    for action, assistants in expected.items():
+        for assistant, invocations in assistants.items():
+            assert matrix["actions"][action][assistant]["invocations"] == invocations
+
+
+def test_rendered_artifacts_use_dist_directory() -> None:
+    skill = SKILL_FILE.read_text(encoding="utf-8")
+
+    assert "`dist/`" in skill
+
+
 def test_lookup_script_returns_action_assistant_entry() -> None:
     result = subprocess.run(
         [
