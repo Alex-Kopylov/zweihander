@@ -8,6 +8,22 @@ API exploration, development workflows, assistant operations, research notes,
 cloud storage, local automation, runtime app verification, and job-search
 workflows.
 
+## About
+
+I am currently working on AI harness tools and trying to stay ahead of the curve.
+
+I am open to new opportunities in AI engineering, LLM applications, and developer
+tools.
+
+[✉️ Email me](mailto:alexkopylov123@gmail.com)
+
+## Selected Projects
+
+- [Zweihander](https://github.com/Alex-Kopylov/zweihander) — an agent-plugin marketplace for Codex and Claude Code.
+- [AI-Ready Modern Python Template](https://github.com/Alex-Kopylov/ai-ready-modern-python-template) — a practical starting point for AI-ready Python projects.
+- [GH Babysitter](https://github.com/Alex-Kopylov/gh-babysitter) — GitHub workflow automation for keeping work moving.
+
+
 ## Plugin Catalog
 
 ### General User Productivity
