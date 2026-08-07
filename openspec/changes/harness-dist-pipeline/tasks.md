@@ -4,15 +4,15 @@ The whole change lands in one PR. Development is test-first (TDD): each behavior
 
 ## 1. Build foundation
 
-- [ ] 1.1 Add Jinja2 to the root `pyproject.toml` dev dependency-group and lock with `uv`
-- [ ] 1.2 Write failing renderer unit tests on a fixture plugin: `actions.*` resolution, both wrapper name shapes, narrative conditional, collision failure, missing-action failure, unknown-harness failure, dev-file exclusion, mode-bit preservation, manifest-driven membership
-- [ ] 1.3 Write the failing matrix schema test (`callable` flag on every action; one name per callable action per assistant; single wrapper per assistant)
-- [ ] 1.4 Create the root `plugin_maintenance/` package with the stage-1 runner (iterates `generators/*` packages, calls each zero-argument `generate()`)
-- [ ] 1.5 Implement the stage-2 renderer against the 1.2 tests: harness argument, matrix loading, resolved `actions` map, wrapper filter for bare and qualified names, `StrictUndefined`
-- [ ] 1.6 Implement the file rules: plain files copied byte-for-byte with mode bits preserved; `*.j2` rendered with the suffix stripped; `X`+`X.j2` collision fails the build; files named `AGENTS.md`/`CLAUDE.md`/`README.md` never emitted; each tree contains exactly the plugins its marketplace manifest lists
-- [ ] 1.7 Implement foreign-runtime-metadata stripping (`.codex-plugin/` out of the Claude Code tree, `.claude-plugin/` out of the Codex tree)
-- [ ] 1.8 Implement fail-loud checks: unknown harness, missing action/name, malformed matrix, render error, leftover Jinja markers in rendered files (`{% raw %}` output exempt), plain/template collision
-- [ ] 1.9 Update `harness-action-matrix.json` to the D3 schema: `callable` flag on every action; one `name` per assistant for callable actions; task tracking split into `CreateTask`/`GetTask`/`ListTasks`/`UpdateTask`/`StopTask` (all → `update_plan` on Codex); `PluginManifest`/`SlashCommand` non-callable; `InvokeSkill`, `surface`, and `terms` dropped; keep `lookup_order`; refresh `checked`; 1.3 goes green
+- [x] 1.1 Add Jinja2 to the root `pyproject.toml` dev dependency-group and lock with `uv`
+- [x] 1.2 Write failing renderer unit tests on a fixture plugin: `actions.*` resolution, both wrapper name shapes, narrative conditional, collision failure, missing-action failure, unknown-harness failure, dev-file exclusion, mode-bit preservation, manifest-driven membership
+- [x] 1.3 Write the failing matrix schema test (`callable` flag on every action; one name per callable action per assistant; single wrapper per assistant)
+- [x] 1.4 Create the root `plugin_maintenance/` package with the stage-1 runner (iterates `generators/*` packages, calls each zero-argument `generate()`)
+- [x] 1.5 Implement the stage-2 renderer against the 1.2 tests: harness argument, matrix loading, resolved `actions` map, wrapper filter for bare and qualified names, `StrictUndefined`
+- [x] 1.6 Implement the file rules: plain files copied byte-for-byte with mode bits preserved; `*.j2` rendered with the suffix stripped; `X`+`X.j2` collision fails the build; files named `AGENTS.md`/`CLAUDE.md`/`README.md` never emitted; each tree contains exactly the plugins its marketplace manifest lists
+- [x] 1.7 Implement foreign-runtime-metadata stripping (`.codex-plugin/` out of the Claude Code tree, `.claude-plugin/` out of the Codex tree)
+- [x] 1.8 Implement fail-loud checks: unknown harness, missing action/name, malformed matrix, render error, leftover Jinja markers in rendered files (`{% raw %}` output exempt), plain/template collision
+- [x] 1.9 Update `harness-action-matrix.json` to the D3 schema: `callable` flag on every action; one `name` per assistant for callable actions; task tracking split into `CreateTask`/`GetTask`/`ListTasks`/`UpdateTask`/`StopTask` (all → `update_plan` on Codex); `PluginManifest`/`SlashCommand` non-callable; `InvokeSkill`, `surface`, and `terms` dropped; keep `lookup_order`; refresh `checked`; 1.3 goes green
 
 ## 2. Mermaid generator relocation
 

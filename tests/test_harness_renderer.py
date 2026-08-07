@@ -1,0 +1,200 @@
+"""Stage-2 renderer unit behavior on the fixture plugin tree.
+
+Covers the harness-dist-build spec: action resolution, the wrapper filter's
+two name shapes, narrative conditionals, file rules, fail-loud errors,
+dev-file exclusion, mode-bit preservation, metadata stripping, and
+manifest-driven membership.
+"""
+
+import os
+from pathlib import Path
+
+import pytest
+
+from plugin_maintenance.render import BuildError, render_tree
+
+
+def render(repo: Path, matrix: Path, harness: str) -> Path:
+    output = repo / "dist-under-test" / harness
+    render_tree(repo, harness, output, matrix_path=matrix)
+    return output
+
+
+def demo_skill(output: Path) -> str:
+    return (output / "demo-plugin" / "skills" / "demo" / "SKILL.md").read_text(
+        encoding="utf-8"
+    )
+
+
+class TestActionResolution:
+    def test_claude_actions_resolve_to_claude_names(self, fixture_repo, fixture_matrix):
+        text = demo_skill(render(fixture_repo, fixture_matrix, "ClaudeCode"))
+
+        assert "Skill(AskUserQuestion)" in text
+        assert "the AskUserQuestion mechanism" in text
+        assert "Skill(Agent)" in text
+
+    def test_codex_actions_resolve_to_codex_names(self, fixture_repo, fixture_matrix):
+        text = demo_skill(render(fixture_repo, fixture_matrix, "Codex"))
+
+        assert "$request_user_input" in text
+        assert "the request_user_input mechanism" in text
+        assert "$spawn_agent" in text
+
+
+class TestWrapperFilter:
+    @pytest.mark.parametrize(
+        ("harness", "bare", "qualified"),
+        [
+            ("ClaudeCode", "Skill(commit)", "Skill(dev-workflow:commit)"),
+            ("Codex", "$commit", "$dev-workflow:commit"),
+        ],
+    )
+    def test_wrapper_covers_bare_and_qualified_names(
+        self, fixture_repo, fixture_matrix, harness, bare, qualified
+    ):
+        text = demo_skill(render(fixture_repo, fixture_matrix, harness))
+
+        assert bare in text
+        assert qualified in text
+
+
+class TestNarrativeConditional:
+    def test_each_harness_keeps_only_its_own_narrative(
+        self, fixture_repo, fixture_matrix
+    ):
+        claude = demo_skill(render(fixture_repo, fixture_matrix, "ClaudeCode"))
+        codex = demo_skill(render(fixture_repo, fixture_matrix, "Codex"))
+
+        assert "Claude Code-specific narrative." in claude
+        assert "Codex-specific narrative." not in claude
+        assert "Codex-specific narrative." in codex
+        assert "Claude Code-specific narrative." not in codex
+
+
+class TestFileRules:
+    def test_plain_file_copied_byte_for_byte(self, fixture_repo, fixture_matrix):
+        source = (
+            fixture_repo
+            / "plugins"
+            / "demo-plugin"
+            / "skills"
+            / "demo"
+            / "references"
+            / "plain.md"
+        )
+        output = render(fixture_repo, fixture_matrix, "ClaudeCode")
+        copied = output / "demo-plugin" / "skills" / "demo" / "references" / "plain.md"
+
+        assert copied.read_bytes() == source.read_bytes()
+
+    def test_template_suffix_stripped_and_absent_from_output(
+        self, fixture_repo, fixture_matrix
+    ):
+        output = render(fixture_repo, fixture_matrix, "ClaudeCode")
+
+        assert (output / "demo-plugin" / "skills" / "demo" / "SKILL.md").is_file()
+        assert not list(output.rglob("*.j2"))
+
+    def test_raw_block_emits_literal_braces(self, fixture_repo, fixture_matrix):
+        text = demo_skill(render(fixture_repo, fixture_matrix, "ClaudeCode"))
+
+        assert "{{COMPANY}}" in text
+
+    def test_rendered_output_has_no_leftover_markers(
+        self, fixture_repo, fixture_matrix
+    ):
+        text = demo_skill(render(fixture_repo, fixture_matrix, "ClaudeCode"))
+
+        for marker in ("{%", "%}", "{{ actions", "| call"):
+            assert marker not in text
+
+    def test_plain_template_collision_fails_naming_the_path(
+        self, fixture_repo, fixture_matrix
+    ):
+        colliding = (
+            fixture_repo / "plugins" / "demo-plugin" / "skills" / "demo" / "SKILL.md"
+        )
+        colliding.write_text("collides\n", encoding="utf-8")
+
+        with pytest.raises(BuildError, match="SKILL.md"):
+            render(fixture_repo, fixture_matrix, "ClaudeCode")
+
+    def test_executable_bit_survives(self, fixture_repo, fixture_matrix):
+        output = render(fixture_repo, fixture_matrix, "ClaudeCode")
+        hook = output / "demo-plugin" / "scripts" / "hook.sh"
+
+        assert os.access(hook, os.X_OK)
+
+
+class TestFailLoud:
+    def test_missing_action_names_action_and_harness(
+        self, fixture_repo, fixture_matrix
+    ):
+        template = (
+            fixture_repo
+            / "plugins"
+            / "demo-plugin"
+            / "skills"
+            / "demo"
+            / "SKILL.md.j2"
+        )
+        template.write_text("{{ actions.NoSuchAction | call }}\n", encoding="utf-8")
+
+        with pytest.raises(BuildError, match=r"NoSuchAction.*ClaudeCode"):
+            render(fixture_repo, fixture_matrix, "ClaudeCode")
+
+    def test_unknown_harness_fails_before_rendering(
+        self, fixture_repo, fixture_matrix
+    ):
+        with pytest.raises(BuildError, match="Gemini"):
+            render(fixture_repo, fixture_matrix, "Gemini")
+
+        assert not (fixture_repo / "dist-under-test" / "Gemini").exists()
+
+    def test_failed_build_leaves_no_partial_tree(self, fixture_repo, fixture_matrix):
+        template = (
+            fixture_repo
+            / "plugins"
+            / "demo-plugin"
+            / "skills"
+            / "demo"
+            / "SKILL.md.j2"
+        )
+        template.write_text("{{ actions.NoSuchAction | call }}\n", encoding="utf-8")
+
+        with pytest.raises(BuildError):
+            render(fixture_repo, fixture_matrix, "ClaudeCode")
+
+        assert not (fixture_repo / "dist-under-test" / "ClaudeCode").exists()
+
+
+class TestTreeMembership:
+    def test_dev_files_never_emitted(self, fixture_repo, fixture_matrix):
+        for harness in ("ClaudeCode", "Codex"):
+            output = render(fixture_repo, fixture_matrix, harness)
+            emitted = {path.name for path in output.rglob("*") if path.is_file()}
+
+            assert not emitted & {"AGENTS.md", "CLAUDE.md", "README.md"}
+
+    def test_foreign_runtime_metadata_stripped(self, fixture_repo, fixture_matrix):
+        claude = render(fixture_repo, fixture_matrix, "ClaudeCode")
+        codex = render(fixture_repo, fixture_matrix, "Codex")
+
+        assert (claude / "demo-plugin" / ".claude-plugin" / "plugin.json").is_file()
+        assert not list(claude.rglob(".codex-plugin"))
+        assert (codex / "demo-plugin" / ".codex-plugin" / "plugin.json").is_file()
+        assert not list(codex.rglob(".claude-plugin"))
+
+    def test_membership_follows_each_harness_manifest(
+        self, fixture_repo, fixture_matrix
+    ):
+        claude = render(fixture_repo, fixture_matrix, "ClaudeCode")
+        codex = render(fixture_repo, fixture_matrix, "Codex")
+
+        assert (claude / "plain-plugin" / "skills" / "plain" / "SKILL.md").is_file()
+        assert (codex / "plain-plugin" / "skills" / "plain" / "SKILL.md").is_file()
+        assert (codex / "codex-only-plugin").is_dir()
+        assert not (claude / "codex-only-plugin").exists()
+        assert not (claude / "unlisted-plugin").exists()
+        assert not (codex / "unlisted-plugin").exists()
