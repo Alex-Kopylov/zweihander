@@ -16,9 +16,9 @@ The whole change lands in one PR. Development is test-first (TDD): each behavior
 
 ## 2. Mermaid generator relocation
 
-- [ ] 2.1 Update `tests/test_mermaid_diagrams_plugin.py` expectations first: root-project invocations, relocated generator paths, dist-pointing manifest sources
-- [ ] 2.2 Move `plugins/mermaid-diagrams/plugin_maintenance/` to `plugin_maintenance/generators/mermaid_diagrams/` (offline `generate()`; the upstream fetch stays a separate weekly updater outside the build); dissolve its standalone `pyproject.toml` and `uv.lock` into the root project
-- [ ] 2.3 Update generator internals/paths so generated docs keep landing under `plugins/mermaid-diagrams/`; 2.1 goes green except the manifest assertions (green at 5.2)
+- [x] 2.1 Update `tests/test_mermaid_diagrams_plugin.py` expectations first: root-project invocations, relocated generator paths, dist-pointing manifest sources
+- [x] 2.2 Move `plugins/mermaid-diagrams/plugin_maintenance/` to `plugin_maintenance/generators/mermaid_diagrams/` (offline `generate()`; the upstream fetch stays a separate weekly updater outside the build); dissolve its standalone `pyproject.toml` and `uv.lock` into the root project
+- [x] 2.3 Update generator internals/paths so generated docs keep landing under `plugins/mermaid-diagrams/`; 2.1 goes green except the manifest assertions (green at 5.2)
 
 ## 3. Dist invariant tests
 

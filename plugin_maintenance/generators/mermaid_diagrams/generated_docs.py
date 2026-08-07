@@ -8,7 +8,9 @@ from pathlib import Path
 import re
 
 
-PLUGIN_ROOT = Path(__file__).resolve().parents[1]
+from plugin_maintenance.generators.mermaid_diagrams import PLUGIN_NAME
+
+PLUGIN_ROOT = Path(__file__).resolve().parents[3] / "plugins" / PLUGIN_NAME
 REFERENCES_DIR = PLUGIN_ROOT / "skills/mermaid/references"
 MERMAID_SKILL_PATH = PLUGIN_ROOT / "skills/mermaid/SKILL.md"
 README_PATH = PLUGIN_ROOT / "README.md"

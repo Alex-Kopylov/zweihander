@@ -1,35 +1,44 @@
+import inspect
 import json
 import re
-import sys
 from pathlib import Path
+
+from plugin_maintenance.generators import mermaid_diagrams
+from plugin_maintenance.generators.mermaid_diagrams.generated_docs import (
+    load_navigation_metadata,
+)
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 PLUGIN_ROOT = REPO_ROOT / "plugins" / "mermaid-diagrams"
-TOOLING_ROOT = PLUGIN_ROOT / "plugin_maintenance"
-
-sys.path.insert(0, str(PLUGIN_ROOT))
-
-from plugin_maintenance.generated_docs import load_navigation_metadata
+TOOLING_ROOT = REPO_ROOT / "plugin_maintenance" / "generators" / "mermaid_diagrams"
 
 
 def read_text(relative_path: str) -> str:
     return (PLUGIN_ROOT / relative_path).read_text(encoding="utf-8")
 
 
+def tooling_text(relative_path: str) -> str:
+    return (TOOLING_ROOT / relative_path).read_text(encoding="utf-8")
+
+
+def skill_source(skill_dir: str) -> str:
+    """Read a skill's authored source, template or plain."""
+    template = PLUGIN_ROOT / "skills" / skill_dir / "SKILL.md.j2"
+    if template.is_file():
+        return template.read_text(encoding="utf-8")
+    return read_text(f"skills/{skill_dir}/SKILL.md")
+
+
 def test_mermaid_plugin_uses_neutral_skill_layout() -> None:
     assert (PLUGIN_ROOT / "skills" / "mermaid" / "SKILL.md").is_file()
-    assert (PLUGIN_ROOT / "skills" / "mermaid-lint" / "SKILL.md").is_file()
+    assert skill_source("mermaid-lint")
     assert not (PLUGIN_ROOT / ".claude" / "skills").exists()
 
 
-def test_skill_files_avoid_claude_specific_source_packaging() -> None:
+def test_generated_files_avoid_claude_specific_source_packaging() -> None:
     combined = "\n".join(
-        [
-            read_text("skills/mermaid/SKILL.md"),
-            read_text("skills/mermaid-lint/SKILL.md"),
-            read_text("README.md"),
-        ]
+        [read_text("skills/mermaid/SKILL.md"), read_text("README.md")]
     )
 
     for phrase in ["Claude", ".claude/skills"]:
@@ -37,7 +46,7 @@ def test_skill_files_avoid_claude_specific_source_packaging() -> None:
 
 
 def test_mermaid_lint_skill_is_renamed() -> None:
-    lint_skill = read_text("skills/mermaid-lint/SKILL.md")
+    lint_skill = skill_source("mermaid-lint")
 
     assert "name: mermaid-lint" in lint_skill
     assert "name: lint-mermaid" not in lint_skill
@@ -100,20 +109,32 @@ def test_linter_schema_reports_status_input_and_errors() -> None:
     assert sorted(schema["properties"]) == ["errors", "input", "status"]
 
 
-def test_python_tooling_is_plugin_scoped() -> None:
-    generated_docs = read_text("plugin_maintenance/generated_docs.py")
-    sync = read_text("plugin_maintenance/sync.py")
-    template = read_text("plugin_maintenance/templates/mermaid_skill.md")
+def test_generator_package_follows_stage_one_convention() -> None:
+    signature = inspect.signature(mermaid_diagrams.generate)
 
+    assert not signature.parameters
+    assert mermaid_diagrams.PLUGIN_NAME == "mermaid-diagrams"
+
+
+def test_python_tooling_is_relocated_to_root_generators() -> None:
     assert (TOOLING_ROOT / "__init__.py").is_file()
     assert (TOOLING_ROOT / "generated_docs.py").is_file()
     assert (TOOLING_ROOT / "sync.py").is_file()
     assert (TOOLING_ROOT / "templates" / "mermaid_skill.md").is_file()
     assert (TOOLING_ROOT / "templates" / "readme.md").is_file()
+    assert not (PLUGIN_ROOT / "plugin_maintenance").exists()
+    assert not (PLUGIN_ROOT / "pyproject.toml").exists()
+    assert not (PLUGIN_ROOT / "uv.lock").exists()
     assert not (PLUGIN_ROOT / "scripts" / "update-generated-docs.mjs").exists()
     assert not (PLUGIN_ROOT / "scripts" / "sync-mermaid-docs.mjs").exists()
 
-    combined = "\n".join([generated_docs, sync, template])
+    combined = "\n".join(
+        [
+            tooling_text("generated_docs.py"),
+            tooling_text("sync.py"),
+            tooling_text("templates/mermaid_skill.md"),
+        ]
+    )
     assert "skills/mermaid/references" in combined
     assert ".claude/skills" not in combined
     assert "Claude" not in combined
@@ -121,8 +142,8 @@ def test_python_tooling_is_plugin_scoped() -> None:
 
 
 def test_python_sync_preserves_first_port_safety_gates() -> None:
-    generated_docs = read_text("plugin_maintenance/generated_docs.py")
-    sync = read_text("plugin_maintenance/sync.py")
+    generated_docs = tooling_text("generated_docs.py")
+    sync = tooling_text("sync.py")
 
     assert "existing_sync_status" in generated_docs
     assert "MERMAID_DOCS_NAVIGATION" in generated_docs
@@ -136,49 +157,21 @@ def test_python_sync_preserves_first_port_safety_gates() -> None:
     assert "existing_sync_metadata.commit == source_commit" in sync
 
 
-def test_sync_workflow_targets_mermaid_plugin_paths() -> None:
+def test_sync_workflow_uses_root_project_and_full_build() -> None:
     workflow = (REPO_ROOT / ".github" / "workflows" / "sync-mermaid-docs.yml").read_text(
         encoding="utf-8"
     )
 
     assert "workflow_dispatch:" in workflow
-    assert "pull_request:" in workflow
-    assert "validate-generated-files:" in workflow
-    assert "sync-docs:" in workflow
     assert "astral-sh/setup-uv" in workflow
-    assert "uv run --project plugins/mermaid-diagrams" in workflow
-    assert "python -m plugin_maintenance.generated_docs" in workflow
-    assert "python -m plugin_maintenance.sync mermaid-source" in workflow
-    assert "plugins/mermaid-diagrams/scripts/sync-mermaid-docs.mjs" not in workflow
-    assert "node plugins/mermaid-diagrams/scripts/update-generated-docs.mjs" not in workflow
-    assert "plugins/mermaid-diagrams/skills/** plugins/mermaid-diagrams/README.md" in workflow
-    assert (
-        "git diff --exit-code -- plugins/mermaid-diagrams/skills/mermaid/SKILL.md "
-        "plugins/mermaid-diagrams/README.md "
-        "plugins/mermaid-diagrams/THIRD_PARTY_NOTICES.md "
-        "plugins/mermaid-diagrams/plugin_maintenance/mermaid_navigation.json"
-    ) in workflow
-    assert "plugins/mermaid-diagrams/THIRD_PARTY_NOTICES.md" in workflow
-    assert "plugins/mermaid-diagrams/plugin_maintenance/mermaid_navigation.json" in workflow
-    assert re.search(
-        r"validate-generated-files:[\s\S]*?permissions:\n      contents: read",
-        workflow,
-    )
-    assert re.search(
-        r"sync-docs:\n    if: github\.event_name != 'pull_request'[\s\S]*?permissions:\n      contents: write",
-        workflow,
-    )
+    assert "python -m plugin_maintenance.generators.mermaid_diagrams.sync mermaid-source" in workflow
+    assert "python -m plugin_maintenance.build" in workflow
+    assert "rm -rf plugins/mermaid-diagrams/mermaid-source" in workflow
+    assert "uv run --project plugins/mermaid-diagrams" not in workflow
+    assert "validate-generated-files:" not in workflow
+    assert "git-auto-commit-action" not in workflow
+    assert "create-pull-request" in workflow
     assert "npm run" not in workflow
-
-
-def test_plugin_python_project_declares_tooling_entrypoints() -> None:
-    pyproject = read_text("pyproject.toml")
-
-    assert 'name = "mermaid-diagrams"' in pyproject
-    assert 'requires-python = ">=3.12"' in pyproject
-    assert 'update-generated-docs = "plugin_maintenance.generated_docs:main"' in pyproject
-    assert 'sync-mermaid-docs = "plugin_maintenance.sync:main"' in pyproject
-    assert (PLUGIN_ROOT / "uv.lock").is_file()
 
 
 def test_plugin_manifests_point_to_neutral_skills() -> None:
@@ -196,7 +189,7 @@ def test_plugin_manifests_point_to_neutral_skills() -> None:
     assert codex["license"] == "MIT"
 
 
-def test_marketplace_catalogs_include_mermaid_diagrams() -> None:
+def test_marketplace_catalogs_source_mermaid_from_dist() -> None:
     codex_marketplace = json.loads(
         (REPO_ROOT / ".agents" / "plugins" / "marketplace.json").read_text(
             encoding="utf-8"
@@ -217,9 +210,9 @@ def test_marketplace_catalogs_include_mermaid_diagrams() -> None:
         if plugin["name"] == "mermaid-diagrams"
     )
 
-    assert codex_entry["source"]["path"] == "./plugins/mermaid-diagrams"
+    assert codex_entry["source"]["path"] == "./dist/codex/mermaid-diagrams"
     assert codex_entry["category"] == "Development"
-    assert claude_entry["source"] == "./plugins/mermaid-diagrams"
+    assert claude_entry["source"] == "./dist/claude-code/mermaid-diagrams"
     assert claude_entry["category"] == "development"
 
 

@@ -8,7 +8,7 @@ import shutil
 import subprocess
 import sys
 
-from plugin_maintenance.generated_docs import (
+from plugin_maintenance.generators.mermaid_diagrams.generated_docs import (
     PLUGIN_ROOT,
     js_iso_timestamp,
     load_navigation_metadata_from_path,
