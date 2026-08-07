@@ -57,6 +57,7 @@ kanban
     wst_task_management[task-management]
     wst_interview[interview]
     wst_create_team[create-team]
+    wst_wait_what[wait-what]
   ai_assistant_ops[ai-assistant-ops]
     aao_agents_md_improver[agents-md-improver]
     aao_ai_setup_audit[ai-setup-audit]
@@ -359,6 +360,9 @@ Mermaid code blocks with the Mermaid CLI.
 **Use when:** you want daily notes, task tracking, structured interviews, or a
 designed multi-agent team for a larger work session.
 
+**Origin:** adapted from Matt Pocock's MIT-licensed
+[skills repository](https://github.com/mattpocock/skills/tree/main/skills/productivity/wait-what).
+
 **Skills**
 
 | Skill | Description |
@@ -367,6 +371,7 @@ designed multi-agent team for a larger work session.
 | `daily` | Generate a daily note from project activity. |
 | `interview` | Walk through a list of items one by one. |
 | `task-management` | Track, split, and orchestrate session tasks. |
+| `wait-what` | Ask for a clearer re-pitch when the last message did not land. |
 
 ### `research`
 
