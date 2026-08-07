@@ -22,10 +22,10 @@ The whole change lands in one PR. Development is test-first (TDD): each behavior
 
 ## 3. Dist invariant tests
 
-- [ ] 3.1 Write dist purity tests: matrix-derived foreign-name scan on `.j2`-rendered files (exemption list honored), no leftover markers in rendered files (`{% raw %}` output exempt), no `*.j2` in dist, no legacy dispatch artifacts, metadata stripping, no dev files (`AGENTS.md`/`CLAUDE.md`/`README.md`)
-- [ ] 3.2 Write template-source policy tests: no literal matrix-mapped callable names in `.j2` sources, no callable names selected inside harness conditionals, no `X`+`X.j2` collisions repo-wide
-- [ ] 3.3 Write publication tests: every manifest entry points into its own `dist/` tree and resolves; catalogs may diverge (Codex-only `run-and-verify-app`)
-- [ ] 3.4 Write the reproducibility test: two consecutive full builds are byte-identical
+- [x] 3.1 Write dist purity tests: matrix-derived foreign-name scan on `.j2`-rendered files (exemption list honored), no leftover markers in rendered files (`{% raw %}` output exempt), no `*.j2` in dist, no legacy dispatch artifacts, metadata stripping, no dev files (`AGENTS.md`/`CLAUDE.md`/`README.md`)
+- [x] 3.2 Write template-source policy tests: no literal matrix-mapped callable names in `.j2` sources, no callable names selected inside harness conditionals, no `X`+`X.j2` collisions repo-wide
+- [x] 3.3 Write publication tests: every manifest entry points into its own `dist/` tree and resolves; catalogs may diverge (Codex-only `run-and-verify-app`)
+- [x] 3.4 Write the reproducibility test: two consecutive full builds are byte-identical
 
 ## 4. Migration
 
