@@ -58,6 +58,7 @@ kanban
     wst_interview[interview]
     wst_create_team[create-team]
     wst_wait_what[wait-what]
+    wst_handoff[handoff]
   ai_assistant_ops[ai-assistant-ops]
     aao_agents_md_improver[agents-md-improver]
     aao_ai_setup_audit[ai-setup-audit]
@@ -357,8 +358,11 @@ Mermaid code blocks with the Mermaid CLI.
 
 ### `work-session-tools`
 
-**Use when:** you want daily notes, task tracking, structured interviews, or a
-designed multi-agent team for a larger work session.
+<details>
+<summary>Productivity, orchestration, and handoffs within an assistant session.</summary>
+
+**Use when:** you want daily notes, task tracking, structured interviews,
+session handoffs, or a designed multi-agent team.
 
 **Skills**
 
@@ -366,9 +370,12 @@ designed multi-agent team for a larger work session.
 |---|---|
 | `create-team` | Design a multi-agent team and handoff plan. |
 | `daily` | Generate a daily note from project activity. |
+| `handoff` | Compact the current conversation for another agent. |
 | `interview` | Walk through a list of items one by one. |
 | `task-management` | Track, split, and orchestrate session tasks. |
 | `wait-what` | Ask for a clearer re-pitch when the last message did not land. |
+
+</details>
 
 ### `research`
 

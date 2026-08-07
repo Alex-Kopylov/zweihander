@@ -101,15 +101,17 @@
     {
       "name": "work-session-tools",
       "source": "./plugins/work-session-tools",
-      "description": "Productivity and orchestration inside an assistant session.",
+      "description": "Productivity, orchestration, and handoffs within an assistant session.",
       "category": "productivity",
       "tags": [
         "productivity",
         "daily",
+        "handoff",
         "interview",
         "team",
         "tasks",
-        "orchestration"
+        "orchestration",
+        "wait-what"
       ]
     },
     {
