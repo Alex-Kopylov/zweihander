@@ -15,9 +15,9 @@ Run once. Never again unless you wipe and restart.
 Triggered by finding a JD worth applying to.
 
 1. Run the `job-hunt-toolkit:new-application` skill with `<company-slug>` (e.g. `acme_robotics`).
-2. Paste or link the JD — saved to `<company>/job_description.md`.
+2. Paste or link the JD — saved to `jobs/<company>/job_description.md`.
 3. `company.md` scaffolded with frontmatter — fill in snapshot, stack, comp band.
-4. Master HTML copied into `<company>/` as the tailoring starting point.
+4. Master HTML copied into `jobs/<company>/` as the tailoring starting point.
 5. **Decision point**: tailor now, or research first?
 
 ## Stage 2: Research (optional but recommended)
@@ -32,7 +32,7 @@ Capture findings in `company.md`. This context drives tailoring decisions.
 ## Stage 3: Tailor
 
 - Invoke `resume-tailoring` skill: research → template → optional discovery → assembly → generation.
-- Edit HTML in `<company>/<name>_<role>_CV.html`.
+- Edit HTML in `jobs/<company>/<name>_<role>_CV.html`.
 - `resume-tailoring` enforces truth-preserving optimization: reframe, emphasize, reorder — never invent.
 - Checkpoint with user at each phase (success profile, template, coverage).
 

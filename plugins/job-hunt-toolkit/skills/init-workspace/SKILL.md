@@ -1,6 +1,6 @@
 ---
 name: init-workspace
-description: Use when the user asks to "initialize job hunt workspace", "set up job seeking folder", "create CV workspace", "bootstrap resume folder", "prepare job search folder", "start job hunt setup", "create application tracking workspace", "first time setup for job applications", or is starting the job-hunt-toolkit for the first time. Creates the workspace directory structure, generates README/AGENTS.md/NAMING.md from plugin templates, copies master HTML CV into workspace, and primes the workspace for per-company folders.
+description: Use when the user asks to "initialize job hunt workspace", "set up job seeking folder", "create CV workspace", "bootstrap resume folder", "prepare job search folder", "start job hunt setup", "create application tracking workspace", "first time setup for job applications", or is starting the job-hunt-toolkit for the first time. Creates the workspace directory structure, generates README/AGENTS.md/NAMING.md from plugin templates, copies master HTML CV into workspace, and primes the `jobs/` directory for per-company folders.
 argument-hint: "[workspace-path] (optional, defaults to ~/Documents/job_seeking)"
 metadata:
   ai-assistant-harness-adaptation.claude-code: references/ai-assistant-harnesses/claude-code.md
@@ -68,6 +68,7 @@ Write these files from this plugin's `references/` directory and templates at ge
 - `README.md` — workspace overview. Use `templates/README.md.template`, substituting `<First>`, `<Last>`, `<Role>`.
 - `AGENTS.md` — workspace-local agent rules. Use `templates/AGENTS.md.template`. Reference the plugin `AGENTS.md` for authoritative rules.
 - `NAMING.md` — quick reference. Use `templates/NAMING.md.template`, but prefer linking back to the plugin's `references/naming-rules.md` rather than duplicating content that will drift.
+- `jobs/` — create the directory that will hold all per-company application folders (`mkdir -p <workspace>/jobs`).
 - `.gitignore` — Write with standard ignore patterns for local notes, editor artifacts, and sensitive files:
   ```
   *.local.md
@@ -87,7 +88,7 @@ Print a "next steps" block pointing to `new-application` and `prepare-to-send`.
 
 - **A master HTML CV is mandatory.** If not provided, initialization stops with a hard error (see step 3).
 - **Never overwrite an existing master CV file** without explicit user confirmation. Master CVs are irreplaceable.
-- **Never delete existing `<company>/` folders** — they may contain application history.
+- **Never delete existing `jobs/<company>/` folders** — they may contain application history.
 - **Always use absolute paths** in bash — `cd` state doesn't persist between tool calls.
 - **Regenerate docs from plugin references**, not from prior workspace state. The plugin is the source of truth.
 

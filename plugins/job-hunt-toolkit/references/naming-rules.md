@@ -53,18 +53,15 @@ Everything else — including **hyphens** — is permitted where the segment rul
 
 ## Company folder naming
 
-Lowercase. No spaces. No characters from the deny-list. Hyphens are allowed.
+All company folders live under `jobs/`. The slug must match `^[a-z0-9]+(?:_[a-z0-9]+)*$` — lowercase alphanumerics separated by single underscores. No spaces, no hyphens, no uppercase.
 
 ```
-acme-robotics/
-acme_robotics/
-openai/
-anthropic/
-deep-mind/
-hugging-face/
+jobs/acme_robotics/
+jobs/openai/
+jobs/anthropic/
+jobs/deep_mind/
+jobs/hugging_face/
 ```
-
-Both underscore and hyphen forms are acceptable. Pick one style and stay consistent within a workspace.
 
 ## Examples
 
@@ -80,12 +77,12 @@ Both underscore and hyphen forms are acceptable. Pick one style and stay consist
 Same filename shape as master — the role may shift to match the JD, but no company tag:
 
 ```
-openai/<First>_<Last>_LLM_Engineer_CV.html
-openai/<First>_<Last>_LLM_Engineer_CV.pdf
-anthropic/<First>_<Last>_AI_Engineer_CV.html
-anthropic/<First>_<Last>_AI_Engineer_CV.pdf
-acme-robotics/<First>_<Last>_Senior_ML_Engineer_CV.html
-acme-robotics/<First>_<Last>_Senior_ML_Engineer_CV.pdf
+jobs/openai/<First>_<Last>_LLM_Engineer_CV.html
+jobs/openai/<First>_<Last>_LLM_Engineer_CV.pdf
+jobs/anthropic/<First>_<Last>_AI_Engineer_CV.html
+jobs/anthropic/<First>_<Last>_AI_Engineer_CV.pdf
+jobs/acme_robotics/<First>_<Last>_Senior_ML_Engineer_CV.html
+jobs/acme_robotics/<First>_<Last>_Senior_ML_Engineer_CV.pdf
 ```
 
 ### Cover letters
