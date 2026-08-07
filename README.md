@@ -58,6 +58,7 @@ kanban
     wst_interview[interview]
     wst_create_team[create-team]
     wst_wait_what[wait-what]
+    wst_handoff[handoff]
   ai_assistant_ops[ai-assistant-ops]
     aao_agents_md_improver[agents-md-improver]
     aao_ai_setup_audit[ai-setup-audit]

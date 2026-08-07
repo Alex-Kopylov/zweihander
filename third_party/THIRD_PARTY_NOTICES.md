@@ -52,11 +52,15 @@ SOFTWARE.
 
 ## Matt Pocock Skills
 
-The `work-session-tools:wait-what` skill was copied from Matt Pocock's skills
+The following `work-session-tools` skills were copied from Matt Pocock's skills
 repository and adapted for this marketplace.
 
+| Local skill | Upstream source |
+|---|---|
+| `work-session-tools:handoff` | https://github.com/mattpocock/skills/tree/main/skills/productivity/handoff |
+| `work-session-tools:wait-what` | https://github.com/mattpocock/skills/tree/main/skills/productivity/wait-what |
+
 - Upstream: https://github.com/mattpocock/skills
-- Source: https://github.com/mattpocock/skills/tree/main/skills/productivity/wait-what
 - Synced commit: `84fdeffd12f2ee307994d1eb6feb48173b6e0502`
 - Author: Matt Pocock
 - License: MIT
@@ -101,21 +105,6 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
-## Matt Pocock Skills
-
-The `work-session-tools:handoff` skill was copied from Matt Pocock's skills
-repository and adapted for this marketplace.
-
-- Upstream: https://github.com/mattpocock/skills
-- Source: https://github.com/mattpocock/skills/tree/main/skills/productivity/handoff
-- Synced commit: `84fdeffd12f2ee307994d1eb6feb48173b6e0502`
-- Author: Matt Pocock
-- License: MIT
-
-### MIT License Notice
-
-See [mattpocock-skills-LICENSE.txt](mattpocock-skills-LICENSE.txt).
 
 ## Mermaid Documentation
 
