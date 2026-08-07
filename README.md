@@ -363,10 +363,6 @@ Mermaid code blocks with the Mermaid CLI.
 **Use when:** you want daily notes, task tracking, structured interviews,
 session handoffs, or a designed multi-agent team.
 
-**Origin:** includes the MIT-licensed
-[`handoff`](https://github.com/mattpocock/skills/blob/main/skills/productivity/handoff/SKILL.md)
-skill from [mattpocock/skills](https://github.com/mattpocock/skills).
-
 **Skills**
 
 | Skill | Description |
