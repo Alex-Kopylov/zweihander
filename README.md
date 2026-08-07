@@ -357,8 +357,15 @@ Mermaid code blocks with the Mermaid CLI.
 
 ### `work-session-tools`
 
-**Use when:** you want daily notes, task tracking, structured interviews, or a
-designed multi-agent team for a larger work session.
+<details>
+<summary>Productivity, orchestration, and handoffs within an assistant session.</summary>
+
+**Use when:** you want daily notes, task tracking, structured interviews,
+session handoffs, or a designed multi-agent team.
+
+**Origin:** includes the MIT-licensed
+[`handoff`](https://github.com/mattpocock/skills/blob/main/skills/productivity/handoff/SKILL.md)
+skill from [mattpocock/skills](https://github.com/mattpocock/skills).
 
 **Skills**
 
@@ -366,9 +373,12 @@ designed multi-agent team for a larger work session.
 |---|---|
 | `create-team` | Design a multi-agent team and handoff plan. |
 | `daily` | Generate a daily note from project activity. |
+| `handoff` | Compact the current conversation for another agent. |
 | `interview` | Walk through a list of items one by one. |
 | `task-management` | Track, split, and orchestrate session tasks. |
 | `wait-what` | Ask for a clearer re-pitch when the last message did not land. |
+
+</details>
 
 ### `research`
 
