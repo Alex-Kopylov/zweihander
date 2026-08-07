@@ -8,7 +8,7 @@ A paranoid, disciplined workflow for job applications. Assumes every PDF leaks m
 Turns your chaotic Downloads folder into a disciplined, structured workspace:
 
 - **HTML is source, PDF is export.** Edit HTML; regenerate PDF. Never hand-edit PDFs.
-- **One folder per company.** Each holds a tailored CV, the JD, research notes, and status.
+- **One folder per company, all under `jobs/`.** Each holds a tailored CV, the JD, research notes, and status.
 - **HR-safe file naming.** `FirstName_LastName_Role_CV.pdf` — no company tags in filenames (that's a tailoring tell). Forbidden characters: spaces, pipes `|`, commas, slashes, emojis, non-ASCII. Hyphens and underscores are fine.
 - **PDF metadata scrubbing.** Author / CreationDate / Producer fields are tracked by ATS tools and recruiters alike. Strip them before sending.
 - **Pre-send checklist.** Catch leaks before they leave your machine.
@@ -98,7 +98,7 @@ Or point the active runtime at a local path:
 ```
 1. $job-hunt-toolkit:init-workspace                 # once, ever
 2. Edit master HTML, export PDF                     # establish canonical version
-3. $job-hunt-toolkit:new-application acme-robotics  # per application
+3. $job-hunt-toolkit:new-application acme_robotics  # per application
 4. Walk through resume-tailoring                    # per application
 5. $job-hunt-toolkit:prepare-to-send                # before attaching PDF
 6. Send PDF                                         # ship it
