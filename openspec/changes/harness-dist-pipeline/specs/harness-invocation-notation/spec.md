@@ -29,11 +29,15 @@ Callable names in rendered narrative SHALL have exactly two shapes: a bare `skil
 - **THEN** the Claude Code output contains `Skill(dev-workflow:commit)` and the Codex output contains `$dev-workflow:commit`
 
 ### Requirement: Matrix maps actions to names
-The action matrix SHALL map each mapped action to one callable name per supported harness, SHALL store the invocation wrapper once per harness, and SHALL preserve the action-then-assistant lookup order.
+The action matrix SHALL mark every action as callable or non-callable, SHALL map each callable action to exactly one callable name per supported harness — several actions MAY resolve to the same name — SHALL store the invocation wrapper once per harness, and SHALL preserve the action-then-assistant lookup order. Non-callable actions carry reference material and are exempt from the name-and-wrapper rule.
 
 #### Scenario: Action lookup resolves a name
 - **WHEN** the matrix is loaded and the delegate-work action is looked up for Codex
 - **THEN** the lookup returns the name `spawn_agent`
+
+#### Scenario: Task operations map many-to-one on Codex
+- **WHEN** the `CreateTask` and `UpdateTask` actions are looked up for both harnesses
+- **THEN** Claude Code returns `TaskCreate` and `TaskUpdate`, and Codex returns `update_plan` for both
 
 #### Scenario: Wrapper stored once per harness
 - **WHEN** the matrix is validated

@@ -18,7 +18,7 @@ The skill SHALL instruct converting an explicitly named target skill's harness-s
 - **THEN** no other skill's files are modified
 
 ### Requirement: Skill carries no legacy pattern
-The skill content SHALL NOT instruct creating `references/ai-assistant-harnesses/` files, dispatch sentences, or harness metadata links, and SHALL NOT mention the retired runtime-dispatch pattern, its migration, or its history.
+The skill SHALL be written greenfield: every file in the skill directory — `SKILL.md`, references, scripts, evals, and any other content — SHALL NOT instruct creating `references/ai-assistant-harnesses/` files, dispatch sentences, or harness metadata links, and SHALL NOT mention the retired runtime-dispatch pattern, its migration, or its history. Files with no greenfield replacement SHALL be deleted.
 
 #### Scenario: Legacy pattern scan passes
 - **WHEN** the skill's content files are scanned for legacy dispatch-pattern instructions
