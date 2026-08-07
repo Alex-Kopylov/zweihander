@@ -360,9 +360,6 @@ Mermaid code blocks with the Mermaid CLI.
 **Use when:** you want daily notes, task tracking, structured interviews, or a
 designed multi-agent team for a larger work session.
 
-**Origin:** adapted from Matt Pocock's MIT-licensed
-[skills repository](https://github.com/mattpocock/skills/tree/main/skills/productivity/wait-what).
-
 **Skills**
 
 | Skill | Description |
