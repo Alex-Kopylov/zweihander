@@ -44,8 +44,8 @@ The whole change lands in one PR. Development is test-first (TDD): each behavior
 
 ## 6. Adaptation skill greenfield rewrite
 
-- [ ] 6.1 Rewrite `tests/test_ai_assistant_harness_adaptation_skill.py` first against the new skill contract (template authoring, matrix schema per D3)
-- [ ] 6.2 Rewrite the `adapt-skill-for-ai-harness` skill from scratch — every file in the skill directory (`SKILL.md`, `references/` including `live-lab-protocol.md`, `scripts/lookup_harness_action.py`, `evals/`, `README.md`): template-model authoring and matrix contract only; delete files with no greenfield replacement; no legacy pattern, migration notes, or history anywhere; 6.1 goes green
+- [x] 6.1 Rewrite `tests/test_ai_assistant_harness_adaptation_skill.py` first against the new skill contract (template authoring, matrix schema per D3)
+- [x] 6.2 Rewrite the `adapt-skill-for-ai-harness` skill from scratch — every file in the skill directory (`SKILL.md`, `references/` including `live-lab-protocol.md`, `scripts/lookup_harness_action.py`, `evals/`, `README.md`): template-model authoring and matrix contract only; delete files with no greenfield replacement; no legacy pattern, migration notes, or history anywhere; 6.1 goes green
 
 ## 7. Docs and versions
 

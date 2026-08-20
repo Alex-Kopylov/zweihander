@@ -29,13 +29,17 @@ def load_entry(matrix_path: Path, action: str, assistant: str) -> dict[str, Any]
             f"Actions: {available_actions}. Assistants: {available_assistants}."
         ) from exc
 
-    return {
+    entry = {
         "action": action,
         "assistant": assistant,
-        "kind": action_entry["kind"],
+        "callable": action_entry["callable"],
         "intent": action_entry["intent"],
         **assistant_entry,
     }
+    if action_entry["callable"]:
+        wrapper = matrix["assistants"][assistant]["invocation_wrapper"]
+        entry["invocation"] = wrapper.format(name=assistant_entry["name"])
+    return entry
 
 
 def main() -> None:
