@@ -40,11 +40,8 @@ Depending on who you are as an AI agent, load exactly one metadata-linked refere
    - Keep it short and descriptive
 
 5. **Generate PR body**:
-   - Explain why the change exists: the problem, intent, or intuition behind the change
-   - Summarize the material code/documentation changes
-   - Use a Markdown checklist only for validation:
-     - Checked items (`- [x]`) are validations already completed
-     - Unchecked items (`- [ ]`) are validations still to be completed
+   - Use these `##` headers, in this order: What Problem This Solves, Why This Change Was Made, User Impact, Evidence
+   - Write Evidence as a Markdown checklist of validations, where `- [x]` is done and `- [ ]` is still to do
    - Keep the body factual and scoped to observed changes; do not invent product impact or ticket details
 
 6. **Create PR**:
