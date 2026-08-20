@@ -9,7 +9,7 @@ TDD_SKILL = (
     / "dev-workflow"
     / "skills"
     / "test-driven-development"
-    / "SKILL.md"
+    / "SKILL.md.j2"
 )
 
 
@@ -45,7 +45,7 @@ def metadata_path_keys(path: Path) -> list[str]:
 
 def test_tests_manager_metadata_paths_resolve_from_declaring_file() -> None:
     metadata_files = [
-        PLUGIN_ROOT / "skills" / "tests-manager" / "SKILL.md",
+        PLUGIN_ROOT / "skills" / "tests-manager" / "SKILL.md.j2",
         PLUGIN_ROOT / "agents" / "unit-test-writer.md",
         PLUGIN_ROOT / "agents" / "integration-test-writer.md",
     ]
@@ -53,8 +53,11 @@ def test_tests_manager_metadata_paths_resolve_from_declaring_file() -> None:
     missing_paths = []
     for metadata_file in metadata_files:
         for key in metadata_path_keys(metadata_file):
+            # Metadata keys name runtime paths; the authored source may be a
+            # template carrying a .j2 suffix.
             referenced_path = (metadata_file.parent / key).resolve()
-            if not referenced_path.is_file():
+            template_source = referenced_path.with_name(referenced_path.name + ".j2")
+            if not referenced_path.is_file() and not template_source.is_file():
                 missing_paths.append(
                     f"{metadata_file.relative_to(REPO_ROOT)} -> {key}"
                 )
@@ -86,7 +89,7 @@ def test_tests_manager_owns_celery_testing_assets() -> None:
     assert (celery_examples / "conftest_celery.py").is_file()
     assert (celery_examples / "test_tasks.py").is_file()
     assert '"references/celery-testing.md"' in frontmatter(
-        tests_manager_root / "SKILL.md"
+        tests_manager_root / "SKILL.md.j2"
     )
 
     # A real conftest.py here would be auto-loaded as a non-top-level conftest
@@ -99,7 +102,7 @@ def test_celery_expert_routes_test_work_to_tests_manager() -> None:
     celery_skill_path = PLUGIN_ROOT / "skills" / "celery-expert" / "SKILL.md"
     routing_target = "python-dev-workflow:tests-manager"
 
-    assert (PLUGIN_ROOT / "skills" / "tests-manager" / "SKILL.md").is_file()
+    assert (PLUGIN_ROOT / "skills" / "tests-manager" / "SKILL.md.j2").is_file()
     assert routing_target in frontmatter(celery_skill_path)
     assert routing_target in body(celery_skill_path)
 
@@ -118,37 +121,23 @@ def test_python_dev_workflow_agent_frontmatter_excludes_examples() -> None:
 
 
 def test_tests_manager_e2e_contract() -> None:
-    skill_path = PLUGIN_ROOT / "skills" / "tests-manager" / "SKILL.md"
+    skill_path = PLUGIN_ROOT / "skills" / "tests-manager" / "SKILL.md.j2"
     manager_body = body(skill_path)
-    manager_frontmatter = frontmatter(skill_path)
     metadata_keys = set(metadata_path_keys(skill_path))
     references = skill_path.parent / "references"
-    e2e_reference = (references / "e2e-testing.md").read_text(encoding="utf-8")
+    e2e_reference = (references / "e2e-testing.md.j2").read_text(encoding="utf-8")
 
     assert {
         "references/e2e-testing.md",
         "../../agents/test-scenario-planner.md",
     } <= metadata_keys
-    assert (
-        "ai-assistant-harness-adaptation.claude-code: "
-        "references/ai-assistant-harnesses/claude-code.md"
-    ) in manager_frontmatter
-    assert (
-        "ai-assistant-harness-adaptation.codex: "
-        "references/ai-assistant-harnesses/codex.md"
-    ) in manager_frontmatter
     assert "E2E → Integration → Unit" in manager_body
     assert "E2E → Integration → Unit" in body(TDD_SKILL)
     assert "not by test count or code\ncoverage percentage" in manager_body
     assert "mock" in manager_body and "observable behavior" in manager_body
     assert "stop immediately" in e2e_reference
     assert "Do not\nwrite or run E2E tests" in e2e_reference
-    assert "AskUserQuestion" in (
-        references / "ai-assistant-harnesses" / "claude-code.md"
-    ).read_text(encoding="utf-8")
-    assert "request_user_input" in (
-        references / "ai-assistant-harnesses" / "codex.md"
-    ).read_text(encoding="utf-8")
+    assert "{{ actions.AskUser | call }}" in e2e_reference
     assert "one happy path per endpoint" not in (
         references / "integration-testing.md"
     ).read_text(encoding="utf-8")

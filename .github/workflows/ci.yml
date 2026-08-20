@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout current repository
+        uses: actions/checkout@v6
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v8.1.0
+        with:
+          version: latest
+          enable-cache: true
+
+      - name: Run the full build
+        run: uv run python -m plugin_maintenance.build
+
+      - name: Check the committed tree is current
+        run: git diff --exit-code
+
+      - name: Run tests
+        run: uv run pytest tests

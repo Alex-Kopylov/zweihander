@@ -8,10 +8,10 @@ Keep development, maintenance, and release workflow guidance in this file.
 
 ## Supported Runtimes
 
-| Runtime | Marketplace metadata | Plugin metadata |
-|---|---|---|
-| Codex | `.agents/plugins/marketplace.json` | `plugins/*/.codex-plugin/plugin.json` |
-| Claude Code | `.claude-plugin/marketplace.json` | `plugins/*/.claude-plugin/plugin.json` |
+| Runtime | Marketplace metadata | Plugin metadata (authored) | Installed source |
+|---|---|---|---|
+| Codex | `.agents/plugins/marketplace.json` | `plugins/*/.codex-plugin/plugin.json` | `dist/codex/<plugin-name>` |
+| Claude Code | `.claude-plugin/marketplace.json` | `plugins/*/.claude-plugin/plugin.json` | `dist/claude-code/<plugin-name>` |
 
 The marketplace install identifier is `zweihander`; the display name is
 `Zweihander`.
@@ -26,6 +26,51 @@ The marketplace install identifier is `zweihander`; the display name is
 - `plugins/<plugin-name>/references/` contains reusable reference docs for plugin skills.
 - `plugins/<plugin-name>/.codex-plugin/plugin.json` contains Codex plugin metadata.
 - `plugins/<plugin-name>/.claude-plugin/plugin.json` contains Claude Code plugin metadata.
+- `plugin_maintenance/` contains the build tooling: `generate.py` (stage-1
+  runner), `render.py` (stage-2 renderer), `build.py` (full build), and
+  `generators/<plugin_name>/` packages for plugins with generated content.
+- `dist/claude-code/` and `dist/codex/` are the committed rendered trees the
+  marketplace manifests install from.
+
+## Build Pipeline
+
+Plugins are authored once under `plugins/` and rendered per harness into
+`dist/`. **Author in `plugins/`; never edit `dist/`** — CI rejects any commit
+where `dist/` differs from a fresh build.
+
+The build has two stages:
+
+1. **Generation**: every package under `plugin_maintenance/generators/` runs
+   its zero-argument `generate()` in-place under `plugins/<plugin-name>/`.
+   Generators are offline, idempotent, and deterministic; anything fetching
+   external content lives outside the build (for example the weekly mermaid
+   sync workflow).
+2. **Distribution**: the renderer emits one complete installable tree per
+   harness containing exactly the plugins that harness's marketplace manifest
+   lists. Plain files copy byte-for-byte (mode bits preserved); `X.j2`
+   templates render with the harness context and emit `X`; `X` plus `X.j2`
+   fails the build. Files named `AGENTS.md`, `CLAUDE.md`, or `README.md` and
+   the other runtime's plugin metadata directory are never emitted.
+
+Build commands:
+
+```shell
+uv run python -m plugin_maintenance.build
+```
+
+runs the full build (both stages, both trees). To run one piece:
+
+```shell
+uv run python -m plugin_maintenance.generate
+uv run python -m plugin_maintenance.render --harness ClaudeCode --output dist/claude-code
+uv run python -m plugin_maintenance.render --harness Codex --output dist/codex
+```
+
+Harness-specific wording in skills lives in `.j2` templates that resolve
+callable names from the action matrix at
+`plugins/ai-assistant-ops/skills/adapt-skill-for-ai-harness/references/harness-action-matrix.json`.
+Use the `adapt-skill-for-ai-harness` skill when converting a skill's
+harness-specific wording into template form.
 
 ## Development Workflow
 
@@ -35,14 +80,22 @@ The marketplace install identifier is `zweihander`; the display name is
 4. Update `README.md` when user-facing install, usage, or catalog information changes.
 5. Keep `third_party/` links, notices, and license copies current when
    third-party material changes.
-6. Run JSON validation before finishing:
+6. Run the full build and commit the resulting `dist/` changes together with
+   the source changes:
 
 ```shell
-jq empty .agents/plugins/marketplace.json .claude-plugin/marketplace.json
-find plugins -path '*/plugin.json' -print0 | xargs -0 jq empty
+uv run python -m plugin_maintenance.build
 ```
 
-7. Run Markdown whitespace checks before finishing:
+7. Run the tests and JSON validation before finishing:
+
+```shell
+uv run pytest tests
+jq empty .agents/plugins/marketplace.json .claude-plugin/marketplace.json
+find plugins dist -path '*/plugin.json' -print0 | xargs -0 jq empty
+```
+
+8. Run Markdown whitespace checks before finishing:
 
 ```shell
 git diff --check
@@ -84,6 +137,9 @@ When adding a plugin:
 - Add `plugins/<plugin-name>/.claude-plugin/plugin.json`.
 - Add the plugin to `.agents/plugins/marketplace.json`.
 - Add the plugin to `.claude-plugin/marketplace.json`.
+- Each manifest is the inclusion list for its own `dist/` tree; a plugin
+  listed in only one manifest ships to only that harness.
+- Run the full build so both `dist/` trees include the plugin.
 - Add a user-facing section to `README.md`.
 - If the plugin has more than one skill, put the README plugin details inside a
   Markdown `<details>` spoiler.

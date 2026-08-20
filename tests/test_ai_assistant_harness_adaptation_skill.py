@@ -1,8 +1,17 @@
+"""Contract for the adapt-skill-for-ai-harness skill.
+
+The skill instructs harness-parametric template authoring against the action
+matrix: `.j2` templates resolve callable names through the action map and the
+wrapper filter, harness conditionals cover only genuinely divergent narrative,
+and no file in the skill instructs any per-harness reference-file pattern.
+"""
+
 import json
-import re
 import subprocess
 import sys
 from pathlib import Path
+
+import pytest
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -17,92 +26,76 @@ SKILL_FILE = SKILL_ROOT / "SKILL.md"
 MATRIX_FILE = SKILL_ROOT / "references" / "harness-action-matrix.json"
 LOOKUP_SCRIPT = SKILL_ROOT / "scripts" / "lookup_harness_action.py"
 
+LEGACY_MARKERS = (
+    "Depending on who you are as an AI agent",
+    "ai-assistant-harnesses",
+    "ai-assistant-harness-adaptation.claude-code",
+    "ai-assistant-harness-adaptation.codex",
+    "metadata-linked reference",
+)
 
-def parse_frontmatter(path: Path) -> dict[str, object]:
-    text = path.read_text(encoding="utf-8")
-    assert text.startswith("---\n"), "SKILL.md must start with YAML frontmatter"
-    frontmatter = text.split("---\n", 2)[1]
-    data: dict[str, object] = {}
-    current_map: dict[str, str] | None = None
 
-    for line in frontmatter.splitlines():
-        if not line.strip():
-            continue
-        if line.startswith("  ") and current_map is not None:
-            key, value = line.strip().split(":", 1)
-            current_map[key.strip()] = value.strip().strip('"')
-            continue
-        key, value = line.split(":", 1)
-        if value.strip():
-            data[key.strip()] = value.strip().strip('"')
-            current_map = None
-        else:
-            current_map = {}
-            data[key.strip()] = current_map
-
-    return data
+def skill_text() -> str:
+    return SKILL_FILE.read_text(encoding="utf-8")
 
 
 def skill_body() -> str:
-    return SKILL_FILE.read_text(encoding="utf-8").split("---\n", 2)[2]
+    return skill_text().split("---\n", 2)[2]
 
 
-def test_skill_exists_with_expected_metadata() -> None:
-    assert SKILL_FILE.is_file()
+def test_skill_exists_with_expected_frontmatter() -> None:
+    text = skill_text()
 
-    frontmatter = parse_frontmatter(SKILL_FILE)
-
-    assert frontmatter["name"] == "adapt-skill-for-ai-harness"
-    description = str(frontmatter["description"])
+    assert text.startswith("---\n")
+    frontmatter = text.split("---\n", 2)[1]
+    assert "name: adapt-skill-for-ai-harness" in frontmatter
     for phrase in [
         "adapting skills",
         "AI Assistant Harness Adaptation",
         "assistant harness action matrix",
     ]:
-        assert phrase in description
-
-    metadata = frontmatter["metadata"]
-    assert isinstance(metadata, dict)
-    assert (
-        metadata["ai-assistant-harness-adaptation.action-matrix"]
-        == "references/harness-action-matrix.json"
-    )
-    assert not any(key.endswith(".codex") for key in metadata)
-    assert not any(key.endswith(".claude-code") for key in metadata)
+        assert phrase in frontmatter
 
 
-def test_metadata_links_to_scriptable_action_matrix() -> None:
-    metadata = parse_frontmatter(SKILL_FILE)["metadata"]
-    assert isinstance(metadata, dict)
+def test_skill_instructs_template_authoring() -> None:
+    body = skill_body()
 
-    value = metadata["ai-assistant-harness-adaptation.action-matrix"]
-    assert value.endswith(".json")
-    assert "\n" not in value
-    assert " " not in value
-    assert (SKILL_ROOT / value).resolve() == MATRIX_FILE.resolve()
-    assert MATRIX_FILE.is_file()
-
-
-def test_action_matrix_supports_action_then_assistant_lookup() -> None:
-    matrix = json.loads(MATRIX_FILE.read_text(encoding="utf-8"))
-
-    assert matrix["schema_version"] == 1
-    assert matrix["lookup_order"] == ["action", "assistant"]
-    assert set(matrix["assistants"]) >= {"ClaudeCode", "Codex"}
-
-    kinds = {action["kind"] for action in matrix["actions"].values()}
-    assert {"workflow", "skill", "tool", "command"}.issubset(kinds)
-
-    create_agent = matrix["actions"]["CreateAgent"]
-    assert create_agent["kind"] == "workflow"
-    assert set(create_agent) >= {"ClaudeCode", "Codex"}
-    assert "Agent" in create_agent["ClaudeCode"]["terms"]
-    assert "spawn_agent" in create_agent["Codex"]["terms"]
-    assert "tool_search" in create_agent["Codex"]["discovery"]
-    assert "guidance" not in json.dumps(matrix)
+    assert ".j2" in body
+    assert "{{ actions.AskUser | call }}" in body
+    assert '{{ "plugin-name:skill-name" | call }}' in body
+    assert '{% if harness == "Codex" %}' in body
+    assert "{% raw %}" in body
+    assert "byte-for-byte" in body
+    assert "explicitly named" in body
 
 
-def test_lookup_script_returns_action_assistant_entry() -> None:
+def test_skill_documents_matrix_contract() -> None:
+    body = skill_body()
+
+    assert 'matrix["actions"]["CreateAgent"]["Codex"]["name"]' in body
+    assert "TitleCase" in body
+    assert "invocation_wrapper" in body
+    assert "one callable name per" in body
+    assert "`callable`" in body
+    assert '`lookup_order: ["action", "assistant"]`' in body
+    assert "`ClaudeCode`" in body and "`Codex`" in body
+
+
+def test_skill_directory_carries_no_legacy_pattern() -> None:
+    violations = []
+
+    for path in sorted(SKILL_ROOT.rglob("*")):
+        if not path.is_file():
+            continue
+        text = path.read_text(encoding="utf-8")
+        for marker in LEGACY_MARKERS:
+            if marker in text:
+                violations.append(f"{path.relative_to(SKILL_ROOT)}: {marker}")
+
+    assert not violations, "\n".join(violations)
+
+
+def run_lookup(action: str, assistant: str) -> dict:
     result = subprocess.run(
         [
             sys.executable,
@@ -110,75 +103,51 @@ def test_lookup_script_returns_action_assistant_entry() -> None:
             "--matrix",
             str(MATRIX_FILE),
             "--action",
-            "CreateAgent",
+            action,
             "--assistant",
-            "Codex",
+            assistant,
         ],
         check=True,
         text=True,
         capture_output=True,
     )
+    return json.loads(result.stdout)
 
-    entry = json.loads(result.stdout)
+
+def test_lookup_script_resolves_callable_name_and_invocation() -> None:
+    entry = run_lookup("CreateAgent", "Codex")
+
     assert entry["action"] == "CreateAgent"
     assert entry["assistant"] == "Codex"
-    assert entry["kind"] == "workflow"
-    assert "spawn_agent" in entry["terms"]
-    assert "tool_search" in entry["discovery"]
+    assert entry["callable"] is True
+    assert entry["name"] == "spawn_agent"
+    assert entry["invocation"] == "$spawn_agent"
 
 
-def test_skill_instructs_single_matching_harness_reference_only() -> None:
-    body = skill_body()
+def test_lookup_script_returns_reference_material_for_non_callable() -> None:
+    entry = run_lookup("PluginManifest", "ClaudeCode")
 
-    assert re.search(
-        r'matrix\["actions"\]\[action_key\]\[assistant_key\]',
-        body,
-        flags=re.IGNORECASE,
-    )
-    assert re.search(
-        r"CreateAgent.*Codex",
-        body,
-        flags=re.IGNORECASE | re.DOTALL,
-    )
+    assert entry["callable"] is False
+    assert ".claude-plugin/plugin.json" in entry["files"]
+    assert "invocation" not in entry
 
 
-def test_skill_has_no_shared_cross_harness_instruction_table() -> None:
-    body = skill_body()
-    tables = re.findall(r"(?:^\|.*\|\n){2,}", body, flags=re.MULTILINE)
-
-    assert not any(
-        "Claude Code" in table and "Codex" in table
-        for table in tables
-    )
+def test_lookup_script_fails_on_unknown_action() -> None:
+    with pytest.raises(subprocess.CalledProcessError):
+        run_lookup("NoSuchAction", "Codex")
 
 
-def test_skill_does_not_ship_its_own_per_harness_references() -> None:
-    harness_root = SKILL_ROOT / "references" / "ai-assistant-harnesses"
-    assert not (harness_root / "claude-code.md").exists()
-    assert not (harness_root / "codex.md").exists()
-
-
-def test_live_lab_protocol_and_skill_readme_exist() -> None:
-    assert (SKILL_ROOT / "references" / "live-lab-protocol.md").is_file()
-    assert (SKILL_ROOT / "README.md").is_file()
-
-
-def test_evals_cover_adaptation_and_harness_read_scope() -> None:
+def test_evals_cover_template_authoring() -> None:
     evals_file = SKILL_ROOT / "evals" / "evals.json"
-    assert evals_file.is_file()
-
     evals = json.loads(evals_file.read_text(encoding="utf-8"))
 
     assert evals["skill_name"] == "adapt-skill-for-ai-harness"
-    cases = evals.get("cases", evals.get("evals"))
-    assert isinstance(cases, list)
+    cases = evals["evals"]
     assert len(cases) >= 3
 
     combined = json.dumps(cases, sort_keys=True)
-    assert "explicitly named skill" in combined
+    assert "explicitly named" in combined
     assert "action matrix" in combined
+    assert ".j2" in combined
+    assert "| call" in combined
     assert "CreateAgent" in combined
-    assert "matrix" in combined
-    assert "action_key" in combined
-    assert "assistant_key" in combined
-    assert "target skill" in combined

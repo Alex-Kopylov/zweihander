@@ -4,12 +4,12 @@
     "name": "Alex Kopylov"
   },
   "metadata": {
-    "description": "🗡️ Zweihander is a simple, robust, and versatile marketplace for agent plugins, forged for the chaos of the AI world."
+    "description": "\ud83d\udde1\ufe0f Zweihander is a simple, robust, and versatile marketplace for agent plugins, forged for the chaos of the AI world."
   },
   "plugins": [
     {
       "name": "langfuse",
-      "source": "./plugins/langfuse",
+      "source": "./dist/claude-code/langfuse",
       "description": "General-purpose Langfuse integration for data exploration, dashboard management, prompt versioning, datasets, and experiments.",
       "category": "observability",
       "tags": [
@@ -23,7 +23,7 @@
     },
     {
       "name": "openapi-tools",
-      "source": "./plugins/openapi-tools",
+      "source": "./dist/claude-code/openapi-tools",
       "description": "Skills for listing and inspecting OpenAPI endpoints on running services.",
       "category": "api",
       "tags": [
@@ -36,7 +36,7 @@
     },
     {
       "name": "llm-application-dev",
-      "source": "./plugins/llm-application-dev",
+      "source": "./dist/claude-code/llm-application-dev",
       "description": "LLM application design, agent pattern selection, and schema-guided reasoning patterns.",
       "category": "development",
       "tags": [
@@ -51,7 +51,7 @@
     },
     {
       "name": "python-dev-workflow",
-      "source": "./plugins/python-dev-workflow",
+      "source": "./dist/claude-code/python-dev-workflow",
       "description": "Python pytest scenario planning, E2E/integration/unit testing, Celery and Redis references, production Celery guidance, and test agents.",
       "category": "development",
       "tags": [
@@ -65,7 +65,7 @@
     },
     {
       "name": "dev-workflow",
-      "source": "./plugins/dev-workflow",
+      "source": "./dist/claude-code/dev-workflow",
       "description": "Git, PRs, tickets, releases, visual diffs, TDD, debugging, and review workflows.",
       "category": "development",
       "tags": [
@@ -87,7 +87,7 @@
     },
     {
       "name": "mermaid-diagrams",
-      "source": "./plugins/mermaid-diagrams",
+      "source": "./dist/claude-code/mermaid-diagrams",
       "description": "Generate and validate Mermaid diagrams with synced syntax references.",
       "category": "development",
       "tags": [
@@ -100,7 +100,7 @@
     },
     {
       "name": "work-session-tools",
-      "source": "./plugins/work-session-tools",
+      "source": "./dist/claude-code/work-session-tools",
       "description": "Productivity, orchestration, and handoffs within an assistant session.",
       "category": "productivity",
       "tags": [
@@ -116,7 +116,7 @@
     },
     {
       "name": "research",
-      "source": "./plugins/research",
+      "source": "./dist/claude-code/research",
       "description": "Research knowledge-base and Obsidian vault workflows for agent-maintained notes.",
       "category": "productivity",
       "tags": [
@@ -130,7 +130,7 @@
     },
     {
       "name": "ai-assistant-ops",
-      "source": "./plugins/ai-assistant-ops",
+      "source": "./dist/claude-code/ai-assistant-ops",
       "description": "Assistant setup, instruction hygiene, memory capture, skill improvement, harness adaptation, and markdown/prompt maintenance.",
       "category": "utilities",
       "tags": [
@@ -146,7 +146,7 @@
     },
     {
       "name": "os-tools",
-      "source": "./plugins/os-tools",
+      "source": "./dist/claude-code/os-tools",
       "description": "Operating-system utilities for local machine automation.",
       "category": "utilities",
       "tags": [
@@ -159,7 +159,7 @@
     },
     {
       "name": "cloud-storage-tools",
-      "source": "./plugins/cloud-storage-tools",
+      "source": "./dist/claude-code/cloud-storage-tools",
       "description": "Dropbox, Google Drive, OneDrive, and MEGA style user-file storage tools.",
       "category": "productivity",
       "tags": [
@@ -173,7 +173,7 @@
     },
     {
       "name": "job-hunt-toolkit",
-      "source": "./plugins/job-hunt-toolkit",
+      "source": "./dist/claude-code/job-hunt-toolkit",
       "description": "Version-controlled job application workspace with resume tailoring, PDF export, metadata scrubbing, and pre-send checks.",
       "category": "productivity",
       "tags": [

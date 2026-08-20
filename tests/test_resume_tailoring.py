@@ -2,18 +2,13 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SKILL = ROOT / "plugins/job-hunt-toolkit/skills/resume-tailoring/SKILL.md"
+SKILL = ROOT / "plugins/job-hunt-toolkit/skills/resume-tailoring/SKILL.md.j2"
 MULTI_JOB = SKILL.parent / "references/multi-job-workflow.md"
-CLAUDE = (
-    SKILL.parent
-    / "references/ai-assistant-harnesses/claude-code.md"
-)
 
 
 def test_resume_tailoring_produces_required_artifacts_without_checkpoints() -> None:
     skill = SKILL.read_text(encoding="utf-8")
     multi_job = MULTI_JOB.read_text(encoding="utf-8")
-    claude = CLAUDE.read_text(encoding="utf-8")
 
     assert "## Autonomy" not in skill
     assert "autonomously" not in skill
@@ -22,10 +17,7 @@ def test_resume_tailoring_produces_required_artifacts_without_checkpoints() -> N
     assert "PDF was generated from that HTML" in skill
     assert "`Before | After | Why`" in skill
     assert "_CV_Report.md" not in skill
-    assert (
-        "User decisions: use `AskUserQuestion` "
-        "(supports bounded options, multiSelect, previews)."
-    ) in claude
+    assert "{{ actions.AskUser | call }}" in skill
 
     for forbidden in ["**Checkpoint:**", "Every checkpoint", "INTERACTIVE** (default)"]:
         assert forbidden not in skill

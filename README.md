@@ -486,10 +486,14 @@ this marketplace:
 
 ## Runtime Support
 
-| Runtime | Marketplace metadata | Plugin metadata |
+| Runtime | Marketplace metadata | Installed plugin source |
 |---|---|---|
-| Codex | `.agents/plugins/marketplace.json` | `plugins/*/.codex-plugin/plugin.json` |
-| Claude Code | `.claude-plugin/marketplace.json` | `plugins/*/.claude-plugin/plugin.json` |
+| Codex | `.agents/plugins/marketplace.json` | `dist/codex/<plugin-name>` |
+| Claude Code | `.claude-plugin/marketplace.json` | `dist/claude-code/<plugin-name>` |
+
+Plugins are authored once under `plugins/` and rendered per runtime into the
+committed `dist/` trees; each marketplace manifest installs from its own tree,
+so every runtime receives content in its own vocabulary.
 
 ## Official References
 
