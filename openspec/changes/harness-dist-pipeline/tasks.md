@@ -29,10 +29,10 @@ The whole change lands in one PR. Development is test-first (TDD): each behavior
 
 ## 4. Migration
 
-- [ ] 4.1 Convert the pilot skill `dev-workflow/skills/commit` to `SKILL.md.j2`: fold its harness reference files inline, delete them, remove the dispatch sentence and metadata links; run the full build and verify the pilot renders correctly in both trees
-- [ ] 4.2 Convert the remaining 27 dispatch-sentence skills (29 carriers minus the pilot and minus `adapt-skill-for-ai-harness`, which group 6 rewrites): fold reference files inline; delete all 55 `references/ai-assistant-harnesses/` files — 50 top-level plus 5 under langfuse's nested sub-skills (`create-dataset` has only `claude-code.md`) — plus dispatch sentences and metadata links; wrap the literal `{{ }}` content in `job-hunt-toolkit`'s `new-application` and `prepare-to-send` in `{% raw %}` during conversion
-- [ ] 4.3 Sweep `references/**/*.md` (recursive; includes nested sub-skill trees) for harness-specific wording; convert those files to `.j2` where found
-- [ ] 4.4 Delete `tests/test_harness_reference_policy.py` once its ported invariants pass
+- [x] 4.1 Convert the pilot skill `dev-workflow/skills/commit` to `SKILL.md.j2`: fold its harness reference files inline, delete them, remove the dispatch sentence and metadata links; run the full build and verify the pilot renders correctly in both trees
+- [x] 4.2 Convert the remaining 27 dispatch-sentence skills (29 carriers minus the pilot and minus `adapt-skill-for-ai-harness`, which group 6 rewrites): fold reference files inline; delete all 55 `references/ai-assistant-harnesses/` files — 50 top-level plus 5 under langfuse's nested sub-skills (`create-dataset` has only `claude-code.md`) — plus dispatch sentences and metadata links; wrap the literal `{{ }}` content in `job-hunt-toolkit`'s `new-application` and `prepare-to-send` in `{% raw %}` during conversion
+- [x] 4.3 Sweep `references/**/*.md` (recursive; includes nested sub-skill trees) for harness-specific wording; convert those files to `.j2` where found
+- [x] 4.4 Delete `tests/test_harness_reference_policy.py` once its ported invariants pass
 
 ## 5. Publication and CI
 
