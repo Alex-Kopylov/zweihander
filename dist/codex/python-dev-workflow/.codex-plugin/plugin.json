@@ -1,6 +1,6 @@
 {
   "name": "python-dev-workflow",
-  "version": "0.15.0",
+  "version": "0.16.0",
   "description": "Python pytest scenario planning, E2E/integration/unit testing, Celery and Redis references, production Celery guidance, and test agents.",
   "author": {
     "name": "Alex Kopylov"

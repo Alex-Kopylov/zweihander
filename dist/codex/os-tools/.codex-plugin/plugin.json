@@ -1,6 +1,6 @@
 {
   "name": "os-tools",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Operating-system utilities for local machine automation.",
   "author": {
     "name": "Alex Kopylov"

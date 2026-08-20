@@ -49,7 +49,7 @@ The whole change lands in one PR. Development is test-first (TDD): each behavior
 
 ## 7. Docs and versions
 
-- [ ] 7.1 Update `AGENTS.md`: two-stage build workflow, `plugin_maintenance/` layout, "author in `plugins/`, never edit `dist/`", build commands
-- [ ] 7.2 Update `README.md`: development workflow and catalog wording reflect `dist/` as the installed source
-- [ ] 7.3 Minor-bump every plugin's version in both runtime `plugin.json` manifests (all plugins ship re-rendered content in this change)
-- [ ] 7.4 Run full verification: JSON validation, `git diff --check`, `uv run pytest tests`
+- [x] 7.1 Update `AGENTS.md`: two-stage build workflow, `plugin_maintenance/` layout, "author in `plugins/`, never edit `dist/`", build commands
+- [x] 7.2 Update `README.md`: development workflow and catalog wording reflect `dist/` as the installed source
+- [x] 7.3 Minor-bump every plugin's version in both runtime `plugin.json` manifests (all plugins ship re-rendered content in this change)
+- [x] 7.4 Run full verification: JSON validation, `git diff --check`, `uv run pytest tests`
