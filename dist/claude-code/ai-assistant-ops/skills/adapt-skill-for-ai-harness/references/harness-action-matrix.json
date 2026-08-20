@@ -1,0 +1,142 @@
+{
+  "schema_version": 2,
+  "checked": "2026-08-07",
+  "lookup_order": [
+    "action",
+    "assistant"
+  ],
+  "assistants": {
+    "ClaudeCode": {
+      "id": "claude-code",
+      "display_name": "Claude Code",
+      "invocation_wrapper": "Skill({name})",
+      "source_urls": [
+        "https://code.claude.com/docs/en/skills",
+        "https://code.claude.com/docs/en/tools-reference",
+        "https://code.claude.com/docs/en/sub-agents",
+        "https://code.claude.com/docs/en/plugins-reference"
+      ]
+    },
+    "Codex": {
+      "id": "codex",
+      "display_name": "Codex",
+      "invocation_wrapper": "${name}",
+      "source_urls": [
+        "https://developers.openai.com/codex/skills",
+        "https://developers.openai.com/codex/plugins/build",
+        "https://developers.openai.com/codex/cli/slash-commands",
+        "https://developers.openai.com/codex/cli/reference#codex-plugin-marketplace",
+        "https://agentskills.io/specification#metadata-field"
+      ]
+    }
+  },
+  "actions": {
+    "AskUser": {
+      "callable": true,
+      "intent": "Ask the user for clarification or a bounded choice.",
+      "ClaudeCode": {
+        "name": "AskUserQuestion"
+      },
+      "Codex": {
+        "name": "request_user_input"
+      }
+    },
+    "CreateAgent": {
+      "callable": true,
+      "intent": "Delegate work to an isolated agent or subagent context.",
+      "ClaudeCode": {
+        "name": "Agent"
+      },
+      "Codex": {
+        "name": "spawn_agent"
+      }
+    },
+    "CreateTask": {
+      "callable": true,
+      "intent": "Create a tracked task in the session task list.",
+      "ClaudeCode": {
+        "name": "TaskCreate"
+      },
+      "Codex": {
+        "name": "update_plan"
+      }
+    },
+    "GetTask": {
+      "callable": true,
+      "intent": "Read one tracked task's details and status.",
+      "ClaudeCode": {
+        "name": "TaskGet"
+      },
+      "Codex": {
+        "name": "update_plan"
+      }
+    },
+    "ListTasks": {
+      "callable": true,
+      "intent": "List the tracked tasks in the session task list.",
+      "ClaudeCode": {
+        "name": "TaskList"
+      },
+      "Codex": {
+        "name": "update_plan"
+      }
+    },
+    "UpdateTask": {
+      "callable": true,
+      "intent": "Update a tracked task's status or content.",
+      "ClaudeCode": {
+        "name": "TaskUpdate"
+      },
+      "Codex": {
+        "name": "update_plan"
+      }
+    },
+    "StopTask": {
+      "callable": true,
+      "intent": "Stop a running tracked task.",
+      "ClaudeCode": {
+        "name": "TaskStop"
+      },
+      "Codex": {
+        "name": "update_plan"
+      }
+    },
+    "PluginManifest": {
+      "callable": false,
+      "intent": "Locate plugin and marketplace metadata files.",
+      "ClaudeCode": {
+        "files": [
+          ".claude-plugin/plugin.json",
+          ".claude-plugin/marketplace.json"
+        ]
+      },
+      "Codex": {
+        "files": [
+          ".codex-plugin/plugin.json",
+          ".agents/plugins/marketplace.json"
+        ]
+      }
+    },
+    "SlashCommand": {
+      "callable": false,
+      "intent": "Refer to slash-command workflows.",
+      "ClaudeCode": {
+        "commands": [
+          "/skill-name",
+          "/plugin-name:skill-name"
+        ]
+      },
+      "Codex": {
+        "commands": [
+          "/skills",
+          "/plugins",
+          "/goal",
+          "/plan",
+          "/review",
+          "/status",
+          "/diff"
+        ]
+      }
+    }
+  }
+}

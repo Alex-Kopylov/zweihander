@@ -1,0 +1,73 @@
+{
+  "skill_name": "adapt-skill-for-ai-harness",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "Adapt the explicitly named skill plugins/example/skills/deploy-helper for AI Assistant Harness Adaptation so it renders correctly for Claude Code and Codex.",
+      "expected_output": "Resolves or asks for the explicitly named skill path, inspects only files that enter invocation context, replaces mapped-mechanism callable names with action-map lookups such as {{ actions.AskUser | call }} and skill invocations with {{ \"plugin-name:skill-name\" | call }}, uses harness conditionals only for genuinely divergent narrative, wraps literal brace output in raw blocks, renames the file with the .j2 suffix leaving no plain sibling, deletes baseline tool coaching instead of templating it, changes no unrelated skill, renders both harness trees, and reports the exact files changed with verification commands run.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "requires_explicit_target",
+          "check": "response resolves or asks for the explicitly named target skill and changes only it"
+        },
+        {
+          "name": "uses_action_map",
+          "check": "callable names come from action-map lookups or the call wrapper filter, never hardcoded literals"
+        },
+        {
+          "name": "conditionals_for_narrative_only",
+          "check": "harness conditionals carry only divergent narrative and never select callable names"
+        },
+        {
+          "name": "template_file_rules",
+          "check": "output uses the .j2 suffix with no plain/template collision"
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "prompt": "Look up the CreateAgent action for Codex from this skill's assistant harness action matrix.",
+      "expected_output": "Loads references/harness-action-matrix.json or runs scripts/lookup_harness_action.py, resolves matrix actions CreateAgent Codex, and reports the callable name spawn_agent with the wrapped invocation $spawn_agent.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "action_first_lookup",
+          "check": "lookup goes action-first then assistant and returns the single callable name"
+        },
+        {
+          "name": "wrapped_invocation",
+          "check": "reports the invocation wrapper applied to the resolved name"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Make all skills in this repository harness-agnostic.",
+      "expected_output": "Declines to batch-migrate and asks the user to name one explicit target skill, because this skill adapts only an explicitly named target unless the user explicitly requests a broader migration.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "no_unrequested_batch_migration",
+          "check": "asks for one explicitly named target instead of migrating every skill"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "The target skill needs a new shared mechanism: opening a browser page. The action matrix has no such action.",
+      "expected_output": "Adds a new TitleCase action to the action matrix first with a callable flag and exactly one name per assistant, keeping the wrapper stored once per assistant and lookup_order action then assistant, then references it from the template via the actions map.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "matrix_first",
+          "check": "extends the matrix before templating instead of hardcoding a callable name"
+        },
+        {
+          "name": "matrix_contract_kept",
+          "check": "new action keeps TitleCase key, callable flag, one name per assistant, and the per-assistant wrapper"
+        }
+      ]
+    }
+  ]
+}

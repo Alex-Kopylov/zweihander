@@ -1,0 +1,26 @@
+{
+  "name": "llm-application-dev",
+  "version": "0.1.3",
+  "description": "LLM application design, agent pattern selection, and schema-guided reasoning patterns.",
+  "author": {
+    "name": "Alex Kopylov"
+  },
+  "license": "UNLICENSED",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "LLM Application Dev",
+    "shortDescription": "LLM app patterns and reasoning schemas",
+    "longDescription": "LLM application design, agent pattern selection, and schema-guided reasoning patterns, including structured output schemas that improve model reasoning.",
+    "developerName": "Alex Kopylov",
+    "category": "Development",
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Select agent patterns for this LLM workflow.",
+      "Design a schema-guided reasoning model.",
+      "Improve this structured output schema."
+    ]
+  }
+}

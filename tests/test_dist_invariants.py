@@ -7,6 +7,7 @@ are byte-identical.
 """
 
 import json
+import re
 from pathlib import Path
 
 import pytest
@@ -77,7 +78,7 @@ def test_rendered_files_carry_no_foreign_callable_names(harness, foreign_harness
             continue
         text = path.read_text(encoding="utf-8")
         for name in sorted(foreign_names):
-            if name in text:
+            if re.search(rf"(?<![\w-]){re.escape(name)}(?![\w-])", text):
                 violations.append(f"{relative}: contains {name}")
 
     assert not violations, "\n".join(violations)

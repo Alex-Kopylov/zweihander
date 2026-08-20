@@ -36,11 +36,11 @@ The whole change lands in one PR. Development is test-first (TDD): each behavior
 
 ## 5. Publication and CI
 
-- [ ] 5.1 Run the full build; commit both complete `dist/` trees; group 3 tests all green
-- [ ] 5.2 Repoint `.claude-plugin/marketplace.json` to `./dist/claude-code/<name>` and `.agents/plugins/marketplace.json` to `./dist/codex/<name>` for every plugin each manifest lists
-- [ ] 5.3 Verify a local marketplace install of the pilot plugin from each harness's manifest
-- [ ] 5.4 Add the PR-gate workflow: full build + `git diff --exit-code` over the whole tree + `uv run pytest tests`
-- [ ] 5.5 Rework `sync-mermaid-docs.yml`: fetch the upstream snapshot, delete the temporary checkout, run the full build, open a PR with the combined `plugins/` + `dist/` changes (no direct pushes); delete the old PR-validation job — the gate covers it
+- [x] 5.1 Run the full build; commit both complete `dist/` trees; group 3 tests all green
+- [x] 5.2 Repoint `.claude-plugin/marketplace.json` to `./dist/claude-code/<name>` and `.agents/plugins/marketplace.json` to `./dist/codex/<name>` for every plugin each manifest lists
+- [x] 5.3 Verify a local marketplace install of the pilot plugin from each harness's manifest
+- [x] 5.4 Add the PR-gate workflow: full build + `git diff --exit-code` over the whole tree + `uv run pytest tests`
+- [x] 5.5 Rework `sync-mermaid-docs.yml`: fetch the upstream snapshot, delete the temporary checkout, run the full build, open a PR with the combined `plugins/` + `dist/` changes (no direct pushes); delete the old PR-validation job — the gate covers it
 
 ## 6. Adaptation skill greenfield rewrite
 

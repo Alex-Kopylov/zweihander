@@ -1,0 +1,9 @@
+{
+  "name": "llm-application-dev",
+  "description": "LLM application design, agent pattern selection, and schema-guided reasoning patterns.",
+  "version": "0.1.3",
+  "author": {
+    "name": "Alex Kopylov"
+  },
+  "skills": "./skills/"
+}
