@@ -16,7 +16,7 @@ One-time setup for a job-hunt workspace: create the folder structure, generate d
 
 ## Inputs
 
-- **Workspace path** (optional argument): where to create the workspace. Default `~/Documents/job_seeking`. Resolve `~` to the real home.
+- **Workspace path** (optional argument): where to create the workspace. Default: the `JOB_HUNT_WORKSPACE` env var, else `~/Documents/job_seeking`. Resolve `~` to the real home.
 - **Name**: first + last name for filename generation (ask user if not obvious from memory/context).
 - **Role**: default/primary role for the master CV filename (e.g. `AI_LLM_ML_Engineer`). Ask user.
 
@@ -25,6 +25,7 @@ One-time setup for a job-hunt workspace: create the folder structure, generate d
 ### 1. Check preconditions
 
 - Resolve target path.
+- A directory is already a job-hunt workspace when it has an `AGENTS.md` that names this plugin, or a master `<First>_<Last>_<Role>_CV.html` at its root. Inside such a directory, apply the plugin rules automatically. Elsewhere, offer this skill first.
 - If the directory already exists AND contains `AGENTS.md`, ask the user with {{ actions.AskUser | call }}:
   - **Overwrite docs** — regenerate README, AGENTS.md, NAMING.md from plugin templates (fresh source of truth)
   - **Abort** — do nothing
@@ -59,7 +60,7 @@ Ask the user for the absolute path to the existing master CV HTML file.
 Write these files from this plugin's `references/` directory and templates at generation time. **Do not copy-paste from stale snapshots.**
 
 - `README.md` — workspace overview. Use `templates/README.md.template`, substituting `<First>`, `<Last>`, `<Role>`.
-- `AGENTS.md` — workspace-local agent rules. Use `templates/AGENTS.md.template`. Reference the plugin `AGENTS.md` for authoritative rules.
+- `AGENTS.md` — workspace-local agent rules. Use `templates/AGENTS.md.template`. It points at the plugin skills and `references/` as the authoritative rules; do not copy rules into it.
 - `NAMING.md` — quick reference. Use `templates/NAMING.md.template`, but prefer linking back to the plugin's `references/naming-rules.md` rather than duplicating content that will drift.
 - `.gitignore` — Write with standard ignore patterns for local notes, editor artifacts, and sensitive files:
   ```
@@ -78,9 +79,18 @@ Print a "next steps" block pointing to `new-application` and `prepare-to-send`.
 
 ## Hard rules
 
-- **A master HTML CV is mandatory.** If not provided, initialization stops with a hard error (see step 3).
-- **Never overwrite an existing master CV file** without explicit user confirmation. Master CVs are irreplaceable.
+### Workspace rules
+
+These stay in force for the whole workspace, not only during setup.
+
+- **HTML is the source, PDF is the export.** Never hand-edit a PDF. Edit the HTML, then regenerate the PDF with {{ "job-hunt-toolkit:export-pdf" | call }}.
+- **Master HTML is edit-guarded.** The master HTML at the workspace root is canonical and irreplaceable. Ask the user for explicit confirmation with {{ actions.AskUser | call }} before you overwrite or modify it. The master PDF is a build artifact and may be overwritten freely. Tailored variants live in `<workspace-root>/<company>/`.
 - **Never delete existing `<company>/` folders** — they may contain application history.
+- **Never leak secrets.** Salary offers, recruiter private contacts, passport numbers, and home addresses never enter a shared artifact without explicit user confirmation.
+
+### Setup rules
+
+- **A master HTML CV is mandatory.** If not provided, initialization stops with a hard error (see step 3).
 - **Always use absolute paths** in bash — `cd` state doesn't persist between tool calls.
 - **Regenerate docs from plugin references**, not from prior workspace state. The plugin is the source of truth.
 
@@ -105,3 +115,11 @@ Next:
   - Use {{ "job-hunt-toolkit:new-application" | call }} with <company-slug> to start an application
   - Use {{ "job-hunt-toolkit:export-pdf" | call }} to generate the master PDF from HTML
 ```
+
+## References
+
+Shared across every skill in this plugin — read these when a skill asks you to:
+
+- [naming-rules.md](../../references/naming-rules.md) — file and folder naming
+- [workspace-layout.md](../../references/workspace-layout.md) — directory structure
+- [application-lifecycle.md](../../references/application-lifecycle.md) — end-to-end flow

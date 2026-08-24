@@ -50,7 +50,11 @@ The build has two stages:
    lists. Plain files copy byte-for-byte (mode bits preserved); `X.j2`
    templates render with the harness context and emit `X`; `X` plus `X.j2`
    fails the build. Files named `AGENTS.md`, `CLAUDE.md`, or `README.md` and
-   the other runtime's plugin metadata directory are never emitted.
+   the other runtime's plugin metadata directory are never emitted. The
+   renderer also skips every path the root `.gitignore` excludes, so local
+   artifacts such as `__pycache__/` and `.DS_Store` stay out of `dist/`. Add a
+   pattern to `.gitignore` to keep a new kind of artifact out of both git and
+   `dist/`.
 
 Build commands:
 
@@ -114,20 +118,29 @@ metadata.
 README-only or AGENTS-only edits do not require a plugin version bump unless
 they also change plugin behavior, manifests, or marketplace metadata.
 
-## Shared Runtime Instructions
+## Plugin Runtime Context
 
-Use `AGENTS.md` as the shared instruction file when a plugin needs runtime
-context. Runtimes that read `AGENTS.md` can consume it directly.
+Runtime context reaches a user only through a file the renderer emits into
+`dist/`. Under `plugins/`, the names `AGENTS.md`, `CLAUDE.md`, and `README.md`
+are developer-only documentation at every level of the tree. The renderer skips
+them, so a runtime rule written in one of them ships to nobody, and a skill that
+links to one gets a dangling path.
 
-For runtimes that read `CLAUDE.md`, keep a sibling `CLAUDE.md` next to every
-`AGENTS.md` and import the shared file:
+Put runtime context a plugin needs in a file that ships:
 
-```md
-@AGENTS.md
-```
+- `plugins/<plugin-name>/references/<topic>.md`, linked from the skill that
+  needs it. See `plugins/langfuse/references/langfuse_domain_knowledge.md` and
+  `plugins/job-hunt-toolkit/references/`.
+- The `SKILL.md` itself, when the context is short and serves one skill.
 
-This keeps Codex and Claude Code on the same instructions without copying
-content between files.
+A template cannot work around the rule. `AGENTS.md.j2` fails the build, because
+it would emit a skipped name. A longer name that merely contains a skipped one
+still ships, such as `templates/AGENTS.md.template` in `job-hunt-toolkit`.
+
+The repository root is a separate case. Root `AGENTS.md` holds the shared
+instructions for this repo, and root `CLAUDE.md` is a symlink to it, so Codex
+and Claude Code read one file. The renderer never copies the root, so this
+convention stays as it is.
 
 ## Plugin Catalog Maintenance
 

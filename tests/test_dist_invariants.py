@@ -13,7 +13,13 @@ from pathlib import Path
 import pytest
 
 from plugin_maintenance.generate import run_generators
-from plugin_maintenance.render import DIST_DIRS, FOREIGN_METADATA_DIRS, MATRIX_PATH, render_tree
+from plugin_maintenance.render import (
+    DIST_DIRS,
+    FOREIGN_METADATA_DIRS,
+    MATRIX_PATH,
+    leftover_jinja_markers,
+    render_tree,
+)
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -91,12 +97,10 @@ def test_rendered_files_carry_no_leftover_jinja_markers(harness):
     for path in dist_files(harness):
         if not rendered_from_template(harness, path):
             continue
-        if "{% raw %}" in template_source(harness, path).read_text(encoding="utf-8"):
-            continue
+        template_text = template_source(harness, path).read_text(encoding="utf-8")
         text = path.read_text(encoding="utf-8")
-        for marker in ("{{", "{%", "{#"):
-            if marker in text:
-                violations.append(f"{path}: contains {marker}")
+        for marker in leftover_jinja_markers(template_text, text):
+            violations.append(f"{path}: contains {marker} outside any raw block")
 
     assert not violations, "\n".join(violations)
 

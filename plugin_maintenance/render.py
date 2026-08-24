@@ -4,27 +4,40 @@ Usage: `uv run python -m plugin_maintenance.render --harness ClaudeCode --output
 
 File rules per output path X: copy X byte-for-byte when only X exists,
 render X.j2 into X when only X.j2 exists, fail when both exist. Files named
-AGENTS.md/CLAUDE.md/README.md and the other harness's runtime metadata
-directory are never emitted. Each tree contains exactly the plugins listed
-in that harness's marketplace manifest.
+AGENTS.md/CLAUDE.md/README.md, the other harness's runtime metadata
+directory, and every path `.gitignore` excludes are never emitted. Each tree
+contains exactly the plugins listed in that harness's marketplace manifest.
 """
 
 import argparse
 import json
+import re
 import shutil
 import tempfile
-from collections.abc import Mapping
+from collections.abc import Callable, Mapping
 from pathlib import Path
 
+import pathspec
 from jinja2 import Environment, StrictUndefined, TemplateError
 
 MATRIX_PATH = Path(
     "plugins/ai-assistant-ops/skills/adapt-skill-for-ai-harness"
     "/references/harness-action-matrix.json"
 )
+IGNORE_FILE = Path(".gitignore")
 DEV_FILE_NAMES = {"AGENTS.md", "CLAUDE.md", "README.md"}
 TEMPLATE_SUFFIX = ".j2"
 JINJA_MARKERS = ("{{", "{%", "{#")
+# One raw block in any spelling Jinja accepts: `{% raw %}`, `{%raw%}`, and the
+# whitespace-control forms `{%- raw -%}` / `{%- endraw -%}`. The body is lazy
+# because Jinja closes a raw block at its first `endraw` tag and treats a
+# nested `raw` tag as literal text.
+RAW_BLOCK = re.compile(
+    r"\{%-?\s*raw\s*(?P<trim_head>-?)%\}"
+    r"(?P<literal>.*?)"
+    r"\{%(?P<trim_tail>-?)\s*endraw\s*-?%\}",
+    re.DOTALL,
+)
 
 HARNESS_MANIFESTS = {
     "ClaudeCode": Path(".claude-plugin/marketplace.json"),
@@ -126,6 +139,62 @@ def manifest_plugin_names(manifest_path: Path) -> list[str]:
     return [entry["name"] for entry in plugins]
 
 
+def ignored_path(repo_root: Path) -> Callable[[Path], bool]:
+    """Return the test for paths `.gitignore` keeps out of the repository.
+
+    Tooling drops artifacts into `plugins/`: `__pycache__/` from running a
+    plugin's own scripts, `.DS_Store` from a file browser, scratch
+    `*.local.md` notes. `.gitignore` is the repository's one declaration of
+    what is not content, so publication reuses it instead of keeping a second
+    list that would drift from it.
+
+    The test reads `.gitignore`, never the git index. Stage 1 writes generated
+    files into `plugins/` before anything commits them, so an index-driven
+    test would drop newly generated content from the tree. A tree with no
+    `.gitignore` ignores nothing.
+    """
+    ignore_file = repo_root / IGNORE_FILE
+    patterns = (
+        ignore_file.read_text(encoding="utf-8").splitlines()
+        if ignore_file.is_file()
+        else []
+    )
+    spec = pathspec.GitIgnoreSpec.from_lines(patterns)
+    return lambda path: spec.match_file(path.relative_to(repo_root))
+
+
+def raw_literals(template_text: str) -> list[str]:
+    """Return each raw block's text exactly as it reaches the rendered output.
+
+    Jinja copies raw content verbatim, so the output holds the same characters
+    at a different offset. Only the block's own edges move: `-%}` on the `raw`
+    tag strips the leading whitespace of the content, and `{%-` on the
+    `endraw` tag strips its trailing whitespace.
+    """
+    literals = []
+    for block in RAW_BLOCK.finditer(template_text):
+        literal = block.group("literal")
+        if block.group("trim_head"):
+            literal = literal.lstrip()
+        if block.group("trim_tail"):
+            literal = literal.rstrip()
+        if literal:
+            literals.append(literal)
+    return literals
+
+
+def leftover_jinja_markers(template_text: str, rendered: str) -> list[str]:
+    """Return the Jinja markers left in `rendered` outside its raw blocks.
+
+    Raw blocks declare literal braces, so their text is removed by content
+    before the scan. Every other region of the file stays under the scan.
+    """
+    scanned = rendered
+    for literal in raw_literals(template_text):
+        scanned = scanned.replace(literal, "")
+    return [marker for marker in JINJA_MARKERS if marker in scanned]
+
+
 def _render_template(
     source: Path, environment: Environment, context: dict, harness: str
 ) -> str:
@@ -139,13 +208,12 @@ def _render_template(
             f"failed to render {source} for harness '{harness}': {error}"
         ) from error
 
-    if "{% raw %}" not in text:
-        for marker in JINJA_MARKERS:
-            if marker in rendered:
-                raise BuildError(
-                    f"{source} rendered for harness '{harness}' still "
-                    f"contains Jinja marker '{marker}'"
-                )
+    markers = leftover_jinja_markers(text, rendered)
+    if markers:
+        raise BuildError(
+            f"{source} rendered for harness '{harness}' still contains Jinja "
+            f"marker '{markers[0]}' outside any raw block"
+        )
     return rendered
 
 
@@ -155,17 +223,26 @@ def _render_plugin(
     environment: Environment,
     context: dict,
     harness: str,
+    is_ignored: Callable[[Path], bool],
 ) -> None:
     foreign_metadata = FOREIGN_METADATA_DIRS[harness]
     for source in sorted(source_dir.rglob("*")):
         relative = source.relative_to(source_dir)
         if foreign_metadata in relative.parts or source.is_dir():
             continue
-        if source.name in DEV_FILE_NAMES:
+        if is_ignored(source):
+            continue
+        is_template = source.name.endswith(TEMPLATE_SUFFIX)
+        plain_name = source.name[: -len(TEMPLATE_SUFFIX)] if is_template else source.name
+        if plain_name in DEV_FILE_NAMES:
+            if is_template:
+                raise BuildError(
+                    f"{source} would emit the development file {plain_name}, "
+                    "which is never shipped; author it as a plain file"
+                )
             continue
 
-        if source.name.endswith(TEMPLATE_SUFFIX):
-            plain_name = source.name[: -len(TEMPLATE_SUFFIX)]
+        if is_template:
             if source.with_name(plain_name).exists():
                 raise BuildError(
                     f"both {source.with_name(plain_name)} and {source} exist; "
@@ -202,6 +279,7 @@ def render_tree(
 
     manifest = Path(manifest_path) if manifest_path else repo_root / HARNESS_MANIFESTS[harness]
     plugin_names = manifest_plugin_names(manifest)
+    is_ignored = ignored_path(repo_root)
 
     environment = Environment(undefined=StrictUndefined, keep_trailing_newline=True)
     wrapper = matrix["assistants"][harness]["invocation_wrapper"]
@@ -220,9 +298,14 @@ def render_tree(
 
     output_dir = Path(output_dir)
     output_dir.parent.mkdir(parents=True, exist_ok=True)
+    # `mkdtemp` always creates its directory 0o700 and `rename` keeps that mode,
+    # which would publish a tree that other users cannot traverse. Take the mode
+    # of `dist/` itself, so a fresh checkout and a post-build tree agree and the
+    # published mode stays a function of the source tree, not of what was there.
     staging = Path(
         tempfile.mkdtemp(prefix=f".{output_dir.name}-staging-", dir=output_dir.parent)
     )
+    staging.chmod(output_dir.parent.stat().st_mode & 0o777)
     try:
         for plugin_name in plugin_names:
             source_dir = repo_root / "plugins" / plugin_name
@@ -232,14 +315,21 @@ def render_tree(
                     f"{source_dir} does not exist"
                 )
             _render_plugin(
-                source_dir, staging / plugin_name, environment, context, harness
+                source_dir,
+                staging / plugin_name,
+                environment,
+                context,
+                harness,
+                is_ignored,
             )
     except BaseException:
         shutil.rmtree(staging, ignore_errors=True)
         raise
 
-    if output_dir.exists():
+    if output_dir.is_dir():
         shutil.rmtree(output_dir)
+    elif output_dir.exists():
+        output_dir.unlink()
     staging.rename(output_dir)
 
 

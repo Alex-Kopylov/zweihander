@@ -16,8 +16,10 @@ are preserved as internal sub-skills under `references/sub-skills/`.
 
 ## Start
 
-1. Read `../../AGENTS.md` for shared Langfuse data model, credentials, storage,
-   and API/DB access strategy.
+1. Read the plugin-level
+   [langfuse_domain_knowledge.md](../../references/langfuse_domain_knowledge.md)
+   for shared Langfuse data model, credentials, storage, and API/DB access
+   strategy.
 2. Classify the user request with the routing map below.
 3. Read each matching `references/sub-skills/<name>/SKILL.md` before acting.
 4. Resolve any sub-skill `references/...` links relative to that sub-skill

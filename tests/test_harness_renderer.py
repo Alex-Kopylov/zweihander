@@ -7,11 +7,12 @@ manifest-driven membership.
 """
 
 import os
+import re
 from pathlib import Path
 
 import pytest
 
-from plugin_maintenance.render import BuildError, render_tree
+from plugin_maintenance.render import DEV_FILE_NAMES, BuildError, render_tree
 
 
 def render(repo: Path, matrix: Path, harness: str) -> Path:
@@ -24,6 +25,10 @@ def demo_skill(output: Path) -> str:
     return (output / "demo-plugin" / "skills" / "demo" / "SKILL.md").read_text(
         encoding="utf-8"
     )
+
+
+def demo_template(repo: Path) -> Path:
+    return repo / "plugins" / "demo-plugin" / "skills" / "demo" / "SKILL.md.j2"
 
 
 class TestActionResolution:
@@ -101,6 +106,30 @@ class TestFileRules:
 
         assert "{{COMPANY}}" in text
 
+    @pytest.mark.parametrize(
+        ("open_tag", "close_tag"),
+        [
+            ("{% raw %}", "{% endraw %}"),
+            ("{%raw%}", "{%endraw%}"),
+            ("{%- raw -%}", "{%- endraw -%}"),
+            ("{% raw -%}", "{%- endraw %}"),
+        ],
+    )
+    def test_every_raw_spelling_emits_literal_braces(
+        self, fixture_repo, fixture_matrix, open_tag, close_tag
+    ):
+        template = demo_template(fixture_repo)
+        template.write_text(
+            f"Ask via {{{{ actions.AskUser | call }}}}.\n"
+            f"{open_tag}\nKeep the literal {{{{COMPANY}}}} placeholder.\n{close_tag}\n",
+            encoding="utf-8",
+        )
+
+        text = demo_skill(render(fixture_repo, fixture_matrix, "ClaudeCode"))
+
+        assert "Skill(AskUserQuestion)" in text
+        assert "{{COMPANY}}" in text
+
     def test_rendered_output_has_no_leftover_markers(
         self, fixture_repo, fixture_matrix
     ):
@@ -144,6 +173,26 @@ class TestFailLoud:
         with pytest.raises(BuildError, match=r"NoSuchAction.*ClaudeCode"):
             render(fixture_repo, fixture_matrix, "ClaudeCode")
 
+    @pytest.mark.parametrize(
+        ("open_tag", "close_tag"),
+        [("{% raw %}", "{% endraw %}"), ("{%- raw -%}", "{%- endraw -%}")],
+    )
+    def test_marker_outside_a_raw_block_fails_the_build(
+        self, fixture_repo, fixture_matrix, open_tag, close_tag
+    ):
+        """A raw block exempts its own text only, never the whole file."""
+        template = demo_template(fixture_repo)
+        template.write_text(
+            f"{open_tag}\nKeep the literal {{{{COMPANY}}}} placeholder.\n{close_tag}\n"
+            "Ask via {{ '{{ actions.AskUser | call }}' }}.\n",
+            encoding="utf-8",
+        )
+
+        with pytest.raises(BuildError, match=re.escape("Jinja marker '{{'")):
+            render(fixture_repo, fixture_matrix, "ClaudeCode")
+
+        assert not (fixture_repo / "dist-under-test" / "ClaudeCode").exists()
+
     def test_unknown_harness_fails_before_rendering(
         self, fixture_repo, fixture_matrix
     ):
@@ -177,6 +226,19 @@ class TestTreeMembership:
 
             assert not emitted & {"AGENTS.md", "CLAUDE.md", "README.md"}
 
+    @pytest.mark.parametrize("dev_name", sorted(DEV_FILE_NAMES))
+    @pytest.mark.parametrize("harness", ["ClaudeCode", "Codex"])
+    def test_dev_file_template_fails_instead_of_emitting(
+        self, fixture_repo, fixture_matrix, harness, dev_name
+    ):
+        template = fixture_repo / "plugins" / "plain-plugin" / f"{dev_name}.j2"
+        template.write_text("Rendered for {{ harness }}.\n", encoding="utf-8")
+
+        with pytest.raises(BuildError, match=re.escape(f"{dev_name}.j2")):
+            render(fixture_repo, fixture_matrix, harness)
+
+        assert not (fixture_repo / "dist-under-test" / harness).exists()
+
     def test_foreign_runtime_metadata_stripped(self, fixture_repo, fixture_matrix):
         claude = render(fixture_repo, fixture_matrix, "ClaudeCode")
         codex = render(fixture_repo, fixture_matrix, "Codex")
@@ -198,3 +260,115 @@ class TestTreeMembership:
         assert not (claude / "codex-only-plugin").exists()
         assert not (claude / "unlisted-plugin").exists()
         assert not (codex / "unlisted-plugin").exists()
+
+
+class TestIgnoredArtifacts:
+    """`.gitignore` is the one list of paths that are not repository content.
+
+    Tooling drops artifacts into `plugins/` — `__pycache__/` from running a
+    plugin's own scripts, `.DS_Store` from a file browser, `*.local.md` from
+    scratch notes. The renderer must leave every one of them behind.
+    """
+
+    IGNORE_RULES = "__pycache__/\n.DS_Store\n*.local.md\n.venv/\n"
+
+    def _plant_artifacts(self, fixture_repo: Path) -> None:
+        (fixture_repo / ".gitignore").write_text(self.IGNORE_RULES, encoding="utf-8")
+        plugin = fixture_repo / "plugins" / "plain-plugin"
+        skill = plugin / "skills" / "plain"
+        (skill / "__pycache__").mkdir(parents=True)
+        (skill / "__pycache__" / "helper.cpython-314.pyc").write_bytes(b"\x00cached")
+        (plugin / ".DS_Store").write_bytes(b"\x00finder")
+        (skill / "notes.local.md").write_text("scratch notes\n", encoding="utf-8")
+        (plugin / ".venv" / "lib").mkdir(parents=True)
+        (plugin / ".venv" / "lib" / "site.py").write_text("x = 1\n", encoding="utf-8")
+
+    @pytest.mark.parametrize("harness", ["ClaudeCode", "Codex"])
+    def test_gitignored_artifacts_never_reach_the_tree(
+        self, fixture_repo, fixture_matrix, harness
+    ):
+        self._plant_artifacts(fixture_repo)
+
+        output = render(fixture_repo, fixture_matrix, harness)
+        emitted = sorted(
+            path.relative_to(output).as_posix() for path in output.rglob("*")
+        )
+
+        assert not [name for name in emitted if "__pycache__" in name]
+        assert not [name for name in emitted if name.endswith(".DS_Store")]
+        assert not [name for name in emitted if name.endswith(".local.md")]
+        assert not [name for name in emitted if ".venv" in name]
+        assert "plain-plugin/skills/plain/SKILL.md" in emitted
+
+    def test_untracked_generated_content_still_ships(self, fixture_repo, fixture_matrix):
+        """Stage 1 writes into `plugins/` before anything is committed.
+
+        The weekly Mermaid sync rewrites `skills/mermaid/references/` and can
+        add a brand-new upstream document, then builds before the bot commits.
+        Publication must follow `.gitignore`, never the git index.
+        """
+        (fixture_repo / ".gitignore").write_text(self.IGNORE_RULES, encoding="utf-8")
+        generated = (
+            fixture_repo
+            / "plugins"
+            / "plain-plugin"
+            / "skills"
+            / "plain"
+            / "references"
+            / "generated.md"
+        )
+        generated.parent.mkdir(parents=True)
+        generated.write_text("# Written by stage 1\n", encoding="utf-8")
+
+        output = render(fixture_repo, fixture_matrix, "ClaudeCode")
+
+        shipped = output / "plain-plugin" / "skills" / "plain" / "references"
+        assert (shipped / "generated.md").read_text(encoding="utf-8") == (
+            "# Written by stage 1\n"
+        )
+
+
+class TestPublishedTreeMode:
+    """The staging rename must not publish `mkdtemp`'s private 0o700 mode."""
+
+    def test_new_tree_takes_the_parent_directory_mode(
+        self, fixture_repo, fixture_matrix
+    ):
+        output = fixture_repo / "dist-under-test" / "ClaudeCode"
+        output.parent.mkdir(parents=True)
+        output.parent.chmod(0o770)
+
+        render_tree(fixture_repo, "ClaudeCode", output, matrix_path=fixture_matrix)
+
+        assert output.stat().st_mode & 0o777 == 0o770
+
+    def test_rebuild_repairs_a_private_tree_mode(self, fixture_repo, fixture_matrix):
+        output = render(fixture_repo, fixture_matrix, "ClaudeCode")
+        output.parent.chmod(0o770)
+        output.chmod(0o700)
+
+        render_tree(fixture_repo, "ClaudeCode", output, matrix_path=fixture_matrix)
+
+        assert output.stat().st_mode & 0o777 == 0o770
+
+    def test_nested_directories_match_a_plain_mkdir(self, fixture_repo, fixture_matrix):
+        output = render(fixture_repo, fixture_matrix, "ClaudeCode")
+        reference = fixture_repo / "mkdir-reference"
+        reference.mkdir()
+
+        nested = {
+            path.stat().st_mode & 0o777 for path in output.rglob("*") if path.is_dir()
+        }
+
+        assert nested == {reference.stat().st_mode & 0o777}
+
+    def test_stray_file_at_the_output_path_is_replaced(
+        self, fixture_repo, fixture_matrix
+    ):
+        output = fixture_repo / "dist-under-test" / "ClaudeCode"
+        output.parent.mkdir(parents=True)
+        output.write_text("stale artifact\n", encoding="utf-8")
+
+        render_tree(fixture_repo, "ClaudeCode", output, matrix_path=fixture_matrix)
+
+        assert (output / "demo-plugin" / "skills" / "demo" / "SKILL.md").is_file()
