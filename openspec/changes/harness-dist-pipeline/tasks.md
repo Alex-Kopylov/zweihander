@@ -53,3 +53,12 @@ The whole change lands in one PR. Development is test-first (TDD): each behavior
 - [x] 7.2 Update `README.md`: development workflow and catalog wording reflect `dist/` as the installed source
 - [x] 7.3 Minor-bump every plugin's version in both runtime `plugin.json` manifests (all plugins ship re-rendered content in this change)
 - [x] 7.4 Run full verification: JSON validation, `git diff --check`, `uv run pytest tests`
+
+## 8. Review findings with a recorded author decision
+
+- [x] 8.1 Move plugin-level runtime context into files the renderer emits: `plugins/langfuse/AGENTS.md` becomes `references/langfuse_domain_knowledge.md` with the skill link repointed; `job-hunt-toolkit`'s `AGENTS.md`/`CLAUDE.md` fold into its `references/` and `init-workspace/SKILL.md.j2`; document the rule in root `AGENTS.md`
+- [x] 8.2 Test the dev-file rule against the emitted name, not the source name, and fail the build on a dev-file template instead of skipping it
+- [x] 8.3 Skip every source path the root `.gitignore` matches, so `__pycache__/` and friends stay out of `dist/`
+- [x] 8.4 Give the staging directory the mode of `dist/` before the rename, and replace a plain file sitting at the output path instead of raising
+- [x] 8.5 Detect `{% raw %}` blocks with a regex covering every Jinja spelling, and exempt each block's own output instead of the whole file — in the renderer and in `tests/test_dist_invariants.py`
+- [x] 8.6 Fold 8.1–8.5 into the delta specs and design decisions, so the archived change records the shipped build contract

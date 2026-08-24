@@ -66,14 +66,37 @@ Each harness tree SHALL contain only its own runtime plugin metadata: no `.codex
 - **THEN** `dist/claude-code/**` contains no `.codex-plugin/` directory and `dist/codex/**` contains no `.claude-plugin/` directory
 
 ### Requirement: Development files excluded
-Files named `AGENTS.md`, `CLAUDE.md`, or `README.md` under `plugins/` are authoring-time files; the renderer SHALL NOT emit them into either harness tree.
+Files named `AGENTS.md`, `CLAUDE.md`, or `README.md` under `plugins/` are authoring-time files; the renderer SHALL NOT emit them into either harness tree. The rule is a predicate on the emitted name, so it SHALL apply to a `.j2` template of a skipped name and SHALL NOT apply to a longer name that merely contains one. Runtime context a plugin needs SHALL live in a file the renderer emits: `plugins/<plugin-name>/references/<topic>.md`, linked from the skill that needs it, or the `SKILL.md` itself.
 
 #### Scenario: Dev files absent from dist
 - **WHEN** the full build completes
 - **THEN** neither `dist/` tree contains a file named `AGENTS.md`, `CLAUDE.md`, or `README.md`
 
+#### Scenario: Dev-file template rejected, not skipped
+- **WHEN** a plugin contains `AGENTS.md.j2`, `CLAUDE.md.j2`, or `README.md.j2`
+- **THEN** the build fails and names the development file the template would have emitted
+
+#### Scenario: Longer name containing a skipped one still ships
+- **WHEN** a plugin contains `templates/AGENTS.md.template`
+- **THEN** both `dist/` trees contain that file
+
+#### Scenario: Plugin runtime context reaches the user
+- **WHEN** a skill needs shared context that would otherwise sit in a plugin-level `AGENTS.md`
+- **THEN** that context ships under the plugin's `references/` directory and the skill's link to it resolves inside each `dist/` tree
+
+### Requirement: Repository-ignored artifacts excluded
+The renderer SHALL skip every source path the repository's root `.gitignore` matches, so tooling artifacts that appear under `plugins/` never reach a published tree. The test SHALL read `.gitignore` and SHALL NOT read the git index, because stage 1 writes generated files into `plugins/` before anything commits them.
+
+#### Scenario: Tooling artifact stays out of the tree
+- **WHEN** a `__pycache__/` directory exists under a plugin and the full build runs
+- **THEN** neither `dist/` tree contains it
+
+#### Scenario: Freshly generated content still ships
+- **WHEN** stage 1 writes an uncommitted file under `plugins/` that `.gitignore` does not match
+- **THEN** the file appears in every `dist/` tree whose manifest lists that plugin
+
 ### Requirement: Build fails loudly
-The build SHALL fail — without falling back to another harness's values — on: an unknown harness key, an action or name missing from the matrix, a malformed matrix, a template render error, leftover Jinja markers in a rendered file (one emitted from a `.j2` source; output of `{% raw %}` blocks is exempt), or a plain/template collision.
+The build SHALL fail — without falling back to another harness's values — on: an unknown harness key, an action or name missing from the matrix, a malformed matrix, a template render error, leftover Jinja markers in a rendered file, a template whose emitted name is a development file, or a plain/template collision. The marker scan SHALL exempt the output of `{% raw %}` blocks per block rather than per file, and SHALL recognise every spelling Jinja accepts for the tag, including the whitespace-control forms.
 
 #### Scenario: Missing action aborts the build
 - **WHEN** a template references an action absent from the matrix for the target harness
@@ -82,6 +105,14 @@ The build SHALL fail — without falling back to another harness's values — on
 #### Scenario: Unknown harness aborts the build
 - **WHEN** the renderer is invoked with a harness key not present in the matrix
 - **THEN** the build fails before rendering any file
+
+#### Scenario: Whitespace-control raw block emits literal braces
+- **WHEN** a `.j2` source wraps literal braces in a `{%- raw -%}` block and the build renders it
+- **THEN** the emitted file keeps those braces and the build succeeds
+
+#### Scenario: Marker outside a raw block still fails
+- **WHEN** a `.j2` source holds one `{% raw %}` block and an unresolved Jinja marker elsewhere in the same file
+- **THEN** the build fails and names the file
 
 ### Requirement: Rendered output carries no foreign harness vocabulary
 Files rendered from `.j2` sources into `dist/claude-code/**` SHALL contain no Codex callable names, and files rendered from `.j2` sources into `dist/codex/**` SHALL contain no Claude Code callable names. The foreign-name lists SHALL be derived from the matrix's callable names. A spec-level exemption list — successor of the retired `AGNOSTIC_EXEMPT` — SHALL cover files whose subject matter is another harness (seeded with the version-bumper harness reference docs and the action matrix file); exempt files are skipped by the scan.

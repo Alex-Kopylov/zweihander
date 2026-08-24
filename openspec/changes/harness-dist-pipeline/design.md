@@ -99,6 +99,22 @@ Alternative — force both trees to carry every plugin under `plugins/`: rejecte
 
 Files named `AGENTS.md`, `CLAUDE.md`, or `README.md` anywhere under `plugins/` are authoring-time files; the renderer skips them in both trees. Neither manifest references them (the only path field in any `plugin.json` is `"skills": "./skills/"`). This also dissolves the symlink question: the only symlinks under `plugins/` are the two `CLAUDE.md → AGENTS.md` links. Copied and rendered files preserve the source file's mode bits, so shipped shell scripts stay executable.
 
+The rule is a predicate on the *emitted* name, not on the source name, so `AGENTS.md.j2` is caught too. It fails the build rather than being skipped: a template is deliberate authoring, and silently dropping one looks like data loss, so the renderer says what it would have emitted and why it cannot. This is the same fail-loud stance as the plain/template collision.
+
+The rule has a corollary the authoring side must respect: a plugin's runtime context cannot live in a plugin-level `AGENTS.md`, because that file ships to nobody and any skill linking to it gets a dangling path once the manifests install from `dist/`. Runtime context belongs in `plugins/<name>/references/<topic>.md` or in the `SKILL.md`. Root `AGENTS.md` is unaffected — it is repository instructions, not plugin content.
+
+### D10. `.gitignore` is the one declaration of what is not content
+
+Tooling drops artifacts inside `plugins/`: `__pycache__/` from a plugin's own scripts and tests, `.DS_Store`, scratch notes. The renderer walks the source directory, so without a filter these are copied verbatim into a published tree — and because `.gitignore` hides them from `git diff`, the freshness gate never notices the local tree diverging from the committed one.
+
+The filter reuses the repository's root `.gitignore` rather than keeping a second exclusion list beside it, which would drift. It reads the file, never the git index: stage 1 writes generated files into `plugins/` before anything commits them, so an index-driven test would drop freshly generated content from the tree.
+
+### D11. The published tree takes the mode of `dist/`
+
+The renderer builds into a staging directory and renames it into place, so the published tree inherits whatever mode staging had. `tempfile.mkdtemp` always creates `0o700` and `rename` keeps it, which would publish a tree no other user can traverse — invisible to the freshness gate, because git does not track directory modes.
+
+Staging takes the mode of `dist/` itself before the rename. Preserving the *existing* `dist/<harness>/` mode was rejected: a tree already left private by an earlier build would stay private forever. Reading the process umask was rejected as a thread-unsafe global mutation. Taking the parent's mode self-heals and keeps the published mode a pure function of the source tree, which is what the freshness requirement asks of every other published attribute.
+
 ## Risks / Trade-offs
 
 - [Committed `dist/` invites hand edits and merge conflicts] → CI freshness gate rejects any divergence; docs state "never edit `dist/`"; conflicts resolve by re-rendering.

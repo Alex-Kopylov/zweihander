@@ -28,6 +28,21 @@ The committed `dist/` trees SHALL always equal the output of a full build from t
 - **WHEN** a pull request includes source changes together with the matching re-rendered `dist/` output
 - **THEN** the freshness check passes
 
+### Requirement: Published trees stay traversable
+The build SHALL publish each `dist/<harness>/` directory with the mode of `dist/` itself, so the published mode is a function of the source tree and not of the temporary directory the build stages into. A rebuild SHALL repair a tree that an earlier build left private. Git does not track directory modes, so the freshness check cannot observe this and the build SHALL guarantee it directly.
+
+#### Scenario: Build preserves the tree mode
+- **WHEN** the full build completes
+- **THEN** `dist/claude-code/` and `dist/codex/` carry the same mode as `dist/`
+
+#### Scenario: Rebuild repairs a private tree
+- **WHEN** `dist/<harness>/` is mode `0700` and the full build runs
+- **THEN** the rebuilt tree carries the mode of `dist/`
+
+#### Scenario: A plain file at the output path is replaced
+- **WHEN** a plain file sits at `dist/<harness>` and the build runs
+- **THEN** the build replaces it with the rendered tree instead of failing
+
 ### Requirement: Scheduled generation publishes through a pull request
 Any automated job that regenerates content under `plugins/` SHALL run the full build afterwards and SHALL open a pull request carrying the source and `dist/` changes together — no direct pushes to the default branch. The pull request SHALL pass the standard CI gate before merge.
 
