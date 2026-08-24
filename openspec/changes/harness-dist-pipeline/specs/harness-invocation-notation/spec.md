@@ -17,6 +17,17 @@ Rendered narrative SHALL reference every callable through the target harness's s
 - **WHEN** a template references the delegate-work action and both harness trees are rendered
 - **THEN** the Claude Code output contains `Skill(Agent)` and the Codex output contains `$spawn_agent`
 
+### Requirement: Notation is a repo convention, not vendor API
+The uniform wrapper SHALL NOT be narrowed toward vendor tool-name spelling. Harness vendors write built-in callable names bare in their own documentation and shipped prompts; this repository wraps them anyway, and that divergence is intentional. Repository checks and reviews SHALL treat a mismatch between rendered notation and vendor documentation as expected, and SHALL NOT reintroduce a separate spelling for callables a vendor documents as tools.
+
+#### Scenario: Vendor mismatch is not a defect
+- **WHEN** rendered narrative wraps a callable that vendor documentation writes as a bare name
+- **THEN** the notation stands unchanged and no repository check reports it
+
+#### Scenario: Per-surface spelling stays rejected
+- **WHEN** a change would render one spelling for callables a vendor documents as tools and another spelling for skills
+- **THEN** the change is rejected as a revert of this requirement
+
 ### Requirement: Exactly two name shapes
 Callable names in rendered narrative SHALL have exactly two shapes: a bare `skill-name` — used identically for harness built-ins and for skills from user skill directories — and a plugin-qualified `plugin-name:skill-name` for plugin-installed skills.
 

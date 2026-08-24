@@ -67,7 +67,11 @@ Alternative — per-action invocation forms (PR #65): rejected as YAGNI; one wra
 
 ### D4. Uniform notation is a repo convention, not harness API
 
-`Skill(AskUserQuestion)` / `$request_user_input` are this repo's reference notation for narrative read by LLM agents. Harness docs classify some callables as tools and do not document qualified `$` mentions; this is known and deliberately not encoded (decision record in #67). Tests must not "correct" rendered notation back toward per-surface syntax.
+`Skill(AskUserQuestion)` / `$request_user_input` are this repo's reference notation for narrative read by LLM agents. Harness docs classify some callables as tools and do not document qualified `$` mentions; this is known and deliberately not encoded (decision record in #67). Tests must not "correct" rendered notation back toward per-surface syntax. The
+anti-revert half of this decision is normative in
+`specs/harness-invocation-notation` — "Notation is a repo convention, not vendor
+API" — so it survives into the main specs when this change is archived and this
+design document moves to `openspec/changes/archive/`.
 
 ### D5. Publication: committed dist, manifests split per harness
 
