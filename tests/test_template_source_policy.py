@@ -15,11 +15,20 @@ from plugin_maintenance.render import MATRIX_PATH, TEMPLATE_SUFFIX
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 PLUGINS_ROOT = REPO_ROOT / "plugins"
+TASK_MANAGEMENT_PATTERNS_TEMPLATE = (
+    PLUGINS_ROOT
+    / "work-session-tools"
+    / "skills"
+    / "task-management"
+    / "references"
+    / "orchestration-patterns.md.j2"
+)
 
 HARNESS_CONDITIONAL_BLOCK = re.compile(
     r"\{%-?\s*if\s+harness[\s\S]*?\{%-?\s*endif\s*-?%\}"
 )
 DOLLAR_INVOCATION = re.compile(r"\$[a-z0-9][a-z0-9-]*(:[a-z0-9_-]+)?")
+MARKDOWN_HEADING = re.compile(r"^#{1,6}\s", re.MULTILINE)
 
 
 def template_sources() -> list[Path]:
@@ -64,6 +73,19 @@ def test_templates_never_select_callable_names_inside_harness_conditionals():
     assert not violations, (
         "harness conditionals are for divergent narrative only; callable "
         "references belong outside them:\n" + "\n".join(violations)
+    )
+
+
+def test_task_management_pattern_sections_stay_outside_harness_conditionals():
+    text = TASK_MANAGEMENT_PATTERNS_TEMPLATE.read_text(encoding="utf-8")
+    conditional_blocks = HARNESS_CONDITIONAL_BLOCK.findall(text)
+
+    assert conditional_blocks
+    assert not [
+        block for block in conditional_blocks if MARKDOWN_HEADING.search(block)
+    ], (
+        "keep shared document sections outside harness conditionals; branch only "
+        "the local syntax or behavior"
     )
 
 

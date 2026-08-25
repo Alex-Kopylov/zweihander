@@ -29,6 +29,9 @@ LEGACY_METADATA_LINKS = (
     "ai-assistant-harness-adaptation.claude-code",
     "ai-assistant-harness-adaptation.codex",
 )
+TASK_MANAGEMENT_PATTERNS = Path(
+    "work-session-tools/skills/task-management/references/orchestration-patterns.md"
+)
 
 # Successor of the retired AGNOSTIC_EXEMPT: dist-tree-relative paths whose
 # subject matter is another harness, skipped by the foreign-name scan.
@@ -143,6 +146,46 @@ def test_dist_strips_foreign_runtime_metadata(harness):
 @pytest.mark.parametrize("harness", ["ClaudeCode", "Codex"])
 def test_dist_carries_no_dev_files(harness):
     assert not [path for path in dist_files(harness) if path.name in DEV_FILE_NAMES]
+
+
+def task_management_patterns(harness: str) -> str:
+    return (REPO_ROOT / DIST_DIRS[harness] / TASK_MANAGEMENT_PATTERNS).read_text(
+        encoding="utf-8"
+    )
+
+
+def test_codex_orchestration_patterns_use_plan_arrays():
+    text = task_management_patterns("Codex")
+
+    plan_examples = re.findall(r"update_plan\(plan: \[(.*?)\]\)", text, re.DOTALL)
+
+    assert plan_examples
+    for example in plan_examples:
+        assert set(re.findall(r"\b([a-z_]+):", example)) == {"step", "status"}
+        assert example.count('status: "in_progress"') <= 1
+        assert set(re.findall(r'status: "([^"]+)"', example)) <= {
+            "pending",
+            "in_progress",
+            "completed",
+        }
+    for foreign_field in ("taskId", "blockedBy", "metadata"):
+        assert foreign_field not in text
+
+
+def test_codex_orchestration_patterns_use_current_spawn_fields():
+    text = task_management_patterns("Codex")
+
+    assert "spawn_agent(" in text
+    assert "task_name:" in text
+    assert "message:" in text
+    for foreign_marker in (
+        "description:",
+        "prompt:",
+        "run_in_background",
+        '"Explore"',
+        '"haiku"',
+    ):
+        assert foreign_marker not in text
 
 
 def tree_snapshot(root: Path) -> dict[str, tuple[bytes, int]]:

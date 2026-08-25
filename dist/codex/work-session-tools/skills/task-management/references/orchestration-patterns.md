@@ -4,164 +4,184 @@ Advanced patterns for multi-agent coordination and task dependency management.
 
 ## Pattern 1: Explore → Plan → Execute
 
-Sequential pipeline where exploration informs planning before code is written.
+Use a sequential pipeline when exploration must inform the plan before
+implementation starts.
+
 
 ```
-update_plan: "Explore codebase architecture"        → #1
-update_plan: "Design implementation plan"            → #2, blockedBy: [#1]
-update_plan: "Implement authentication module"       → #3, blockedBy: [#2]
-update_plan: "Write tests for authentication"        → #4, blockedBy: [#3]
+update_plan(plan: [
+  {step: "Explore codebase architecture", status: "in_progress"},
+  {step: "Design implementation plan", status: "pending"},
+  {step: "Implement authentication module", status: "pending"},
+  {step: "Write tests for authentication", status: "pending"}
+])
 ```
+
+Send the complete ordered plan on each update. Keep at most one item
+`in_progress`.
 
 
 ### When to Use
-- Large features where the approach is unclear
-- Unfamiliar codebases requiring discovery first
-- Tasks where wrong assumptions lead to significant rework
 
-## Pattern 2: Parallel Background Agents
+- The approach is unclear
+- The codebase is unfamiliar
+- Wrong assumptions can cause significant rework
 
-Launch multiple independent agents simultaneously, then aggregate results.
+## Pattern 2: Parallel Agents
+
+Launch independent agents together. Continue non-overlapping work, then
+aggregate their results.
+
+
+Delegate only when the user or applicable project instructions authorize it.
 
 ```
-# Launch in parallel (single message, multiple spawn_agent calls):
-spawn_agent(description: "Run unit tests",       prompt: "...", run_in_background: true)
-spawn_agent(description: "Run linter",           prompt: "...", run_in_background: true)
-spawn_agent(description: "Check type safety",    prompt: "...", run_in_background: true)
-spawn_agent(description: "Security audit",       prompt: "...", run_in_background: true)
-
-# Continue other work; aggregate results after completion notifications
+spawn_agent(
+  task_name: "run_unit_tests",
+  message: "Run the unit tests. Return each failure with its file path."
+)
+spawn_agent(
+  task_name: "check_types",
+  message: "Run the type checker. Return each error with its file path."
+)
 ```
+
+
+Wait only when the next step requires an agent result.
 
 ### When to Use
-- CI-like validation (tests, lint, types, security)
-- Independent research across different areas
-- Multiple file transformations with no shared state
+
+- Two or more tasks are independent
+- Each agent has a distinct read or write scope
+- Parallel work reduces the critical path
 
 ## Pattern 3: Research → Implement
 
-Background agent gathers information while main session continues.
+Let one agent gather information while the main session continues independent
+work.
+
 
 ```
-# Launch research agent in background
 spawn_agent(
-  description: "Research OAuth2 patterns",
-  prompt: "Search the codebase for existing auth patterns, check documentation...",
-  run_in_background: true
+  task_name: "research_oauth",
+  message: "Find existing authentication patterns and return file paths."
 )
-
-# Continue current work; use research output when it completes
 ```
+
+
+Do not repeat the delegated research in the main session. Integrate the result
+after the agent reports completion.
 
 ### When to Use
-- Need web research or deep codebase exploration before coding
-- Current work can continue independently of research
-- Time-consuming information gathering
+
+- The research has a concrete output
+- Current work can continue without the result
+- The research does not duplicate main-session work
 
 ## Pattern 4: Fan-Out / Fan-In
 
-Divide a large task into parallel subtasks, then merge results.
+Divide a large task into independent branches. Integrate only after every
+required branch finishes.
+
 
 ```
-update_plan: "Prepare migration plan"                → #1
-update_plan: "Migrate user service"                  → #2, blockedBy: [#1]
-update_plan: "Migrate payment service"               → #3, blockedBy: [#1]
-update_plan: "Migrate notification service"          → #4, blockedBy: [#1]
-update_plan: "Integration testing after migration"   → #5, blockedBy: [#2, #3, #4]
+update_plan(plan: [
+  {step: "Prepare the migration plan", status: "completed"},
+  {step: "Migrate the independent services", status: "in_progress"},
+  {step: "Run integration tests", status: "pending"}
+])
 ```
 
-Tasks #2, #3, #4 run in parallel after #1 completes. Task #5 waits for all three.
+Use one bounded agent task for each independent service when delegation is
+authorized.
+
+
+Start integration only after all required results are available.
 
 ### When to Use
-- Multiple independent modules need the same transformation
-- Integration testing must follow all parallel work
-- Clear separation of concerns between subtasks
+
+- Multiple modules have disjoint scopes
+- The same transformation applies to each module
+- A final step depends on every branch
 
 ## Pattern 5: Iterative Refinement
 
-Run a task, validate, and loop until quality criteria are met.
+Run one iteration, validate it, and repeat until the acceptance criteria pass.
+
 
 ```
-update_plan: "Generate initial implementation"       → #1
-update_plan: "Validate implementation"               → #2, blockedBy: [#1]
-# If validation fails:
-update_plan: "Fix issues from validation"            → #3, blockedBy: [#2]
-update_plan: "Re-validate after fixes"               → #4, blockedBy: [#3]
+update_plan(plan: [
+  {step: "Generate the initial implementation", status: "completed"},
+  {step: "Validate the implementation", status: "completed"},
+  {step: "Fix validation findings", status: "in_progress"},
+  {step: "Re-run validation", status: "pending"}
+])
 ```
+
+
+Add or revise a step when validation changes the required work.
 
 ### When to Use
-- Code generation requiring quality validation
-- Test-driven workflows (write test, implement, verify)
-- Any task with measurable acceptance criteria
 
-## Dependency Management Strategies
+- Code generation requires validation
+- The workflow uses test-driven development
+- The task has measurable acceptance criteria
 
-### Linear Chain
-```
-#1 → #2 → #3 → #4
-```
-Each task blocks the next. Simple and predictable.
+## Dependency Management
 
-### Diamond Pattern
-```
-    #1
-   / \
-  #2  #3
-   \ /
-    #4
-```
-Task #1 unblocks #2 and #3 (parallel). Task #4 waits for both.
+Use a linear order for sequential work. For fan-out and fan-in, start the
+independent branches together and wait before integration.
 
-### Independent Groups
-```
-Group A: #1 → #2
-Group B: #3 → #4
-Final:   #5 (blockedBy: [#2, #4])
-```
-Two independent chains converge at a final integration task.
+
+The plan is an ordered checklist, not a dependency graph. Express dependencies
+through step order and clear step text. Use agent lifecycle tools only for
+delegated work.
+
 
 ## Best Practices for Multi-Agent Work
 
-### Prompt Quality
-Provide complete context in agent prompts — agents cannot see the parent conversation:
-- Include file paths, function names, and specific requirements
-- State the expected output format
-- Mention relevant constraints or conventions
+### Task Quality
 
-### Agent-Context Isolation
-Each background agent has its own context window:
-- Agents do not share state with each other
-- Pass all necessary information through the prompt
-- Collect results from each agent's output after completion
+- Keep tasks short and outcome-focused
+- Mark work complete only after validation
+- State file paths, constraints, and the expected result
+
+
+- Send the complete plan on every update
+- Keep at most one plan item `in_progress`
+
+
+### Delegated Context
+
+Do not rely on inherited context. Give each agent the information required to
+complete its task and return a useful result.
 
 ### Error Handling
-- If a background agent fails, its output contains the error
-- Check the agent's output before marking dependent tasks as unblocked
-- Create follow-up tasks for failed work rather than retrying blindly
+
+- Check an agent result before starting dependent work
+- Keep a blocked step open until the blocker is resolved
+- Send follow-up work to an existing agent when its context remains useful
 
 ### Resource Awareness
-- Background agents consume API tokens independently
-- Limit concurrent agents to avoid rate limits (3-5 is reasonable)
 
-## Task Metadata for Orchestration
+- Each agent consumes tokens independently
+- Use only the concurrency that the current session exposes
+- Keep concurrent write scopes disjoint
 
-Attach orchestration metadata for richer coordination:
 
-```
-update_plan(taskId: "1", metadata: {
-  "agent_type": "Explore",
-  "model": "haiku",
-  "priority": "critical",
-  "estimated_duration": "2m",
-  "files": ["src/auth/", "tests/auth/"]
-})
-```
+- Omit model overrides unless the user or applicable instructions require one
 
-Useful metadata fields:
 
-- `priority` — critical, high, medium, low
-- `estimated_duration` — rough time estimate
-- `files` — relevant file paths
-- `started_at` / `completed_at` — ISO 8601 timestamps
-- `related_issue` — link to GitHub issue
-- `test_results` — pass/fail summary
+### Follow-Up Work
+
+
+Use a lifecycle tool exposed in the current session. Continue the existing
+agent when its prior context remains relevant.
+
+
+### Task Details
+
+
+Plan items accept only the fields exposed by the active tool schema. Put
+priority, file paths, and other context in the step text or delegated-agent
+message.

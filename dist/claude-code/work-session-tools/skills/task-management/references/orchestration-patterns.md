@@ -4,7 +4,9 @@ Advanced patterns for multi-agent coordination and task dependency management.
 
 ## Pattern 1: Explore → Plan → Execute
 
-Sequential pipeline where exploration informs planning before code is written.
+Use a sequential pipeline when exploration must inform the plan before
+implementation starts.
+
 
 ```
 TaskCreate: "Explore codebase architecture"        → #1
@@ -13,173 +15,172 @@ TaskCreate: "Implement authentication module"       → #3, blockedBy: [#2]
 TaskCreate: "Write tests for authentication"        → #4, blockedBy: [#3]
 ```
 
+Step 1 uses an `Explore` agent. Step 2 uses a `Plan` agent. Steps 3
+and 4 use `general-purpose` agents.
 
-Step 1 uses an `Explore` agent (read-only, fast). Step 2 uses a `Plan` agent. Steps 3-4 use `general-purpose` agents.
-
-### When to Use
-- Large features where the approach is unclear
-- Unfamiliar codebases requiring discovery first
-- Tasks where wrong assumptions lead to significant rework
-
-## Pattern 2: Parallel Background Agents
-
-Launch multiple independent agents simultaneously, then aggregate results.
-
-```
-# Launch in parallel (single message, multiple Agent calls):
-Agent(description: "Run unit tests",       prompt: "...", run_in_background: true)
-Agent(description: "Run linter",           prompt: "...", run_in_background: true)
-Agent(description: "Check type safety",    prompt: "...", run_in_background: true)
-Agent(description: "Security audit",       prompt: "...", run_in_background: true)
-
-# Continue other work; aggregate results after completion notifications
-```
 
 ### When to Use
-- CI-like validation (tests, lint, types, security)
-- Independent research across different areas
-- Multiple file transformations with no shared state
+
+- The approach is unclear
+- The codebase is unfamiliar
+- Wrong assumptions can cause significant rework
+
+## Pattern 2: Parallel Agents
+
+Launch independent agents together. Continue non-overlapping work, then
+aggregate their results.
+
+
+```
+Agent(description: "Run unit tests", prompt: "...", run_in_background: true)
+Agent(description: "Run linter", prompt: "...", run_in_background: true)
+Agent(description: "Check type safety", prompt: "...", run_in_background: true)
+Agent(description: "Run security audit", prompt: "...", run_in_background: true)
+```
+
+
+Wait only when the next step requires an agent result.
+
+### When to Use
+
+- Two or more tasks are independent
+- Each agent has a distinct read or write scope
+- Parallel work reduces the critical path
 
 ## Pattern 3: Research → Implement
 
-Background agent gathers information while main session continues.
+Let one agent gather information while the main session continues independent
+work.
+
 
 ```
-# Launch research agent in background
 Agent(
   description: "Research OAuth2 patterns",
-  prompt: "Search the codebase for existing auth patterns, check documentation...",
+  prompt: "Find existing authentication patterns and return file paths.",
   run_in_background: true
 )
-
-# Continue current work; use research output when it completes
 ```
 
+
+Do not repeat the delegated research in the main session. Integrate the result
+after the agent reports completion.
+
 ### When to Use
-- Need web research or deep codebase exploration before coding
-- Current work can continue independently of research
-- Time-consuming information gathering
+
+- The research has a concrete output
+- Current work can continue without the result
+- The research does not duplicate main-session work
 
 ## Pattern 4: Fan-Out / Fan-In
 
-Divide a large task into parallel subtasks, then merge results.
+Divide a large task into independent branches. Integrate only after every
+required branch finishes.
+
 
 ```
 TaskCreate: "Prepare migration plan"                → #1
 TaskCreate: "Migrate user service"                  → #2, blockedBy: [#1]
 TaskCreate: "Migrate payment service"               → #3, blockedBy: [#1]
 TaskCreate: "Migrate notification service"          → #4, blockedBy: [#1]
-TaskCreate: "Integration testing after migration"   → #5, blockedBy: [#2, #3, #4]
+TaskCreate: "Run integration tests"                 → #5, blockedBy: [#2, #3, #4]
 ```
 
-Tasks #2, #3, #4 run in parallel after #1 completes. Task #5 waits for all three.
+
+Start integration only after all required results are available.
 
 ### When to Use
-- Multiple independent modules need the same transformation
-- Integration testing must follow all parallel work
-- Clear separation of concerns between subtasks
+
+- Multiple modules have disjoint scopes
+- The same transformation applies to each module
+- A final step depends on every branch
 
 ## Pattern 5: Iterative Refinement
 
-Run a task, validate, and loop until quality criteria are met.
+Run one iteration, validate it, and repeat until the acceptance criteria pass.
+
 
 ```
 TaskCreate: "Generate initial implementation"       → #1
 TaskCreate: "Validate implementation"               → #2, blockedBy: [#1]
-# If validation fails:
-TaskCreate: "Fix issues from validation"            → #3, blockedBy: [#2]
-TaskCreate: "Re-validate after fixes"               → #4, blockedBy: [#3]
+TaskCreate: "Fix validation findings"               → #3, blockedBy: [#2]
+TaskCreate: "Re-run validation"                     → #4, blockedBy: [#3]
 ```
+
+
+Add or revise a step when validation changes the required work.
 
 ### When to Use
-- Code generation requiring quality validation
-- Test-driven workflows (write test, implement, verify)
-- Any task with measurable acceptance criteria
 
-## Dependency Management Strategies
+- Code generation requires validation
+- The workflow uses test-driven development
+- The task has measurable acceptance criteria
 
-### Linear Chain
-```
-#1 → #2 → #3 → #4
-```
-Each task blocks the next. Simple and predictable.
+## Dependency Management
 
-### Diamond Pattern
-```
-    #1
-   / \
-  #2  #3
-   \ /
-    #4
-```
-Task #1 unblocks #2 and #3 (parallel). Task #4 waits for both.
+Use a linear order for sequential work. For fan-out and fan-in, start the
+independent branches together and wait before integration.
 
-### Independent Groups
+
+Represent explicit relationships with task dependencies.
+
 ```
-Group A: #1 → #2
-Group B: #3 → #4
-Final:   #5 (blockedBy: [#2, #4])
+Linear:  #1 → #2 → #3
+Fan-out: #1 → [#2, #3] → #4
 ```
-Two independent chains converge at a final integration task.
+
 
 ## Best Practices for Multi-Agent Work
 
-### Prompt Quality
-Provide complete context in agent prompts — agents cannot see the parent conversation:
-- Include file paths, function names, and specific requirements
-- State the expected output format
-- Mention relevant constraints or conventions
+### Task Quality
 
-### Agent-Context Isolation
-Each background agent has its own context window:
-- Agents do not share state with each other
-- Pass all necessary information through the prompt
-- Collect results from each agent's output after completion
+- Keep tasks short and outcome-focused
+- Mark work complete only after validation
+- State file paths, constraints, and the expected result
+
+
+
+### Delegated Context
+
+Do not rely on inherited context. Give each agent the information required to
+complete its task and return a useful result.
 
 ### Error Handling
-- If a background agent fails, its output contains the error
-- Check the agent's output before marking dependent tasks as unblocked
-- Create follow-up tasks for failed work rather than retrying blindly
+
+- Check an agent result before starting dependent work
+- Keep a blocked step open until the blocker is resolved
+- Send follow-up work to an existing agent when its context remains useful
 
 ### Resource Awareness
-- Background agents consume API tokens independently
-- Limit concurrent agents to avoid rate limits (3-5 is reasonable)
 
-- Use `haiku` model for simple tasks to reduce cost
-- Reserve `opus` for genuinely complex reasoning
+- Each agent consumes tokens independently
+- Use only the concurrency that the current session exposes
+- Keep concurrent write scopes disjoint
 
-### Resuming Agents
-To continue work from a previous agent invocation:
+
+- Use `haiku` for simple searches
+- Reserve `opus` for complex reasoning
+
+
+### Follow-Up Work
+
+
 ```
 Agent(
   resume: "<agent-id>",
-  prompt: "Continue from where you left off. The auth module is now complete."
+  prompt: "Continue from where you stopped. The dependency is now ready."
 )
 ```
-The agent resumes with full previous context preserved.
 
-## Task Metadata for Orchestration
 
-Attach orchestration metadata for richer coordination:
+### Task Details
+
+
+Attach task metadata when the extra fields improve coordination.
 
 ```
 TaskUpdate(taskId: "1", metadata: {
-  "agent_type": "Explore",
-  "model": "haiku",
   "priority": "critical",
-  "estimated_duration": "2m",
-  "files": ["src/auth/", "tests/auth/"]
+  "files": ["src/auth/", "tests/auth/"],
+  "estimated_duration": "2m"
 })
 ```
-
-Useful metadata fields:
-
-- `agent_type` — which agent type to use
-- `model` — model override for the agent
-
-- `priority` — critical, high, medium, low
-- `estimated_duration` — rough time estimate
-- `files` — relevant file paths
-- `started_at` / `completed_at` — ISO 8601 timestamps
-- `related_issue` — link to GitHub issue
-- `test_results` — pass/fail summary
