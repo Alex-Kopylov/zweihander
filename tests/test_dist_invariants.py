@@ -205,15 +205,23 @@ def task_management_patterns(harness: str) -> str:
 
 
 def test_codex_orchestration_patterns_use_plan_arrays():
+    """Plan items quote their keys, the way Codex sends them on the wire.
+
+    `plan` stays an unquoted named argument, matching how every call example
+    in this document names its arguments. The objects inside the list are
+    object literals, so their keys carry quotes — the same convention the
+    Claude Code branch uses for a nested `metadata` object.
+    """
     text = task_management_patterns("Codex")
 
     plan_examples = re.findall(r"update_plan\(plan: \[(.*?)\]\)", text, re.DOTALL)
 
     assert plan_examples
     for example in plan_examples:
-        assert set(re.findall(r"\b([a-z_]+):", example)) == {"step", "status"}
-        assert example.count('status: "in_progress"') <= 1
-        assert set(re.findall(r'status: "([^"]+)"', example)) <= {
+        assert set(re.findall(r'"([a-z_]+)":', example)) == {"step", "status"}
+        assert not re.search(r"(?<![\"\w])(step|status):", example)
+        assert example.count('"status": "in_progress"') <= 1
+        assert set(re.findall(r'"status": "([^"]+)"', example)) <= {
             "pending",
             "in_progress",
             "completed",

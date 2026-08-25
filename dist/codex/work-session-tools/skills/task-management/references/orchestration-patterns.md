@@ -10,10 +10,10 @@ implementation starts.
 
 ```
 update_plan(plan: [
-  {step: "Explore codebase architecture", status: "in_progress"},
-  {step: "Design implementation plan", status: "pending"},
-  {step: "Implement authentication module", status: "pending"},
-  {step: "Write tests for authentication", status: "pending"}
+  {"step": "Explore codebase architecture", "status": "in_progress"},
+  {"step": "Design implementation plan", "status": "pending"},
+  {"step": "Implement authentication module", "status": "pending"},
+  {"step": "Write tests for authentication", "status": "pending"}
 ])
 ```
 
@@ -86,9 +86,9 @@ required branch finishes.
 
 ```
 update_plan(plan: [
-  {step: "Prepare the migration plan", status: "completed"},
-  {step: "Migrate the independent services", status: "in_progress"},
-  {step: "Run integration tests", status: "pending"}
+  {"step": "Prepare the migration plan", "status": "completed"},
+  {"step": "Migrate the independent services", "status": "in_progress"},
+  {"step": "Run integration tests", "status": "pending"}
 ])
 ```
 
@@ -111,10 +111,10 @@ Run one iteration, validate it, and repeat until the acceptance criteria pass.
 
 ```
 update_plan(plan: [
-  {step: "Generate the initial implementation", status: "completed"},
-  {step: "Validate the implementation", status: "completed"},
-  {step: "Fix validation findings", status: "in_progress"},
-  {step: "Re-run validation", status: "pending"}
+  {"step": "Generate the initial implementation", "status": "completed"},
+  {"step": "Validate the implementation", "status": "completed"},
+  {"step": "Fix validation findings", "status": "in_progress"},
+  {"step": "Re-run validation", "status": "pending"}
 ])
 ```
 
