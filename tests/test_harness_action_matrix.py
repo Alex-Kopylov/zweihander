@@ -85,18 +85,37 @@ def test_action_keys_never_equal_callable_names(actions, assistants):
 
 
 def test_task_tracking_splits_per_operation(actions):
-    expected_claude = {
-        "CreateTask": "TaskCreate",
-        "GetTask": "TaskGet",
-        "ListTasks": "TaskList",
-        "UpdateTask": "TaskUpdate",
-        "StopTask": "TaskStop",
+    """Only the write half of the task list reaches a real Codex tool.
+
+    `update_plan` creates and updates a plan item, so those two actions map to
+    it. Reading one item, listing the plan, and stopping a tracked task have no
+    Codex tool at all, so they fall back to the Claude Code name rather than
+    name a tool that does not do the job.
+    """
+    expected = {
+        "CreateTask": ("TaskCreate", "update_plan"),
+        "UpdateTask": ("TaskUpdate", "update_plan"),
+        "GetTask": ("TaskGet", "TaskGet"),
+        "ListTasks": ("TaskList", "TaskList"),
+        "StopTask": ("TaskStop", "TaskStop"),
     }
 
-    for action_key, claude_name in expected_claude.items():
+    for action_key, (claude_name, codex_name) in expected.items():
         assert actions[action_key]["callable"] is True, action_key
         assert actions[action_key]["ClaudeCode"]["name"] == claude_name
-        assert actions[action_key]["Codex"]["name"] == "update_plan"
+        assert actions[action_key]["Codex"]["name"] == codex_name
+
+
+def test_codex_task_fallbacks_record_why(actions):
+    """A fallback row states that Codex has no counterpart.
+
+    The name alone cannot show the difference between a mapping and a
+    fallback, so the reason travels with the entry and survives the next edit.
+    """
+    for action_key in ("GetTask", "ListTasks", "StopTask"):
+        codex = actions[action_key]["Codex"]
+        assert codex["name"] == actions[action_key]["ClaudeCode"]["name"], action_key
+        assert "No Codex counterpart" in codex.get("note", ""), action_key
 
 
 @pytest.mark.parametrize(

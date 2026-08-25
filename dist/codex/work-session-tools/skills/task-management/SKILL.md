@@ -1,6 +1,6 @@
 ---
 name: task-management
-description: This skill should be used when the user asks to "track tasks", "create a todo list", "manage background tasks", "use update_plan", "orchestrate agents", "run tasks in parallel", "break this into tasks", "track progress", "create a checklist", "plan steps", "divide work into subtasks", or when working on multi-step tasks. Also activates when the user mentions update_plan, update_plan, update_plan, or update_plan.
+description: Use when the user asks to track tasks, track tasks progress, plan steps, create a todo list, create a checklist, break work into subtasks, spawn background tasks, or run tasks in parallel, or when working on multi-step tasks.
 ---
 
 # Task Management & Background-Agent Orchestration

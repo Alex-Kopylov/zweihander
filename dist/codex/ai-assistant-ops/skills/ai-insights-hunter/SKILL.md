@@ -20,6 +20,13 @@ Read these files before delegating to the corresponding agents:
 - `agents/patterns-hunter.md` — reusable patterns & proven approaches
 - `agents/project-context-hunter.md` — project-specific facts & context
 
+## Task tracking
+
+When the run yields more than one finding, track the findings with
+$work-session-tools:task-management and follow that skill for how
+to create, order, and update plan items. The steps below name what to track and
+leave the calls to it.
+
 ---
 
 ## Step 1 — Locate Conversation Logs
@@ -98,14 +105,14 @@ If "Skip": jump to Step 7.
 
 ## Step 5 — Build Task List
 
-Track each selected finding as a plan item with $update_plan. Each item holds:
+Add each selected finding to the plan as its own item. Each item holds:
 - Finding title
 - Category (Decisions / Preferences / Patterns / Project Context)
 - Tier
 - Recommended storage path (your best guess)
 - Status: `pending`
 
-Keep exactly one item in progress while interviewing and storing findings, updating statuses with $update_plan.
+Keep exactly one item in progress while interviewing and storing findings, and move its status forward as each one is resolved.
 
 ---
 
@@ -168,7 +175,7 @@ Avoid writing:
 - One-off fixes unlikely to recur
 - Verbose explanations — if a one-liner suffices, use it
 
-If the user explores an item, asks questions, or revisits a decision, continue the side conversation, then re-orient with $update_plan and resume.
+If the user explores an item, asks questions, or revisits a decision, continue the side conversation, then re-read the plan to find the item you stopped on and resume.
 
 ---
 

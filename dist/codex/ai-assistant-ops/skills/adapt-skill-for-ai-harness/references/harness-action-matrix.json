@@ -1,6 +1,7 @@
 {
   "schema_version": 2,
-  "checked": "2026-08-07",
+  "checked": "2026-08-25",
+  "note": "Codex has no queryable task store. `update_plan` overwrites the whole plan and carries no ids, no dependencies, and no read-back, so it covers creating and updating a plan item but nothing else. The `collaboration` tools (`spawn_agent`, `list_agents`, `wait_agent`, `interrupt_agent`) act on running agents, which are live processes rather than task records, so they are not counterparts either. An action with no Codex counterpart therefore falls back to the Claude Code name. That is safe: the rendered text keeps naming one real concept instead of asserting a Codex tool that does not exist, and it reads as the vocabulary it is. Revisit when Codex ships a task store.",
   "lookup_order": [
     "action",
     "assistant"
@@ -58,7 +59,8 @@
         "name": "TaskCreate"
       },
       "Codex": {
-        "name": "update_plan"
+        "name": "update_plan",
+        "note": "Real counterpart. Adding a step to the plan is how Codex creates a tracked item."
       }
     },
     "GetTask": {
@@ -68,7 +70,8 @@
         "name": "TaskGet"
       },
       "Codex": {
-        "name": "update_plan"
+        "name": "TaskGet",
+        "note": "No Codex counterpart. `update_plan` writes the plan and never reads it back, and there is no id to address one item by. Falls back to the Claude Code name."
       }
     },
     "ListTasks": {
@@ -78,7 +81,8 @@
         "name": "TaskList"
       },
       "Codex": {
-        "name": "update_plan"
+        "name": "TaskList",
+        "note": "No Codex counterpart. `list_agents` enumerates running agents, not task records, and the plan cannot be listed back. Falls back to the Claude Code name."
       }
     },
     "UpdateTask": {
@@ -88,7 +92,8 @@
         "name": "TaskUpdate"
       },
       "Codex": {
-        "name": "update_plan"
+        "name": "update_plan",
+        "note": "Real counterpart. Codex rewrites the whole plan, so creating and updating an item are the same call."
       }
     },
     "StopTask": {
@@ -98,7 +103,8 @@
         "name": "TaskStop"
       },
       "Codex": {
-        "name": "update_plan"
+        "name": "TaskStop",
+        "note": "No Codex counterpart. `interrupt_agent` stops a running agent, which is a process rather than a task record. Falls back to the Claude Code name."
       }
     },
     "PluginManifest": {

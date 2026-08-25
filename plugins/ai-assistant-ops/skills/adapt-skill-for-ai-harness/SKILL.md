@@ -101,7 +101,13 @@ The renderer depends on every element below; keep them stable:
 - Every action carries a boolean `callable` flag.
 - Callable actions map to exactly one callable name per assistant — one
   `name` string under each assistant key. Several actions may resolve to the
-  same name (all task operations map to `update_plan` on Codex).
+  same name (`CreateTask` and `UpdateTask` both map to `update_plan` on
+  Codex, which rewrites the whole plan).
+- When a harness has no counterpart for an action, that assistant entry
+  repeats the other harness's name and carries a `note` saying so. `GetTask`,
+  `ListTasks`, and `StopTask` do this for Codex: reading one item, listing
+  the plan, and stopping a tracked task have no Codex tool. Naming a real
+  concept beats naming a tool that cannot do the job.
 - Non-callable actions carry reference material (file paths, command lists)
   instead of names.
 - Each assistant defines exactly one `invocation_wrapper` with a single
