@@ -2,18 +2,20 @@
 name: tests-manager
 description: Use when applying TDD to Python work, deriving test scenarios from requirements, or planning, writing, editing, reviewing, or running Python E2E, integration, or unit tests, including Celery, Redis, mocks, fixtures, pytest structure, or test coverage.
 metadata:
-  "references/e2e-testing.md": "Load when writing, reviewing, or planning externally observable business flows across the real system boundary."
-  "references/integration-testing.md": "Load when writing, reviewing, or planning integration-test behavior, real wiring, or resource isolation."
-  "references/unit-testing.md": "Load when writing, reviewing, or planning unit-test behavior, mocks, or branch coverage."
-  "references/test-structure.md": "Load when choosing pytest directories, file names, or source-to-test mirroring."
-  "references/factory-conventions.md": "Load when tests need reusable deterministic entity builders or persisted domain objects."
-  "references/celery-testing.md": "Load only when tests involve Celery tasks, retries, canvas workflows, workers, brokers, result backends, or Beat schedules."
-  "references/redis-testing.md": "Load only when tests involve Redis, cache services, queues, pub/sub, Lua, locks, or TTLs."
-  "../../agents/test-scenario-planner.md": "Use when a task description, specification, or business requirement must be converted into test scenarios and corner cases."
-  "../../agents/unit-test-writer.md": "Use for substantial Python pytest unit-test generation."
-  "../../agents/integration-test-writer.md": "Use for substantial Python pytest integration-test generation."
-  "../../agents/test-unit-reviewer.md": "Use for read-only review of existing unit tests."
-  "../../agents/test-runner.md": "Use for focused pytest execution and failure reporting."
+  references:
+    "references/e2e-testing.md": "Load when writing, reviewing, or planning externally observable business flows across the real system boundary."
+    "references/integration-testing.md": "Load when writing, reviewing, or planning integration-test behavior, real wiring, or resource isolation."
+    "references/unit-testing.md": "Load when writing, reviewing, or planning unit-test behavior, mocks, or branch coverage."
+    "references/test-structure.md": "Load when choosing pytest directories, file names, or source-to-test mirroring."
+    "references/factory-conventions.md": "Load when tests need reusable deterministic entity builders or persisted domain objects."
+    "references/celery-testing.md": "Load only when tests involve Celery tasks, retries, canvas workflows, workers, brokers, result backends, or Beat schedules."
+    "references/redis-testing.md": "Load only when tests involve Redis, cache services, queues, pub/sub, Lua, locks, or TTLs."
+  agents:
+    "../../agents/test-scenario-planner.md": "Use when a task description, specification, or business requirement must be converted into test scenarios and corner cases."
+    "../../agents/unit-test-writer.md": "Use for substantial Python pytest unit-test generation."
+    "../../agents/integration-test-writer.md": "Use for substantial Python pytest integration-test generation."
+    "../../agents/test-unit-reviewer.md": "Use for read-only review of existing unit tests."
+    "../../agents/test-runner.md": "Use for focused pytest execution and failure reporting."
 ---
 
 # Tests Manager
@@ -58,8 +60,8 @@ do not implement lower-layer behavior before its higher-layer test is written.
 
 ## Reference Loading
 
-Use the frontmatter metadata as the routing table. Load only the reference or
-agent whose metadata value matches the current task, and skip the rest.
+Use `metadata.references` and `metadata.agents` as the routing table. Load only
+the reference or agent whose value matches the current task, and skip the rest.
 
 ## Shared Pytest Rules
 
@@ -90,7 +92,7 @@ Use `test-scenario-planner` for scenario discovery only. Give its scenario
 catalog to Tests Manager, which selects levels and passes the assigned scope to
 writer agents.
 
-Use the remaining metadata-listed agents for substantial layer-specific test
+Use the remaining agents under `metadata.agents` for substantial layer-specific test
 generation, read-only review, or focused pytest execution. Keep writer scopes
 separate and do not let them expand the scenario catalog.
 

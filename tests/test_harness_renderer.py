@@ -156,6 +156,141 @@ class TestFileRules:
         assert os.access(hook, os.X_OK)
 
 
+class TestFrontmatterPortability:
+    """`allowed-tools` is the one non-portable key a skill may need.
+
+    Claude Code reads it at the top level; Codex documents no support for it,
+    so it travels in `metadata`. The template declares it once and the
+    renderer decides where it lands.
+    """
+
+    HEAD = '---\nname: demo\ndescription: "Demo skill."\n'
+
+    def write_skill(self, repo: Path, frontmatter_tail: str) -> None:
+        demo_template(repo).write_text(
+            f"{self.HEAD}{frontmatter_tail}---\n\n# Demo\n", encoding="utf-8"
+        )
+
+    def test_claude_takes_allowed_tools_at_the_top_level(
+        self, fixture_repo, fixture_matrix
+    ):
+        self.write_skill(fixture_repo, '{{ allowed_tools("Bash(git:*) Read") }}\n')
+
+        text = demo_skill(render(fixture_repo, fixture_matrix, "ClaudeCode"))
+
+        assert "\nallowed-tools: Bash(git:*) Read\n" in text
+        assert "metadata:" not in text
+
+    def test_codex_takes_allowed_tools_under_metadata(
+        self, fixture_repo, fixture_matrix
+    ):
+        self.write_skill(fixture_repo, '{{ allowed_tools("Bash(git:*) Read") }}\n')
+
+        text = demo_skill(render(fixture_repo, fixture_matrix, "Codex"))
+
+        assert "\nmetadata:\n  allowed-tools: Bash(git:*) Read\n" in text
+        assert "\nallowed-tools:" not in text
+
+    @pytest.mark.parametrize("harness", ["ClaudeCode", "Codex"])
+    def test_list_argument_joins_with_spaces(
+        self, fixture_repo, fixture_matrix, harness
+    ):
+        self.write_skill(
+            fixture_repo, '{{ allowed_tools(["Bash(git:*)", "Read"]) }}\n'
+        )
+
+        text = demo_skill(render(fixture_repo, fixture_matrix, harness))
+
+        assert "allowed-tools: Bash(git:*) Read\n" in text
+
+    @pytest.mark.parametrize("argument", ['""', "[]"])
+    @pytest.mark.parametrize("harness", ["ClaudeCode", "Codex"])
+    def test_empty_argument_emits_no_key(
+        self, fixture_repo, fixture_matrix, harness, argument
+    ):
+        self.write_skill(fixture_repo, f"{{{{- allowed_tools({argument}) }}}}\n")
+
+        text = demo_skill(render(fixture_repo, fixture_matrix, harness))
+
+        assert "allowed-tools" not in text
+        assert text == f"{self.HEAD}---\n\n# Demo\n"
+
+    @pytest.mark.parametrize(
+        "value", ["Bash(git: *)", "*Read", "Read # comment", "Read\nWrite"]
+    )
+    @pytest.mark.parametrize("harness", ["ClaudeCode", "Codex"])
+    def test_unquotable_value_fails_the_build(
+        self, fixture_repo, fixture_matrix, harness, value
+    ):
+        self.write_skill(fixture_repo, f"{{{{ allowed_tools({value!r}) }}}}\n")
+
+        with pytest.raises(BuildError, match="allowed-tools"):
+            render(fixture_repo, fixture_matrix, harness)
+
+
+class TestFrontmatterMetadataMerge:
+    """A Codex `allowed-tools` grant emits its own `metadata:` block.
+
+    A skill that also hand-writes one would render a duplicate YAML key, so
+    the renderer folds every block into the first.
+    """
+
+    BOTH_BLOCKS = (
+        "---\n"
+        "name: demo\n"
+        '{{ allowed_tools("Read") }}\n'
+        "metadata:\n"
+        '  references:\n    "references/plain.md": "Load for the plain case."\n'
+        "---\n\n# Demo\n"
+    )
+
+    def test_codex_folds_both_blocks_into_one(self, fixture_repo, fixture_matrix):
+        demo_template(fixture_repo).write_text(self.BOTH_BLOCKS, encoding="utf-8")
+
+        text = demo_skill(render(fixture_repo, fixture_matrix, "Codex"))
+
+        assert text.count("metadata:") == 1
+        assert "  allowed-tools: Read\n" in text
+        assert '    "references/plain.md": "Load for the plain case."\n' in text
+
+    def test_claude_keeps_the_hand_written_block_alone(
+        self, fixture_repo, fixture_matrix
+    ):
+        demo_template(fixture_repo).write_text(self.BOTH_BLOCKS, encoding="utf-8")
+
+        text = demo_skill(render(fixture_repo, fixture_matrix, "ClaudeCode"))
+
+        assert text.count("metadata:") == 1
+        assert "\nallowed-tools: Read\n" in text
+
+    @pytest.mark.parametrize("harness", ["ClaudeCode", "Codex"])
+    def test_single_block_file_is_untouched(
+        self, fixture_repo, fixture_matrix, harness
+    ):
+        source = (
+            "---\nname: demo\nmetadata:\n"
+            '  origin:\n    url: "https://example.invalid/demo"\n'
+            "---\n\n# Demo\n"
+        )
+        demo_template(fixture_repo).write_text(source, encoding="utf-8")
+
+        text = demo_skill(render(fixture_repo, fixture_matrix, harness))
+
+        assert text == source
+
+    @pytest.mark.parametrize("harness", ["ClaudeCode", "Codex"])
+    def test_duplicate_of_another_key_fails_the_build(
+        self, fixture_repo, fixture_matrix, harness
+    ):
+        demo_template(fixture_repo).write_text(
+            "---\nname: demo\ndescription: first\ndescription: second\n---\n",
+            encoding="utf-8",
+        )
+
+        with pytest.raises(BuildError, match="description"):
+            render(fixture_repo, fixture_matrix, harness)
+
+
 class TestFailLoud:
     def test_missing_action_names_action_and_harness(
         self, fixture_repo, fixture_matrix

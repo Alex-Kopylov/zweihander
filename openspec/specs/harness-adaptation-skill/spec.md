@@ -1,10 +1,10 @@
-# harness-adaptation-skill
+# harness-adaptation-skill Specification
 
 ## Purpose
 
 Defines what the rewritten `adapt-skill-for-ai-harness` skill instructs: authoring harness-parametric Jinja templates against the action matrix, written as if the template model had always been the only distribution model.
 
-## ADDED Requirements
+## Requirements
 
 ### Requirement: Skill instructs template authoring
 The skill SHALL instruct converting an explicitly named target skill's harness-specific wording into template form: callable names via action-map lookups and the wrapper mechanism, harness conditionals only for genuinely divergent narrative, and the `.j2` marking with its plain/template collision rule.

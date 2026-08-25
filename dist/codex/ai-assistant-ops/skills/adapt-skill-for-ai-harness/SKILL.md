@@ -67,6 +67,42 @@ When rendered output needs literal `{{` or `{%` sequences, wrap that content
 in `{% raw %}` blocks. Plain (non-template) files never need this; they are
 copied byte-for-byte.
 
+## Frontmatter Portability Boundary
+
+Frontmatter is the one region where a wrong key is a hard incompatibility
+rather than noise. `name` and `description` are the portable keys — every
+harness reads both — so write them literally. `allowed-tools` is not portable:
+Claude Code reads it at the top level, Codex documents no support for it.
+
+Declare an `allowed-tools` grant once, through the `allowed_tools` global:
+
+```jinja
+{{ allowed_tools("Bash(git:*) Read") }}
+```
+
+Claude Code renders `allowed-tools: Bash(git:*) Read` at the top level; Codex
+renders it under `metadata:`. The value is a space-separated string, the form
+the Agent Skills specification defines. A list argument joins with spaces, an
+empty argument emits no key, and a value that would not survive as a plain YAML
+scalar fails the build. Never write `allowed-tools:` by hand and never wrap the
+call in a harness conditional — the global already carries the harness.
+
+A skill may also hand-write `metadata:`. For Codex that would collide with the
+block the global emits, so the renderer folds every frontmatter `metadata:`
+block into the first one. Duplicates of any other key stay a build failure.
+
+Group `metadata` entries one level deep, under `references`, `agents`,
+`skills`, or `origin`, and keep entry keys as paths that resolve from the
+declaring file:
+
+```yaml
+metadata:
+  references:
+    "references/gitlab.md": "Load when the merge request lives on GitLab."
+  agents:
+    "../../agents/test-runner.md": "Use for focused pytest execution."
+```
+
 ## Workflow
 
 1. Resolve the explicitly named target skill directory or path.
@@ -74,7 +110,8 @@ copied byte-for-byte.
    `references/`, `agents/`, examples, and scripts the skill loads or
    describes. Ignore README files, tests, and development-only support files.
 3. Find harness-specific wording: mechanism callable names, invocation
-   syntax, and harness-specific facts such as context-file locations.
+   syntax, frontmatter keys outside the portable set, and harness-specific
+   facts such as context-file locations.
 4. Leave baseline capabilities alone. Every harness reads, searches, creates,
    edits, and writes files and runs shell commands natively; delete baseline
    tool coaching instead of templating it.
@@ -123,6 +160,8 @@ The renderer depends on every element below; keep them stable:
 For each adapted target, check that:
 
 - Exactly one source exists per output path (no plain/template collision).
+- Frontmatter holds no hand-written `allowed-tools:`, and every `metadata`
+  entry sits under a declared namespace.
 - Rendered output for each harness contains only that harness's callable
   names, with the wrapper applied uniformly.
 - No template hardcodes a matrix-mapped callable name and no conditional

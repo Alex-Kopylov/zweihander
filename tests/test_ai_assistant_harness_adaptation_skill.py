@@ -69,6 +69,19 @@ def test_skill_instructs_template_authoring() -> None:
     assert "explicitly named" in body
 
 
+def test_skill_documents_frontmatter_portability_boundary() -> None:
+    body = skill_body()
+
+    assert "Frontmatter Portability Boundary" in body
+    assert '{{ allowed_tools("Bash(git:*) Read") }}' in body
+    assert "`name` and `description` are the portable keys" in body
+    assert "Claude Code renders `allowed-tools: Bash(git:*) Read` at the top" in body
+    assert "Codex\nrenders it under `metadata:`" in body
+    assert "folds every frontmatter `metadata:`" in body
+    for namespace in ("references", "agents", "skills", "origin"):
+        assert f"`{namespace}`" in body
+
+
 def test_skill_documents_matrix_contract() -> None:
     body = skill_body()
 

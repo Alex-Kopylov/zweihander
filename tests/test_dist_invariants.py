@@ -2,8 +2,9 @@
 
 Files rendered from `.j2` sources carry no foreign harness vocabulary and no
 leftover Jinja markers; neither tree carries templates, legacy dispatch
-artifacts, foreign runtime metadata, or development files; consecutive builds
-are byte-identical.
+artifacts, foreign runtime metadata, or development files; published
+frontmatter stays inside each harness's portability boundary; consecutive
+builds are byte-identical.
 """
 
 import json
@@ -17,6 +18,7 @@ from plugin_maintenance.render import (
     DIST_DIRS,
     FOREIGN_METADATA_DIRS,
     MATRIX_PATH,
+    frontmatter_lines,
     leftover_jinja_markers,
     render_tree,
 )
@@ -146,6 +148,54 @@ def test_dist_strips_foreign_runtime_metadata(harness):
 @pytest.mark.parametrize("harness", ["ClaudeCode", "Codex"])
 def test_dist_carries_no_dev_files(harness):
     assert not [path for path in dist_files(harness) if path.name in DEV_FILE_NAMES]
+
+
+def dist_frontmatter_files(harness: str) -> list[tuple[str, list[str]]]:
+    """Every published file that opens with frontmatter, with its lines."""
+    published = []
+    for path in dist_files(harness):
+        if path.suffix != ".md":
+            continue
+        lines = frontmatter_lines(path.read_text(encoding="utf-8"))
+        if lines is not None:
+            published.append(
+                (path.relative_to(REPO_ROOT / DIST_DIRS[harness]).as_posix(), lines)
+            )
+    return published
+
+
+def test_codex_tree_carries_no_top_level_allowed_tools():
+    """Codex documents `name` and `description` only.
+
+    An `allowed-tools` grant reaches the Codex tree under `metadata`, the
+    free-form map, never as a top-level key Codex does not read.
+    """
+    violations = [
+        name
+        for name, lines in dist_frontmatter_files("Codex")
+        for line in lines
+        if line.startswith("allowed-tools:")
+    ]
+
+    assert not violations, "\n".join(violations)
+
+
+@pytest.mark.parametrize("harness", ["ClaudeCode", "Codex"])
+def test_published_frontmatter_holds_no_duplicate_key(harness):
+    """The merge step folds `metadata:` blocks; nothing else may repeat."""
+    violations = []
+
+    for name, lines in dist_frontmatter_files(harness):
+        seen = set()
+        for line in lines:
+            match = re.match(r"([A-Za-z_][\w.-]*):", line)
+            if not match:
+                continue
+            if match.group(1) in seen:
+                violations.append(f"{name}: duplicate {match.group(1)}")
+            seen.add(match.group(1))
+
+    assert not violations, "\n".join(violations)
 
 
 def task_management_patterns(harness: str) -> str:

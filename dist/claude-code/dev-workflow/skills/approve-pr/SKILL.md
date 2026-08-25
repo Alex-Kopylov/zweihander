@@ -3,10 +3,11 @@ name: approve-pr
 description: Use when the user explicitly asks to approve and merge a pull request or merge request.
 argument-hint: "pr=<url-or-number> [target_branch=<branch>]"
 metadata:
-  gitlab: references/gitlab.md
-  github: references/github.md
-  azure_devops: references/azure_devops.md
-  bitbucket: references/bitbucket.md
+  references:
+    "references/gitlab.md": "Load when the merge request lives on GitLab."
+    "references/github.md": "Load when the pull request lives on GitHub."
+    "references/azure_devops.md": "Load when the pull request lives on Azure DevOps."
+    "references/bitbucket.md": "Load when the pull request lives on Bitbucket."
 ---
 
 # Approve PR
@@ -45,7 +46,7 @@ Progress:
 
 - [ ] Step 1: Resolve platform from `pr` URL. If `pr` is only a number, resolve
   from `git remote get-url origin`.
-- [ ] Step 2: Load the matching platform reference from skill `metadata`.
+- [ ] Step 2: Load the matching platform reference from `metadata.references`.
 - [ ] Step 3: Fetch PR metadata and record current head SHA.
 - [ ] Step 4: Show the actual target branch. If `target_branch` was supplied,
   compare it before approval and treat a mismatch as a hard stop.

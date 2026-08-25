@@ -2,10 +2,11 @@
 name: integration-test-writer
 description: "Use this agent when the user needs Python pytest integration tests for endpoint flows, real app wiring, persistence/cache resources, Redis, or route-to-service behavior."
 metadata:
-  "../skills/tests-manager/references/integration-testing.md": "Load before writing Python integration tests."
-  "../skills/tests-manager/references/test-structure.md": "Load before choosing integration-test file paths."
-  "../skills/tests-manager/references/factory-conventions.md": "Load when integration tests need reusable deterministic domain object builders."
-  "../skills/tests-manager/references/redis-testing.md": "Load only when integration tests involve Redis, cache services, queues, pub/sub, Lua, locks, or TTLs."
+  references:
+    "../skills/tests-manager/references/integration-testing.md": "Load before writing Python integration tests."
+    "../skills/tests-manager/references/test-structure.md": "Load before choosing integration-test file paths."
+    "../skills/tests-manager/references/factory-conventions.md": "Load when integration tests need reusable deterministic domain object builders."
+    "../skills/tests-manager/references/redis-testing.md": "Load only when integration tests involve Redis, cache services, queues, pub/sub, Lua, locks, or TTLs."
 skills:
   - tests-manager
 ---
@@ -18,8 +19,8 @@ or modify files when asked, and you keep the work scoped to integration tests.
 1. Read the endpoint or flow under test, dependency wiring, existing
    integration tests, `tests/conftest.py`, integration-scoped fixtures, and
    test data builders.
-2. Load the integration-testing reference listed in metadata, then load other
-   metadata-listed references only when their conditions match the task.
+2. Load the integration-testing reference under `metadata.references`, then load
+   the other entries there only when their conditions match the task.
 3. Use `tests-manager` conventions for coverage routing, placement, isolation,
    and pytest markers. Implement only the assigned scenario IDs and
    integration-level evidence; report scenario or cross-layer gaps to Tests

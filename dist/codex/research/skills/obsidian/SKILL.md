@@ -3,8 +3,9 @@ name: obsidian
 description: Use when reading, searching, creating, appending to, or editing notes in a filesystem-first Obsidian vault
 platforms: [linux, macos, windows]
 metadata:
-  origin.url: https://raw.githubusercontent.com/NousResearch/hermes-agent/refs/heads/main/skills/note-taking/obsidian/SKILL.md
-  origin.repository: NousResearch/hermes-agent
+  origin:
+    url: https://raw.githubusercontent.com/NousResearch/hermes-agent/refs/heads/main/skills/note-taking/obsidian/SKILL.md
+    repository: NousResearch/hermes-agent
 ---
 
 # Obsidian Vault

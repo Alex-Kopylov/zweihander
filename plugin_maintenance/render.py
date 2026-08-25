@@ -7,18 +7,27 @@ render X.j2 into X when only X.j2 exists, fail when both exist. Files named
 AGENTS.md/CLAUDE.md/README.md, the other harness's runtime metadata
 directory, and every path `.gitignore` excludes are never emitted. Each tree
 contains exactly the plugins listed in that harness's marketplace manifest.
+
+Frontmatter is the portability boundary: `name` and `description` are written
+literally, while an `allowed-tools` grant goes through the `allowed_tools`
+global, which lands it at the top level for Claude Code and under `metadata`
+for Codex.
 """
 
 import argparse
+import functools
 import json
 import re
 import shutil
 import tempfile
 from collections.abc import Callable, Mapping
 from pathlib import Path
+from typing import Literal
 
 import pathspec
 from jinja2 import Environment, StrictUndefined, TemplateError
+
+Harness = Literal["ClaudeCode", "Codex"]
 
 MATRIX_PATH = Path(
     "plugins/ai-assistant-ops/skills/adapt-skill-for-ai-harness"
@@ -38,6 +47,12 @@ RAW_BLOCK = re.compile(
     r"\{%(?P<trim_tail>-?)\s*endraw\s*-?%\}",
     re.DOTALL,
 )
+
+FRONTMATTER = re.compile(r"\A---\n(?P<body>.*?\n)---\n", re.DOTALL)
+TOP_LEVEL_KEY = re.compile(r"\A(?P<key>[A-Za-z_][\w.-]*):")
+METADATA_KEY = "metadata:"
+# Characters that make YAML read a plain scalar as something other than text.
+YAML_INDICATORS = set("*&!|>%@`{}[],#\"'?")
 
 HARNESS_MANIFESTS = {
     "ClaudeCode": Path(".claude-plugin/marketplace.json"),
@@ -195,8 +210,116 @@ def leftover_jinja_markers(template_text: str, rendered: str) -> list[str]:
     return [marker for marker in JINJA_MARKERS if marker in scanned]
 
 
+def _plain_scalar_problem(value: str) -> str | None:
+    """Name what stops `value` from being a plain YAML scalar, or return None.
+
+    The Agent Skills specification writes `allowed-tools` unquoted, so the
+    renderer writes it unquoted too and refuses a value that would change
+    meaning in that position instead of quoting it into a different shape.
+    """
+    if value != value.strip():
+        return "leading or trailing whitespace"
+    if "\n" in value or "\r" in value:
+        return "a line break"
+    if ": " in value or value.endswith(":"):
+        return "a key separator"
+    if " #" in value:
+        return "a comment marker"
+    if value[0] in YAML_INDICATORS:
+        return f"the leading YAML indicator {value[0]!r}"
+    if value.startswith("- "):
+        return "a leading sequence marker"
+    return None
+
+
+def allowed_tools(harness: Harness, tools: str | list[str]) -> str:
+    """Place an `allowed-tools` grant where the target harness reads it.
+
+    Claude Code honours the key at the top level of skill frontmatter. Codex
+    documents no support for it, so it travels in `metadata`, the free-form
+    map both harnesses accept. A template declares the grant once and this
+    global decides the placement; the harness is bound at registration, so no
+    template can branch on it.
+    """
+    value = tools if isinstance(tools, str) else " ".join(tools)
+    if not value:
+        return ""
+
+    problem = _plain_scalar_problem(value)
+    if problem:
+        raise BuildError(
+            f"allowed-tools value {value!r} cannot be written as a plain YAML "
+            f"scalar: it carries {problem}"
+        )
+    if harness == "Codex":
+        return f"{METADATA_KEY}\n  allowed-tools: {value}"
+    return f"allowed-tools: {value}"
+
+
+def frontmatter_lines(text: str) -> list[str] | None:
+    """Return the frontmatter block's lines, or None when there is none."""
+    match = FRONTMATTER.match(text)
+    return match.group("body").splitlines() if match else None
+
+
+def merge_metadata_blocks(text: str) -> str:
+    """Fold every frontmatter `metadata:` block into the first one.
+
+    `allowed_tools` emits its own block for Codex, so a skill that also
+    hand-writes `metadata:` would render a duplicate YAML key. Each entry line
+    crosses over exactly as authored. A file with one block is returned
+    unchanged, which keeps the step invisible to every existing template.
+    """
+    match = FRONTMATTER.match(text)
+    if not match:
+        return text
+
+    lines = match.group("body").splitlines()
+    heads = [index for index, line in enumerate(lines) if line == METADATA_KEY]
+    if len(heads) < 2:
+        return text
+
+    bodies: dict[int, list[str]] = {}
+    consumed: set[int] = set()
+    for head in heads:
+        end = head + 1
+        while end < len(lines) and (not lines[end] or lines[end].startswith(" ")):
+            end += 1
+        bodies[head] = lines[head + 1 : end]
+        consumed.update(range(head, end))
+
+    merged: list[str] = []
+    for index, line in enumerate(lines):
+        if index == heads[0]:
+            merged.append(METADATA_KEY)
+            for head in heads:
+                merged.extend(bodies[head])
+        elif index not in consumed:
+            merged.append(line)
+
+    return text.replace(match.group("body"), "\n".join(merged) + "\n", 1)
+
+
+def duplicate_frontmatter_key(text: str) -> str | None:
+    """Return the first frontmatter key that appears twice, or None."""
+    lines = frontmatter_lines(text)
+    if lines is None:
+        return None
+
+    seen: set[str] = set()
+    for line in lines:
+        match = TOP_LEVEL_KEY.match(line)
+        if not match:
+            continue
+        key = match.group("key")
+        if key in seen:
+            return key
+        seen.add(key)
+    return None
+
+
 def _render_template(
-    source: Path, environment: Environment, context: dict, harness: str
+    source: Path, environment: Environment, context: dict, harness: Harness
 ) -> str:
     text = source.read_text(encoding="utf-8")
     try:
@@ -214,6 +337,14 @@ def _render_template(
             f"{source} rendered for harness '{harness}' still contains Jinja "
             f"marker '{markers[0]}' outside any raw block"
         )
+
+    rendered = merge_metadata_blocks(rendered)
+    duplicate = duplicate_frontmatter_key(rendered)
+    if duplicate:
+        raise BuildError(
+            f"{source} rendered for harness '{harness}' carries two "
+            f"'{duplicate}:' keys in its frontmatter"
+        )
     return rendered
 
 
@@ -222,7 +353,7 @@ def _render_plugin(
     target_dir: Path,
     environment: Environment,
     context: dict,
-    harness: str,
+    harness: Harness,
     is_ignored: Callable[[Path], bool],
 ) -> None:
     foreign_metadata = FOREIGN_METADATA_DIRS[harness]
@@ -263,7 +394,7 @@ def _render_plugin(
 
 def render_tree(
     repo_root: Path,
-    harness: str,
+    harness: Harness,
     output_dir: Path,
     matrix_path: Path | None = None,
     manifest_path: Path | None = None,
@@ -284,6 +415,7 @@ def render_tree(
     environment = Environment(undefined=StrictUndefined, keep_trailing_newline=True)
     wrapper = matrix["assistants"][harness]["invocation_wrapper"]
     environment.filters["call"] = lambda name: wrapper.format(name=name)
+    environment.globals["allowed_tools"] = functools.partial(allowed_tools, harness)
     context = {
         "harness": harness,
         "actions": ActionMap(

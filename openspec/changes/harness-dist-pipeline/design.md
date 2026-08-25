@@ -115,6 +115,80 @@ The renderer builds into a staging directory and renames it into place, so the p
 
 Staging takes the mode of `dist/` itself before the rename. Preserving the *existing* `dist/<harness>/` mode was rejected: a tree already left private by an earlier build would stay private forever. Reading the process umask was rejected as a thread-unsafe global mutation. Taking the parent's mode self-heals and keeps the published mode a pure function of the source tree, which is what the freshness requirement asks of every other published attribute.
 
+### D12. Skill frontmatter is the portability boundary
+
+Frontmatter is the one region of a skill where a wrong key is a hard
+incompatibility rather than noise. Claude Code documents about twenty fields,
+the Agent Skills specification six, and Codex exactly two: `name` and
+`description`. `allowed-tools` is the concrete case — Claude Code honours the
+key at the top level and runs the grant through its permission flow; Codex
+documents no support for it.
+
+Frontmatter is therefore the portability boundary, and `allowed-tools` crosses
+it through one renderer-provided Jinja global rather than through author
+discipline:
+
+```jinja
+{{ allowed_tools("Bash(git:*) Read") }}
+```
+
+Claude Code renders `allowed-tools: Bash(git:*) Read` at the top level. Codex
+renders it under `metadata:`, the free-form map both harnesses accept, which is
+where non-portable data travels. The harness is bound when the global is
+registered, so a template never passes it and no author can branch the
+placement by hand. The value is a space-separated string — the form the Agent
+Skills specification defines — written unquoted as the specification writes it;
+a value that would not survive as a plain YAML scalar fails the build instead
+of being quoted into a shape the specification does not show. A list argument
+joins with spaces; an empty argument emits no key at all.
+
+The global covers `allowed-tools` only. Reference pointers, agent pointers and
+provenance are author content, not placement decisions, so they stay written in
+the template.
+
+That leaves one hazard: for Codex the global emits its own `metadata:` block, so
+a skill that also hand-writes `metadata:` would render a duplicate YAML key.
+The renderer folds every frontmatter `metadata:` block into the first one after
+rendering, carrying each entry line across as authored. The step is
+idempotent — a file with one block is unchanged — so existing templates render
+byte-identically. Duplicates of any other frontmatter key stay a build failure:
+a second `name:` or `description:` is an authoring mistake, not a portability
+problem.
+
+Alongside the global, `metadata` entries group one level deep by kind instead of
+sitting flat, so the region reads as a tree:
+
+    metadata:
+      allowed-tools: Bash(git:*) Read
+      references:
+        "references/e2e-testing.md": "Load when ..."
+      agents:
+        "../../agents/unit-test-writer.md": "Use for ..."
+      skills:
+        "python-dev-workflow:tests-manager": "Use for ..."
+      origin:
+        url: "https://..."
+        repository: "NousResearch/hermes-agent"
+
+The four content namespaces are the kinds already in use across the repository.
+Every flat variant converts to this shape, including the dotted `origin.url`
+keys and the bare path keys, so each skill and agent reads the same way. Entry
+keys stay paths relative to the declaring file, so a grouped entry still
+resolves.
+
+Alternative — a global that also takes the reference and agent pointers:
+rejected; those are content the author writes, and routing them through a
+function call only to have it print them back is indirection with no decision
+behind it. Alternative — forbid a hand-written `metadata:` beside the global:
+rejected; it leaves a skill that needs both with no supported path. Alternative
+— namespace a flat `metadata` through dotted keys (`references.e2e-testing.md`):
+rejected; file names contain dots, so the separator is ambiguous.
+
+Trade-off: nested values under `metadata` go past the Agent Skills
+specification's "map from string keys to string values". Claude Code defines the
+field as a free-form YAML map, and both trees are consumed by CLI harnesses
+rather than by the strict claude.ai upload path, so the deviation is accepted.
+
 ## Risks / Trade-offs
 
 - [Committed `dist/` invites hand edits and merge conflicts] → CI freshness gate rejects any divergence; docs state "never edit `dist/`"; conflicts resolve by re-rendering.

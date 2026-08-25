@@ -1,10 +1,10 @@
-# harness-dist-build
+# harness-dist-build Specification
 
 ## Purpose
 
 Turns the authored `plugins/` tree into one complete, installable, harness-specific plugin tree per supported harness under `dist/`, through a two-stage build: per-plugin content generation, then per-harness template rendering.
 
-## ADDED Requirements
+## Requirements
 
 ### Requirement: Two-stage build order
 The build SHALL run generation (stage 1) before distribution (stage 2), and stage 2 SHALL consume the `plugins/` tree exactly as stage 1 left it.

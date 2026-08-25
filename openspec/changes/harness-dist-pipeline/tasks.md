@@ -62,3 +62,13 @@ The whole change lands in one PR. Development is test-first (TDD): each behavior
 - [x] 8.4 Give the staging directory the mode of `dist/` before the rename, and replace a plain file sitting at the output path instead of raising
 - [x] 8.5 Detect `{% raw %}` blocks with a regex covering every Jinja spelling, and exempt each block's own output instead of the whole file — in the renderer and in `tests/test_dist_invariants.py`
 - [x] 8.6 Fold 8.1–8.5 into the delta specs and design decisions, so the archived change records the shipped build contract
+
+## 9. Frontmatter portability boundary
+
+- [x] 9.1 Write failing renderer tests for the frontmatter boundary: top-level `allowed-tools` for Claude Code, `metadata` sub-key for Codex, string and list arguments, empty argument emits nothing, unquotable value fails, hand-written `metadata:` merges into one block, single-block file unchanged, duplicate of another key fails
+- [x] 9.2 Implement the `allowed_tools` template global and the frontmatter merge and duplicate-key checks in the renderer, with a `Harness` literal type replacing the bare `harness: str` annotations
+- [x] 9.3 Write the source policy test: no hand-written `allowed-tools:` in any skill or agent frontmatter, and every frontmatter `metadata` entry under a declared namespace
+- [x] 9.4 Write the dist invariant test: no top-level `allowed-tools` under `dist/codex/**`, and exactly one `metadata:` key per rendered file
+- [x] 9.5 Convert the seven existing `metadata:` blocks to the namespaced shape, update the skill and agent bodies that describe them as a routing table, and update `tests/test_python_dev_workflow_plugin.py` to the nested keys
+- [x] 9.6 Document the boundary in `adapt-skill-for-ai-harness` and extend `tests/test_ai_assistant_harness_adaptation_skill.py` to cover it
+- [x] 9.7 Rebuild both trees and run full verification: `uv run pytest tests`, JSON validation, `git diff --check`

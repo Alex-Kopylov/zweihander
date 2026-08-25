@@ -2,7 +2,8 @@
 name: celery-expert
 description: This skill should be used when the user asks to "configure Celery", "set up Celery with Redis", "write Celery tasks", "add background tasks with Celery", "celery beat schedule", "celery task retry", "celery performance tuning", "celery TDD", "test Celery tasks", "celery worker config", "celery monitoring", "celery security", or when code imports celery or the project uses a celeryconfig/celery.py module.
 metadata:
-  "python-dev-workflow:tests-manager": "Use for Celery test planning, pytest fixtures, eager-mode decisions, live-worker integration tests, and test isolation."
+  skills:
+    "python-dev-workflow:tests-manager": "Use for Celery test planning, pytest fixtures, eager-mode decisions, live-worker integration tests, and test isolation."
 ---
 
 # Celery Expert (Redis Broker)

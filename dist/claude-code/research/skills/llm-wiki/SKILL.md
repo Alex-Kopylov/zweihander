@@ -6,8 +6,9 @@ author: Hermes Agent
 license: MIT
 platforms: [linux, macos, windows]
 metadata:
-  origin.url: https://raw.githubusercontent.com/NousResearch/hermes-agent/refs/heads/main/skills/research/llm-wiki/SKILL.md
-  origin.repository: NousResearch/hermes-agent
+  origin:
+    url: https://raw.githubusercontent.com/NousResearch/hermes-agent/refs/heads/main/skills/research/llm-wiki/SKILL.md
+    repository: NousResearch/hermes-agent
 ---
 
 # Karpathy's LLM Wiki
