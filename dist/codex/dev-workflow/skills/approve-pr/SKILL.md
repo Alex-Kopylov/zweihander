@@ -1,8 +1,8 @@
 ---
 name: approve-pr
 description: Use when the user explicitly asks to approve and merge a pull request or merge request.
-argument-hint: "pr=<url-or-number> [target_branch=<branch>]"
 metadata:
+  argument-hint: "pr=<url-or-number> [target_branch=<branch>]"
   references:
     "references/gitlab.md": "Load when the merge request lives on GitLab."
     "references/github.md": "Load when the pull request lives on GitHub."

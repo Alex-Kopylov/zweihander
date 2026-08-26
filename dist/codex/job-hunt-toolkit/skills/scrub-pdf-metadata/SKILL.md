@@ -1,7 +1,8 @@
 ---
 name: scrub-pdf-metadata
 description: Use when the user asks to "scrub PDF metadata", "clean the PDF", "strip CV metadata", "remove author from PDF", "sanitize PDF", "wipe PDF info", "clear PDF properties", "clean up before sending", "remove creation date", or after exporting a PDF that will be sent to a recruiter. Strips Author, Title, Producer, Creator, CreationDate, ModifyDate, XMP, and custom metadata fields using exiftool, then sets a clean Author field back. Called automatically by export-pdf as its final step.
-argument-hint: <pdf-file> [--author="Full Name"]
+metadata:
+  argument-hint: "<pdf-file> [--author=\"Full Name\"]"
 ---
 
 # Scrub PDF Metadata

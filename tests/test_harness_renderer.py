@@ -6,13 +6,19 @@ dev-file exclusion, mode-bit preservation, metadata stripping, and
 manifest-driven membership.
 """
 
+import json
 import os
 import re
 from pathlib import Path
 
 import pytest
 
-from plugin_maintenance.render import DEV_FILE_NAMES, BuildError, render_tree
+from plugin_maintenance.render import (
+    DEV_FILE_NAMES,
+    FRONTMATTER_MATRIX_NAME,
+    BuildError,
+    render_tree,
+)
 
 
 def render(repo: Path, matrix: Path, harness: str) -> Path:
@@ -157,11 +163,11 @@ class TestFileRules:
 
 
 class TestFrontmatterPortability:
-    """`allowed-tools` is the one non-portable key a skill may need.
+    """`allowed-tools` is a key the harnesses place differently.
 
     Claude Code reads it at the top level; Codex documents no support for it,
-    so it travels in `metadata`. The template declares it once and the
-    renderer decides where it lands.
+    so the matrix sends it to `metadata`. The template declares it once and
+    the renderer places it.
     """
 
     HEAD = '---\nname: demo\ndescription: "Demo skill."\n'
@@ -226,6 +232,150 @@ class TestFrontmatterPortability:
 
         with pytest.raises(BuildError, match="allowed-tools"):
             render(fixture_repo, fixture_matrix, harness)
+
+
+class TestArgumentFrontmatter:
+    """`argument-hint` and `arguments` are Claude Code keys.
+
+    The frontmatter matrix places both under `metadata` for Codex, which
+    documents `name` and `description` only, the same way it places an
+    `allowed-tools` grant.
+    """
+
+    HEAD = "---\nname: demo\n"
+
+    def write_skill(self, repo: Path, frontmatter_tail: str) -> None:
+        demo_template(repo).write_text(
+            f"{self.HEAD}{frontmatter_tail}---\n\n# Demo\n", encoding="utf-8"
+        )
+
+    def test_claude_takes_both_keys_at_the_top_level(
+        self, fixture_repo, fixture_matrix
+    ):
+        self.write_skill(
+            fixture_repo,
+            '{{ argument_hint("[items] to walk") }}\n{{ arguments("items") }}\n',
+        )
+
+        text = demo_skill(render(fixture_repo, fixture_matrix, "ClaudeCode"))
+
+        assert '\nargument-hint: "[items] to walk"\n' in text
+        assert "\narguments: items\n" in text
+        assert "metadata:" not in text
+
+    def test_codex_takes_both_keys_under_one_metadata_block(
+        self, fixture_repo, fixture_matrix
+    ):
+        self.write_skill(
+            fixture_repo,
+            '{{ argument_hint("[items] to walk") }}\n{{ arguments("items") }}\n',
+        )
+
+        text = demo_skill(render(fixture_repo, fixture_matrix, "Codex"))
+
+        assert text.count("metadata:") == 1
+        assert '  argument-hint: "[items] to walk"\n' in text
+        assert "  arguments: items\n" in text
+        assert "\nargument-hint:" not in text
+        assert "\narguments:" not in text
+
+    @pytest.mark.parametrize("harness", ["ClaudeCode", "Codex"])
+    def test_hint_is_quoted_so_yaml_reads_it_as_one_string(
+        self, fixture_repo, fixture_matrix, harness
+    ):
+        """`argument-hint: [file] [format]` would otherwise parse as a list."""
+        self.write_skill(fixture_repo, '{{ argument_hint("[file] [format]") }}\n')
+
+        text = demo_skill(render(fixture_repo, fixture_matrix, harness))
+
+        assert 'argument-hint: "[file] [format]"\n' in text
+
+    @pytest.mark.parametrize("harness", ["ClaudeCode", "Codex"])
+    def test_quotes_inside_a_hint_are_escaped(
+        self, fixture_repo, fixture_matrix, harness
+    ):
+        self.write_skill(fixture_repo, """{{ argument_hint('say "hi"') }}\n""")
+
+        text = demo_skill(render(fixture_repo, fixture_matrix, harness))
+
+        assert 'argument-hint: "say \\"hi\\""\n' in text
+
+    @pytest.mark.parametrize("harness", ["ClaudeCode", "Codex"])
+    def test_argument_list_joins_with_spaces(
+        self, fixture_repo, fixture_matrix, harness
+    ):
+        self.write_skill(fixture_repo, '{{ arguments(["issue", "branch"]) }}\n')
+
+        text = demo_skill(render(fixture_repo, fixture_matrix, harness))
+
+        assert "arguments: issue branch\n" in text
+
+    @pytest.mark.parametrize("global_call", ["argument_hint", "arguments"])
+    @pytest.mark.parametrize("argument", ['""', "[]"])
+    @pytest.mark.parametrize("harness", ["ClaudeCode", "Codex"])
+    def test_empty_argument_emits_no_key(
+        self, fixture_repo, fixture_matrix, harness, global_call, argument
+    ):
+        self.write_skill(fixture_repo, f"{{{{- {global_call}({argument}) }}}}\n")
+
+        text = demo_skill(render(fixture_repo, fixture_matrix, harness))
+
+        assert text == f"{self.HEAD}---\n\n# Demo\n"
+
+    @pytest.mark.parametrize("harness", ["ClaudeCode", "Codex"])
+    def test_multi_line_hint_fails_the_build(
+        self, fixture_repo, fixture_matrix, harness
+    ):
+        self.write_skill(fixture_repo, "{{ argument_hint('one\\ntwo') }}\n")
+
+        with pytest.raises(BuildError, match="argument-hint"):
+            render(fixture_repo, fixture_matrix, harness)
+
+    @pytest.mark.parametrize("name", ["Items", "two words", "1st", "items!"])
+    @pytest.mark.parametrize("harness", ["ClaudeCode", "Codex"])
+    def test_name_that_cannot_spell_a_placeholder_fails_the_build(
+        self, fixture_repo, fixture_matrix, harness, name
+    ):
+        self.write_skill(fixture_repo, f"{{{{ arguments([{name!r}]) }}}}\n")
+
+        with pytest.raises(BuildError, match="placeholder"):
+            render(fixture_repo, fixture_matrix, harness)
+
+
+class TestPlacementComesFromTheMatrix:
+    """Placement is data the renderer reads, not a branch it carries."""
+
+    def repoint(self, matrix_path: Path, key: str, harness: str, placement: str) -> None:
+        path = matrix_path.with_name(FRONTMATTER_MATRIX_NAME)
+        matrix = json.loads(path.read_text(encoding="utf-8"))
+        matrix["keys"][key][harness]["placement"] = placement
+        path.write_text(json.dumps(matrix, indent=2) + "\n", encoding="utf-8")
+
+    def write_skill(self, repo: Path, frontmatter_tail: str) -> None:
+        demo_template(repo).write_text(
+            f"---\nname: demo\n{frontmatter_tail}---\n\n# Demo\n", encoding="utf-8"
+        )
+
+    def test_flipping_a_placement_moves_the_key(self, fixture_repo, fixture_matrix):
+        self.repoint(fixture_matrix, "argument-hint", "ClaudeCode", "metadata")
+        self.write_skill(fixture_repo, '{{ argument_hint("[items]") }}\n')
+
+        text = demo_skill(render(fixture_repo, fixture_matrix, "ClaudeCode"))
+
+        assert '\nmetadata:\n  argument-hint: "[items]"\n' in text
+
+    def test_a_key_outside_the_matrix_has_no_global(self, fixture_repo, fixture_matrix):
+        self.write_skill(fixture_repo, '{{ model("opus") }}\n')
+
+        with pytest.raises(BuildError, match="model"):
+            render(fixture_repo, fixture_matrix, "ClaudeCode")
+
+    def test_a_verbatim_key_has_no_global(self, fixture_repo, fixture_matrix):
+        """`name` is written literally, so nothing places it."""
+        self.write_skill(fixture_repo, '{{ name("demo") }}\n')
+
+        with pytest.raises(BuildError, match="name"):
+            render(fixture_repo, fixture_matrix, "ClaudeCode")
 
 
 class TestFrontmatterMetadataMerge:

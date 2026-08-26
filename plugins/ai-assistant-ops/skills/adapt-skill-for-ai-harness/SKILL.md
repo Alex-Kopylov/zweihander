@@ -1,6 +1,6 @@
 ---
 name: adapt-skill-for-ai-harness
-description: "Use when adapting skills for AI Assistant Harness Adaptation, using an assistant harness action matrix, or making explicitly named target skills render correctly for every supported harness."
+description: "Use when adapting skills for AI Assistant Harness Adaptation, using an assistant harness action matrix or frontmatter matrix, or making explicitly named target skills render correctly for every supported harness."
 ---
 
 # Adapt Skill For AI Harness
@@ -70,30 +70,56 @@ copied byte-for-byte.
 ## Frontmatter Portability Boundary
 
 Frontmatter is the one region where a wrong key is a hard incompatibility
-rather than noise. `name` and `description` are the portable keys — every
-harness reads both — so write them literally. `allowed-tools` is not portable:
-Claude Code reads it at the top level, Codex documents no support for it.
+rather than noise. `references/harness-frontmatter-matrix.json` is the only
+source of frontmatter placement, as the action matrix is the only source of
+callable names. Lookups are key-first, then assistant:
 
-Declare an `allowed-tools` grant once, through the `allowed_tools` global:
+```python
+matrix = load_json("references/harness-frontmatter-matrix.json")
+placement = matrix["keys"]["argument-hint"]["Codex"]["placement"]  # metadata
+```
+
+Use `scripts/lookup_harness_frontmatter.py --key argument-hint --assistant Codex`
+for scriptable lookup; it also returns how to declare the key.
+
+A key whose form is `verbatim` is portable — every harness reads it — so write
+it literally. `name` and `description` are the two. Every other key carries a
+placement per harness, and the renderer registers one global named after it:
 
 ```jinja
 {{ allowed_tools("Bash(git:*) Read") }}
+{{ argument_hint("[issue] to work through") }}
+{{ arguments("issue") }}
 ```
 
-Claude Code renders `allowed-tools: Bash(git:*) Read` at the top level; Codex
-renders it under `metadata:`. The value is a space-separated string, the form
-the Agent Skills specification defines. A list argument joins with spaces, an
-empty argument emits no key, and a value that would not survive as a plain YAML
-scalar fails the build. Never write `allowed-tools:` by hand and never wrap the
-call in a harness conditional — the global already carries the harness.
+Claude Code renders each at the top level; Codex renders each under
+`metadata:`, the free-form map both harnesses accept. An empty value emits no
+key. Never write a placed key by hand and never wrap the call in a harness
+conditional — the global already carries the harness.
+
+Each key's `form` decides how the value is written, and the matrix documents
+every form:
+
+- `plain-scalar` — written unquoted, the form the Agent Skills specification
+  shows; a list argument joins with spaces, and a value that would not survive
+  as a plain YAML scalar fails the build.
+- `quoted-scalar` — always double-quoted, because `argument-hint: [file]
+  [format]` would otherwise parse as a YAML list; a line break fails the build.
+- `placeholder-names` — names that can each spell a `$name` placeholder, so a
+  name with a space, a capital, or a leading digit fails the build.
+
+Claude Code substitutes `$name` in the body; Codex documents no substitution. So
+spell a placeholder inside a harness conditional and write prose in the Codex
+branch. This is the only `$name` that may sit inside a conditional.
 
 A skill may also hand-write `metadata:`. For Codex that would collide with the
-block the global emits, so the renderer folds every frontmatter `metadata:`
+block a global emits, so the renderer folds every frontmatter `metadata:`
 block into the first one. Duplicates of any other key stay a build failure.
 
-Group `metadata` entries one level deep, under `references`, `agents`,
-`skills`, or `origin`, and keep entry keys as paths that resolve from the
-declaring file:
+Group `metadata` entries one level deep, under a namespace the matrix
+declares — `references`, `agents`, `skills`, `origin`, or `config` — and keep
+entry keys as paths that resolve from the declaring file. `config` is the
+exception: its entries name the skill's own runtime defaults.
 
 ```yaml
 metadata:
@@ -101,6 +127,8 @@ metadata:
     "references/gitlab.md": "Load when the merge request lives on GitLab."
   agents:
     "../../agents/test-runner.md": "Use for focused pytest execution."
+  config:
+    output-dir: "${TMPDIR:-/tmp}/skill-output"
 ```
 
 ## Workflow
@@ -130,7 +158,25 @@ metadata:
 
 ## Matrix Contract
 
-The renderer depends on every element below; keep them stable:
+Both matrices answer one question each — the action matrix "what is this
+mechanism called here", the frontmatter matrix "where does this key go here" —
+so a new harness fact belongs in one of them rather than in a template.
+
+The frontmatter matrix keeps these stable:
+
+- Key names are the frontmatter keys themselves, so the global is the key with
+  hyphens turned into underscores.
+- Every key carries a `form` the matrix documents under `forms`, and every
+  non-`verbatim` form is one the renderer can write.
+- Every key carries a `placement` per assistant: `top-level` where the harness
+  reads the key, `metadata` where it does not.
+- A `metadata` placement carries a `note` recording why the harness does not
+  read the key.
+- `metadata_namespaces` lists the namespaces authors may write, and never
+  repeats a key name.
+- Keep `lookup_order: ["key", "assistant"]`.
+
+The action matrix keeps these stable:
 
 - Action keys are stable TitleCase (`AskUser`, `CreateAgent`, `CreateTask`)
   and never equal any callable name.
@@ -160,8 +206,8 @@ The renderer depends on every element below; keep them stable:
 For each adapted target, check that:
 
 - Exactly one source exists per output path (no plain/template collision).
-- Frontmatter holds no hand-written `allowed-tools:`, and every `metadata`
-  entry sits under a declared namespace.
+- Frontmatter hand-writes no key the frontmatter matrix places, and every
+  `metadata` entry sits under a declared namespace.
 - Rendered output for each harness contains only that harness's callable
   names, with the wrapper applied uniformly.
 - No template hardcodes a matrix-mapped callable name and no conditional

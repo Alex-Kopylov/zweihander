@@ -371,7 +371,7 @@ session handoffs, or a designed multi-agent team.
 | `create-team` | Design a multi-agent team and handoff plan. |
 | `daily` | Generate a daily note from project activity. |
 | `handoff` | Compact the current conversation for another agent. |
-| `interview` | Walk through a list of items one by one. |
+| `interview` | Walk through a list of items one by one, logging every decision before anything runs. |
 | `task-management` | Track, split, and orchestrate session tasks. |
 | `wait-what` | Ask for a clearer re-pitch when the last message did not land. |
 

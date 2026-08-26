@@ -1,7 +1,8 @@
 ---
 name: prepare-to-send
 description: Use when the user asks to "prepare to send", "final check", "ready to send", "pre-send checklist", "is this ready", "is this clean", "can I attach this", "run the checklist", "verify the CV", or "check before sending". Runs the complete pre-send audit — filename sanity, HTML↔PDF parity, metadata scrub, visible content scan, sensitive file presence, content correctness, final sanity — and fails loudly on any issue. Nothing ships with warnings.
-argument-hint: "[pdf-file] (optional; defaults to most recently modified CV PDF in current company folder)"
+metadata:
+  argument-hint: "[pdf-file] (optional; defaults to most recently modified CV PDF in current company folder)"
 ---
 
 # Prepare to Send

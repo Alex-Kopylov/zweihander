@@ -1,7 +1,8 @@
 ---
 name: version-bumper
 description: Bump version strings in project, package, plugin, and marketplace files. Activate when user asks to bump version, release, or says /version-bumper.
-argument-hint: "[version] — e.g. 1.2.3, patch, minor, major. If omitted, auto-detected from recent commits."
+metadata:
+  argument-hint: "[version] — e.g. 1.2.3, patch, minor, major. If omitted, auto-detected from recent commits."
 ---
 
 # Version Bumper

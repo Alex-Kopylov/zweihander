@@ -129,11 +129,19 @@ Files rendered from `.j2` sources into `dist/claude-code/**` SHALL contain no Co
 - **THEN** a scan of both trees finds none of the legacy dispatch artifacts
 
 ### Requirement: Skill frontmatter is the portability boundary
-Rendered frontmatter SHALL carry only keys the target harness accepts. `name` and `description` are portable and MAY be written literally. `allowed-tools` is not portable and SHALL be produced by the renderer's `allowed_tools` template global, which emits it as a top-level key for Claude Code and as a `metadata` sub-key for Codex. The value SHALL be a space-separated string written as a plain YAML scalar; a list argument joins with spaces, an empty argument emits no key, and a value that would not survive as a plain scalar SHALL fail the build. The renderer SHALL fold every frontmatter `metadata:` block of a rendered file into the first one, and SHALL fail the build on a duplicate of any other frontmatter key.
+Rendered frontmatter SHALL carry only keys the target harness accepts, and the frontmatter matrix SHALL be the only source of that judgement. A key whose form is `verbatim` is portable and MAY be written literally; every other key SHALL be produced by the renderer global named after it, with hyphens turned into underscores. The renderer SHALL register exactly one global per placed key, take the placement from the rendered harness's matrix entry — `top-level` for a harness that reads the key, `metadata` for one that does not — and emit no key for an empty value. The renderer SHALL fold every frontmatter `metadata:` block of a rendered file into the first one, and SHALL fail the build on a duplicate of any other frontmatter key.
 
-#### Scenario: allowed-tools lands where each harness reads it
+#### Scenario: A placed key lands where each harness reads it
 - **WHEN** a template declares allowed tools through the global and both trees render
 - **THEN** the Claude Code file carries a top-level `allowed-tools` key, and the Codex file carries it under `metadata:` and carries no top-level `allowed-tools`
+
+#### Scenario: Placement follows the matrix, not the renderer
+- **WHEN** a key's placement for one harness changes in the matrix and that tree renders
+- **THEN** the key moves to the new placement with no renderer change
+
+#### Scenario: A key outside the matrix has no global
+- **WHEN** a template calls a global named after a key the matrix does not declare
+- **THEN** the build fails and names the key
 
 #### Scenario: Hand-written metadata merges instead of duplicating
 - **WHEN** a template both declares allowed tools through the global and hand-writes a `metadata:` block
@@ -147,16 +155,46 @@ Rendered frontmatter SHALL carry only keys the target harness accepts. `name` an
 - **WHEN** a rendered file's frontmatter holds two `description:` keys
 - **THEN** the build fails and names the file and the key
 
-#### Scenario: Unquotable allowed-tools value fails the build
-- **WHEN** a template passes a tool value that cannot be written as a plain YAML scalar
+#### Scenario: Hand-written placed key rejected in sources
+- **WHEN** a skill or agent source writes a placed key in its frontmatter instead of calling the global
+- **THEN** the repository policy check fails and names the file and the key
+
+#### Scenario: Argument keys land where each harness reads them
+- **WHEN** a template declares an argument hint and argument names through the globals and both trees render
+- **THEN** the Claude Code file carries top-level `argument-hint` and `arguments` keys, and the Codex file carries both under one `metadata:` block and neither at the top level
+
+### Requirement: Frontmatter matrix declares every key's placement and form
+The frontmatter matrix SHALL declare, for every frontmatter key the repository writes, one `form` documented in its own `forms` section and one `placement` per assistant. Every non-`verbatim` form SHALL be one the renderer can write, and a `metadata` placement SHALL carry a note recording why that harness does not read the key. The matrix SHALL preserve the key-then-assistant lookup order and SHALL declare the `metadata` namespaces authors may write, none of which repeats a key name. A malformed matrix SHALL fail the build before any file renders.
+
+#### Scenario: Matrix schema holds
+- **WHEN** the frontmatter matrix is validated
+- **THEN** every key carries a documented form and one placement per assistant, and every `metadata` placement carries its note
+
+#### Scenario: Undocumented form fails the build
+- **WHEN** a key declares a form the matrix does not document, or one the renderer cannot write
+- **THEN** the build fails and names the key and the form
+
+#### Scenario: Unknown placement fails the build
+- **WHEN** a key gives an assistant a placement outside `top-level` and `metadata`
+- **THEN** the build fails and names the key and the placement
+
+### Requirement: Value form decides how a key is written
+Each form SHALL write its value one way and fail the build rather than change its meaning. `plain-scalar` writes the value unquoted, joins a list argument with spaces, and fails on a value that would not survive as a plain YAML scalar. `quoted-scalar` writes the value double-quoted with its own quotes escaped and fails on a line break. `placeholder-names` writes a space-separated list of names that can each spell a `$name` placeholder and fails on any other name.
+
+#### Scenario: Quoted form keeps a hint one string
+- **WHEN** a template passes the hint `[file] [format]`
+- **THEN** the rendered key reads `argument-hint: "[file] [format]"` rather than a YAML list
+
+#### Scenario: Argument name that cannot spell a placeholder fails the build
+- **WHEN** a template declares an argument name carrying a space, a capital letter, or a leading digit
+- **THEN** the build fails and names the placeholder rule
+
+#### Scenario: Unquotable plain-scalar value fails the build
+- **WHEN** a template passes a `plain-scalar` value that cannot be written as a plain YAML scalar
 - **THEN** the build fails and names the value
 
-#### Scenario: Hand-written allowed-tools rejected in sources
-- **WHEN** a skill or agent source writes `allowed-tools:` in its frontmatter instead of calling the global
-- **THEN** the repository policy check fails and names the file
-
 ### Requirement: Frontmatter metadata entries carry a namespace
-Frontmatter `metadata` entries in every skill and agent source SHALL sit one level deep under a declared namespace — `allowed-tools`, `references`, `agents`, `skills`, or `origin` — rather than directly under `metadata:`. Entry keys SHALL stay paths or identifiers that resolve relative to the declaring file.
+Frontmatter `metadata` entries in every skill and agent source SHALL sit one level deep under a namespace the frontmatter matrix declares — `references`, `agents`, `skills`, `origin`, or `config` — rather than directly under `metadata:`. Entry keys SHALL stay paths or identifiers that resolve relative to the declaring file, except under `config`, whose entries name a skill's own runtime defaults. A key the matrix places also names a `metadata` entry, so the namespace scan SHALL accept it alongside the declared namespaces.
 
 #### Scenario: Namespace scan passes
 - **WHEN** every skill and agent source that declares frontmatter metadata is scanned
@@ -165,6 +203,10 @@ Frontmatter `metadata` entries in every skill and agent source SHALL sit one lev
 #### Scenario: Grouped reference entry still resolves
 - **WHEN** a metadata entry under the `references` namespace names a path
 - **THEN** that path resolves from the directory of the file declaring it
+
+#### Scenario: Skill default sits under the config namespace
+- **WHEN** a skill declares a runtime default such as an output directory
+- **THEN** the entry sits under the `config` namespace and the namespace scan passes
 
 ### Requirement: Deterministic rendering
 Rendering SHALL be deterministic: identical source, matrix, and harness inputs SHALL produce byte-identical output trees.

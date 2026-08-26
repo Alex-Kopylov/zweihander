@@ -8,10 +8,10 @@ AGENTS.md/CLAUDE.md/README.md, the other harness's runtime metadata
 directory, and every path `.gitignore` excludes are never emitted. Each tree
 contains exactly the plugins listed in that harness's marketplace manifest.
 
-Frontmatter is the portability boundary: `name` and `description` are written
-literally, while an `allowed-tools` grant goes through the `allowed_tools`
-global, which lands it at the top level for Claude Code and under `metadata`
-for Codex.
+Frontmatter is the portability boundary, and the frontmatter matrix draws it:
+each key carries a placement per harness and a value form. A key placed
+`top-level` for one harness and under `metadata` for another is declared once
+in a template through the global named after it, and the renderer places it.
 """
 
 import argparse
@@ -33,6 +33,9 @@ MATRIX_PATH = Path(
     "plugins/ai-assistant-ops/skills/adapt-skill-for-ai-harness"
     "/references/harness-action-matrix.json"
 )
+# The frontmatter matrix sits beside the action matrix, so overriding one path
+# in a test moves both.
+FRONTMATTER_MATRIX_NAME = "harness-frontmatter-matrix.json"
 IGNORE_FILE = Path(".gitignore")
 DEV_FILE_NAMES = {"AGENTS.md", "CLAUDE.md", "README.md"}
 TEMPLATE_SUFFIX = ".j2"
@@ -51,6 +54,9 @@ RAW_BLOCK = re.compile(
 FRONTMATTER = re.compile(r"\A---\n(?P<body>.*?\n)---\n", re.DOTALL)
 TOP_LEVEL_KEY = re.compile(r"\A(?P<key>[A-Za-z_][\w.-]*):")
 METADATA_KEY = "metadata:"
+# A named argument becomes a `$name` placeholder, so the name is limited to
+# what a placeholder can spell without swallowing the text that follows it.
+ARGUMENT_NAME = re.compile(r"\A[a-z][a-z0-9_]*\Z")
 # Characters that make YAML read a plain scalar as something other than text.
 YAML_INDICATORS = set("*&!|>%@`{}[],#\"'?")
 
@@ -232,28 +238,133 @@ def _plain_scalar_problem(value: str) -> str | None:
     return None
 
 
-def allowed_tools(harness: Harness, tools: str | list[str]) -> str:
-    """Place an `allowed-tools` grant where the target harness reads it.
-
-    Claude Code honours the key at the top level of skill frontmatter. Codex
-    documents no support for it, so it travels in `metadata`, the free-form
-    map both harnesses accept. A template declares the grant once and this
-    global decides the placement; the harness is bound at registration, so no
-    template can branch on it.
-    """
-    value = tools if isinstance(tools, str) else " ".join(tools)
-    if not value:
+def _plain_scalar(key: str, value: str | list[str]) -> str:
+    """Write the value unquoted, the form the Agent Skills specification shows."""
+    written = value if isinstance(value, str) else " ".join(value)
+    if not written:
         return ""
 
-    problem = _plain_scalar_problem(value)
+    problem = _plain_scalar_problem(written)
     if problem:
         raise BuildError(
-            f"allowed-tools value {value!r} cannot be written as a plain YAML "
+            f"{key} value {written!r} cannot be written as a plain YAML "
             f"scalar: it carries {problem}"
         )
-    if harness == "Codex":
-        return f"{METADATA_KEY}\n  allowed-tools: {value}"
-    return f"allowed-tools: {value}"
+    return written
+
+
+def _quoted_scalar(key: str, value: str | list[str]) -> str:
+    """Write the value double-quoted, so YAML reads it as one string.
+
+    A hint describes an argument list, so it reaches for the characters YAML
+    claims: `argument-hint: [file] [format]` parses as a two-item list, and a
+    hint that explains itself after a colon parses as a nested key.
+    """
+    written = value if isinstance(value, str) else " ".join(value)
+    if not written:
+        return ""
+
+    if "\n" in written or "\r" in written:
+        raise BuildError(
+            f"{key} value {written!r} cannot be written as one YAML line: "
+            "it carries a line break"
+        )
+    escaped = written.replace("\\", "\\\\").replace('"', '\\"')
+    return f'"{escaped}"'
+
+
+def _placeholder_names(key: str, value: str | list[str]) -> str:
+    """Write names that can each spell a `$name` placeholder."""
+    names = value.split() if isinstance(value, str) else list(value)
+    if not names:
+        return ""
+
+    for name in names:
+        if not ARGUMENT_NAME.match(name):
+            raise BuildError(
+                f"{key} name {name!r} cannot spell a `$name` placeholder: use "
+                "lowercase letters, digits and underscores, starting with a "
+                "letter"
+            )
+    return " ".join(names)
+
+
+VERBATIM_FORM = "verbatim"
+VALUE_FORMS: dict[str, Callable[[str, str | list[str]], str]] = {
+    "plain-scalar": _plain_scalar,
+    "quoted-scalar": _quoted_scalar,
+    "placeholder-names": _placeholder_names,
+}
+PLACEMENTS = {"top-level", "metadata"}
+
+
+def frontmatter_key(
+    placement: str, key: str, form: str, value: str | list[str]
+) -> str:
+    """Write one frontmatter key where the target harness reads it.
+
+    `top-level` is for a harness that reads the key itself. `metadata` is for
+    one that does not: the key travels in the free-form map every harness
+    accepts, rather than sitting at the top level as a key the harness never
+    asked for. An empty value emits no key at all.
+
+    Placement, key and form are bound when the global is registered, so a
+    template passes the value alone and cannot branch on the harness.
+    """
+    written = VALUE_FORMS[form](key, value)
+    if not written:
+        return ""
+    if placement == "metadata":
+        return f"{METADATA_KEY}\n  {key}: {written}"
+    return f"{key}: {written}"
+
+
+def load_frontmatter_matrix(matrix_path: Path) -> dict:
+    """Load the frontmatter matrix and check every element the renderer uses."""
+    try:
+        matrix = json.loads(matrix_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as error:
+        raise BuildError(
+            f"cannot load frontmatter matrix {matrix_path}: {error}"
+        ) from error
+
+    keys = matrix.get("keys")
+    assistants = matrix.get("assistants")
+    forms = matrix.get("forms")
+    if not isinstance(keys, dict) or not keys or not isinstance(assistants, dict):
+        raise BuildError(
+            f"malformed frontmatter matrix {matrix_path}: "
+            "'keys' and 'assistants' must be non-empty objects"
+        )
+    if not isinstance(matrix.get("metadata_namespaces"), dict) or not isinstance(
+        forms, dict
+    ):
+        raise BuildError(
+            f"malformed frontmatter matrix {matrix_path}: "
+            "'metadata_namespaces' and 'forms' must be objects"
+        )
+
+    for key, entry in keys.items():
+        form = entry.get("form")
+        if form not in forms:
+            raise BuildError(
+                f"malformed frontmatter matrix {matrix_path}: key '{key}' "
+                f"declares the undocumented form '{form}'"
+            )
+        if form != VERBATIM_FORM and form not in VALUE_FORMS:
+            raise BuildError(
+                f"malformed frontmatter matrix {matrix_path}: key '{key}' "
+                f"declares the form '{form}', which the renderer cannot write"
+            )
+        for assistant_key in assistants:
+            placement = entry.get(assistant_key, {}).get("placement")
+            if placement not in PLACEMENTS:
+                raise BuildError(
+                    f"malformed frontmatter matrix {matrix_path}: key '{key}' "
+                    f"gives assistant '{assistant_key}' the placement "
+                    f"{placement!r}; use one of {', '.join(sorted(PLACEMENTS))}"
+                )
+    return matrix
 
 
 def frontmatter_lines(text: str) -> list[str] | None:
@@ -400,10 +511,15 @@ def render_tree(
     manifest_path: Path | None = None,
 ) -> None:
     repo_root = Path(repo_root)
-    matrix = load_matrix(Path(matrix_path) if matrix_path else repo_root / MATRIX_PATH)
+    matrix_file = Path(matrix_path) if matrix_path else repo_root / MATRIX_PATH
+    matrix = load_matrix(matrix_file)
+    frontmatter_matrix = load_frontmatter_matrix(
+        matrix_file.with_name(FRONTMATTER_MATRIX_NAME)
+    )
 
-    if harness not in matrix["assistants"] or harness not in HARNESS_MANIFESTS:
-        known = sorted(set(matrix["assistants"]) & set(HARNESS_MANIFESTS))
+    known_assistants = set(matrix["assistants"]) & set(frontmatter_matrix["assistants"])
+    if harness not in known_assistants or harness not in HARNESS_MANIFESTS:
+        known = sorted(known_assistants & set(HARNESS_MANIFESTS))
         raise BuildError(
             f"unknown harness '{harness}'; supported harnesses: {', '.join(known)}"
         )
@@ -415,7 +531,14 @@ def render_tree(
     environment = Environment(undefined=StrictUndefined, keep_trailing_newline=True)
     wrapper = matrix["assistants"][harness]["invocation_wrapper"]
     environment.filters["call"] = lambda name: wrapper.format(name=name)
-    environment.globals["allowed_tools"] = functools.partial(allowed_tools, harness)
+    # One global per placed key, named after the key. The matrix decides which
+    # keys exist and where each lands, so adding a key is a data change.
+    for key, entry in frontmatter_matrix["keys"].items():
+        if entry["form"] == VERBATIM_FORM:
+            continue
+        environment.globals[key.replace("-", "_")] = functools.partial(
+            frontmatter_key, entry[harness]["placement"], key, entry["form"]
+        )
     context = {
         "harness": harness,
         "actions": ActionMap(

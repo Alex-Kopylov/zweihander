@@ -12,6 +12,8 @@ from pathlib import Path
 
 import pytest
 
+from plugin_maintenance.render import FRONTMATTER_MATRIX_NAME
+
 
 FIXTURE_MATRIX = {
     "schema_version": 2,
@@ -66,6 +68,49 @@ Invoke {{ "commit" | call }} or {{ "dev-workflow:commit" | call }}.
 """
 
 PLAIN_REFERENCE = "Literal {{ mustache }} and {% marker %} stay untouched.\n"
+
+FIXTURE_FRONTMATTER_MATRIX = {
+    "schema_version": 1,
+    "checked": "2026-08-26",
+    "lookup_order": ["key", "assistant"],
+    "metadata_namespaces": {"references": "Reference documents the skill loads."},
+    "forms": {
+        "verbatim": "Written literally by the author.",
+        "plain-scalar": "Space-separated string written unquoted.",
+        "quoted-scalar": "Single line written double-quoted.",
+        "placeholder-names": "Names that can each spell a `$name` placeholder.",
+    },
+    "keys": {
+        "name": {
+            "form": "verbatim",
+            "intent": "Skill identifier.",
+            "ClaudeCode": {"placement": "top-level"},
+            "Codex": {"placement": "top-level"},
+        },
+        "allowed-tools": {
+            "form": "plain-scalar",
+            "intent": "Pre-approved tools.",
+            "ClaudeCode": {"placement": "top-level"},
+            "Codex": {"placement": "metadata"},
+        },
+        "argument-hint": {
+            "form": "quoted-scalar",
+            "intent": "Autocomplete hint.",
+            "ClaudeCode": {"placement": "top-level"},
+            "Codex": {"placement": "metadata"},
+        },
+        "arguments": {
+            "form": "placeholder-names",
+            "intent": "Named positional arguments.",
+            "ClaudeCode": {"placement": "top-level"},
+            "Codex": {"placement": "metadata"},
+        },
+    },
+    "assistants": {
+        "ClaudeCode": {"id": "claude-code", "display_name": "Claude Code"},
+        "Codex": {"id": "codex", "display_name": "Codex"},
+    },
+}
 
 
 def _write(path: Path, content: str) -> Path:
@@ -160,6 +205,15 @@ def fixture_repo(tmp_path: Path) -> Path:
 
 @pytest.fixture
 def fixture_matrix(fixture_repo: Path) -> Path:
+    """Write both matrices and return the action matrix path.
+
+    The renderer reads the frontmatter matrix from beside the action matrix,
+    so one override moves both.
+    """
+    _write(
+        fixture_repo / FRONTMATTER_MATRIX_NAME,
+        json.dumps(FIXTURE_FRONTMATTER_MATRIX, indent=2) + "\n",
+    )
     return _write(
         fixture_repo / "matrix.json", json.dumps(FIXTURE_MATRIX, indent=2) + "\n"
     )

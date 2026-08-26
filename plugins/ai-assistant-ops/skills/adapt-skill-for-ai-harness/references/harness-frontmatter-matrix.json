@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "checked": "2026-08-26",
+  "note": "Codex documents `name` and `description` only, and OpenAI's own skill-creator tells authors to add nothing else. Claude Code documents a wider set, and the Agent Skills specification a middle one. A key outside the portable pair therefore needs a placement per harness rather than a single spelling: `top-level` where the harness reads the key, `metadata` where it does not, since `metadata` is the free-form map both harnesses accept. Revisit when Codex documents a key beyond the portable pair.",
+  "lookup_order": [
+    "key",
+    "assistant"
+  ],
+  "metadata_namespaces": {
+    "references": "Reference documents the skill loads, keyed by path relative to the declaring file.",
+    "agents": "Agent definitions the skill delegates to, keyed by path relative to the declaring file.",
+    "skills": "Other skills this one invokes, keyed by plugin-qualified or bare name.",
+    "origin": "Provenance of adapted third-party material.",
+    "config": "The skill's own runtime defaults, such as an output directory."
+  },
+  "forms": {
+    "verbatim": "Portable key the author writes literally in frontmatter; the renderer places nothing.",
+    "plain-scalar": "Space-separated string written unquoted; a list argument joins with spaces and a value that would not survive as a plain YAML scalar fails the build.",
+    "quoted-scalar": "Single line written double-quoted with its own quotes escaped; a line break fails the build.",
+    "placeholder-names": "Space-separated names that can each spell a `$name` placeholder; any other name fails the build."
+  },
+  "keys": {
+    "name": {
+      "form": "verbatim",
+      "intent": "Skill identifier, and the slash command that invokes it.",
+      "ClaudeCode": {
+        "placement": "top-level"
+      },
+      "Codex": {
+        "placement": "top-level"
+      }
+    },
+    "description": {
+      "form": "verbatim",
+      "intent": "What the skill does and when to use it; both harnesses trigger on it.",
+      "ClaudeCode": {
+        "placement": "top-level"
+      },
+      "Codex": {
+        "placement": "top-level"
+      }
+    },
+    "allowed-tools": {
+      "form": "plain-scalar",
+      "intent": "Tools the assistant may use without asking permission during the invoking turn.",
+      "ClaudeCode": {
+        "placement": "top-level"
+      },
+      "Codex": {
+        "placement": "metadata",
+        "note": "Undocumented for Codex, which runs its own approval flow."
+      }
+    },
+    "argument-hint": {
+      "form": "quoted-scalar",
+      "intent": "Hint shown during autocomplete to indicate the expected arguments.",
+      "ClaudeCode": {
+        "placement": "top-level"
+      },
+      "Codex": {
+        "placement": "metadata",
+        "note": "Codex tolerates the key but documents no use for it; its loader has had to repair unquoted values found in the wild."
+      }
+    },
+    "arguments": {
+      "form": "placeholder-names",
+      "intent": "Named positional arguments, substituted as `$name` in the skill body.",
+      "ClaudeCode": {
+        "placement": "top-level"
+      },
+      "Codex": {
+        "placement": "metadata",
+        "note": "Codex documents no argument substitution, so a body that spells a placeholder does it inside a harness conditional."
+      }
+    }
+  },
+  "assistants": {
+    "ClaudeCode": {
+      "id": "claude-code",
+      "display_name": "Claude Code",
+      "source_urls": [
+        "https://code.claude.com/docs/en/skills",
+        "https://agentskills.io/specification#metadata-field"
+      ]
+    },
+    "Codex": {
+      "id": "codex",
+      "display_name": "Codex",
+      "source_urls": [
+        "https://developers.openai.com/codex/skills",
+        "https://github.com/openai/skills/blob/main/skills/.system/skill-creator/SKILL.md",
+        "https://github.com/openai/codex/pull/28628"
+      ]
+    }
+  }
+}

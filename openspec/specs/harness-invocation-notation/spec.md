@@ -64,3 +64,7 @@ Template sources SHALL obtain callable names through the resolved action map or 
 #### Scenario: Names never branch on harness
 - **WHEN** a `.j2` source file selects a callable name inside a harness conditional
 - **THEN** the repository policy check fails and names the file
+
+#### Scenario: Declared argument placeholder is not a callable
+- **WHEN** a `.j2` source file spells a `$name` inside a harness conditional and the same file declares that name through the `arguments` global
+- **THEN** the repository policy check passes, because the name is a Claude Code argument placeholder rather than a callable

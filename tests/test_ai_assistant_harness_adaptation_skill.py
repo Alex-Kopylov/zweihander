@@ -24,7 +24,13 @@ SKILL_ROOT = (
 )
 SKILL_FILE = SKILL_ROOT / "SKILL.md"
 MATRIX_FILE = SKILL_ROOT / "references" / "harness-action-matrix.json"
+FRONTMATTER_MATRIX_FILE = (
+    SKILL_ROOT / "references" / "harness-frontmatter-matrix.json"
+)
 LOOKUP_SCRIPT = SKILL_ROOT / "scripts" / "lookup_harness_action.py"
+FRONTMATTER_LOOKUP_SCRIPT = (
+    SKILL_ROOT / "scripts" / "lookup_harness_frontmatter.py"
+)
 
 LEGACY_MARKERS = (
     "Depending on who you are as an AI agent",
@@ -73,13 +79,33 @@ def test_skill_documents_frontmatter_portability_boundary() -> None:
     body = skill_body()
 
     assert "Frontmatter Portability Boundary" in body
+    assert "harness-frontmatter-matrix.json" in body
     assert '{{ allowed_tools("Bash(git:*) Read") }}' in body
-    assert "`name` and `description` are the portable keys" in body
-    assert "Claude Code renders `allowed-tools: Bash(git:*) Read` at the top" in body
-    assert "Codex\nrenders it under `metadata:`" in body
+    assert '{{ argument_hint("[issue] to work through") }}' in body
+    assert '{{ arguments("issue") }}' in body
+    assert "one global named after it" in body
     assert "folds every frontmatter `metadata:`" in body
-    for namespace in ("references", "agents", "skills", "origin"):
+    for namespace in ("references", "agents", "skills", "origin", "config"):
         assert f"`{namespace}`" in body
+
+
+def test_skill_documents_every_value_form() -> None:
+    body = skill_body()
+    forms = json.loads(FRONTMATTER_MATRIX_FILE.read_text(encoding="utf-8"))["forms"]
+
+    for form in forms:
+        assert f"`{form}`" in body, form
+    assert "would otherwise parse as a YAML list" in body
+    assert "spell a placeholder inside a harness conditional" in body
+
+
+def test_skill_documents_the_frontmatter_matrix_contract() -> None:
+    body = skill_body()
+
+    assert '`lookup_order: ["key", "assistant"]`' in body
+    assert "hyphens turned into underscores" in body
+    assert "`top-level` where the harness" in body
+    assert "metadata_namespaces" in body
 
 
 def test_skill_documents_matrix_contract() -> None:
@@ -148,6 +174,49 @@ def test_lookup_script_returns_reference_material_for_non_callable() -> None:
 def test_lookup_script_fails_on_unknown_action() -> None:
     with pytest.raises(subprocess.CalledProcessError):
         run_lookup("NoSuchAction", "Codex")
+
+
+def run_frontmatter_lookup(key: str, assistant: str) -> dict:
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(FRONTMATTER_LOOKUP_SCRIPT),
+            "--matrix",
+            str(FRONTMATTER_MATRIX_FILE),
+            "--key",
+            key,
+            "--assistant",
+            assistant,
+        ],
+        check=True,
+        text=True,
+        capture_output=True,
+    )
+    return json.loads(result.stdout)
+
+
+def test_frontmatter_lookup_resolves_placement_and_declaration() -> None:
+    entry = run_frontmatter_lookup("argument-hint", "Codex")
+
+    assert entry["key"] == "argument-hint"
+    assert entry["assistant"] == "Codex"
+    assert entry["placement"] == "metadata"
+    assert entry["form"] == "quoted-scalar"
+    assert entry["declaration"] == "{{ argument_hint(...) }}"
+    assert entry["note"]
+
+
+def test_frontmatter_lookup_marks_a_portable_key_as_hand_written() -> None:
+    entry = run_frontmatter_lookup("name", "ClaudeCode")
+
+    assert entry["placement"] == "top-level"
+    assert entry["form"] == "verbatim"
+    assert entry["declaration"] == "write `name:` literally in frontmatter"
+
+
+def test_frontmatter_lookup_fails_on_unknown_key() -> None:
+    with pytest.raises(subprocess.CalledProcessError):
+        run_frontmatter_lookup("no-such-key", "Codex")
 
 
 def test_evals_cover_template_authoring() -> None:

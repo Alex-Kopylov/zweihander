@@ -1,7 +1,8 @@
 ---
 name: export-pdf
 description: Use when the user asks to "export the PDF", "regenerate PDF", "build PDF from HTML", "convert HTML CV to PDF", "refresh the PDF", "HTML to PDF", "render CV to PDF", "produce PDF from HTML", "generate PDF", or after editing a CV HTML and needs a fresh PDF. Converts an HTML CV into a PDF using headless Chromium, ensuring consistent rendering across all applications.
-argument-hint: "[html-file] (optional; defaults to the current file context or detected CV)"
+metadata:
+  argument-hint: "[html-file] (optional; defaults to the current file context or detected CV)"
 ---
 
 # Export PDF

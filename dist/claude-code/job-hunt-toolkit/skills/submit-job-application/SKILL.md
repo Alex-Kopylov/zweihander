@@ -1,7 +1,7 @@
 ---
 name: submit-job-application
 description: Use when filling, reviewing, automating, uploading files to, or preparing final submission for an employer job application portal or candidate profile form.
-argument-hint: <application-portal-url-or-company-folder>
+argument-hint: "<application-portal-url-or-company-folder>"
 ---
 
 # Submit Job Application

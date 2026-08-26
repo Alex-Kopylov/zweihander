@@ -142,9 +142,44 @@ a value that would not survive as a plain YAML scalar fails the build instead
 of being quoted into a shape the specification does not show. A list argument
 joins with spaces; an empty argument emits no key at all.
 
-The global covers `allowed-tools` only. Reference pointers, agent pointers and
-provenance are author content, not placement decisions, so they stay written in
-the template.
+The placement itself is data. `references/harness-frontmatter-matrix.json` sits
+beside the action matrix and answers the frontmatter question the same way: the
+action matrix says what a mechanism is called here, the frontmatter matrix says
+where a key goes here. Each key carries one `form` and one `placement` per
+assistant, and the renderer registers one global per placed key, named after the
+key with hyphens turned into underscores. Adding `argument-hint` was therefore a
+data change, not a renderer change.
+
+Alternative — a global per key written in Python: rejected. Three hand-written
+globals already repeated the same shape, and the fourth would have repeated it
+again; a harness fact belongs in a matrix, where it can be read, looked up, and
+tested as data. Alternative — a `frontmatter("argument-hint", ...)` global
+taking the key as an argument: rejected; the key would move from the call's name
+into its arguments, which reads worse and lets a template pass a key the matrix
+never declared.
+
+The `form` decides how the value is written, because each key fails YAML
+differently. `plain-scalar` stays unquoted, the form the Agent Skills
+specification shows. `quoted-scalar` is always double-quoted: a hint describes an
+argument list, so `argument-hint: [file] [format]` parses as a two-item list and
+a hint that explains itself after a colon parses as a nested key. Codex reported
+both shapes as parse failures across a marketplace audit, so quoting is the safe
+default rather than a per-value judgement. `placeholder-names` takes names that
+can each spell a `$name` placeholder, so a name with a space, a capital, or a
+leading digit fails the build instead of rendering a placeholder that swallows
+the text after it.
+
+Reference pointers, agent pointers and provenance stay written in the template:
+they are author content, not placement decisions.
+
+`arguments` carries one consequence into the body: Claude Code substitutes
+`$name`, and Codex documents no substitution at all. A body that spells the
+placeholder therefore does it inside a harness conditional, with prose in the
+Codex branch. That is the one case where a `$name` inside a conditional is not a
+Codex invocation, so the policy check exempts names the same file declares
+through the global and keeps rejecting every other `$name`. Alternative — spell
+the placeholder unconditionally: rejected; the Codex tree would carry `$items`,
+which reads as an invocation of a callable named `items`.
 
 That leaves one hazard: for Codex the global emits its own `metadata:` block, so
 a skill that also hand-writes `metadata:` would render a duplicate YAML key.

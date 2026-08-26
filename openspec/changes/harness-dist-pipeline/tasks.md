@@ -72,3 +72,15 @@ The whole change lands in one PR. Development is test-first (TDD): each behavior
 - [x] 9.5 Convert the seven existing `metadata:` blocks to the namespaced shape, update the skill and agent bodies that describe them as a routing table, and update `tests/test_python_dev_workflow_plugin.py` to the nested keys
 - [x] 9.6 Document the boundary in `adapt-skill-for-ai-harness` and extend `tests/test_ai_assistant_harness_adaptation_skill.py` to cover it
 - [x] 9.7 Rebuild both trees and run full verification: `uv run pytest tests`, JSON validation, `git diff --check`
+
+## 10. Argument frontmatter and the interview decision log
+
+- [x] 10.1 Add the frontmatter matrix beside the action matrix, declaring one form and one placement per assistant for every frontmatter key, with its own schema test and a key-then-assistant lookup script
+- [x] 10.1a Drive the renderer from it: one global per placed key, three value forms, a validating loader, and renderer tests for placement, quoting, list joining, empty value, a flipped placement, and each failure mode
+- [x] 10.1b Sweep every hand-written `argument-hint:` onto the global, renaming the four plain sources that carried one
+- [x] 10.2 Add the `config` metadata namespace for a skill's own runtime defaults, in the source policy test and the specs
+- [x] 10.3 Exempt a declared argument name from the `$name`-in-a-conditional policy check, with unit tests for the narrow exemption
+- [x] 10.4 Give the interview skill a `scripts/decision_log.py` that owns both the append-only log and the progress bar, with tests under `tests/`
+- [x] 10.5 Rewrite `interview/SKILL.md.j2`: group questions before the walk, record every decision to the log, review the log, execute only after approval, delegate non-blocking work
+- [x] 10.6 Rewrite the frontmatter section of `adapt-skill-for-ai-harness` around the matrix, its forms, its contract, and the lookup script
+- [x] 10.7 Rebuild both trees and run full verification: `uv run pytest tests`, JSON validation, `git diff --check`

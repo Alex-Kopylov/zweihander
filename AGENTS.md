@@ -70,11 +70,13 @@ uv run python -m plugin_maintenance.render --harness ClaudeCode --output dist/cl
 uv run python -m plugin_maintenance.render --harness Codex --output dist/codex
 ```
 
-Harness-specific wording in skills lives in `.j2` templates that resolve
-callable names from the action matrix at
-`plugins/ai-assistant-ops/skills/adapt-skill-for-ai-harness/references/harness-action-matrix.json`.
-Use the `adapt-skill-for-ai-harness` skill when converting a skill's
-harness-specific wording into template form.
+Harness-specific wording in skills lives in `.j2` templates that resolve every
+harness fact from a matrix under
+`plugins/ai-assistant-ops/skills/adapt-skill-for-ai-harness/references/`:
+`harness-action-matrix.json` for callable names, and
+`harness-frontmatter-matrix.json` for where each frontmatter key goes. Use the
+`adapt-skill-for-ai-harness` skill when converting a skill's harness-specific
+wording into template form.
 
 ## Development Workflow
 

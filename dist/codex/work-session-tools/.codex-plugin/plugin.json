@@ -1,6 +1,6 @@
 {
   "name": "work-session-tools",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Productivity, orchestration, and handoffs within an assistant session.",
   "author": {
     "name": "Alex Kopylov"

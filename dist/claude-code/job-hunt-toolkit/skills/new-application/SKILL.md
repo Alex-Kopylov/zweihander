@@ -1,7 +1,7 @@
 ---
 name: new-application
 description: Use when the user asks to "apply to <company>", "start a new application", "new company folder", "scaffold application for", "I'm applying to", "track this job", "set up application for", "create folder for", or provides a JD and wants to set up a tracked application. Creates a per-company folder in the workspace, scaffolds company.md with YAML frontmatter, saves the job description, copies the master HTML for tailoring, and optionally hands off to the resume-tailoring skill.
-argument-hint: <company-slug> [role]
+argument-hint: "<company-slug> [role]"
 ---
 
 # New Application

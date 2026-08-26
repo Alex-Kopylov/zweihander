@@ -17,7 +17,9 @@ from plugin_maintenance.generate import run_generators
 from plugin_maintenance.render import (
     DIST_DIRS,
     FOREIGN_METADATA_DIRS,
+    FRONTMATTER_MATRIX_NAME,
     MATRIX_PATH,
+    VERBATIM_FORM,
     frontmatter_lines,
     leftover_jinja_markers,
     render_tree,
@@ -164,36 +166,39 @@ def dist_frontmatter_files(harness: str) -> list[tuple[str, list[str]]]:
     return published
 
 
-def test_codex_tree_carries_no_top_level_allowed_tools():
-    """Codex documents `name` and `description` only.
+def frontmatter_matrix() -> dict:
+    return json.loads(
+        (REPO_ROOT / MATRIX_PATH)
+        .with_name(FRONTMATTER_MATRIX_NAME)
+        .read_text(encoding="utf-8")
+    )
 
-    An `allowed-tools` grant reaches the Codex tree under `metadata`, the
-    free-form map, never as a top-level key Codex does not read.
-    """
-    violations = [
-        name
-        for name, lines in dist_frontmatter_files("Codex")
-        for line in lines
-        if line.startswith("allowed-tools:")
-    ]
 
-    assert not violations, "\n".join(violations)
+def metadata_placed_keys(harness: str) -> set[str]:
+    """Keys the matrix keeps out of this harness's top-level frontmatter."""
+    return {
+        key
+        for key, entry in frontmatter_matrix()["keys"].items()
+        if entry["form"] != VERBATIM_FORM
+        and entry[harness]["placement"] == "metadata"
+    }
 
 
 @pytest.mark.parametrize("harness", ["ClaudeCode", "Codex"])
-def test_published_frontmatter_holds_no_duplicate_key(harness):
-    """The merge step folds `metadata:` blocks; nothing else may repeat."""
-    violations = []
+def test_tree_carries_no_top_level_key_the_harness_does_not_read(harness):
+    """A key placed under `metadata` never reaches the top level.
 
-    for name, lines in dist_frontmatter_files(harness):
-        seen = set()
-        for line in lines:
-            match = re.match(r"([A-Za-z_][\w.-]*):", line)
-            if not match:
-                continue
-            if match.group(1) in seen:
-                violations.append(f"{name}: duplicate {match.group(1)}")
-            seen.add(match.group(1))
+    `metadata` is the free-form map every harness accepts, so a key a harness
+    does not read travels there instead of sitting at the top level.
+    """
+    keys = metadata_placed_keys(harness)
+    violations = [
+        f"{name}: {key}"
+        for name, lines in dist_frontmatter_files(harness)
+        for line in lines
+        for key in keys
+        if line.startswith(f"{key}:")
+    ]
 
     assert not violations, "\n".join(violations)
 

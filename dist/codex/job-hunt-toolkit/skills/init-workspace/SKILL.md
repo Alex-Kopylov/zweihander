@@ -1,7 +1,8 @@
 ---
 name: init-workspace
 description: Use when the user asks to "initialize job hunt workspace", "set up job seeking folder", "create CV workspace", "bootstrap resume folder", "prepare job search folder", "start job hunt setup", "create application tracking workspace", "first time setup for job applications", or is starting the job-hunt-toolkit for the first time. Creates the workspace directory structure, generates README/AGENTS.md/NAMING.md from plugin templates, copies master HTML CV into workspace, and primes the workspace for per-company folders.
-argument-hint: "[workspace-path] (optional, defaults to ~/Documents/job_seeking)"
+metadata:
+  argument-hint: "[workspace-path] (optional, defaults to ~/Documents/job_seeking)"
 ---
 
 # Initialize Workspace

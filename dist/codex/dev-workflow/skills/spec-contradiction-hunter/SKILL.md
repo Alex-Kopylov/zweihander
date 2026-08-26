@@ -1,5 +1,6 @@
 ---
-argument-hint: [topic or paste the information to analyze]
+metadata:
+  argument-hint: "[topic or paste the information to analyze]"
 name: spec-contradiction-hunter
 description: This skill should be used when the user wants to "find contradictions", "check consistency", "validate my spec", "cross-check requirements", "spot inconsistencies", or has provided a body of information (spec, requirements, design doc) that needs consistency validation. Spawns parallel agents to hunt obvious and deeper contradictions.
 ---
