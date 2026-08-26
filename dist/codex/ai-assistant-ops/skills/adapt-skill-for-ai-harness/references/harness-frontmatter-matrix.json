@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "checked": "2026-08-26",
-  "note": "Codex documents `name` and `description` only, and OpenAI's own skill-creator tells authors to add nothing else. Claude Code documents a wider set, and the Agent Skills specification a middle one. A key outside the portable pair therefore needs a placement per harness rather than a single spelling: `top-level` where the harness reads the key, `metadata` where it does not, since `metadata` is the free-form map both harnesses accept. Revisit when Codex documents a key beyond the portable pair.",
+  "note": "The Agent Skills specification defines six frontmatter fields: `name`, `description`, `license`, `compatibility`, `metadata`, and `allowed-tools`. Those six are portable and stay at the top level everywhere. Every other key is one product's extension, so it carries a placement per harness: `top-level` where the harness reads it, `metadata` where it does not, since `metadata` is the map the specification reserves for exactly that. Neither harness rejects an unknown key \u2014 the Codex parser ignores anything outside `name`, `description`, and `metadata.short-description` \u2014 so placement is about writing only what a harness asked for, not about avoiding a crash. Codex UI, invocation policy, and tool dependencies belong in `agents/openai.yaml`, never in frontmatter. Revisit when either product documents a key it does not read today.",
   "lookup_order": [
     "key",
     "assistant"
@@ -47,8 +47,8 @@
         "placement": "top-level"
       },
       "Codex": {
-        "placement": "metadata",
-        "note": "Undocumented for Codex, which runs its own approval flow."
+        "placement": "top-level",
+        "note": "Specification field, marked experimental; Codex accepts it and does not enforce it as a permission rule."
       }
     },
     "argument-hint": {
@@ -59,7 +59,7 @@
       },
       "Codex": {
         "placement": "metadata",
-        "note": "Codex tolerates the key but documents no use for it; its loader has had to repair unquoted values found in the wild."
+        "note": "Not a Codex frontmatter control. The parser reads `name`, `description`, and `metadata.short-description` only, and ignores everything else."
       }
     },
     "arguments": {
@@ -72,6 +72,40 @@
         "placement": "metadata",
         "note": "Codex documents no argument substitution, so a body that spells a placeholder does it inside a harness conditional."
       }
+    },
+    "license": {
+      "form": "verbatim",
+      "intent": "License covering the skill, as a name or a bundled file reference.",
+      "ClaudeCode": {
+        "placement": "top-level"
+      },
+      "Codex": {
+        "placement": "top-level",
+        "note": "Portable specification metadata; Codex does not use it during execution."
+      }
+    },
+    "compatibility": {
+      "form": "verbatim",
+      "intent": "Environment the skill needs: intended product, system packages, network access.",
+      "ClaudeCode": {
+        "placement": "top-level"
+      },
+      "Codex": {
+        "placement": "top-level",
+        "note": "Portable specification metadata; Codex does not enforce it."
+      }
+    },
+    "short-description": {
+      "form": "quoted-scalar",
+      "intent": "Short label shown beside the skill in a product's own surface.",
+      "ClaudeCode": {
+        "placement": "metadata",
+        "note": "Claude Code reads no short label; the entry rides along inert."
+      },
+      "Codex": {
+        "placement": "metadata",
+        "note": "The one nested key the Codex parser reads, defined as a `metadata` sub-key rather than a top-level one."
+      }
     }
   },
   "assistants": {
@@ -80,17 +114,29 @@
       "display_name": "Claude Code",
       "source_urls": [
         "https://code.claude.com/docs/en/skills",
-        "https://agentskills.io/specification#metadata-field"
+        "https://agentskills.io/specification"
       ]
     },
     "Codex": {
       "id": "codex",
       "display_name": "Codex",
       "source_urls": [
-        "https://developers.openai.com/codex/skills",
-        "https://github.com/openai/skills/blob/main/skills/.system/skill-creator/SKILL.md",
-        "https://github.com/openai/codex/pull/28628"
+        "https://learn.chatgpt.com/docs/build-skills",
+        "https://github.com/openai/codex/blob/ff29a44391deccde0aba0f8390337d7f3c319ea4/codex-rs/skills/src/parser.rs#L6-L27",
+        "https://github.com/openai/codex/blob/ff29a44391deccde0aba0f8390337d7f3c319ea4/codex-rs/skills/src/parser_tests.rs#L63-L79"
       ]
     }
+  },
+  "specification": {
+    "document": "references/agent-skills-specification.md",
+    "source": "https://agentskills.io/specification.md",
+    "portable_keys": [
+      "name",
+      "description",
+      "license",
+      "compatibility",
+      "metadata",
+      "allowed-tools"
+    ]
   }
 }

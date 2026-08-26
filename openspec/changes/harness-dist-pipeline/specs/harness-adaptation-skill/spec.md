@@ -25,7 +25,7 @@ The skill SHALL be written greenfield: every file in the skill directory — `SK
 - **THEN** the scan finds none
 
 ### Requirement: Skill documents the frontmatter portability boundary
-The skill SHALL document that frontmatter is the portability boundary and that the frontmatter matrix is its only source: the `verbatim` form as the mark of a portable key, the global named after each placed key as that key's only route, both placements, every value form the matrix documents, the merge of a hand-written `metadata:` block, and the namespaced `metadata` shape. The skill SHALL document the frontmatter matrix contract alongside the action matrix contract, and SHALL provide a scriptable key-then-assistant lookup.
+The skill SHALL document that frontmatter is the portability boundary and that the frontmatter matrix is its only source: the six portable specification fields, the global named after each placed key as that key's only route, both placements, every value form the matrix documents, the merge of a hand-written `metadata:` block, and the namespaced `metadata` shape. The skill SHALL link the vendored Agent Skills specification instead of the network, SHALL state that a product's own UI, invocation policy and tool dependencies belong in `agents/openai.yaml` rather than in frontmatter, SHALL document the frontmatter matrix contract alongside the action matrix contract, and SHALL provide a scriptable key-then-assistant lookup.
 
 #### Scenario: Boundary documented
 - **WHEN** the skill content is checked against the renderer's frontmatter behavior
@@ -34,6 +34,14 @@ The skill SHALL document that frontmatter is the portability boundary and that t
 #### Scenario: Frontmatter lookup resolves a placement
 - **WHEN** the skill's frontmatter lookup runs for one key and one assistant
 - **THEN** it returns that key's placement, form, and how to declare it
+
+#### Scenario: Specification is read locally
+- **WHEN** the skill points an author at the format specification
+- **THEN** it links the vendored document in the skill's own references rather than a URL
+
+#### Scenario: Product settings are routed out of frontmatter
+- **WHEN** the skill covers a product's UI, invocation policy, or tool dependencies
+- **THEN** it directs them to `agents/openai.yaml`
 
 ### Requirement: Skill documents matrix maintenance
 The skill SHALL document the matrix contract: one callable name per mapped action per harness, one invocation wrapper per harness, stable TitleCase action keys, stable assistant keys, and the action-then-assistant lookup order.

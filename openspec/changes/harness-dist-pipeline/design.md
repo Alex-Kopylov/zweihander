@@ -117,30 +117,35 @@ Staging takes the mode of `dist/` itself before the rename. Preserving the *exis
 
 ### D12. Skill frontmatter is the portability boundary
 
-Frontmatter is the one region of a skill where a wrong key is a hard
-incompatibility rather than noise. Claude Code documents about twenty fields,
-the Agent Skills specification six, and Codex exactly two: `name` and
-`description`. `allowed-tools` is the concrete case — Claude Code honours the
-key at the top level and runs the grant through its permission flow; Codex
-documents no support for it.
+Frontmatter is the one region of a skill where a key belongs to a product
+rather than to the document. The Agent Skills specification defines six fields —
+`name`, `description`, `license`, `compatibility`, `metadata`, `allowed-tools` —
+and both products accept all six, so all six stay at the top level everywhere.
+Claude Code documents about twenty more. Codex documents none beyond the six and
+reads only `name`, `description`, and `metadata.short-description`; its parser
+ignores every other key rather than rejecting it.
 
-Frontmatter is therefore the portability boundary, and `allowed-tools` crosses
-it through one renderer-provided Jinja global rather than through author
-discipline:
+So placement is not about avoiding a crash. It is about writing only what a
+harness asked for. `argument-hint` is the concrete case — a Claude Code
+extension, meaningless to Codex — and it crosses the boundary through a
+renderer-provided Jinja global rather than through author discipline:
 
 ```jinja
-{{ allowed_tools("Bash(git:*) Read") }}
+{{ argument_hint("[issue] to work through") }}
 ```
 
-Claude Code renders `allowed-tools: Bash(git:*) Read` at the top level. Codex
-renders it under `metadata:`, the free-form map both harnesses accept, which is
-where non-portable data travels. The harness is bound when the global is
-registered, so a template never passes it and no author can branch the
-placement by hand. The value is a space-separated string — the form the Agent
-Skills specification defines — written unquoted as the specification writes it;
-a value that would not survive as a plain YAML scalar fails the build instead
-of being quoted into a shape the specification does not show. A list argument
-joins with spaces; an empty argument emits no key at all.
+Claude Code renders it at the top level. Codex renders it under `metadata:`, the
+map the specification reserves for what it does not define. The direction also
+runs the other way: `metadata.short-description` is a Codex key, so it is
+`metadata`-placed for both. The harness is bound when the global is registered,
+so a template never passes it and no author can branch the placement by hand.
+
+The specification itself is vendored at
+`references/agent-skills-specification.md` under Apache-2.0, so the adaptation
+skill reads the document it renders against instead of the network, and the
+matrix names both the document and the six portable keys so they cannot drift
+apart. Codex UI, invocation policy and tool dependencies stay out of frontmatter
+entirely: `agents/openai.yaml` is where Codex documents them.
 
 The placement itself is data. `references/harness-frontmatter-matrix.json` sits
 beside the action matrix and answers the frontmatter question the same way: the

@@ -129,7 +129,7 @@ Files rendered from `.j2` sources into `dist/claude-code/**` SHALL contain no Co
 - **THEN** a scan of both trees finds none of the legacy dispatch artifacts
 
 ### Requirement: Skill frontmatter is the portability boundary
-Rendered frontmatter SHALL carry only keys the target harness accepts, and the frontmatter matrix SHALL be the only source of that judgement. A key whose form is `verbatim` is portable and MAY be written literally; every other key SHALL be produced by the renderer global named after it, with hyphens turned into underscores. The renderer SHALL register exactly one global per placed key, take the placement from the rendered harness's matrix entry — `top-level` for a harness that reads the key, `metadata` for one that does not — and emit no key for an empty value. The renderer SHALL fold every frontmatter `metadata:` block of a rendered file into the first one, and SHALL fail the build on a duplicate of any other frontmatter key.
+Rendered frontmatter SHALL carry only keys the target harness accepts, and the frontmatter matrix SHALL be the only source of that judgement. The six fields the Agent Skills specification defines — `name`, `description`, `license`, `compatibility`, `metadata`, `allowed-tools` — are portable and SHALL be placed `top-level` for every harness. A key whose form is `verbatim` MAY be written literally; every other key SHALL be produced by the renderer global named after it, with hyphens turned into underscores. The renderer SHALL register exactly one global per placed key, take the placement from the rendered harness's matrix entry — `top-level` for a key that harness reads, `metadata` for a key it does not read and for a key the product defines as a `metadata` sub-key — and emit no key for an empty value. The renderer SHALL fold every frontmatter `metadata:` block of a rendered file into the first one, and SHALL fail the build on a duplicate of any other frontmatter key.
 
 #### Scenario: A placed key lands where each harness reads it
 - **WHEN** a template declares allowed tools through the global and both trees render
@@ -164,7 +164,7 @@ Rendered frontmatter SHALL carry only keys the target harness accepts, and the f
 - **THEN** the Claude Code file carries top-level `argument-hint` and `arguments` keys, and the Codex file carries both under one `metadata:` block and neither at the top level
 
 ### Requirement: Frontmatter matrix declares every key's placement and form
-The frontmatter matrix SHALL declare, for every frontmatter key the repository writes, one `form` documented in its own `forms` section and one `placement` per assistant. Every non-`verbatim` form SHALL be one the renderer can write, and a `metadata` placement SHALL carry a note recording why that harness does not read the key. The matrix SHALL preserve the key-then-assistant lookup order and SHALL declare the `metadata` namespaces authors may write, none of which repeats a key name. A malformed matrix SHALL fail the build before any file renders.
+The frontmatter matrix SHALL declare, for every frontmatter key the repository writes, one `form` documented in its own `forms` section and one `placement` per assistant. Every non-`verbatim` form SHALL be one the renderer can write, and a `metadata` placement SHALL carry a note recording why the key lives there. The matrix SHALL preserve the key-then-assistant lookup order and SHALL declare the `metadata` namespaces authors may write, none of which repeats a key name. The matrix SHALL name the vendored Agent Skills specification document and the portable keys it defines, and every named portable key SHALL appear in that document. A malformed matrix SHALL fail the build before any file renders.
 
 #### Scenario: Matrix schema holds
 - **WHEN** the frontmatter matrix is validated
@@ -177,6 +177,18 @@ The frontmatter matrix SHALL declare, for every frontmatter key the repository w
 #### Scenario: Unknown placement fails the build
 - **WHEN** a key gives an assistant a placement outside `top-level` and `metadata`
 - **THEN** the build fails and names the key and the placement
+
+#### Scenario: Portable keys stay top level in both trees
+- **WHEN** the matrix's portable key list is checked against every key's placement
+- **THEN** each portable key is placed `top-level` for every assistant
+
+#### Scenario: A product's nested key is metadata-placed everywhere
+- **WHEN** a key a product defines as a `metadata` sub-key is looked up for either assistant
+- **THEN** its placement is `metadata`, carrying the note that says why
+
+#### Scenario: Vendored specification backs the portable list
+- **WHEN** the matrix names a specification document and its portable keys
+- **THEN** the document exists beside the matrix and names every one of those keys
 
 ### Requirement: Value form decides how a key is written
 Each form SHALL write its value one way and fail the build rather than change its meaning. `plain-scalar` writes the value unquoted, joins a list argument with spaces, and fails on a value that would not survive as a plain YAML scalar. `quoted-scalar` writes the value double-quoted with its own quotes escaped and fails on a line break. `placeholder-names` writes a space-separated list of names that can each spell a `$name` placeholder and fails on any other name.

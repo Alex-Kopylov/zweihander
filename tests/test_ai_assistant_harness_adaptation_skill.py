@@ -83,7 +83,7 @@ def test_skill_documents_frontmatter_portability_boundary() -> None:
     assert '{{ allowed_tools("Bash(git:*) Read") }}' in body
     assert '{{ argument_hint("[issue] to work through") }}' in body
     assert '{{ arguments("issue") }}' in body
-    assert "one global named after it" in body
+    assert "the global named after it" in body
     assert "folds every frontmatter `metadata:`" in body
     for namespace in ("references", "agents", "skills", "origin", "config"):
         assert f"`{namespace}`" in body
@@ -104,8 +104,33 @@ def test_skill_documents_the_frontmatter_matrix_contract() -> None:
 
     assert '`lookup_order: ["key", "assistant"]`' in body
     assert "hyphens turned into underscores" in body
-    assert "`top-level` where the harness" in body
     assert "metadata_namespaces" in body
+    assert "specification" in body
+
+
+def test_skill_names_every_portable_specification_field() -> None:
+    body = skill_body()
+    matrix = json.loads(FRONTMATTER_MATRIX_FILE.read_text(encoding="utf-8"))
+
+    for key in matrix["specification"]["portable_keys"]:
+        assert f"`{key}`" in body, key
+
+
+def test_skill_links_the_vendored_specification() -> None:
+    body = skill_body()
+    document = SKILL_ROOT / "references" / "agent-skills-specification.md"
+
+    assert "references/agent-skills-specification.md" in body
+    assert document.is_file()
+
+
+def test_skill_sends_codex_product_settings_to_the_agent_file() -> None:
+    """Codex UI, invocation policy and tool dependencies are not frontmatter."""
+    body = skill_body()
+
+    assert "agents/openai.yaml" in body
+    assert "allow_implicit_invocation" in body
+    assert "metadata.short-description" in body
 
 
 def test_skill_documents_matrix_contract() -> None:

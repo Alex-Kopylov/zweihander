@@ -83,4 +83,7 @@ The whole change lands in one PR. Development is test-first (TDD): each behavior
 - [x] 10.4 Give the interview skill a `scripts/decision_log.py` that owns both the append-only log and the progress bar, with tests under `tests/`
 - [x] 10.5 Rewrite `interview/SKILL.md.j2`: group questions before the walk, record every decision to the log, review the log, execute only after approval, delegate non-blocking work
 - [x] 10.6 Rewrite the frontmatter section of `adapt-skill-for-ai-harness` around the matrix, its forms, its contract, and the lookup script
-- [x] 10.7 Rebuild both trees and run full verification: `uv run pytest tests`, JSON validation, `git diff --check`
+- [x] 10.7 Correct the matrix against the Codex parser and the Agent Skills specification: six portable fields stay top level (`allowed-tools` among them), add `license`, `compatibility`, and Codex's `metadata.short-description`, and record each note against the parser it came from
+- [x] 10.8 Vendor the Agent Skills specification into the adaptation skill's references under Apache-2.0, record it in `third_party/`, and name it from the matrix so the portable list cannot drift from the document
+- [x] 10.9 Document in the adaptation skill that a product's UI, invocation policy, and tool dependencies belong in `agents/openai.yaml`, never in frontmatter
+- [x] 10.10 Rebuild both trees and run full verification: `uv run pytest tests`, JSON validation, `git diff --check`

@@ -66,18 +66,52 @@ def test_every_key_places_itself_for_every_assistant(keys, assistants):
             assert entry[assistant]["placement"] in PLACEMENTS, f"{key}/{assistant}"
 
 
-def test_the_portable_pair_is_verbatim_and_top_level_everywhere(keys, assistants):
-    """`name` and `description` are the two keys every harness documents."""
-    for key in ("name", "description"):
-        assert keys[key]["form"] == VERBATIM_FORM
+def test_specification_keys_stay_top_level_everywhere(matrix, keys, assistants):
+    """The specification's six fields are portable, so nothing displaces them."""
+    portable = matrix["specification"]["portable_keys"]
+
+    assert "metadata" not in keys, "the map itself is not one of its own keys"
+    for key in portable:
+        if key == "metadata":
+            continue
         for assistant in assistants:
-            assert keys[key][assistant]["placement"] == "top-level"
+            assert keys[key][assistant]["placement"] == "top-level", f"{key}/{assistant}"
 
 
-def test_claude_code_only_keys_travel_in_codex_metadata(keys):
-    for key in ("allowed-tools", "argument-hint", "arguments"):
+def test_a_key_needing_no_renderer_help_is_verbatim(keys):
+    """`allowed-tools` is portable but still formatted, so it is not verbatim."""
+    for key in ("name", "description", "license", "compatibility"):
+        assert keys[key]["form"] == VERBATIM_FORM
+    assert keys["allowed-tools"]["form"] != VERBATIM_FORM
+
+
+def test_product_extensions_travel_in_the_other_harness_metadata(keys):
+    for key in ("argument-hint", "arguments"):
         assert keys[key]["ClaudeCode"]["placement"] == "top-level"
         assert keys[key]["Codex"]["placement"] == "metadata"
+
+
+def test_a_nested_key_is_metadata_placed_for_every_harness(keys):
+    """`metadata.short-description` is defined as a sub-key, not a top-level one."""
+    for assistant in ("ClaudeCode", "Codex"):
+        assert keys["short-description"][assistant]["placement"] == "metadata"
+
+
+def test_specification_document_is_vendored_beside_the_matrix(matrix):
+    document = FRONTMATTER_MATRIX_PATH.with_name(
+        matrix["specification"]["document"].rsplit("/", 1)[-1]
+    )
+
+    assert document.is_file()
+    assert document.read_text(encoding="utf-8").startswith("# Specification")
+
+
+def test_every_portable_key_appears_in_the_vendored_specification(matrix):
+    document = FRONTMATTER_MATRIX_PATH.with_name("agent-skills-specification.md")
+    text = document.read_text(encoding="utf-8")
+
+    for key in matrix["specification"]["portable_keys"]:
+        assert f"`{key}`" in text, key
 
 
 def test_every_key_records_its_intent(keys):
@@ -86,7 +120,7 @@ def test_every_key_records_its_intent(keys):
 
 
 def test_a_metadata_placement_records_why(keys):
-    """A key a harness does not read carries the note saying so."""
+    """A key sent to `metadata` carries the note saying why it lives there."""
     for key, entry in keys.items():
         for assistant, placement in entry.items():
             if not isinstance(placement, dict):

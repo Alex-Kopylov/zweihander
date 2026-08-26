@@ -82,9 +82,15 @@ placement = matrix["keys"]["argument-hint"]["Codex"]["placement"]  # metadata
 Use `scripts/lookup_harness_frontmatter.py --key argument-hint --assistant Codex`
 for scriptable lookup; it also returns how to declare the key.
 
-A key whose form is `verbatim` is portable — every harness reads it — so write
-it literally. `name` and `description` are the two. Every other key carries a
-placement per harness, and the renderer registers one global named after it:
+The Agent Skills specification defines six portable fields — `name`,
+`description`, `license`, `compatibility`, `metadata`, and `allowed-tools` —
+and every one of them stays at the top level in every tree. The specification
+is vendored at [references/agent-skills-specification.md](references/agent-skills-specification.md);
+read it there rather than from the network.
+
+A key whose form is `verbatim` needs nothing from the renderer, so write it
+literally. Every other key is declared through the global named after it, which
+places it and writes its value:
 
 ```jinja
 {{ allowed_tools("Bash(git:*) Read") }}
@@ -92,10 +98,28 @@ placement per harness, and the renderer registers one global named after it:
 {{ arguments("issue") }}
 ```
 
-Claude Code renders each at the top level; Codex renders each under
-`metadata:`, the free-form map both harnesses accept. An empty value emits no
+`allowed-tools` is portable, so both trees carry it at the top level; Codex
+accepts it and does not enforce it. `argument-hint` and `arguments` are Claude
+Code extensions, so Codex takes them under `metadata:`, the map the
+specification reserves for what it does not define. An empty value emits no
 key. Never write a placed key by hand and never wrap the call in a harness
 conditional — the global already carries the harness.
+
+Neither product rejects an unknown key: the Codex parser reads `name`,
+`description`, and `metadata.short-description`, and ignores everything else.
+Placement is therefore about writing only what a harness asked for, not about
+avoiding a crash.
+
+Codex UI, invocation policy, and tool dependencies never belong in frontmatter.
+They belong in `agents/openai.yaml` beside the skill:
+
+```yaml
+interface:
+  display_name: "Handoff"
+  short_description: "Compact a conversation into a handoff"
+policy:
+  allow_implicit_invocation: false
+```
 
 Each key's `form` decides how the value is written, and the matrix documents
 every form:
@@ -168,10 +192,13 @@ The frontmatter matrix keeps these stable:
   hyphens turned into underscores.
 - Every key carries a `form` the matrix documents under `forms`, and every
   non-`verbatim` form is one the renderer can write.
-- Every key carries a `placement` per assistant: `top-level` where the harness
-  reads the key, `metadata` where it does not.
-- A `metadata` placement carries a `note` recording why the harness does not
-  read the key.
+- Every key carries a `placement` per assistant: `top-level` for the six
+  specification fields and for any key that harness reads, `metadata` for a
+  key it does not read and for one the product defines as a `metadata`
+  sub-key, such as Codex's `short-description`.
+- A `metadata` placement carries a `note` recording why the key lives there.
+- `specification` names the vendored specification document and the six
+  portable keys, so the two never drift apart.
 - `metadata_namespaces` lists the namespaces authors may write, and never
   repeats a key name.
 - Keep `lookup_order: ["key", "assistant"]`.
