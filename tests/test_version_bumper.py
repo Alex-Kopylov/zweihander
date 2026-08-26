@@ -2,7 +2,9 @@ import importlib.util
 from pathlib import Path
 
 
-SCRIPT_PATH = Path(__file__).resolve().parents[1] / "scripts" / "find_versions.py"
+REPO_ROOT = Path(__file__).resolve().parents[1]
+SKILL_DIR = REPO_ROOT / "plugins" / "dev-workflow" / "skills" / "version-bumper"
+SCRIPT_PATH = SKILL_DIR / "scripts" / "find_versions.py"
 
 
 def load_find_versions():

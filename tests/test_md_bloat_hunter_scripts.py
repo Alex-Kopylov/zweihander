@@ -6,8 +6,11 @@ from pathlib import Path
 from types import ModuleType
 
 
-SKILL_DIR = Path(__file__).resolve().parents[1]
+REPO_ROOT = Path(__file__).resolve().parents[1]
+SKILL_DIR = REPO_ROOT / "plugins" / "ai-assistant-ops" / "skills" / "md-bloat-hunter"
 SCRIPTS_DIR = SKILL_DIR / "scripts"
+# The skill ships as a rendered template, so the authored source is the `.j2`.
+SKILL_FILE = SKILL_DIR / "SKILL.md.j2"
 
 
 def load_script(name: str) -> ModuleType:
@@ -237,7 +240,7 @@ def test_measure_size_marks_hard_budget_exceeded(tmp_path: Path) -> None:
 
 def test_size_budget_markdown_delegates_calculation_to_script() -> None:
     markdown_files = [
-        SKILL_DIR / "SKILL.md",
+        SKILL_FILE,
         SKILL_DIR / "agents" / "size-budget-reporter.md",
         SKILL_DIR / "docs" / "SPEC.md",
     ]
@@ -259,7 +262,7 @@ def test_size_budget_markdown_delegates_calculation_to_script() -> None:
 
 
 def test_tiktoken_optional_requirement_uses_compatibility_frontmatter() -> None:
-    skill_text = (SKILL_DIR / "SKILL.md").read_text(encoding="utf-8")
+    skill_text = SKILL_FILE.read_text(encoding="utf-8")
     frontmatter = skill_text.split("---", 2)[1]
 
     assert "compatibility:" in frontmatter

@@ -4,7 +4,8 @@ import sys
 from pathlib import Path
 
 
-SKILL_DIR = Path(__file__).resolve().parents[1]
+REPO_ROOT = Path(__file__).resolve().parents[1]
+SKILL_DIR = REPO_ROOT / "plugins" / "ai-assistant-ops" / "skills" / "md-bloat-hunter"
 DETECTOR_SCHEMA = SKILL_DIR / "references" / "detector-output.schema.json"
 FILE_REDUCTION_SCHEMA = SKILL_DIR / "references" / "file-reduction.schema.json"
 SIZE_REPORT_SCHEMA = SKILL_DIR / "references" / "size-report.schema.json"
