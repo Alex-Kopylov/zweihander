@@ -6,22 +6,24 @@ requires-python = ">=3.11"
 name = "ai-agents-marketplace"
 version = "0.1.0"
 source = { virtual = "." }
+dependencies = [
+    { name = "jinja2" },
+    { name = "pathspec" },
+]
 
 [package.dev-dependencies]
 dev = [
-    { name = "jinja2" },
-    { name = "pathspec" },
     { name = "pytest" },
 ]
 
 [package.metadata]
-
-[package.metadata.requires-dev]
-dev = [
+requires-dist = [
     { name = "jinja2", specifier = ">=3.1" },
     { name = "pathspec", specifier = ">=0.12" },
-    { name = "pytest", specifier = ">=9.0.3" },
 ]
+
+[package.metadata.requires-dev]
+dev = [{ name = "pytest", specifier = ">=9.0.3" }]
 
 [[package]]
 name = "colorama"

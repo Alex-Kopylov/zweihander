@@ -3,11 +3,12 @@ name = "ai-agents-marketplace"
 version = "0.1.0"
 description = "Personal plugin marketplace for AI agents."
 requires-python = ">=3.11"
-dependencies = []
+dependencies = [
+    "jinja2>=3.1",
+    "pathspec>=0.12",
+]
 
 [dependency-groups]
 dev = [
-    "jinja2>=3.1",
-    "pathspec>=0.12",
     "pytest>=9.0.3",
 ]
