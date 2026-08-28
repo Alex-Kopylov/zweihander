@@ -112,6 +112,38 @@
           "check": "uses the active harness's mapped user-question mechanism before proceeding"
         }
       ]
+    },
+    {
+      "id": 7,
+      "prompt": "Walk me through the full red-green-refactor discipline for this Python service change, including what to do about code I already wrote without tests.",
+      "expected_output": "Owns Python level selection, pytest layout, and authoring order, and routes the test-first process itself to dev-workflow:test-driven-development instead of restating the iron law, existing-code gate, and rationalization handling.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "routes_process_detail_to_tdd_skill",
+          "check": "sends the detailed test-first process to dev-workflow:test-driven-development rather than restating it"
+        },
+        {
+          "name": "keeps_python_ownership",
+          "check": "still owns Python level selection, pytest structure, fixtures, and writer-agent delegation"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "Only python-dev-workflow is installed here. Plan pytest coverage for a new cache eviction rule.",
+      "expected_output": "Completes level selection, pytest structure, fixture, and authoring guidance from this plugin alone, using no file path outside python-dev-workflow.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "standalone_without_sibling_plugin",
+          "check": "produces usable Python test guidance without requiring another plugin to be installed"
+        },
+        {
+          "name": "no_cross_plugin_paths",
+          "check": "loads no reference path outside the python-dev-workflow plugin"
+        }
+      ]
     }
   ]
 }

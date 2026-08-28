@@ -26,6 +26,17 @@ Use this skill as the entry point for Python pytest work. It defines the shared
 testing rules, then routes to focused references or agents only when the project
 needs them.
 
+## Ownership
+
+This skill owns Python test work: level selection, pytest structure, fixtures,
+factories, Celery and Redis coverage, and writer-agent delegation.
+
+The language-neutral test-first process belongs to
+`dev-workflow:test-driven-development`: the iron law, the existing code gate,
+verified RED and GREEN, minimal implementation, and rationalization handling.
+Invoke that skill for the detail instead of restating it here. When it is not
+installed, the summary rules in this file are the working minimum.
+
 ## Harness Adaptation
 
 Depending on who you are as an AI agent, load exactly one metadata-linked reference and skip every non-matching file.
