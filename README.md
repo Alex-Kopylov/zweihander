@@ -262,7 +262,7 @@ Redis behavior, or configuring Celery for production behavior.
 | Skill | Description |
 |---|---|
 | `celery-expert` | Configure Celery tasks, workers, retries, schedules, performance, and security. |
-| `tests-manager` | Plan scenarios and write pytest E2E, integration, and unit tests with focused references. |
+| `tests-manager` | Own Python test craft: plan scenarios and write pytest E2E, integration, and unit tests with focused references. |
 
 **Agents**
 
@@ -301,7 +301,7 @@ provenance.
 | `spec-contradiction-hunter` | Find contradictions and inconsistencies in specs. |
 | `spec-interview` | Interview the user and produce an implementation spec. |
 | `systematic-debugging` | Investigate bugs through evidence, patterns, hypotheses, and fixes. |
-| `test-driven-development` | Enforce red-green-refactor for features, bug fixes, and behavior changes. |
+| `test-driven-development` | Own the language-neutral red-green-refactor process and route Python test work to `tests-manager`. |
 | `ticket-branch` | Create a git branch from a ticket ID or URL. |
 | `ticket-comment-status` | Post status updates to tickets or work items. |
 | `using-git-worktrees` | Set up isolated workspace branches for feature work. |
