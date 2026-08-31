@@ -17,22 +17,9 @@ same file. Reference it by path. Never copy its content elsewhere.
 
 ## Styling
 
-Apply ISO 24495-1 (plain language), ASD-STE100 (Simplified Technical English),
-W3C Cognitive Accessibility Guidance (COGA), and the US Plain Writing Act:
+Apply every standard below:
 
-- Write one instruction per sentence.
-- Use the active voice and name the actor.
-- Use simple present or simple past.
-- Cap a procedural sentence at 20 words and a descriptive sentence at 25.
-- Write whole sentences with articles. Never write telegraphic notes.
-- Use one meaning per word, and reuse that same word everywhere.
-- Replace a rare word with a common word of the same meaning.
-- Split a stack of three or more nouns with a preposition or a hyphen.
-- Expand an abbreviation on first use, then use the abbreviation.
-- Cap a paragraph at 6 sentences.
-- Put a warning before the step it applies to, never after.
-- Turn three or more parallel facts into a list or a table.
-- Cap a list at 7 items. Split a longer list into named groups.
-- Give every section a heading that states its subject, and keep heading levels in order.
-- Lead each section with its outcome, then give the detail.
-- Address the reader as "you", and state what to do before you explain why.
+- [ ] ISO 24495-1 (plain language)
+- [ ] ASD-STE100 (Simplified Technical English)
+- [ ] W3C Cognitive Accessibility Guidance (COGA)
+- [ ] US Plain Writing Act
