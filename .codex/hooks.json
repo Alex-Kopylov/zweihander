@@ -1,0 +1,18 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "^(apply_patch|Write|Edit)$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$(git rev-parse --show-toplevel)/.codex/hooks/docs_language_guard.py\"",
+            "statusMessage": "Checking documentation language",
+            "timeout": 600,
+            "async": true
+          }
+        ]
+      }
+    ]
+  }
+}
