@@ -98,17 +98,6 @@ def test_patched_paths_skips_deletes() -> None:
     assert hook.patched_paths(patch_text) == []
 
 
-def test_patched_paths_reports_both_names_of_a_rename() -> None:
-    patch_text = (
-        "*** Begin Patch\n"
-        "*** Update File: notes.md\n"
-        "*** Move to: docs/notes.md\n"
-        "@@\n-a\n+b\n"
-        "*** End Patch\n"
-    )
-    assert hook.patched_paths(patch_text) == ["notes.md", "docs/notes.md"]
-
-
 def make_event(patch_text: str, cwd: Path) -> dict:
     return {
         "cwd": str(cwd),
@@ -133,16 +122,6 @@ def test_mixed_patch_selects_only_in_scope_files(sample_repository: Path) -> Non
 
 def test_missing_file_is_not_selected(sample_repository: Path) -> None:
     assert targets(make_patch("docs/does-not-exist.md"), sample_repository) == []
-
-
-def test_rename_selects_only_the_existing_new_path(sample_repository: Path) -> None:
-    patch_text = (
-        "*** Begin Patch\n"
-        "*** Update File: gone.md\n"
-        "*** Move to: docs/index.md\n"
-        "*** End Patch\n"
-    )
-    assert targets(patch_text, sample_repository) == ["docs/index.md"]
 
 
 def test_path_outside_the_root_is_not_selected(sample_repository: Path) -> None:

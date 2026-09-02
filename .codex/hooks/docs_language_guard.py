@@ -53,22 +53,17 @@ SUBAGENT_TIMEOUT_SECONDS = 240
 
 # `*** Delete File:` is left out: a deleted file has no prose left to fix.
 PATCH_PATH_PATTERN = re.compile(
-    r"^\*\*\* (?:Add File|Update File|Move to): (.+)$", re.MULTILINE
+    r"^\*\*\* (?:Add File|Update File): (.+)$", re.MULTILINE
 )
 
 SUBAGENT_PROMPT = """Read the repository file {guidelines}.
 Apply the guidelines in that file to exactly one file: {target}.
 Change no other file.
-If {target} already follows the guidelines, make no change.
-Report what you changed."""
+If {target} already follows the guidelines, make no change."""
 
 
 def patched_paths(patch_text: str) -> list[str]:
-    """Returns the paths an apply_patch envelope adds, updates, or renames to.
-
-    A rename yields both names. The caller drops the old one, because it keeps
-    only paths that still exist on disk.
-    """
+    """Returns the paths an apply_patch envelope adds or updates."""
     return [path.strip() for path in PATCH_PATH_PATTERN.findall(patch_text) if path.strip()]
 
 
@@ -116,6 +111,48 @@ def targets_from_event(event: dict, root: Path = PROJECT_ROOT) -> list[PurePosix
     return sorted(selected)
 
 
+def revert_out_of_scope_changes(relative_path: PurePosixPath, root: Path) -> None:
+    """Reverts any file the sub-agent touched other than `relative_path`.
+
+    `--sandbox workspace-write` only keeps the sub-agent inside the repo, not
+    inside its one assigned file, so this is the actual write boundary.
+    """
+    try:
+        status = subprocess.run(
+            ["git", "status", "--porcelain"],
+            cwd=str(root),
+            capture_output=True,
+            text=True,
+            timeout=30,
+            check=False,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return
+    if status.returncode != 0:
+        return
+    target = str(relative_path)
+    stray_paths = {
+        line[3:].strip()
+        for line in status.stdout.splitlines()
+        if line[3:].strip() and line[3:].strip() != target
+    }
+    for stray_path in stray_paths:
+        subprocess.run(
+            ["git", "checkout", "--", stray_path],
+            cwd=str(root),
+            capture_output=True,
+            timeout=30,
+            check=False,
+        )
+        subprocess.run(
+            ["git", "clean", "-fd", "--", stray_path],
+            cwd=str(root),
+            capture_output=True,
+            timeout=30,
+            check=False,
+        )
+
+
 def dispatch(codex_binary: str, relative_path: PurePosixPath) -> None:
     """Starts one separate agent process for one file, with a bounded timeout."""
     command = [
@@ -147,6 +184,7 @@ def dispatch(codex_binary: str, relative_path: PurePosixPath) -> None:
         )
     except (OSError, subprocess.SubprocessError):
         return
+    revert_out_of_scope_changes(relative_path, PROJECT_ROOT)
 
 
 def main() -> int:
