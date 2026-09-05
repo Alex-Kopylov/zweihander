@@ -1,10 +1,5 @@
 # Rationalizations
 
-## When to Load
-
-Load this reference when you or the user argue for skipping the failing test,
-writing tests after the code, or keeping untested code as reference.
-
 ## Red Flags - Stop and Start Over
 
 - Code before test
