@@ -53,7 +53,13 @@ Everything else — including **hyphens** — is permitted where the segment rul
 
 ## Company folder naming
 
-All company folders live under `jobs/`. The slug must match `^[a-z0-9]+(?:_[a-z0-9]+)*$` — lowercase alphanumerics separated by single underscores. No spaces, no hyphens, no uppercase.
+All company folders live under `jobs/`. Slug: lowercase alphanumerics separated by single underscores. No spaces, no hyphens, no uppercase.
+
+```bash
+# Validate a slug before creating jobs/<slug>/
+slug="acme_robotics"
+[[ "$slug" =~ ^[a-z0-9]+(_[a-z0-9]+)*$ ]] && echo ok || echo "bad slug: $slug"
+```
 
 ```
 jobs/acme_robotics/
@@ -65,10 +71,10 @@ jobs/hugging_face/
 
 ## Examples
 
-### Master (at workspace root) — HTML + PDF pair, same stem
+### Master (at workspace root) — Typst + PDF pair, same stem
 
 ```
-<First>_<Last>_<Role>_CV.html
+<First>_<Last>_<Role>_CV.typ
 <First>_<Last>_<Role>_CV.pdf
 ```
 
@@ -77,12 +83,20 @@ jobs/hugging_face/
 Same filename shape as master — the role may shift to match the JD, but no company tag:
 
 ```
-jobs/openai/<First>_<Last>_LLM_Engineer_CV.html
+jobs/openai/<First>_<Last>_LLM_Engineer_CV.typ
 jobs/openai/<First>_<Last>_LLM_Engineer_CV.pdf
-jobs/anthropic/<First>_<Last>_AI_Engineer_CV.html
+jobs/anthropic/<First>_<Last>_AI_Engineer_CV.typ
 jobs/anthropic/<First>_<Last>_AI_Engineer_CV.pdf
-jobs/acme_robotics/<First>_<Last>_Senior_ML_Engineer_CV.html
+jobs/acme_robotics/<First>_<Last>_Senior_ML_Engineer_CV.typ
 jobs/acme_robotics/<First>_<Last>_Senior_ML_Engineer_CV.pdf
+```
+
+```bash
+# Creates `file.pdf` in working directory.
+typst compile file.typ
+
+# Creates a PDF file at the desired path.
+typst compile path/to/source.typ path/to/output.pdf
 ```
 
 ### Cover letters
