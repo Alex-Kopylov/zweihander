@@ -26,6 +26,9 @@ The marketplace install identifier is `zweihander`; the display name is
 - `plugins/<plugin-name>/references/` contains reusable reference docs for plugin skills.
 - `plugins/<plugin-name>/.codex-plugin/plugin.json` contains Codex plugin metadata.
 - `plugins/<plugin-name>/.claude-plugin/plugin.json` contains Claude Code plugin metadata.
+- `common/` contains instruction files that every runtime shares.
+- `.claude/hooks/` contains Claude Code hook scripts.
+- `.codex/hooks/` contains Codex hook scripts.
 
 ## Development Workflow
 

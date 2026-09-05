@@ -1,0 +1,107 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "if": "Edit(**/CHANGELOG.md)",
+            "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/docs-language-review.sh",
+            "args": [],
+            "async": true,
+            "statusMessage": "Checking documentation language"
+          },
+          {
+            "type": "command",
+            "if": "Edit(**/CONTRIBUTING.md)",
+            "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/docs-language-review.sh",
+            "args": [],
+            "async": true,
+            "statusMessage": "Checking documentation language"
+          },
+          {
+            "type": "command",
+            "if": "Edit(**/README.md)",
+            "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/docs-language-review.sh",
+            "args": [],
+            "async": true,
+            "statusMessage": "Checking documentation language"
+          },
+          {
+            "type": "command",
+            "if": "Edit(**/CODE_OF_CONDUCT.md)",
+            "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/docs-language-review.sh",
+            "args": [],
+            "async": true,
+            "statusMessage": "Checking documentation language"
+          },
+          {
+            "type": "command",
+            "if": "Edit(**/SECURITY.md)",
+            "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/docs-language-review.sh",
+            "args": [],
+            "async": true,
+            "statusMessage": "Checking documentation language"
+          },
+          {
+            "type": "command",
+            "if": "Edit(**/SUPPORT.md)",
+            "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/docs-language-review.sh",
+            "args": [],
+            "async": true,
+            "statusMessage": "Checking documentation language"
+          },
+          {
+            "type": "command",
+            "if": "Edit(**/GOVERNANCE.md)",
+            "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/docs-language-review.sh",
+            "args": [],
+            "async": true,
+            "statusMessage": "Checking documentation language"
+          },
+          {
+            "type": "command",
+            "if": "Edit(**/MAINTAINERS.md)",
+            "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/docs-language-review.sh",
+            "args": [],
+            "async": true,
+            "statusMessage": "Checking documentation language"
+          },
+          {
+            "type": "command",
+            "if": "Edit(**/AUTHORS.md)",
+            "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/docs-language-review.sh",
+            "args": [],
+            "async": true,
+            "statusMessage": "Checking documentation language"
+          },
+          {
+            "type": "command",
+            "if": "Edit(**/CONTRIBUTORS.md)",
+            "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/docs-language-review.sh",
+            "args": [],
+            "async": true,
+            "statusMessage": "Checking documentation language"
+          },
+          {
+            "type": "command",
+            "if": "Edit(**/NOTICE.md)",
+            "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/docs-language-review.sh",
+            "args": [],
+            "async": true,
+            "statusMessage": "Checking documentation language"
+          },
+          {
+            "type": "command",
+            "if": "Edit(**/docs/**/*.md)",
+            "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/docs-language-review.sh",
+            "args": [],
+            "async": true,
+            "statusMessage": "Checking documentation language"
+          }
+        ]
+      }
+    ]
+  }
+}
