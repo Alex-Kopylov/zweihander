@@ -1,6 +1,9 @@
 # Testing Anti-Patterns
 
-**Load this reference when:** writing or changing tests, adding mocks, or tempted to add test-only methods to production code.
+## When to Load
+
+Load this reference when writing or changing tests, adding mocks, or tempted
+to add test-only methods to production code.
 
 ## Overview
 

@@ -86,7 +86,6 @@ kanban
     dw_render_diff_html[render-diff-html]
     dw_requesting_code_review[requesting-code-review]
     dw_systematic_debugging[systematic-debugging]
-    dw_test_driven_development[test-driven-development]
     dw_ticket_branch[ticket-branch]
     dw_ticket_comment_status[ticket-comment-status]
     dw_using_git_worktrees[using-git-worktrees]
@@ -253,16 +252,17 @@ reasoning.
 
 ### `python-dev-workflow`
 
-**Use when:** you are deriving scenarios from requirements, writing or reviewing
-Python tests, deciding E2E vs integration vs unit coverage, testing Celery or
-Redis behavior, or configuring Celery for production behavior.
+**Use when:** you are doing TDD or test-first development in Python, deriving
+scenarios from requirements, writing or reviewing Python tests, deciding E2E
+vs integration vs unit coverage, testing Celery or Redis behavior, or
+configuring Celery for production behavior.
 
 **Skills**
 
 | Skill | Description |
 |---|---|
 | `celery-expert` | Configure Celery tasks, workers, retries, schedules, performance, and security. |
-| `tests-manager` | Own Python test craft: plan scenarios and write pytest E2E, integration, and unit tests with focused references. |
+| `tests-manager` | Own Python test-first development and test craft: red-green-refactor, plan scenarios, and write pytest E2E, integration, and unit tests with focused references. |
 
 **Agents**
 
@@ -276,7 +276,7 @@ Redis behavior, or configuring Celery for production behavior.
 
 ### `dev-workflow`
 
-**Use when:** you need structured development workflow support: TDD, debugging,
+**Use when:** you need structured development workflow support: debugging,
 visual diff reports, review, commits, PRs, ticket branches, status updates,
 version bumps, or spec checks.
 
@@ -301,7 +301,6 @@ provenance.
 | `spec-contradiction-hunter` | Find contradictions and inconsistencies in specs. |
 | `spec-interview` | Interview the user and produce an implementation spec. |
 | `systematic-debugging` | Investigate bugs through evidence, patterns, hypotheses, and fixes. |
-| `test-driven-development` | Own the language-neutral red-green-refactor process and route Python test work to `tests-manager`. |
 | `ticket-branch` | Create a git branch from a ticket ID or URL. |
 | `ticket-comment-status` | Post status updates to tickets or work items. |
 | `using-git-worktrees` | Set up isolated workspace branches for feature work. |

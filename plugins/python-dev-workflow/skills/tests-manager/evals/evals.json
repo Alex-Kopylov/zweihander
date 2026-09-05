@@ -116,12 +116,12 @@
     {
       "id": 7,
       "prompt": "Walk me through the full red-green-refactor discipline for this Python service change, including what to do about code I already wrote without tests.",
-      "expected_output": "Owns Python level selection, pytest layout, and authoring order, and routes the test-first process itself to dev-workflow:test-driven-development instead of restating the iron law, existing-code gate, and rationalization handling.",
+      "expected_output": "Runs the full test-first process itself, without routing to another skill: applies the iron law to the untested code, walks the RED-GREEN-REFACTOR cycle, and still owns Python level selection, pytest layout, and authoring order.",
       "files": [],
       "assertions": [
         {
-          "name": "routes_process_detail_to_tdd_skill",
-          "check": "sends the detailed test-first process to dev-workflow:test-driven-development rather than restating it"
+          "name": "applies_process_directly",
+          "check": "applies the iron law and RED-GREEN-REFACTOR cycle itself instead of naming another skill for the process detail"
         },
         {
           "name": "keeps_python_ownership",
@@ -131,7 +131,7 @@
     },
     {
       "id": 8,
-      "prompt": "Only python-dev-workflow is installed here. Plan pytest coverage for a new cache eviction rule.",
+      "prompt": "Plan pytest coverage for a new cache eviction rule.",
       "expected_output": "Completes level selection, pytest structure, fixture, and authoring guidance from this plugin alone, using no file path outside python-dev-workflow.",
       "files": [],
       "assertions": [
@@ -142,6 +142,70 @@
         {
           "name": "no_cross_plugin_paths",
           "check": "loads no reference path outside the python-dev-workflow plugin"
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "Use TDD for this change. I already wrote the retry helper and it works; now add tests around it.",
+      "expected_output": "Applies the iron law: production code written before a failing test is deleted and reimplemented from the test. Does not keep the existing implementation as reference or adapt it while writing tests.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "deletes_code_written_before_test",
+          "check": "requires deleting the untested implementation instead of writing tests after it"
+        },
+        {
+          "name": "rejects_keep_as_reference",
+          "check": "refuses to keep or adapt the existing implementation while writing the test"
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "prompt": "Red-green-refactor this bug fix: the form accepts an empty email. The test I wrote passes already.",
+      "expected_output": "Treats a test that passes before implementation as a defective test, not as progress. Requires watching the test fail for the missing behavior, with an expected failure message, before writing production code.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "requires_verified_red",
+          "check": "requires observing the test fail for the missing behavior before implementing"
+        },
+        {
+          "name": "passing_test_is_a_defect",
+          "check": "treats an immediately passing test as testing existing behavior and fixes the test"
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "prompt": "Red-green-refactor this change. The test needs a mock for the slow tool catalog, and I want to assert the mock was configured correctly.",
+      "expected_output": "Loads the testing anti-patterns reference because mocks are involved, rejects asserting on mock behavior, and requires observable behavior from real code.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "loads_anti_patterns_on_mock_work",
+          "check": "loads the testing anti-patterns reference when mocks or test-only helpers appear"
+        },
+        {
+          "name": "rejects_asserting_on_mocks",
+          "check": "refuses assertions that only prove the mock configuration"
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "prompt": "TDD this feature, but skip the failing-test step just this once because the deadline is today.",
+      "expected_output": "Names the shortcut as a rationalization, holds the iron law, and loads the rationalization reference only when pushback appears rather than carrying that argument in the entrypoint.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "holds_iron_law_under_pressure",
+          "check": "refuses to skip the failing-test step under deadline pressure"
+        },
+        {
+          "name": "loads_rationalization_reference_on_demand",
+          "check": "loads the rationalization counterargument reference only when the user pushes back"
         }
       ]
     }
