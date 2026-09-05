@@ -1,7 +1,7 @@
 ---
 name: export-pdf
-description: Use when the user asks to "export the PDF", "regenerate PDF", "build PDF from HTML", "convert HTML CV to PDF", "refresh the PDF", "HTML to PDF", "render CV to PDF", "produce PDF from HTML", "generate PDF", or after editing a CV HTML and needs a fresh PDF. Converts an HTML CV into a PDF using headless Chromium, ensuring consistent rendering across all applications.
-argument-hint: "[html-file] (optional; defaults to the current file context or detected CV)"
+description: Use when the user asks to "export the PDF", "regenerate PDF", "build PDF from Typst", "compile the Typst CV", "refresh the PDF", "Typst to PDF", "render CV to PDF", "produce PDF from .typ", "generate PDF", or after editing a CV Typst source and needs a fresh PDF. Compiles a Typst CV into a PDF using the Typst CLI, ensuring consistent rendering across all applications.
+argument-hint: "[typ-file] (optional; defaults to the current file context or detected CV)"
 metadata:
   ai-assistant-harness-adaptation.claude-code: references/ai-assistant-harnesses/claude-code.md
   ai-assistant-harness-adaptation.codex: references/ai-assistant-harnesses/codex.md
@@ -9,7 +9,7 @@ metadata:
 
 # Export PDF
 
-Convert an HTML CV to PDF using headless Chromium; every workspace PDF should use this skill for consistent rendering.
+Compile a Typst CV to PDF using the Typst CLI; every workspace PDF should use this skill for consistent rendering.
 
 ## Harness Adaptation
 
@@ -17,41 +17,34 @@ Depending on who you are as an AI agent, load exactly one metadata-linked refere
 
 ## When to use
 
-- After any edit to a CV HTML file
-- When regenerating the master PDF after the master HTML changes
+- After any edit to a CV Typst source
+- When regenerating the master PDF after the master Typst source changes
 - When initial scaffolding needs a PDF export
-- Invoked manually by the user after editing HTML. Also called by the `job-hunt-toolkit:prepare-to-send` skill to verify PDF freshness. NOT called by the `job-hunt-toolkit:new-application` skill (user tailors HTML first, then exports the PDF).
+- Invoked manually by the user after editing the Typst source. Also called by the `job-hunt-toolkit:prepare-to-send` skill to verify PDF freshness. NOT called by the `job-hunt-toolkit:new-application` skill (user tailors the Typst source first, then exports the PDF).
 
 ## Inputs
 
-- **HTML file** (argument or inferred): path to the source HTML. If omitted:
-  - If exactly one `*_CV.html` exists in the current working directory, use it.
+- **Typst file** (argument or inferred): path to the `.typ` source. If omitted:
+  - If exactly one `*_CV.typ` exists in the current working directory, use it.
   - If multiple, ask the user which one.
 
 ## Preconditions
 
-### 1. Chromium available
+### 1. Typst available
 
-Check in order:
 ```bash
-which chromium || which chromium-browser || which google-chrome || which 'Google Chrome' || ls /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome 2>/dev/null
+command -v typst
 ```
 
-Prefer this order on macOS:
-1. `/Applications/Google Chrome.app/Contents/MacOS/Google Chrome`
-2. `/Applications/Chromium.app/Contents/MacOS/Chromium`
-3. `chromium` on PATH
-4. `chromium-browser` on PATH
-
-If none found, fail loudly:
+If not found, fail loudly:
 
 ```
-ERROR: No Chromium-based browser found. Install Chrome (brew install --cask google-chrome) or Chromium (brew install --cask chromium).
+ERROR: typst not found on PATH. Install it (brew install typst, or cargo install --locked typst-cli).
 
 Do NOT silently fall back to another PDF tool — cross-application PDF consistency is critical.
 ```
 
-### 2. HTML file exists and is readable
+### 2. Typst file exists and is readable
 
 Fail fast if not.
 
@@ -59,19 +52,21 @@ Fail fast if not.
 
 ### 1. Resolve paths
 
-- HTML: absolute path.
+- Typst source: absolute path.
 - PDF: same directory, same stem, `.pdf` extension.
 - If a PDF already exists, note that it will be overwritten.
 
-### 2. Run Chromium headless
+### 2. Run the Typst compiler
 
-Use `scripts/html-to-pdf.sh` which wraps the browser invocation. Call it with absolute paths:
+Use `scripts/typst-to-pdf.sh` which wraps the `typst compile` invocation. Call it with absolute paths:
 
 ```bash
-bash ${PLUGIN_ROOT}/skills/export-pdf/scripts/html-to-pdf.sh <html-absolute-path> <pdf-absolute-path>
+bash ${PLUGIN_ROOT}/skills/export-pdf/scripts/typst-to-pdf.sh <typ-absolute-path> <pdf-absolute-path>
 ```
 
 Where `${PLUGIN_ROOT}` resolves to the plugin's root directory.
+
+Typst may only read files under its project root, which the script defaults to the source file's own directory. If the CV imports a shared template from higher up (e.g. a workspace-level `template.typ`), set `JOB_HUNT_TYPST_ROOT` to that directory before calling the script.
 
 ### 3. Verify output
 
@@ -79,20 +74,20 @@ Where `${PLUGIN_ROOT}` resolves to the plugin's root directory.
 - File size > 1KB (anything smaller is a failed render)
 - If `exiftool` is installed, print a quick summary of PDF metadata so the user sees what leaked in
 
-### 3b. Sanity-check PDF content
+### 3b. Sanity-check the compile output
 
-Inspect the produced PDF text. These strings almost certainly mean Chromium rendered a browser error page rather than the CV:
+A Typst compile error exits non-zero and produces no PDF, so the script already catches it. Warnings are the dangerous case: they still produce a PDF, but a visibly wrong one. Read the `[typst]` lines the script printed to stderr and fail on any of these:
 
-- `This page isn't working`
-- `ERR_CONNECTION_REFUSED`
-- `chrome-error://`
-- `This site can't be reached`
-- `HTTP ERROR`
+- `unknown font family` — the layout silently fell back to a substitute font, so the PDF will not match the master
+- `did not converge` — the layout is unstable across pages
+- Any unresolved-reference or unresolved-label warning — these render as a literal `?` in the output
 
-If any such string is found, fail immediately:
+Then inspect the produced PDF text for markers that survived the compile: `TODO`, `FIXME`, `[placeholder]`, `{{`.
+
+If any of the above is found, fail immediately:
 
 ```
-ERROR: PDF content suggests render failure; re-run export-pdf or inspect HTML.
+ERROR: Typst emitted warnings or the PDF contains unresolved markers; inspect the .typ source and re-run export-pdf.
 ```
 
 Do NOT report success or proceed to scrubbing if this check fails.
@@ -106,26 +101,28 @@ Every exported PDF is scrubbed, even when attached directly without the `job-hun
 ### 5. Report
 
 ```
-✓ Exported: <html-filename> → <pdf-filename>
+✓ Exported: <typ-filename> → <pdf-filename>
   Size: <bytes>
   Metadata scrubbed.
 ```
 
 ## Hard rules
 
-- **Use Chromium every time.** Never fall back to weasyprint or wkhtmltopdf; prompt the user to install Chrome or Chromium if missing.
-- **Use absolute paths.** Chromium's `--print-to-pdf` writes to CWD otherwise, which is unpredictable across tool calls.
+- **Use Typst every time.** Never fall back to a browser, weasyprint, wkhtmltopdf, or pandoc; prompt the user to install Typst if missing.
+- **Use absolute paths.** Typst resolves relative paths against CWD otherwise, which is unpredictable across tool calls.
 - **Always scrub metadata after export.** Invoke the `job-hunt-toolkit:scrub-pdf-metadata` skill; the `job-hunt-toolkit:prepare-to-send` skill also verifies scrubbing.
-- **Warn if the HTML has never-rendered markers** like `TODO`, `<!-- draft -->`, `[placeholder]` — these will appear in the PDF unless scrubbed at HTML level.
+- **Warn if the Typst source has leftover markers** like `TODO`, `[placeholder]`, `{{` — written as content they render straight into the PDF. Typst strips `//` and `/* */` comments at compile time, so those never reach the PDF; they still leak forward when the source is copied to the next company folder, which `job-hunt-toolkit:prepare-to-send` checks.
 
 ## Error handling
 
 | Scenario | Action |
 |---|---|
-| Chromium not found | Fail loudly with install instructions |
-| HTML file missing or unreadable | Fail loudly |
-| Chromium exits non-zero | Print stderr, fail loudly |
+| `typst` not found | Fail loudly with install instructions |
+| Typst file missing or unreadable | Fail loudly |
+| `typst compile` exits non-zero | Print stderr, fail loudly |
+| Compile succeeds with warnings (font fallback, unresolved refs) | Treat as failure; report the warning |
 | Output PDF < 1KB | Treat as failure; delete partial PDF |
+| Typst cannot read an imported file | Re-run with `JOB_HUNT_TYPST_ROOT` set to the directory containing the import |
 | Target PDF is read-only / directory not writable | Fail loudly |
 
 ## After export

@@ -10,8 +10,8 @@ Fill employer application portals from verified workspace data, prepare the requ
 
 ## Hard Gates
 
-- Before any CV upload, invoke `job-hunt-toolkit:resume-tailoring` unless the company folder already contains a current tailored CV HTML/PDF pair for this JD.
-- Before any required cover-letter upload, invoke `job-hunt-toolkit:cover-letter-writing` unless a current cover letter HTML/PDF pair already exists. If that skill is unavailable, stop and report a blocker. For optional cover letters, upload or generate only when the user explicitly approves that upload; otherwise skip and report.
+- Before any CV upload, invoke `job-hunt-toolkit:resume-tailoring` unless the company folder already contains a current tailored CV Typst/PDF pair for this JD.
+- Before any required cover-letter upload, invoke `job-hunt-toolkit:cover-letter-writing` unless a current cover letter Typst/PDF pair already exists. If that skill is unavailable, stop and report a blocker. For optional cover letters, upload or generate only when the user explicitly approves that upload; otherwise skip and report.
 - Run `job-hunt-toolkit:prepare-to-send` on every PDF that will be uploaded.
 - Never click final `Submit`, `Send application`, `Apply`, or equivalent without a fresh approval after the filled-value report.
 
@@ -27,7 +27,7 @@ Read in this order:
 2. `USER.md` at the workspace root
 3. Per-company `company.md`
 4. `job_description.*`
-5. Tailored CV HTML and generated PDFs
+5. Tailored CV Typst sources and generated PDFs
 
 If `USER.md` lacks legal, demographic, authorization, consent, salary, or availability data, leave the field blank or choose "prefer not to say" only when that exact option is available and appropriate. Do not infer sensitive answers from the CV.
 

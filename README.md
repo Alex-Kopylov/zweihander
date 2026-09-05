@@ -455,14 +455,14 @@ Cloud storage workflows for MEGA-style user-file storage tools.
 ### `job-hunt-toolkit`
 
 **Use when:** you want a structured job application workspace, tailored resumes,
-HTML-to-PDF export, PDF metadata scrubbing, or a final pre-send checklist.
+Typst-to-PDF export, PDF metadata scrubbing, or a final pre-send checklist.
 
 **Skills**
 
 | Skill | Description |
 |---|---|
-| `cover-letter-writing` | Write an evidence-backed cover letter as HTML and PDF. |
-| `export-pdf` | Render HTML CVs to PDF with headless Chromium. |
+| `cover-letter-writing` | Write an evidence-backed cover letter as Typst and PDF. |
+| `export-pdf` | Compile Typst CVs to PDF with `typst compile`. |
 | `init-workspace` | Scaffold the job application workspace. |
 | `new-application` | Create a company application folder and starter files. |
 | `prepare-to-send` | Run final filename, metadata, and content checks. |

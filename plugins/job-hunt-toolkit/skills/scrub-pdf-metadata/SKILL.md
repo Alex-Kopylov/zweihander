@@ -9,7 +9,7 @@ metadata:
 
 # Scrub PDF Metadata
 
-Some PDF metadata can leak export tools, suspicious timestamps, source HTML filenames, and device names. Strip it with `exiftool`, then reset a clean Author.
+Some PDF metadata can leak export tools, suspicious timestamps, source Typst filenames, and device names. Strip it with `exiftool`, then reset a clean Author.
 
 ## Harness Adaptation
 
@@ -114,9 +114,9 @@ Metadata scrub does not cover PDF *content*. Extract PDF text, then scan for:
 - `C:\`
 - `Documents`
 - the workspace basename (computed at runtime: `$(basename "${JOB_HUNT_WORKSPACE:-$HOME/Documents/job_seeking}")`)
-- `.html`
+- `.typ`
 
-If any hits: the HTML template probably renders a path in a header/footer via `@page` CSS. Fix the HTML, re-export, re-scrub. Do NOT send the PDF.
+If any hits: the Typst template probably prints a path in a `#set page(header: …)` / `footer:` rule. Fix the `.typ` source, re-export, re-scrub. Do NOT send the PDF.
 
 ### 6. Report
 
@@ -137,7 +137,7 @@ Ready for sending. Run the `job-hunt-toolkit:prepare-to-send` skill for the full
 - **Strip, then set.** Always run `-all=` first, then set Author/Title. If you only set Author, the other fields (Producer, CreationDate) stick around.
 - **Title = "CV".** Not the role, not the company, not a timestamp. Generic.
 - **Never embed the company name anywhere in metadata.** Same rule as filenames.
-- **Do not silently scrub without showing before/after.** User needs to see what leaked — it teaches pattern recognition for the HTML side too.
+- **Do not silently scrub without showing before/after.** User needs to see what leaked — it teaches pattern recognition for the Typst side too.
 
 ## Why this matters
 
@@ -146,7 +146,8 @@ Recruiters and hiring managers sometimes open `File → Properties` on a PDF. AT
 ## Gotchas
 
 - **`exiftool -all=` strips Author too.** Step 3 (Set clean Author + Title) is mandatory; see `references/exiftool-commands.md` for commands.
-- **HTML `@page` paths render into PDF text and survive metadata stripping.** `exiftool` cannot remove visible header/footer text, so always run Step 5 after a clean report.
+- **Typst writes its own PDF metadata.** `typst compile` sets `Producer`/`Creator` to the Typst version, and `#set document(title: …, author: …)` becomes the PDF `Title`/`Author`. A document title like "CV tailored for Acme" ships in the PDF properties — Step 2 strips it, but fix the source too.
+- **Paths printed by a page header/footer render into PDF text and survive metadata stripping.** `exiftool` cannot remove visible header/footer text, so always run Step 5 after a clean report.
 
 ## References
 

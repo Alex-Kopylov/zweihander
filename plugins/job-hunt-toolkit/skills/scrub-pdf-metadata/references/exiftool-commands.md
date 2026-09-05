@@ -99,18 +99,18 @@ Metadata scrub does not cover visible content. Use Read, then scan extracted tex
 - `C:\`
 - `Documents`
 - the workspace basename (computed at runtime: `$(basename "${JOB_HUNT_WORKSPACE:-$HOME/Documents/job_seeking}")`)
-- `.html`
+- `.typ`
 
-If hits: the HTML template renders a path somewhere visible via `@page` CSS / footer / running-head. Fix the HTML and re-export.
+If hits: the Typst template prints a path somewhere visible via a page header, footer, or running head. Fix the `.typ` source and re-export.
 
 ## Common leaking fields, ranked by damage
 
 | Field | Why it leaks | Severity |
 |---|---|---|
-| `Title` | Often contains the source HTML filename or a stale variant name | HIGH — visible in File → Properties |
-| `Keywords` | Sometimes set by templates with role / company tags | HIGH |
-| `Author` | If blank or "user" — signals you're new to this CV or templating lazily | MEDIUM |
-| `Producer` | Reveals export tool (Chrome / wkhtmltopdf / weasyprint). Doesn't leak tailoring but breaks consistency if you swap tools between applications | MEDIUM |
+| `Title` | Comes from `#set document(title: …)`; often a stale variant name or a company-tagged one | HIGH — visible in File → Properties |
+| `Keywords` | Comes from `#set document(keywords: …)`; templates sometimes set role / company tags | HIGH |
+| `Author` | Comes from `#set document(author: …)`; if blank or "user", signals you're new to this CV or templating lazily | MEDIUM |
+| `Producer` / `Creator` | Typst writes its own version string here. Doesn't leak tailoring but breaks consistency if you swap tools between applications | MEDIUM |
 | `CreateDate` | "Generated 8 minutes before application submit" is a tell | LOW — common and usually ignored |
 | XMP custom | Some templates embed the source file path | HIGH if present |
 
@@ -118,5 +118,5 @@ If hits: the HTML template renders a path somewhere visible via `@page` CSS / fo
 
 - Use `exiftool -Author=""` expecting it to clear the field — use `exiftool -Author=` (no value) or `exiftool -all=` instead.
 - Leave `.pdf_original` backup files that exiftool creates by default sitting in your workspace. Use `-overwrite_original` to avoid them.
-- Scrub a PDF, then edit the HTML, then re-export and forget to re-scrub. Every new PDF needs a fresh scrub.
+- Scrub a PDF, then edit the `.typ` source, then re-export and forget to re-scrub. Every new PDF needs a fresh scrub.
 - Trust `File → Properties` in Preview.app for verification — it doesn't show XMP or custom fields. Always verify with `exiftool`.

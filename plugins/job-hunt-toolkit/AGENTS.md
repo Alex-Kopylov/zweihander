@@ -6,12 +6,12 @@ Rules the assistant follows when this plugin is active and the user is working o
 
 Default workspace path: `~/Documents/job_seeking`. Override via env var `JOB_HUNT_WORKSPACE`.
 
-If the user is inside a detected workspace (has `AGENTS.md` referencing this plugin OR a master `*_CV.html` at the root matching `<First>_<Last>_<Role>_CV.html`), apply the rules below automatically. Otherwise, offer to run `init-workspace` first.
+If the user is inside a detected workspace (has `AGENTS.md` referencing this plugin OR a master `*_CV.typ` at the root matching `<First>_<Last>_<Role>_CV.typ`), apply the rules below automatically. Otherwise, offer to run `init-workspace` first.
 
 ## Hard rules
 
-- **HTML is the source, PDF is the export.** Never hand-edit PDFs. Edit HTML → regenerate PDF via `export-pdf` skill.
-- **Master HTML is edit-guarded.** Master HTML at workspace root is canonical. The assistant must call AskUserQuestion for explicit user confirmation before modifying the master HTML. The master PDF is a build artifact and may be overwritten freely. Tailored variants live in `<workspace-root>/jobs/<company>/`.
+- **Typst is the source, PDF is the export.** Never hand-edit PDFs. Edit the `.typ` source → regenerate PDF via `export-pdf` skill.
+- **The master Typst source is edit-guarded.** The master `.typ` at workspace root is canonical. The assistant must call AskUserQuestion for explicit user confirmation before modifying it. The master PDF is a build artifact and may be overwritten freely. Tailored variants live in `<workspace-root>/jobs/<company>/`.
 - **File naming is strict.** See `references/naming-rules.md` for the canonical naming rules.
 - **Company folder naming.** See `references/naming-rules.md` for the canonical naming rules.
 - **Metadata scrubbing is mandatory before any PDF leaves the workspace.** Always run `scrub-pdf-metadata` before reporting a CV as "ready to send". No exceptions.
@@ -23,7 +23,7 @@ If the user is inside a detected workspace (has `AGENTS.md` referencing this plu
 | Task | Tool | Install if missing |
 |---|---|---|
 | PDF metadata inspect/strip | `exiftool` | `brew install exiftool` |
-| HTML → PDF | Chromium / Chrome headless | Any Chromium browser on `PATH` |
+| Typst → PDF | `typst` | `brew install typst` |
 
 If a required tool is missing, say so loudly. Do NOT silently fall back to a worse tool — inconsistent PDFs across applications are a red flag. One tool, always the same tool.
 
@@ -44,11 +44,11 @@ Match user intent to the right skill:
 
 ## Skill chaining
 
-- `new-application` should copy master HTML, then hand off to `resume-tailoring`.
+- `new-application` should copy the master Typst source, then hand off to `resume-tailoring`.
 - `submit-job-application` should prepare a tailored CV and required cover letter before uploading, then stop for explicit final approval before submission.
 - `export-pdf` auto-invokes `scrub-pdf-metadata` as its final step. Every exported PDF is scrubbed.
 - `prepare-to-send` verifies scrubbing as a gate before declaring the file ready.
-- `export-pdf` is a utility any skill can call after HTML edits.
+- `export-pdf` is a utility any skill can call after Typst source edits.
 
 ## Reference docs
 

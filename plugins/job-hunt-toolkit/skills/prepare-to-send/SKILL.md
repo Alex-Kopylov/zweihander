@@ -1,6 +1,6 @@
 ---
 name: prepare-to-send
-description: Use when the user asks to "prepare to send", "final check", "ready to send", "pre-send checklist", "is this ready", "is this clean", "can I attach this", "run the checklist", "verify the CV", or "check before sending". Runs the complete pre-send audit — filename sanity, HTML↔PDF parity, metadata scrub, visible content scan, sensitive file presence, content correctness, final sanity — and fails loudly on any issue. Nothing ships with warnings.
+description: Use when the user asks to "prepare to send", "final check", "ready to send", "pre-send checklist", "is this ready", "is this clean", "can I attach this", "run the checklist", "verify the CV", or "check before sending". Runs the complete pre-send audit — filename sanity, Typst↔PDF parity, metadata scrub, visible content scan, sensitive file presence, content correctness, final sanity — and fails loudly on any issue. Nothing ships with warnings.
 argument-hint: "[pdf-file] (optional; defaults to most recently modified CV PDF in current company folder)"
 metadata:
   ai-assistant-harness-adaptation.claude-code: references/ai-assistant-harnesses/claude-code.md
@@ -27,7 +27,7 @@ Depending on who you are as an AI agent, load exactly one metadata-linked refere
   1. If `$1` is passed → use it directly.
   2. Else if CWD contains a sibling `company.md` (i.e. CWD is a per-company folder) → pick the `*_CV.pdf` in CWD; if multiple, take the one with the most recent mtime.
   3. Else → hard error: "No PDF specified and CWD is not a per-company folder. Pass a path or cd into a company folder."
-- **HTML counterpart**: inferred by swapping `.pdf` → `.html` on the same stem in the same directory.
+- **Typst counterpart**: inferred by swapping `.pdf` → `.typ` on the same stem in the same directory.
 
 ## Workspace root
 
@@ -69,19 +69,21 @@ Validate the PDF filename against `${PLUGIN_ROOT}/references/naming-rules.md`.
 
 ---
 
-## Section 2 — HTML + PDF parity
+## Section 2 — Typst + PDF parity
 
 **Checklist:**
 
-- [ ] HTML file with same stem exists in the same directory
-- [ ] HTML mtime ≤ PDF mtime (PDF not stale)
+- [ ] `.typ` file with same stem exists in the same directory
+- [ ] `.typ` mtime ≤ PDF mtime (PDF not stale)
 
 ```bash
-if [[ "$(stat -f%m "$html")" -gt "$(stat -f%m "$pdf")" ]]; then
-  echo 'FAIL: HTML edited after PDF exported. Re-run the `job-hunt-toolkit:export-pdf` skill.'
+if [[ "$(stat -f%m "$typ")" -gt "$(stat -f%m "$pdf")" ]]; then
+  echo 'FAIL: Typst source edited after PDF exported. Re-run the `job-hunt-toolkit:export-pdf` skill.'
   exit 1
 fi
 ```
+
+If the source imports a shared template, check that template's mtime too — editing it also makes the PDF stale.
 
 ---
 
@@ -131,7 +133,7 @@ other_companies="$(ls -1 "$workspace" 2>/dev/null | grep -v "^${current_company}
 
 Fail on ANY hit for another company name in the PDF text.
 
-**@page CSS path leak:** Some HTML templates embed source paths in headers/footers via `@page` CSS. When scanning PDF text, also look for `file:`, `/Users/`, `/home/`, or the workspace basename from `$(basename "${JOB_HUNT_WORKSPACE:-$HOME/Documents/job_seeking}")`. Any match means the @page rule leaked the build path into the rendered output.
+**Page header/footer path leak:** A Typst template can print a build path into every page via `#set page(header: ...)` / `footer:`, and `#include`d fragments can carry one too. When scanning PDF text, also look for `file:`, `/Users/`, `/home/`, or the workspace basename from `$(basename "${JOB_HUNT_WORKSPACE:-$HOME/Documents/job_seeking}")`. Any match means the template leaked the build path into the rendered output.
 
 **Rasterized PDF check:** After reading the PDF, verify extracted text is at least 200 characters long (configurable via `JOB_HUNT_MIN_PDF_TEXT_CHARS`). If it fails, report: "FAIL: PDF text extraction yielded fewer than `$min_chars` chars. Likely rasterized. Re-export."
 
@@ -145,17 +147,19 @@ Fail on ANY hit for another company name in the PDF text.
 - [ ] Contact info present and correct (email, LinkedIn URL, phone if included)
 - [ ] PDF text length ≥ 200 chars (not rasterized)
 
-### 4b. HTML comments
+### 4b. Typst comments
+
+Typst comments (`// line` and `/* block */`) are stripped at compile time, so they never reach the PDF. They still matter: the `.typ` source is what gets copied into the next company folder, so a stale comment there leaks on the *following* application.
 
 ```bash
-grep -oE '<!--[^>]*-->' "$html" || true
+grep -nE '(^|[[:space:]])//|/\*' "$typ" || true
 ```
 
-Block HTML comments that reference another company; commented-out prior-application bullets are high-risk because some PDF indexers parse comments.
+The `[[:space:]]` guard keeps `https://` URLs out of the results.
 
 **Checklist:**
 
-- [ ] No `<!-- ... -->` comments referencing other companies
+- [ ] No `//` or `/* ... */` comments referencing other companies
 - [ ] No commented-out bullets from prior tailoring sessions
 - [ ] No TODO comments to self
 
@@ -204,7 +208,7 @@ The assistant must read both the PDF text and accompanying `company.md` / `job_d
 - [ ] Role title on the CV sensibly matches / reframes the target JD's role
 - [ ] Key must-have JD requirements are visibly addressed in the CV text
 
-Also read the master HTML. Any discrepancy = fail with a specific line-level finding.
+Also read the master Typst source. Any discrepancy = fail with a specific line-level finding.
 
 ---
 
@@ -230,7 +234,7 @@ If `status` is still `drafting`, surface it as informational so the user can upd
 
 Ask the user to confirm these judgment calls; they are not automated gates.
 
-- [ ] Open PDF in a different renderer than the one that made it (Preview if exported via Chrome; vice-versa) to catch tool-specific bugs
+- [ ] Open the PDF in a viewer other than the one you drafted in (Preview, a browser, Acrobat) to catch viewer-specific font or layout bugs
 - [ ] Re-read the first sentence of the first bullet — does it instantly signal fit for THIS role?
 - [ ] Imagine the recruiter's 6-second scan — is the best thing about the candidate for this role visible first?
 
@@ -244,7 +248,7 @@ Only print the full summary if all automated sections pass:
 Pre-send audit: <pdf-filename>
 
 [PASS] Filename sanity
-[PASS] HTML/PDF pair in sync
+[PASS] Typst/PDF pair in sync
 [PASS] Metadata scrubbed (Title=CV, Author=<clean name>)
 [PASS] Visible content — 0 leaks
 [PASS] Sensitive file presence
@@ -270,6 +274,6 @@ If any automated section fails, print ONLY the failing section's diagnostic and 
 
 - **Every automated gate must pass — no warnings, no partial pass.** Partial pass = fail.
 - **Require exiftool up front.** No silent degradation. Missing tool = abort.
-- **Always run the `job-hunt-toolkit:scrub-pdf-metadata` skill in Section 3.** Never skip even if the user says they "just scrubbed" — HTML edits invalidate prior scrubs.
-- **Cross-company leak = catastrophic.** Any other company name in the PDF text or HTML comments is game-over; block.
+- **Always run the `job-hunt-toolkit:scrub-pdf-metadata` skill in Section 3.** Never skip even if the user says they "just scrubbed" — Typst source edits invalidate prior scrubs.
+- **Cross-company leak = catastrophic.** Any other company name in the PDF text or Typst comments is game-over; block.
 - **Defer metadata specifics to the `job-hunt-toolkit:scrub-pdf-metadata` skill and its references.** If you need to fall back, use EXACT commands from `exiftool-commands.md` — never improvise.
