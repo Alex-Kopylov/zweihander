@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "checked": "2026-06-16",
+  "checked": "2026-08-02",
   "lookup_order": [
     "action",
     "assistant"
@@ -42,6 +42,16 @@
           "/skill-name",
           "/plugin-name:skill-name"
         ],
+        "invocations": {
+          "user": [
+            "/skill-name",
+            "/plugin-name:skill-name"
+          ],
+          "agent": [
+            "Skill(name)",
+            "Skill(plugin-name:skill-name)"
+          ]
+        },
         "aliases": [],
         "discovery": [
           "available skills list"
@@ -60,6 +70,12 @@
           "$skill-name",
           "$plugin-name:skill-name"
         ],
+        "invocations": {
+          "user": [
+            "$skill-name",
+            "$plugin-name:skill-name"
+          ]
+        },
         "aliases": [],
         "discovery": [
           "available skills list",
@@ -80,6 +96,11 @@
         "terms": [
           "Agent"
         ],
+        "invocations": {
+          "agent": [
+            "Agent"
+          ]
+        },
         "aliases": [
           "Task"
         ],
@@ -96,6 +117,11 @@
         "terms": [
           "spawn_agent"
         ],
+        "invocations": {
+          "agent": [
+            "spawn_agent"
+          ]
+        },
         "aliases": [
           "multi-agent tool"
         ],
@@ -118,6 +144,11 @@
           "AskUserQuestion",
           "chat"
         ],
+        "invocations": {
+          "agent": [
+            "AskUserQuestion"
+          ]
+        },
         "aliases": [],
         "discovery": [
           "tools reference"
@@ -132,6 +163,11 @@
           "request_user_input",
           "chat"
         ],
+        "invocations": {
+          "agent": [
+            "request_user_input"
+          ]
+        },
         "aliases": [],
         "discovery": [
           "active tool list"
@@ -154,6 +190,14 @@
           "TaskUpdate",
           "TaskStop"
         ],
+        "invocations": {
+          "agent": [
+            "TaskCreate",
+            "TaskGet",
+            "TaskList",
+            "TaskUpdate"
+          ]
+        },
         "aliases": [
           "TodoWrite"
         ],
@@ -169,6 +213,11 @@
         "terms": [
           "update_plan"
         ],
+        "invocations": {
+          "agent": [
+            "update_plan"
+          ]
+        },
         "aliases": [],
         "discovery": [
           "active tool list"

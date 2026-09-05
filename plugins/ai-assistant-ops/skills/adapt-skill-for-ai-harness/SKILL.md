@@ -82,13 +82,15 @@ Do not create `references/ai-assistant-harnesses/` inside this skill. That direc
 5. Detect explicit harness wording, tool names, command names, command-like workflow references, and host-specific instructions.
 6. Map each host-specific operation to an action key such as `CreateAgent`, `AskUser`, `TrackTasks`, or `SlashCommand`. Drop operations whose matrix action is marked `"adaptation": "baseline"`; remove baseline tool coaching from adaptation output instead of translating it.
 7. For each remaining pair, look up `matrix["actions"][action_key][assistant_key]`; for example, use `matrix["actions"]["CreateAgent"]["Codex"]`.
-8. Make the shared target `SKILL.md` harness-agnostic; keep all broadly valid workflow there.
-9. Move Codex-specific instructions to the target `references/ai-assistant-harnesses/codex.md`.
-10. Move Claude Code-specific details to the target `references/ai-assistant-harnesses/claude-code.md`.
-11. If per-assistant instructions exist, reorganize them into the target `references/ai-assistant-harnesses/` format and remove duplicated old adaptation information.
-12. Add or update the flat metadata links in the target `SKILL.md`.
-13. Encode every policy decision from the adaptation as a focused static test or eval when the repository has that convention. Prose-only policy regresses on the next edit; a failing test does not.
-14. Report the exact files changed and the verification commands run.
+8. When generating harness-specific narrative from Jinja templates, copy exact tool and command forms from the entry's `invocations`; do not infer them from `terms` or hardcode harness branches.
+9. Write rendered build artifacts to `dist/`; keep Jinja source templates authoritative.
+10. Make the shared target `SKILL.md` harness-agnostic; keep all broadly valid workflow there.
+11. Move Codex-specific instructions to the target `references/ai-assistant-harnesses/codex.md`.
+12. Move Claude Code-specific details to the target `references/ai-assistant-harnesses/claude-code.md`.
+13. If per-assistant instructions exist, reorganize them into the target `references/ai-assistant-harnesses/` format and remove duplicated old adaptation information.
+14. Add or update the flat metadata links in the target `SKILL.md`.
+15. Encode every policy decision from the adaptation as a focused static test or eval when the repository has that convention. Prose-only policy regresses on the next edit; a failing test does not.
+16. Report the exact files changed and the verification commands run.
 
 ## Matrix Maintenance
 
@@ -101,6 +103,7 @@ Prefer compact fields:
 - `adaptation`: `map` for shared mechanisms worth explicit per-harness instructions; `baseline` for native capabilities that must never generate them.
 - `surface`: where the concept appears, such as `tool`, `skill`, `slash-command`, or `workflow`.
 - `terms`: current names the harness uses.
+- `invocations`: exact `user` and `agent` forms for generated harness narrative; omit unavailable forms instead of inventing them.
 - `aliases`: older or alternate names.
 - `discovery`: how to find deferred or optional capabilities.
 - `nuances`: short compatibility notes that matter during translation.
