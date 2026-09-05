@@ -52,12 +52,13 @@
     {
       "name": "python-dev-workflow",
       "source": "./plugins/python-dev-workflow",
-      "description": "Python pytest scenario planning, E2E/integration/unit testing, Celery and Redis references, production Celery guidance, and test agents.",
+      "description": "Python TDD and pytest scenario planning, E2E/integration/unit testing, Celery and Redis references, production Celery guidance, and test agents.",
       "category": "development",
       "tags": [
         "python",
         "pytest",
         "testing",
+        "tdd",
         "celery",
         "redis",
         "agents"
@@ -66,7 +67,7 @@
     {
       "name": "dev-workflow",
       "source": "./plugins/dev-workflow",
-      "description": "Git, PRs, tickets, releases, visual diffs, TDD, debugging, and review workflows.",
+      "description": "Git, PRs, tickets, releases, visual diffs, debugging, and review workflows.",
       "category": "development",
       "tags": [
         "git",
@@ -80,7 +81,6 @@
         "review",
         "spec",
         "requirements",
-        "tdd",
         "debugging",
         "code-review"
       ]
