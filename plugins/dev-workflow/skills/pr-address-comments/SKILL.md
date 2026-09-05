@@ -45,7 +45,7 @@ Group remaining threads by file path (general comments grouped separately). For 
 - Comment text (truncated if very long)
 - File path and line range (if inline)
 
-Ask the user to choose which comments to address, using a bounded multi-select choice. Include an "All of them" option as the first choice.
+Default to all of them, no question asked. Only ask (bounded multi-select) if the user's invocation named a subset and it's ambiguous which threads that maps to.
 
 ### 4. Address Selected Comments
 
