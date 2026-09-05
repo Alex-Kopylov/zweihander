@@ -23,7 +23,7 @@ Depending on who you are as an AI agent, load exactly one metadata-linked refere
 
 ## Inputs
 
-- **Company slug** (argument, required): lowercase with underscores. Examples: `openai`, `acme_robotics`, `hugging_face`. Used verbatim as the folder name after deny-list validation.
+- **Company slug** (argument, required): must match `^[a-z0-9]+(?:_[a-z0-9]+)*$` (lowercase alphanumerics separated by single underscores). Examples: `openai`, `acme_robotics`, `hugging_face`. Used verbatim as the folder name under `jobs/` after validation.
 - **Role** (argument, optional): role the user is targeting. Default to the master's role.
 - **JD source** (ask): text paste, file path, or URL.
 
@@ -37,10 +37,10 @@ If the workspace doesn't exist or lacks a master CV, stop and direct the user to
 
 ### 2. Validate company slug
 
-- Deny-list: spaces, pipes `|`, commas, slashes, emojis, non-ASCII characters
-- If the slug contains any denied character, reject it and ask the user for a corrected slug
+- The slug must match `^[a-z0-9]+(?:_[a-z0-9]+)*$`. This rejects spaces, pipes `|`, commas, slashes, hyphens, emojis, uppercase, and non-ASCII characters.
+- If the slug doesn't match, reject it and ask the user for a corrected slug
 - The slug is used verbatim as the folder name — no normalisation, no suffix stripping
-- Check `<workspace>/<slug>/` doesn't already exist. If it does, ask:
+- Check `<workspace>/jobs/<slug>/` doesn't already exist. If it does, ask:
   - **Resume existing** — work inside the existing folder
   - **New variant** — append `_2` (or ask user for a distinguisher)
   - **Abort**
@@ -54,15 +54,15 @@ Ask if not provided:
 ### 4. Create folder
 
 ```bash
-mkdir -p <workspace>/<slug>
+mkdir -p <workspace>/jobs/<slug>
 ```
 
 ### 5. Save the JD
 
 Ask user how they'll provide the JD:
-- **Paste text** → write to `<slug>/job_description.md` (wrap with a header noting source and date)
-- **URL** → use WebFetch to grab the content; write to `<slug>/job_description.md` with a `> Source: <url>` line and fetch date at the top
-- **File path** → copy into `<slug>/job_description.<original-ext>`, preserving the original extension as-is. Do NOT convert the format.
+- **Paste text** → write to `jobs/<slug>/job_description.md` (wrap with a header noting source and date)
+- **URL** → use WebFetch to grab the content; write to `jobs/<slug>/job_description.md` with a `> Source: <url>` line and fetch date at the top
+- **File path** → copy into `jobs/<slug>/job_description.<original-ext>`, preserving the original extension as-is. Do NOT convert the format.
 
 ### 6. Scaffold company.md
 
@@ -76,7 +76,7 @@ Use `templates/company.md.template`, substituting:
 
 Find the master: `<workspace>/<First>_<Last>_<Role>_CV.html` (glob for `*_CV.html` at workspace root, not inside company folders).
 
-Copy to `<slug>/<First>_<Last>_<NewRole>_CV.html`. The role in the filename matches the **target role**, not the master's role, since tailoring often reframes the title.
+Copy to `jobs/<slug>/<First>_<Last>_<NewRole>_CV.html`. The role in the filename matches the **target role**, not the master's role, since tailoring often reframes the title.
 
 **Do not generate the PDF yet**; tailoring will edit the HTML first.
 
@@ -89,7 +89,7 @@ Ask the user to choose:
 ### 9. Output summary
 
 ```
-✓ Created <workspace>/<slug>/
+✓ Created <workspace>/jobs/<slug>/
   ├── company.md
   ├── job_description.md
   └── <First>_<Last>_<NewRole>_CV.html
@@ -103,7 +103,7 @@ Next:
 
 ## Hard rules
 
-- **Validate company slug** against the deny-list before creating the folder. Reject slugs containing spaces, pipes, commas, slashes, emojis, or non-ASCII characters.
+- **Validate company slug** against `^[a-z0-9]+(?:_[a-z0-9]+)*$` before creating the folder. Reject anything that doesn't match.
 - **Never overwrite an existing company folder** without explicit confirmation.
 - **Never copy the master PDF** — only HTML. The PDF will be regenerated after tailoring.
 - **Never include the company name in the CV filename** (see `references/naming-rules.md` in the plugin).
@@ -116,5 +116,5 @@ Next:
 | Workspace doesn't exist | Stop; direct user to the `job-hunt-toolkit:init-workspace` skill |
 | Master HTML not found | Stop; ask user to create one or use the `job-hunt-toolkit:init-workspace` skill |
 | WebFetch fails on JD URL | Ask user to paste the JD text instead |
-| Slug contains denied characters | Reject; show deny-list; ask user for corrected slug |
+| Slug doesn't match `^[a-z0-9]+(?:_[a-z0-9]+)*$` | Reject; show the pattern; ask user for corrected slug |
 | Role label contains invalid characters | Reject; show naming rules; ask again |

@@ -37,7 +37,7 @@ Derive the workspace root from the environment:
 workspace="${JOB_HUNT_WORKSPACE:-$HOME/Documents/job_seeking}"
 ```
 
-Use `ls -1 "$workspace"` to enumerate company folders when needed (e.g. cross-company leak checks).
+Use `ls -1 "$workspace/jobs"` to enumerate company folders when needed (e.g. cross-company leak checks).
 
 ## Preconditions
 

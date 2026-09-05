@@ -89,7 +89,7 @@ Follow scoring from `references/matching-strategies.md`.
 
 ### Phase 5: Generation
 
-Output directory: `${JOB_HUNT_WORKSPACE:-$HOME/Documents/job_seeking}/<company>/`
+Output directory: `${JOB_HUNT_WORKSPACE:-$HOME/Documents/job_seeking}/jobs/<company>/`
 Filename format: `<First>_<Last>_<Role>_CV.<ext>` — NO company name in the filename.
 
 **Edit-guard:** If this skill needs to modify the master HTML at `${JOB_HUNT_WORKSPACE:-$HOME/Documents/job_seeking}/<First>_<Last>_<Role>_CV.html`, ask the user for explicit confirmation before doing so.

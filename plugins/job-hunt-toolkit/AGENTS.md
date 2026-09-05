@@ -11,7 +11,7 @@ If the user is inside a detected workspace (has `AGENTS.md` referencing this plu
 ## Hard rules
 
 - **HTML is the source, PDF is the export.** Never hand-edit PDFs. Edit HTML → regenerate PDF via `export-pdf` skill.
-- **Master HTML is edit-guarded.** Master HTML at workspace root is canonical. The assistant must call AskUserQuestion for explicit user confirmation before modifying the master HTML. The master PDF is a build artifact and may be overwritten freely. Tailored variants live in `<workspace-root>/<company>/`.
+- **Master HTML is edit-guarded.** Master HTML at workspace root is canonical. The assistant must call AskUserQuestion for explicit user confirmation before modifying the master HTML. The master PDF is a build artifact and may be overwritten freely. Tailored variants live in `<workspace-root>/jobs/<company>/`.
 - **File naming is strict.** See `references/naming-rules.md` for the canonical naming rules.
 - **Company folder naming.** See `references/naming-rules.md` for the canonical naming rules.
 - **Metadata scrubbing is mandatory before any PDF leaves the workspace.** Always run `scrub-pdf-metadata` before reporting a CV as "ready to send". No exceptions.
