@@ -1,6 +1,6 @@
 ---
 name: scrub-pdf-metadata
-description: Use when the user asks to "scrub PDF metadata", "clean the PDF", "strip CV metadata", "remove author from PDF", "sanitize PDF", "wipe PDF info", "clear PDF properties", "clean up before sending", "remove creation date", or after exporting a PDF that will be sent to a recruiter. Strips Author, Title, Producer, Creator, CreationDate, ModifyDate, XMP, and custom metadata fields using exiftool, then sets a clean Author field back. Called automatically by export-pdf as its final step.
+description: Use when the user asks to "scrub PDF metadata", "clean the PDF", "strip CV metadata", "remove author from PDF", "sanitize PDF", "wipe PDF info", "clear PDF properties", "clean up before sending", "remove creation date", or after exporting a PDF that will be sent to a recruiter.
 argument-hint: <pdf-file> [--author="Full Name"]
 metadata:
   ai-assistant-harness-adaptation.claude-code: references/ai-assistant-harnesses/claude-code.md
@@ -88,10 +88,28 @@ exiftool \
 
 Use `Title = "CV"`; do not include company, role, or date.
 
+### 3b. Flatten the file (mandatory)
+
+Steps 2 and 3 only *append* a new version; the original `Title`/`Keywords` are still recoverable from the file bytes. Rewrite the PDF to drop the incremental update:
+
+```bash
+qpdf --linearize "$pdf" "$pdf.flat" && mv "$pdf.flat" "$pdf"
+```
+
+`mutool clean -gggg "$pdf" "$pdf"` works equally well. Verified: after flattening, `exiftool -PDF-update:all=` reports "File contains no previous ExifTool update", the old title is gone from the raw bytes, and the text layer is unchanged.
+
+If neither tool is installed, **stop and say so** — do not report the PDF as scrubbed.
+
 ### 4. Inspect (after)
 
 ```bash
 exiftool "$pdf" | grep -Ei 'author|title|producer|creator|date|keywords|subject'
+```
+
+`exiftool` alone is not proof — it reads the newest update and will report clean either way. Confirm against the raw bytes:
+
+```bash
+grep -ac "$(basename "$(dirname "$pdf")")" "$pdf"   # company slug must not appear
 ```
 
 Confirm:
@@ -133,6 +151,7 @@ Ready for sending. Run the `job-hunt-toolkit:prepare-to-send` skill for the full
 
 ## Hard rules
 
+- **exiftool edits are reversible — you MUST flatten the file afterwards.** exiftool rewrites a PDF as an *incremental update*: the old objects stay in the file and `exiftool -PDF-update:all=` restores them. exiftool says so itself (`Warning: [minor] ExifTool PDF edits are reversible`). A scrubbed CV therefore still contains "tailored for Acme" in its bytes while `exiftool` reports a clean `Title` — exactly the false confidence this skill exists to prevent. Always finish with Step 3b, then verify by grepping the raw bytes, not with `exiftool`.
 - **Require exiftool.** No silent fallbacks. Partial scrubbing is worse than no scrubbing.
 - **Strip, then set.** Always run `-all=` first, then set Author/Title. If you only set Author, the other fields (Producer, CreationDate) stick around.
 - **Title = "CV".** Not the role, not the company, not a timestamp. Generic.
@@ -146,7 +165,7 @@ Recruiters and hiring managers sometimes open `File → Properties` on a PDF. AT
 ## Gotchas
 
 - **`exiftool -all=` strips Author too.** Step 3 (Set clean Author + Title) is mandatory; see `references/exiftool-commands.md` for commands.
-- **Typst writes its own PDF metadata.** `typst compile` sets `Producer`/`Creator` to the Typst version, and `#set document(title: …, author: …)` becomes the PDF `Title`/`Author`. A document title like "CV tailored for Acme" ships in the PDF properties — Step 2 strips it, but fix the source too.
+- **Typst writes its own PDF metadata.** `typst compile` sets `Creator` to the Typst version (it sets no `Producer`), and `#set document(title: …, author: …, keywords: …)` becomes the PDF `Title`/`Author`/`Keywords`. A document title like "CV tailored for Acme" ships in the PDF properties. **Step 2 does not truly remove it** — see the hard rule on reversible edits. Fix the source: the master should set `title: "CV"` and no `keywords`, so there is nothing to strip.
 - **Paths printed by a page header/footer render into PDF text and survive metadata stripping.** `exiftool` cannot remove visible header/footer text, so always run Step 5 after a clean report.
 
 ## References

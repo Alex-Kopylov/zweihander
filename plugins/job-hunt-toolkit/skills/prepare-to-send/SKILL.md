@@ -1,6 +1,6 @@
 ---
 name: prepare-to-send
-description: Use when the user asks to "prepare to send", "final check", "ready to send", "pre-send checklist", "is this ready", "is this clean", "can I attach this", "run the checklist", "verify the CV", or "check before sending". Runs the complete pre-send audit — filename sanity, Typst↔PDF parity, metadata scrub, visible content scan, sensitive file presence, content correctness, final sanity — and fails loudly on any issue. Nothing ships with warnings.
+description: Use when the user is about to send a job-application CV or cover letter and asks to "run the pre-send checklist", "prepare this CV to send", "is this CV ready to attach", "check this CV before I apply", or "is this application PDF clean". Only for PDFs in a job-hunt workspace company folder — not for general file, document, or code review.
 argument-hint: "[pdf-file] (optional; defaults to most recently modified CV PDF in current company folder)"
 metadata:
   ai-assistant-harness-adaptation.claude-code: references/ai-assistant-harnesses/claude-code.md
@@ -103,7 +103,8 @@ exiftool -Title -Author -Producer -Creator -CreatorTool -CreateDate -Keywords -S
 
 - [ ] `Title` = "CV" (generic)
 - [ ] `Author` = clean legal name
-- [ ] `Producer` / `Creator` empty or "exiftool" only
+- [ ] `Creator` empty or "exiftool" only (Typst sets no `Producer`)
+- [ ] Raw byte grep for the company slug and the old title returns nothing — `exiftool` alone reports clean even when the values are still recoverable
 - [ ] `Keywords` empty
 - [ ] `Subject` empty
 - [ ] No XMP custom fields mentioning paths, companies, or other identifying strings
@@ -128,12 +129,12 @@ Cross-company leak check:
 
 ```bash
 current_company="$(basename "$(dirname "$pdf")")"
-other_companies="$(ls -1 "$workspace" 2>/dev/null | grep -v "^${current_company}$" | grep -v '^\.' || true)"
+other_companies="$(ls -1 "$workspace/jobs" 2>/dev/null | grep -v "^${current_company}$" | grep -v '^\.' || true)"
 ```
 
 Fail on ANY hit for another company name in the PDF text.
 
-**Page header/footer path leak:** A Typst template can print a build path into every page via `#set page(header: ...)` / `footer:`, and `#include`d fragments can carry one too. When scanning PDF text, also look for `file:`, `/Users/`, `/home/`, or the workspace basename from `$(basename "${JOB_HUNT_WORKSPACE:-$HOME/Documents/job_seeking}")`. Any match means the template leaked the build path into the rendered output.
+**On build paths:** unlike the old browser pipeline, Typst embeds no build path of its own — verified by grepping raw and decompressed PDF streams. A path can only appear if the template prints one, which the `Absolute path fragments` item above already covers. No separate check needed.
 
 **Rasterized PDF check:** After reading the PDF, verify extracted text is at least 200 characters long (configurable via `JOB_HUNT_MIN_PDF_TEXT_CHARS`). If it fails, report: "FAIL: PDF text extraction yielded fewer than `$min_chars` chars. Likely rasterized. Re-export."
 
@@ -147,9 +148,11 @@ Fail on ANY hit for another company name in the PDF text.
 - [ ] Contact info present and correct (email, LinkedIn URL, phone if included)
 - [ ] PDF text length ≥ 200 chars (not rasterized)
 
-### 4b. Typst comments
+### 4b. Typst source scan
 
-Typst comments (`// line` and `/* block */`) are stripped at compile time, so they never reach the PDF. They still matter: the `.typ` source is what gets copied into the next company folder, so a stale comment there leaks on the *following* application.
+Three things live in the source that the PDF-text scan structurally cannot catch.
+
+**Comments.** Typst strips `//` and `/* */` at compile time, so they never reach the PDF. They still matter: the `.typ` is what gets copied into the next company folder, so a stale comment leaks on the *following* application.
 
 ```bash
 grep -nE '(^|[[:space:]])//|/\*' "$typ" || true
@@ -157,11 +160,27 @@ grep -nE '(^|[[:space:]])//|/\*' "$typ" || true
 
 The `[[:space:]]` guard keeps `https://` URLs out of the results.
 
+**Vanished content.** In Typst markup `<role>` is a label, not text. An inline one compiles with no error and no warning and renders as nothing, leaving a silently blank spot on the CV.
+
+```bash
+grep -nE '<[a-z_][a-z0-9_-]*>' "$typ" || true
+```
+
+**Invisible-but-extractable text.** White or zero-size text is invisible on the page yet fully present in the extracted text layer — keyword stuffing that a visual review cannot see and that many employers treat as instant disqualification. It can arrive via a copied template rather than intent.
+
+```bash
+grep -nE 'fill:[[:space:]]*(white|luma\(255\)|rgb\("#[fF]{3,6}"\))|size:[[:space:]]*0|#place\(' "$typ" || true
+```
+
+`#hide[...]` is safe and should not be flagged — it lays content out but emits no glyphs, so it is genuinely absent from the PDF.
+
 **Checklist:**
 
 - [ ] No `//` or `/* ... */` comments referencing other companies
 - [ ] No commented-out bullets from prior tailoring sessions
 - [ ] No TODO comments to self
+- [ ] No `<...>` labels where prose was intended
+- [ ] No white, zero-size, or off-page text
 
 ---
 
@@ -190,6 +209,7 @@ Read the PDF text and verify:
 
 - [ ] PDF opens without error
 - [ ] Text is selectable (not rasterized) — required for ATS
+- [ ] The candidate's name appears as a **contiguous** run in the extracted text, within the first few lines. Letter-spacing (`#text(tracking: …)`) on the name shatters it into `A L E X   K O P Y L O V`, and a `#grid` sidebar can push the whole sidebar ahead of the name — both leave the text selectable while making ATS name parsing fail
 - [ ] Page count matches expectation (usually 1–2 pages for a CV)
 - [ ] Links (LinkedIn, portfolio, email) are present
 

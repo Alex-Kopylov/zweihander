@@ -57,6 +57,7 @@ Shared knowledge consumed by skills:
 | Tool | Purpose | Install |
 |---|---|---|
 | **exiftool** | PDF metadata scrubbing | `brew install exiftool` |
+| **qpdf** | Flattening the PDF so the scrub is irreversible | `brew install qpdf` |
 | **typst** | Typst → PDF export | `brew install typst` or `cargo install --locked typst-cli` |
 
 ## Configuration

@@ -71,13 +71,40 @@ exiftool \
 
 Tradeoff: some ATS tools flag PDFs with no date at all as "tampered". A recent but not suspicious date is usually safer than no date.
 
-## One-liner: scrub + set + verify
+## One-liner: scrub + set + flatten + verify
+
+The flatten step is **not optional**. Without it exiftool leaves the original
+values recoverable in the file (see "Reversible edits" below).
 
 ```bash
 exiftool -all= -overwrite_original "$pdf" && \
 exiftool -Author="<Your Name>" -Title="CV" -overwrite_original "$pdf" && \
+qpdf --linearize "$pdf" "$pdf.flat" && mv "$pdf.flat" "$pdf" && \
 exiftool -Title -Author -Producer -Creator -CreateDate "$pdf"
 ```
+
+## Reversible edits — the trap
+
+exiftool writes PDFs as an *incremental update*: it appends a new trailer and
+leaves the original objects in place. It warns about this itself:
+
+```
+Warning: [minor] ExifTool PDF edits are reversible. Deleted tags may be recovered!
+```
+
+Demonstrated on a real Typst CV: after `-all=` plus setting a clean Title, the
+file *grew* from 11829 to 15467 bytes, `exiftool` reported `Title: CV`, and:
+
+```bash
+exiftool -PDF-update:all= -overwrite_original "$pdf"
+exiftool -Title -Keywords "$pdf"
+# Title    : Alex CV tailored for Acme
+# Keywords : acme, llm
+```
+
+`qpdf --linearize` (or `mutool clean -gggg`) rewrites the file without the
+update history and makes the removal real. Verify with a raw byte grep, never
+with `exiftool` alone.
 
 ## Diff — before vs after
 
@@ -110,8 +137,8 @@ If hits: the Typst template prints a path somewhere visible via a page header, f
 | `Title` | Comes from `#set document(title: …)`; often a stale variant name or a company-tagged one | HIGH — visible in File → Properties |
 | `Keywords` | Comes from `#set document(keywords: …)`; templates sometimes set role / company tags | HIGH |
 | `Author` | Comes from `#set document(author: …)`; if blank or "user", signals you're new to this CV or templating lazily | MEDIUM |
-| `Producer` / `Creator` | Typst writes its own version string here. Doesn't leak tailoring but breaks consistency if you swap tools between applications | MEDIUM |
-| `CreateDate` | "Generated 8 minutes before application submit" is a tell | LOW — common and usually ignored |
+| `Creator` | Typst writes its version string here (it sets no `Producer`). Doesn't leak tailoring but breaks consistency if you swap tools between applications | MEDIUM |
+| `CreateDate` | "Generated 8 minutes before application submit" is a tell. Worse, Typst stamps the **local UTC offset** — `+03:00` vs `-07:00` narrows where the applicant lives. Set `SOURCE_DATE_EPOCH` to pin it to UTC | MEDIUM |
 | XMP custom | Some templates embed the source file path | HIGH if present |
 
 ## Do NOT

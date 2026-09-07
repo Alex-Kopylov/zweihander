@@ -14,7 +14,7 @@ If the user is inside a detected workspace (has `AGENTS.md` referencing this plu
 - **The master Typst source is edit-guarded.** The master `.typ` at workspace root is canonical. The assistant must call AskUserQuestion for explicit user confirmation before modifying it. The master PDF is a build artifact and may be overwritten freely. Tailored variants live in `<workspace-root>/jobs/<company>/`.
 - **File naming is strict.** See `references/naming-rules.md` for the canonical naming rules.
 - **Company folder naming.** See `references/naming-rules.md` for the canonical naming rules.
-- **Metadata scrubbing is mandatory before any PDF leaves the workspace.** Always run `scrub-pdf-metadata` before reporting a CV as "ready to send". No exceptions.
+- **Metadata scrubbing is mandatory before any PDF leaves the workspace.** Always run `scrub-pdf-metadata` before reporting a CV as "ready to send". No exceptions. Scrubbing is not complete until the PDF has been flattened — exiftool's edits are reversible on their own.
 - **Never fabricate experience.** Only rephrase / re-order / emphasize what the master CV already contains. If the JD requires something absent, flag it to the user — do not invent.
 - **Never leak secrets.** Salary offers, recruiter private contacts, passport numbers, home addresses — never include in shared artifacts without explicit user confirmation.
 
@@ -23,6 +23,7 @@ If the user is inside a detected workspace (has `AGENTS.md` referencing this plu
 | Task | Tool | Install if missing |
 |---|---|---|
 | PDF metadata inspect/strip | `exiftool` | `brew install exiftool` |
+| Flatten PDF after scrubbing | `qpdf` (or `mutool`) | `brew install qpdf` |
 | Typst → PDF | `typst` | `brew install typst` |
 
 If a required tool is missing, say so loudly. Do NOT silently fall back to a worse tool — inconsistent PDFs across applications are a red flag. One tool, always the same tool.

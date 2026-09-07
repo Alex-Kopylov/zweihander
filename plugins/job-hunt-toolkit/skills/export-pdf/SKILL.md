@@ -1,6 +1,6 @@
 ---
 name: export-pdf
-description: Use when the user asks to "export the PDF", "regenerate PDF", "build PDF from Typst", "compile the Typst CV", "refresh the PDF", "Typst to PDF", "render CV to PDF", "produce PDF from .typ", "generate PDF", or after editing a CV Typst source and needs a fresh PDF. Compiles a Typst CV into a PDF using the Typst CLI, ensuring consistent rendering across all applications.
+description: Use when the user asks to "export the PDF", "regenerate PDF", "build PDF from Typst", "compile the Typst CV", "refresh the PDF", "Typst to PDF", "render CV to PDF", "produce PDF from .typ", "generate PDF", or after editing a CV Typst source and needs a fresh PDF.
 argument-hint: "[typ-file] (optional; defaults to the current file context or detected CV)"
 metadata:
   ai-assistant-harness-adaptation.claude-code: references/ai-assistant-harnesses/claude-code.md
@@ -66,28 +66,38 @@ bash ${PLUGIN_ROOT}/skills/export-pdf/scripts/typst-to-pdf.sh <typ-absolute-path
 
 Where `${PLUGIN_ROOT}` resolves to the plugin's root directory.
 
-Typst may only read files under its project root, which the script defaults to the source file's own directory. If the CV imports a shared template from higher up (e.g. a workspace-level `template.typ`), set `JOB_HUNT_TYPST_ROOT` to that directory before calling the script.
+Typst may only read files under its project root, which defaults to the source file's own directory. If the CV imports a shared template from higher up, set Typst's own `TYPST_ROOT` to that directory — the script passes no `--root`, so this works natively.
+
+Two cautions. Inside a `.typ`, a leading `/` means the *project root*, not the filesystem root, so a shared template must be imported as `#import "/template.typ"`; a plain `#import "template.typ"` resolves next to the importing file and raising the root will not fix it. And widening the root widens Typst's read sandbox to every company folder under it, so prefer copying the template into the company folder.
 
 ### 3. Verify output
 
 - PDF file exists at the target path
-- File size > 1KB (anything smaller is a failed render)
 - If `exiftool` is installed, print a quick summary of PDF metadata so the user sees what leaked in
+
+Note there is deliberately **no byte-size floor**. A Typst document whose content vanished still compiles to a valid ~2KB PDF, so size cannot tell a blank render from a real one. Step 3b is the gate that can.
 
 ### 3b. Sanity-check the compile output
 
-A Typst compile error exits non-zero and produces no PDF, so the script already catches it. Warnings are the dangerous case: they still produce a PDF, but a visibly wrong one. Read the `[typst]` lines the script printed to stderr and fail on any of these:
+Compile errors exit non-zero and produce no PDF, and the script now also fails on warnings (exit 7) — Typst exits 0 on those, but `unknown font family` means a substitute font was silently used and `did not converge` means the layout is unstable, and either way the PDF no longer matches the master.
 
-- `unknown font family` — the layout silently fell back to a substitute font, so the PDF will not match the master
-- `did not converge` — the layout is unstable across pages
-- Any unresolved-reference or unresolved-label warning — these render as a literal `?` in the output
+What the script cannot catch is content that compiled cleanly into nothing. Extract the PDF text and fail if:
 
-Then inspect the produced PDF text for markers that survived the compile: `TODO`, `FIXME`, `[placeholder]`, `{{`.
+- It is shorter than `JOB_HUNT_MIN_PDF_TEXT_CHARS` (default 200) — the render is blank or rasterized
+- It contains `TODO`, `FIXME`, `[placeholder]`, or `{{` — markers that survived into the output
 
-If any of the above is found, fail immediately:
+Then check the **source**, because the most dangerous failure leaves no trace in the PDF at all:
+
+```bash
+grep -nE '<[a-z_][a-z0-9_-]*>' "$typ"
+```
+
+In Typst markup `<role>` is a *label*, not text. An inline one compiles with no error and no warning and renders as nothing, so the CV ships with a silently blank spot. Scanning the PDF text for `<role>` cannot work — by then it is already gone.
+
+If any check fails:
 
 ```
-ERROR: Typst emitted warnings or the PDF contains unresolved markers; inspect the .typ source and re-run export-pdf.
+ERROR: PDF is blank, contains leftover markers, or the source has unescaped <...> labels; inspect the .typ source and re-run export-pdf.
 ```
 
 Do NOT report success or proceed to scrubbing if this check fails.
@@ -109,7 +119,8 @@ Every exported PDF is scrubbed, even when attached directly without the `job-hun
 ## Hard rules
 
 - **Use Typst every time.** Never fall back to a browser, weasyprint, wkhtmltopdf, or pandoc; prompt the user to install Typst if missing.
-- **Use absolute paths.** Typst resolves relative paths against CWD otherwise, which is unpredictable across tool calls.
+- **Use absolute paths for the CLI arguments.** Typst resolves relative paths against CWD otherwise, which is unpredictable across tool calls. This is the opposite of paths *inside* the source, where a leading `/` means the project root.
+- **Never pass `--no-pdf-tags`.** Typst writes a tagged PDF by default; those tags are the ordered text layer ATS parsers prefer. Do not pass `--pdf-standard` either — no ATS requires PDF/A, and PDF/UA-1 refuses to compile without a document title you would then have to scrub.
 - **Always scrub metadata after export.** Invoke the `job-hunt-toolkit:scrub-pdf-metadata` skill; the `job-hunt-toolkit:prepare-to-send` skill also verifies scrubbing.
 - **Warn if the Typst source has leftover markers** like `TODO`, `[placeholder]`, `{{` — written as content they render straight into the PDF. Typst strips `//` and `/* */` comments at compile time, so those never reach the PDF; they still leak forward when the source is copied to the next company folder, which `job-hunt-toolkit:prepare-to-send` checks.
 
@@ -119,10 +130,10 @@ Every exported PDF is scrubbed, even when attached directly without the `job-hun
 |---|---|
 | `typst` not found | Fail loudly with install instructions |
 | Typst file missing or unreadable | Fail loudly |
-| `typst compile` exits non-zero | Print stderr, fail loudly |
-| Compile succeeds with warnings (font fallback, unresolved refs) | Treat as failure; report the warning |
-| Output PDF < 1KB | Treat as failure; delete partial PDF |
-| Typst cannot read an imported file | Re-run with `JOB_HUNT_TYPST_ROOT` set to the directory containing the import |
+| `typst compile` exits non-zero | Print stderr, fail loudly (exit 6) |
+| Compile succeeds with warnings (font fallback, non-converging layout) | Script fails with exit 7; report the warning |
+| Extracted PDF text below the minimum | Treat as a blank render; fail |
+| Typst cannot read an imported file | Import it as `/…` from the project root and set `TYPST_ROOT`, or copy it into the company folder |
 | Target PDF is read-only / directory not writable | Fail loudly |
 
 ## After export

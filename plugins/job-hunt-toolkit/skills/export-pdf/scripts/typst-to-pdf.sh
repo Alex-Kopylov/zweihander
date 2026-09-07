@@ -42,21 +42,36 @@ EOF
   exit 3
 fi
 
-# Typst can only read files under the project root. It defaults to the source
-# file's own directory, which is right for a self-contained CV. Set
-# JOB_HUNT_TYPST_ROOT when the CV imports a shared template from higher up
-# (e.g. a workspace-level template.typ shared by every company folder).
-root="${JOB_HUNT_TYPST_ROOT:-$(dirname "$typ")}"
+# We pass no --root on purpose. Typst already defaults it to the source file's
+# own directory, which is the narrowest sandbox and the right one for a
+# self-contained CV. Overriding it here would also shadow the user's TYPST_ROOT,
+# which is Typst's own supported way to widen the root for a shared template.
 
 # Compile. `set -e` would abort on a failed pipeline before we could read
 # PIPESTATUS, so suspend it just long enough to capture typst's own exit code.
+# Warnings are captured too: typst exits 0 on them, but a font fallback or a
+# non-converging layout means the PDF does not match the master.
+# Typst stamps the machine's local UTC offset into /CreationDate and the XMP
+# packet, which narrows down where the applicant lives. Pinning SOURCE_DATE_EPOCH
+# forces UTC and makes the build byte-reproducible, which is a far stronger
+# staleness proof than comparing mtimes.
+export SOURCE_DATE_EPOCH="${SOURCE_DATE_EPOCH:-$(date -u +%s)}"
+
 set +e
-typst compile --root "$root" "$typ" "$pdf" 2>&1 | sed 's/^/[typst] /' >&2
-typst_exit=${PIPESTATUS[0]}
+typst_log="$(typst compile "$typ" "$pdf" 2>&1)"
+typst_exit=$?
 set -e
+[[ -n "$typst_log" ]] && printf '%s\n' "$typst_log" | sed 's/^/[typst] /' >&2
 if (( typst_exit != 0 )); then
   echo "error: typst exited with status $typst_exit — compilation failed" >&2
   exit 6
+fi
+
+# Typst exits 0 on warnings, but every warning it emits for a CV means the
+# output differs from what the master looked like. Treat them as failures.
+if printf '%s\n' "$typst_log" | grep -q '^warning:'; then
+  echo "error: typst emitted warnings — the PDF does not match the master" >&2
+  exit 7
 fi
 
 # Verify output.
@@ -65,10 +80,10 @@ if [[ ! -r "$pdf" ]]; then
   exit 4
 fi
 
-size=$(stat -f%z "$pdf" 2>/dev/null || stat -c%s "$pdf")
-if (( size < 1024 )); then
-  echo "error: compiled PDF is suspiciously small ($size bytes)" >&2
-  exit 5
-fi
+# No byte-size floor: a Typst document whose content vanished still compiles to
+# a valid ~2KB PDF, so size cannot distinguish it from a real render. The
+# authoritative "did it render" gate is the extracted-text check in export-pdf.
+head -c4 "$pdf" | grep -q '%PDF' || { echo "error: not a PDF: $pdf" >&2; exit 5; }
 
+size=$(stat -f%z "$pdf" 2>/dev/null || stat -c%s "$pdf")
 echo "ok: $pdf (${size} bytes)"

@@ -1,6 +1,6 @@
 ---
 name: new-application
-description: Use when the user asks to "apply to <company>", "start a new application", "new company folder", "scaffold application for", "I'm applying to", "track this job", "set up application for", "create folder for", or provides a JD and wants to set up a tracked application. Creates a per-company folder in the workspace, scaffolds company.md with YAML frontmatter, saves the job description, copies the master Typst source for tailoring, and optionally hands off to the resume-tailoring skill.
+description: Use when the user asks to "apply to <company>", "start a new application", "new company folder", "scaffold application for", "I'm applying to", "track this job", "set up application for", "create folder for", or provides a JD and wants to set up a tracked application.
 argument-hint: <company-slug> [role]
 metadata:
   ai-assistant-harness-adaptation.claude-code: references/ai-assistant-harnesses/claude-code.md
@@ -78,7 +78,7 @@ Find the master: `<workspace>/<First>_<Last>_<Role>_CV.typ` (glob for `*_CV.typ`
 
 Copy to `jobs/<slug>/<First>_<Last>_<NewRole>_CV.typ`. The role in the filename matches the **target role**, not the master's role, since tailoring often reframes the title.
 
-If the master imports a shared template (e.g. `#import "template.typ"`), copy that file into the company folder too, or leave the import in place and set `JOB_HUNT_TYPST_ROOT` to the workspace root at export time.
+If the master imports a shared template, copy that file into the company folder too. Do not instead widen Typst's project root: a relative `#import "template.typ"` resolves next to the importing file, so raising the root will not find it anyway, and a root that spans the whole workspace lets the CV `read()` files from every other company folder.
 
 **Do not generate the PDF yet**; tailoring will edit the Typst source first.
 
