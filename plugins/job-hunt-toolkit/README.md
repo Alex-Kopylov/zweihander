@@ -1,6 +1,6 @@
 # job-hunt-toolkit
 
-Version-controlled job application workspace with resume tailoring, PDF export, metadata scrubbing, and pre-send checks.
+Version-controlled job application workspace with resume tailoring, Typst-to-PDF export, and pre-send checks.
 A paranoid, disciplined workflow for job applications. Assumes every PDF leaks metadata, every filename signals something, and every company you apply to will find a way to notice if you cut corners.
 
 ## What it does
@@ -26,7 +26,6 @@ Turns your chaotic Downloads folder into a disciplined, structured workspace:
 | `cover-letter-writing` | conversational | Write an evidence-backed cover letter as Typst, then export and check the PDF. |
 | `submit-job-application` | conversational | Fill employer portals from workspace data and stop for explicit approval before final submission. |
 | `export-pdf` | slash command or auto | Typst → PDF via `typst compile`. Consistent rendering across applications. |
-| `scrub-pdf-metadata` | on request | Strip metadata from a PDF produced outside this plugin. Not needed for its own exports. |
 | `prepare-to-send` | slash command | Run the full pre-send checklist: naming, metadata, visible content, and Typst↔PDF parity. |
 
 ### Natural-language triggers
@@ -41,7 +40,6 @@ You can invoke skills conversationally — The assistant recognizes these phrase
 | "write a cover letter", "draft a cover letter", "make a cover letter for this role", "generate a cover letter" | `cover-letter-writing` |
 | "fill this application portal", "submit this job application", "apply through this portal", "upload my CV to this application" | `submit-job-application` |
 | "export the PDF", "rebuild the PDF", "regenerate my CV PDF", "compile the Typst CV", "re-export", "refresh the PDF" | `export-pdf` |
-| "scrub PDF metadata", "clean the PDF", "strip metadata before sending", "remove author from PDF", "sanitise the PDF", "wipe exif data" | `scrub-pdf-metadata` |
 | "ready to send", "final check", "run the pre-send checklist", "is my CV ready?", "check before I apply", "validate before sending", "am I good to go?" | `prepare-to-send` |
 
 ### References
@@ -57,7 +55,9 @@ Shared knowledge consumed by skills:
 | Tool | Purpose | Install |
 |---|---|---|
 | **typst** | Typst → PDF export | `brew install typst` or `cargo install --locked typst-cli` |
-| **qpdf** + **exiftool** | Only for scrubbing PDFs from outside this plugin — its own exports are clean at the source | `brew install qpdf exiftool` |
+
+That is the only dependency. Metadata is set in the Typst source rather than
+stripped from the output afterwards, so no PDF post-processing tool is needed.
 
 ## Configuration
 

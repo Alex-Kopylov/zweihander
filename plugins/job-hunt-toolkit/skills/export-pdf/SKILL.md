@@ -72,7 +72,6 @@ Two cautions. Inside a `.typ`, a leading `/` means the *project root*, not the f
 ### 3. Verify output
 
 - PDF file exists at the target path
-- If `exiftool` is installed, print a quick summary of PDF metadata so the user sees what leaked in
 
 Note there is deliberately **no byte-size floor**. A Typst document whose content vanished still compiles to a valid ~2KB PDF, so size cannot tell a blank render from a real one. Step 3b is the gate that can.
 
@@ -99,7 +98,7 @@ If any check fails:
 ERROR: PDF is blank, contains leftover markers, or the source has unescaped <...> labels; inspect the .typ source and re-run export-pdf.
 ```
 
-Do NOT report success or proceed to scrubbing if this check fails.
+Do NOT report success if this check fails.
 
 ### 4. Verify the metadata came out clean
 
@@ -111,7 +110,13 @@ grep -n '#set document(' "$typ"
 
 Require `title: "CV"` and no `keywords:`. Anything else — a role, a company, a date — fails here, and the fix is to edit the `.typ`.
 
-Do **not** run a metadata scrubber over the output as a matter of course. On an already-clean PDF it is strictly harmful: it inflates the file ~30% and replaces `Creator: Typst <version>` with `XMP Toolkit: Image::ExifTool <version>`, trading a neutral tell for "this candidate ran a metadata scrubber". The `job-hunt-toolkit:scrub-pdf-metadata` skill exists for PDFs that did *not* come out of this pipeline.
+Confirm it landed:
+
+```bash
+grep -aoE '/(Title|Author|Keywords|Subject) ?\([^)]*\)' "$pdf"
+```
+
+Never reach for a metadata scrubber instead. On an already-clean PDF one is strictly harmful: it inflates the file ~30% and replaces `Creator: Typst <version>` with the scrubber's own name, trading a neutral tell for "this candidate ran a metadata scrubber" — and the common `exiftool -all=` does not even delete, it appends an update that leaves the old values recoverable.
 
 ### 5. Report
 
@@ -125,7 +130,7 @@ Do **not** run a metadata scrubber over the output as a matter of course. On an 
 
 - **Use Typst every time.** Never fall back to a browser, weasyprint, wkhtmltopdf, or pandoc; prompt the user to install Typst if missing.
 - **Use absolute paths for the CLI arguments.** Typst resolves relative paths against CWD otherwise, which is unpredictable across tool calls. This is the opposite of paths *inside* the source, where a leading `/` means the project root.
-- **Never pass `--no-pdf-tags`.** Typst writes a tagged PDF by default; those tags are the ordered text layer ATS parsers prefer. Do not pass `--pdf-standard` either — no ATS requires PDF/A, and PDF/UA-1 refuses to compile without a document title you would then have to scrub.
+- **Never pass `--no-pdf-tags`.** Typst writes a tagged PDF by default; those tags are the ordered text layer ATS parsers prefer. Do not pass `--pdf-standard` either — no ATS requires PDF/A, and PDF/UA-1 refuses to compile without a document title.
 - **Fix metadata at the source, never on the output.** The master `.typ` sets `title: "CV"` and no `keywords`, so there is nothing to strip. Running a scrubber over a clean PDF makes it bigger and more identifiable, not less.
 - **Warn if the Typst source has leftover markers** like `TODO`, `[placeholder]`, `{{` — written as content they render straight into the PDF. Typst strips `//` and `/* */` comments at compile time, so those never reach the PDF; they still leak forward when the source is copied to the next company folder, which `job-hunt-toolkit:prepare-to-send` checks.
 
@@ -145,5 +150,5 @@ Do **not** run a metadata scrubber over the output as a matter of course. On an 
 
 Remind user:
 1. Visually review the PDF (open it, check layout)
-2. Metadata has already been scrubbed by this skill
+2. Metadata is clean because the source set it that way
 3. Run the `job-hunt-toolkit:prepare-to-send` skill before attaching to any application for a final freshness and content check

@@ -7,7 +7,7 @@
 # - Inputs MUST be absolute paths (typst resolves relative paths against CWD)
 # - Exits non-zero on any failure; callers must check $?
 # - Prints stderr from typst on failure for debugging
-# - Does NOT scrub metadata — that's a separate skill
+# - Does NOT touch metadata: the .typ sets it via #set document(...)
 
 set -euo pipefail
 

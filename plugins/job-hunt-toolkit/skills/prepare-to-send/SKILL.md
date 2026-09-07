@@ -41,13 +41,7 @@ Use `ls -1 "$workspace/jobs"` to enumerate company folders when needed (e.g. cro
 
 ## Preconditions
 
-Hard-require `exiftool` up front. Do NOT degrade; a partial audit is worse than no audit because it creates false confidence.
-
-```bash
-command -v exiftool >/dev/null 2>&1 || { echo "ERROR: exiftool not installed (brew install exiftool)"; exit 1; }
-```
-
-If missing, stop immediately. Do not run any section.
+None. Every gate below runs on the `.typ` source and the PDF's own bytes, so this audit needs no tool beyond what the shell already provides.
 
 ## Workflow
 
@@ -89,20 +83,18 @@ If the source imports a shared template, check that template's mtime too — edi
 
 ## Section 3 — PDF metadata
 
-This is a **check, not a fix**. A PDF from `export-pdf` is clean because the Typst source made it so; if this section fails, the fix is to correct `#set document(...)` in the `.typ` and re-export, not to scrub the output. Only for a PDF from outside this plugin should you invoke `job-hunt-toolkit:scrub-pdf-metadata`.
-
-Verify with:
+This is a **check, not a fix**. A PDF from `export-pdf` is clean because the Typst source made it so; if this section fails, correct `#set document(...)` in the `.typ` and re-export. Do not post-process the PDF.
 
 ```bash
-exiftool -Title -Author -Producer -Creator -CreatorTool -CreateDate -Keywords -Subject "$pdf"
+grep -aoE '/(Title|Author|Keywords|Subject|Creator) ?\([^)]*\)' "$pdf"
 ```
 
 **Checklist:**
 
 - [ ] `Title` = "CV" (generic)
 - [ ] `Author` = clean legal name
-- [ ] `Creator` empty or "exiftool" only (Typst sets no `Producer`)
-- [ ] Raw byte grep for the company slug and the old title returns nothing — `exiftool` alone reports clean even when the values are still recoverable
+- [ ] `Creator` is the plain Typst version string (Typst sets no `Producer`)
+- [ ] The company slug appears nowhere in the file: `grep -ac "$current_company" "$pdf"` returns 0
 - [ ] `Keywords` empty
 - [ ] `Subject` empty
 - [ ] No XMP custom fields mentioning paths, companies, or other identifying strings
@@ -289,7 +281,7 @@ If any automated section fails, print ONLY the failing section's diagnostic and 
 ## Hard rules
 
 - **Every automated gate must pass — no warnings, no partial pass.** Partial pass = fail.
-- **Require exiftool up front.** No silent degradation. Missing tool = abort.
+- **No external tools.** Every gate reads the `.typ` and the PDF bytes directly, so there is nothing to install and nothing to degrade to.
 - **Section 3 fails toward the source.** A dirty `Title` means a wrong `#set document(...)` in the `.typ`; fix that and re-export. Scrubbing the PDF instead hides the defect and re-introduces it on the next export.
 - **Cross-company leak = catastrophic.** Any other company name in the PDF text or Typst comments is game-over; block.
-- **Defer metadata specifics to the `job-hunt-toolkit:scrub-pdf-metadata` skill and its references** when a foreign PDF genuinely needs scrubbing. Use its EXACT commands — never improvise.
+- **Metadata failures are source failures.** Never "fix" them on the PDF; the next export would reintroduce them anyway.

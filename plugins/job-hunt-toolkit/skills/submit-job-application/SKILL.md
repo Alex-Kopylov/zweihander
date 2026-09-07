@@ -88,7 +88,7 @@ Only proceed when the user explicitly approves this specific application after s
 | Mistake | Correction |
 |---|---|
 | Clicking Submit because the deadline is close | Stop for the report and fresh approval |
-| Uploading the master CV | Tailor, export, scrub, and upload the company-folder PDF |
+| Uploading the master CV | Tailor, export, and upload the company-folder PDF |
 | Guessing demographic or consent fields | Ask or leave blank according to the portal options |
 | Filling from memory | Use `USER.md`, company files, JD, and CV evidence |
 | Hiding skipped fields | Report skipped/unanswered fields in `**entity_name**: value` format |

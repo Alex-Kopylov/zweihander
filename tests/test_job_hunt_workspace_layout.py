@@ -35,57 +35,32 @@ def test_naming_rules_forbid_hyphenated_slugs() -> None:
 def test_plugin_manifests_agree_on_version() -> None:
     claude = json.loads((PLUGIN / ".claude-plugin/plugin.json").read_text(encoding="utf-8"))
     codex = json.loads((PLUGIN / ".codex-plugin/plugin.json").read_text(encoding="utf-8"))
-    assert claude["version"] == codex["version"] == "0.5.0"
+    assert claude["version"] == codex["version"] == "0.6.0"
 
 
-def test_render_script_is_typst_only() -> None:
-    scripts = PLUGIN / "skills/export-pdf/scripts"
-    assert not (scripts / "html-to-pdf.sh").exists()
-
-    script = (scripts / "typst-to-pdf.sh").read_text(encoding="utf-8")
-    assert "typst compile" in script
-    # The browser pipeline must be gone, not merely unused as a fallback.
-    assert "--print-to-pdf" not in script
-    assert "--headless" not in script
+def test_browser_render_script_is_gone() -> None:
+    # Behaviour of the replacement lives in tests/test_typst_export_script.py.
+    assert not (PLUGIN / "skills/export-pdf/scripts/html-to-pdf.sh").exists()
+    assert (PLUGIN / "skills/export-pdf/scripts/typst-to-pdf.sh").exists()
 
 
-def test_render_script_does_not_shadow_typst_root() -> None:
-    # Typst's default root is already the source file's directory, and passing
-    # --root would override the user's TYPST_ROOT.
-    script = (PLUGIN / "skills/export-pdf/scripts/typst-to-pdf.sh").read_text(encoding="utf-8")
-    invocations = [
-        line for line in script.splitlines()
-        if "typst compile" in line and not line.lstrip().startswith("#")
-    ]
-    assert invocations, "no typst compile invocation found"
-    assert not any("--root" in line for line in invocations)
-    assert "JOB_HUNT_TYPST_ROOT" not in script
+def test_typst_is_the_only_external_dependency() -> None:
+    # Metadata is set in the Typst source rather than stripped from the output,
+    # so no PDF post-processing tool is needed and the scrub skill is gone.
+    assert not (PLUGIN / "skills/scrub-pdf-metadata").exists()
+
+    for path in PLUGIN.rglob("*"):
+        if not path.is_file():
+            continue
+        text = path.read_text(encoding="utf-8", errors="ignore")
+        for tool in ("qpdf", "mutool"):
+            assert tool not in text, f"{path.relative_to(PLUGIN)} still needs {tool}"
 
 
-def test_scrub_strips_with_qpdf_before_exiftool() -> None:
-    # exiftool writes PDFs as an incremental update, so `-all=` is reversible:
-    # the stripped values stay recoverable. qpdf rewrites the file, and running
-    # it first also empties what exiftool's own update could restore.
-    commands = (
-        PLUGIN / "skills/scrub-pdf-metadata/references/exiftool-commands.md"
-    ).read_text(encoding="utf-8")
-    qpdf_at = commands.index("qpdf --remove-info --remove-metadata")
-    exiftool_set_at = commands.index('exiftool -Author=')
-    assert qpdf_at < exiftool_set_at
-    # `exiftool -all=` may only appear as a prohibition, never as the strip step.
-    strip_lines = [
-        line for line in commands.splitlines()
-        if "exiftool -all=" in line and not line.lstrip().startswith(("-", "Do", "So"))
-    ]
-    assert not strip_lines, strip_lines
-
-
-def test_export_path_does_not_scrub_its_own_output() -> None:
-    # Typst sets Title/Author/Keywords from the source, so exports are clean by
-    # construction; scrubbing them only adds size and an "I ran a scrubber" tell.
+def test_export_path_fixes_metadata_at_the_source() -> None:
     export = (PLUGIN / "skills/export-pdf/SKILL.md").read_text(encoding="utf-8")
     assert "#set document(" in export
-    assert "scrub-pdf-metadata` skill on the produced PDF" not in export
+    assert "Fix metadata at the source" in export
 
 
 def test_no_browser_pipeline_remains() -> None:
