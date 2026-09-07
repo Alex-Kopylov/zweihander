@@ -12,9 +12,8 @@ If the user is inside a detected workspace (has `AGENTS.md` referencing this plu
 
 - **Typst is the source, PDF is the export.** Never hand-edit PDFs. Edit the `.typ` source → regenerate PDF via `export-pdf` skill.
 - **The master Typst source is edit-guarded.** The master `.typ` at workspace root is canonical. The assistant must call AskUserQuestion for explicit user confirmation before modifying it. The master PDF is a build artifact and may be overwritten freely. Tailored variants live in `<workspace-root>/jobs/<company>/`.
-- **File naming is strict.** See `references/naming-rules.md` for the canonical naming rules.
-- **Company folder naming.** See `references/naming-rules.md` for the canonical naming rules.
-- **Metadata scrubbing is mandatory before any PDF leaves the workspace.** Always run `scrub-pdf-metadata` before reporting a CV as "ready to send". No exceptions. Scrubbing is not complete until the PDF has been flattened — exiftool's edits are reversible on their own.
+- **File and company-folder naming is strict.** See `references/naming-rules.md` for the canonical rules.
+- **Clean metadata is the source's job.** Typst writes `Title`/`Author`/`Keywords` from `#set document(...)`, so the master `.typ` sets `title: "CV"` with no keywords and every export is clean by construction. Verify that before sending; do not scrub the output. `scrub-pdf-metadata` is for PDFs from outside this plugin.
 - **Never fabricate experience.** Only rephrase / re-order / emphasize what the master CV already contains. If the JD requires something absent, flag it to the user — do not invent.
 - **Never leak secrets.** Salary offers, recruiter private contacts, passport numbers, home addresses — never include in shared artifacts without explicit user confirmation.
 
@@ -22,9 +21,8 @@ If the user is inside a detected workspace (has `AGENTS.md` referencing this plu
 
 | Task | Tool | Install if missing |
 |---|---|---|
-| PDF metadata inspect/strip | `exiftool` | `brew install exiftool` |
-| Flatten PDF after scrubbing | `qpdf` (or `mutool`) | `brew install qpdf` |
 | Typst → PDF | `typst` | `brew install typst` |
+| Scrubbing a foreign PDF (not needed for our own exports) | `qpdf` + `exiftool` | `brew install qpdf exiftool` |
 
 If a required tool is missing, say so loudly. Do NOT silently fall back to a worse tool — inconsistent PDFs across applications are a red flag. One tool, always the same tool.
 
@@ -47,8 +45,8 @@ Match user intent to the right skill:
 
 - `new-application` should copy the master Typst source, then hand off to `resume-tailoring`.
 - `submit-job-application` should prepare a tailored CV and required cover letter before uploading, then stop for explicit final approval before submission.
-- `export-pdf` auto-invokes `scrub-pdf-metadata` as its final step. Every exported PDF is scrubbed.
-- `prepare-to-send` verifies scrubbing as a gate before declaring the file ready.
+- `export-pdf` verifies the source sets clean document metadata; it does not scrub the output.
+- `prepare-to-send` gates on the PDF's metadata being clean before declaring the file ready.
 - `export-pdf` is a utility any skill can call after Typst source edits.
 
 ## Reference docs

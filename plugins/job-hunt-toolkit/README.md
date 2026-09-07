@@ -10,7 +10,7 @@ Turns your chaotic Downloads folder into a disciplined, structured workspace:
 - **Typst is source, PDF is export.** Edit the `.typ` source; regenerate PDF. Never hand-edit PDFs.
 - **One folder per company, all under `jobs/`.** Each holds a tailored CV, the JD, research notes, and status.
 - **HR-safe file naming.** `FirstName_LastName_Role_CV.pdf` — no company tags in filenames (that's a tailoring tell). Forbidden characters: spaces, pipes `|`, commas, slashes, emojis, non-ASCII. Hyphens and underscores are fine.
-- **PDF metadata scrubbing.** Author / CreationDate / Producer fields are tracked by ATS tools and recruiters alike. Strip them before sending.
+- **Clean PDF metadata by construction.** Title / Author / Keywords come from the Typst source, so a tailored CV never ships a "tailored for Acme" title in its properties. Timestamps are pinned to UTC so the export does not leak your timezone.
 - **Pre-send checklist.** Catch leaks before they leave your machine.
 - **Integrated resume tailoring.** The `resume-tailoring` skill lives here — truth-preserving optimization against a job description.
 
@@ -26,7 +26,7 @@ Turns your chaotic Downloads folder into a disciplined, structured workspace:
 | `cover-letter-writing` | conversational | Write an evidence-backed cover letter as Typst, then export and check the PDF. |
 | `submit-job-application` | conversational | Fill employer portals from workspace data and stop for explicit approval before final submission. |
 | `export-pdf` | slash command or auto | Typst → PDF via `typst compile`. Consistent rendering across applications. |
-| `scrub-pdf-metadata` | auto (after export) | Strip PDF metadata with exiftool. Required before sending any PDF. |
+| `scrub-pdf-metadata` | on request | Strip metadata from a PDF produced outside this plugin. Not needed for its own exports. |
 | `prepare-to-send` | slash command | Run the full pre-send checklist: naming, metadata, visible content, and Typst↔PDF parity. |
 
 ### Natural-language triggers
@@ -56,9 +56,8 @@ Shared knowledge consumed by skills:
 
 | Tool | Purpose | Install |
 |---|---|---|
-| **exiftool** | PDF metadata scrubbing | `brew install exiftool` |
-| **qpdf** | Flattening the PDF so the scrub is irreversible | `brew install qpdf` |
 | **typst** | Typst → PDF export | `brew install typst` or `cargo install --locked typst-cli` |
+| **qpdf** + **exiftool** | Only for scrubbing PDFs from outside this plugin — its own exports are clean at the source | `brew install qpdf exiftool` |
 
 ## Configuration
 

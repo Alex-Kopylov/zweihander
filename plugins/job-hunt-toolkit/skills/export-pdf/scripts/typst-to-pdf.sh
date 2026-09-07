@@ -51,10 +51,8 @@ fi
 # PIPESTATUS, so suspend it just long enough to capture typst's own exit code.
 # Warnings are captured too: typst exits 0 on them, but a font fallback or a
 # non-converging layout means the PDF does not match the master.
-# Typst stamps the machine's local UTC offset into /CreationDate and the XMP
-# packet, which narrows down where the applicant lives. Pinning SOURCE_DATE_EPOCH
-# forces UTC and makes the build byte-reproducible, which is a far stronger
-# staleness proof than comparing mtimes.
+# Forces UTC; Typst otherwise stamps the machine's local offset into
+# /CreationDate and the XMP packet, leaking the applicant's timezone.
 export SOURCE_DATE_EPOCH="${SOURCE_DATE_EPOCH:-$(date -u +%s)}"
 
 set +e

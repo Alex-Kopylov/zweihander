@@ -20,7 +20,6 @@ Depending on who you are as an AI agent, load exactly one metadata-linked refere
 - After any edit to a CV Typst source
 - When regenerating the master PDF after the master Typst source changes
 - When initial scaffolding needs a PDF export
-- Invoked manually by the user after editing the Typst source. Also called by the `job-hunt-toolkit:prepare-to-send` skill to verify PDF freshness. NOT called by the `job-hunt-toolkit:new-application` skill (user tailors the Typst source first, then exports the PDF).
 
 ## Inputs
 
@@ -102,18 +101,24 @@ ERROR: PDF is blank, contains leftover markers, or the source has unescaped <...
 
 Do NOT report success or proceed to scrubbing if this check fails.
 
-### 4. Scrub metadata
+### 4. Verify the metadata came out clean
 
-Invoke the `job-hunt-toolkit:scrub-pdf-metadata` skill on the produced PDF as the final step.
+Typst writes the PDF `Title`, `Author` and `Keywords` from `#set document(...)`, so clean metadata is a property of the **source**, not something to fix afterwards. Check the source, not the PDF:
 
-Every exported PDF is scrubbed, even when attached directly without the `job-hunt-toolkit:prepare-to-send` skill.
+```bash
+grep -n '#set document(' "$typ"
+```
+
+Require `title: "CV"` and no `keywords:`. Anything else — a role, a company, a date — fails here, and the fix is to edit the `.typ`.
+
+Do **not** run a metadata scrubber over the output as a matter of course. On an already-clean PDF it is strictly harmful: it inflates the file ~30% and replaces `Creator: Typst <version>` with `XMP Toolkit: Image::ExifTool <version>`, trading a neutral tell for "this candidate ran a metadata scrubber". The `job-hunt-toolkit:scrub-pdf-metadata` skill exists for PDFs that did *not* come out of this pipeline.
 
 ### 5. Report
 
 ```
 ✓ Exported: <typ-filename> → <pdf-filename>
   Size: <bytes>
-  Metadata scrubbed.
+  Metadata clean at source (Title=CV, no keywords).
 ```
 
 ## Hard rules
@@ -121,7 +126,7 @@ Every exported PDF is scrubbed, even when attached directly without the `job-hun
 - **Use Typst every time.** Never fall back to a browser, weasyprint, wkhtmltopdf, or pandoc; prompt the user to install Typst if missing.
 - **Use absolute paths for the CLI arguments.** Typst resolves relative paths against CWD otherwise, which is unpredictable across tool calls. This is the opposite of paths *inside* the source, where a leading `/` means the project root.
 - **Never pass `--no-pdf-tags`.** Typst writes a tagged PDF by default; those tags are the ordered text layer ATS parsers prefer. Do not pass `--pdf-standard` either — no ATS requires PDF/A, and PDF/UA-1 refuses to compile without a document title you would then have to scrub.
-- **Always scrub metadata after export.** Invoke the `job-hunt-toolkit:scrub-pdf-metadata` skill; the `job-hunt-toolkit:prepare-to-send` skill also verifies scrubbing.
+- **Fix metadata at the source, never on the output.** The master `.typ` sets `title: "CV"` and no `keywords`, so there is nothing to strip. Running a scrubber over a clean PDF makes it bigger and more identifiable, not less.
 - **Warn if the Typst source has leftover markers** like `TODO`, `[placeholder]`, `{{` — written as content they render straight into the PDF. Typst strips `//` and `/* */` comments at compile time, so those never reach the PDF; they still leak forward when the source is copied to the next company folder, which `job-hunt-toolkit:prepare-to-send` checks.
 
 ## Error handling

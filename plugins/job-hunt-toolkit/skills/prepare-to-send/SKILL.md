@@ -9,7 +9,7 @@ metadata:
 
 # Prepare to Send
 
-The last gate before a PDF goes out. This skill drives the checklist section-by-section, delegates metadata scrubbing to the `job-hunt-toolkit:scrub-pdf-metadata` skill, collects results, and refuses to declare "ready" unless every gate passes.
+The last gate before a PDF goes out. This skill drives the checklist section-by-section, collects results, and refuses to declare "ready" unless every gate passes.
 
 ## Harness Adaptation
 
@@ -87,13 +87,11 @@ If the source imports a shared template, check that template's mtime too — edi
 
 ---
 
-## Section 3 — PDF metadata scrub
+## Section 3 — PDF metadata
 
-**Invoke the `job-hunt-toolkit:scrub-pdf-metadata` skill** on the PDF; do not inline exiftool commands here.
+This is a **check, not a fix**. A PDF from `export-pdf` is clean because the Typst source made it so; if this section fails, the fix is to correct `#set document(...)` in the `.typ` and re-export, not to scrub the output. Only for a PDF from outside this plugin should you invoke `job-hunt-toolkit:scrub-pdf-metadata`.
 
-If the skill cannot be invoked as a skill, fall back to the exact commands from `${PLUGIN_ROOT}/skills/scrub-pdf-metadata/references/exiftool-commands.md` under "One-liner: scrub + set + verify" — never improvise.
-
-After scrub, verify with:
+Verify with:
 
 ```bash
 exiftool -Title -Author -Producer -Creator -CreatorTool -CreateDate -Keywords -Subject "$pdf"
@@ -166,21 +164,19 @@ The `[[:space:]]` guard keeps `https://` URLs out of the results.
 grep -nE '<[a-z_][a-z0-9_-]*>' "$typ" || true
 ```
 
-**Invisible-but-extractable text.** White or zero-size text is invisible on the page yet fully present in the extracted text layer — keyword stuffing that a visual review cannot see and that many employers treat as instant disqualification. It can arrive via a copied template rather than intent.
+**Invisible-but-extractable text.** White text is invisible on the page yet fully present in the extracted text layer — keyword stuffing that a visual review cannot see and that many employers treat as instant disqualification. It can arrive via a copied template rather than intent.
 
 ```bash
-grep -nE 'fill:[[:space:]]*(white|luma\(255\)|rgb\("#[fF]{3,6}"\))|size:[[:space:]]*0|#place\(' "$typ" || true
+grep -nE 'fill:[[:space:]]*(white|luma\(255\)|rgb\("#([fF]{3}|[fF]{6})"\))' "$typ" || true
 ```
+
+Match only white fills. Screening for `size: 0` or `#place(` sounds prudent and is not: `size: 0.9em` and `#place(top + right)` are ordinary layout, so those patterns fire on almost every real CV and train the reader to ignore the check.
 
 `#hide[...]` is safe and should not be flagged — it lays content out but emits no glyphs, so it is genuinely absent from the PDF.
 
 **Checklist:**
 
-- [ ] No `//` or `/* ... */` comments referencing other companies
-- [ ] No commented-out bullets from prior tailoring sessions
-- [ ] No TODO comments to self
-- [ ] No `<...>` labels where prose was intended
-- [ ] No white, zero-size, or off-page text
+- [ ] All three source scans clean: no other-company comments, no `<...>` labels where prose was intended, no white text
 
 ---
 
@@ -269,7 +265,7 @@ Pre-send audit: <pdf-filename>
 
 [PASS] Filename sanity
 [PASS] Typst/PDF pair in sync
-[PASS] Metadata scrubbed (Title=CV, Author=<clean name>)
+[PASS] Metadata clean (Title=CV, Author=<clean name>)
 [PASS] Visible content — 0 leaks
 [PASS] Sensitive file presence
 [PASS] PDF rendering (<chars> text chars)
@@ -294,6 +290,6 @@ If any automated section fails, print ONLY the failing section's diagnostic and 
 
 - **Every automated gate must pass — no warnings, no partial pass.** Partial pass = fail.
 - **Require exiftool up front.** No silent degradation. Missing tool = abort.
-- **Always run the `job-hunt-toolkit:scrub-pdf-metadata` skill in Section 3.** Never skip even if the user says they "just scrubbed" — Typst source edits invalidate prior scrubs.
+- **Section 3 fails toward the source.** A dirty `Title` means a wrong `#set document(...)` in the `.typ`; fix that and re-export. Scrubbing the PDF instead hides the defect and re-introduces it on the next export.
 - **Cross-company leak = catastrophic.** Any other company name in the PDF text or Typst comments is game-over; block.
-- **Defer metadata specifics to the `job-hunt-toolkit:scrub-pdf-metadata` skill and its references.** If you need to fall back, use EXACT commands from `exiftool-commands.md` — never improvise.
+- **Defer metadata specifics to the `job-hunt-toolkit:scrub-pdf-metadata` skill and its references** when a foreign PDF genuinely needs scrubbing. Use its EXACT commands — never improvise.

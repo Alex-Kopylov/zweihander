@@ -48,7 +48,7 @@ Capture findings in `company.md`. This context drives tailoring decisions.
 
 - The `job-hunt-toolkit:prepare-to-send` skill runs the full checklist:
   1. Filename sanity (no company tag, no spaces, matches `naming-rules.md`).
-  2. `scrub-pdf-metadata` — strip Title/Author/Producer/CreationDate.
+  2. Metadata check — `Title` is "CV", no keywords, no company anywhere.
   3. Visible content scan (stray drafts, wrong company names in body, placeholders).
   4. Typst ↔ PDF parity.
 

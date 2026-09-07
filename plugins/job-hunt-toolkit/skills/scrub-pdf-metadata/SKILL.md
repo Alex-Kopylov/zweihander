@@ -9,7 +9,9 @@ metadata:
 
 # Scrub PDF Metadata
 
-Some PDF metadata can leak export tools, suspicious timestamps, source Typst filenames, and device names. Strip it with `exiftool`, then reset a clean Author.
+Some PDF metadata can leak export tools, suspicious timestamps, source filenames, and device names. Strip it with `qpdf`, then set a clean Author with `exiftool`.
+
+**This skill is for PDFs that did not come from `export-pdf`** — a file the user produced elsewhere, or an old one of unknown provenance. PDFs this plugin generates are clean at the source: Typst writes `Title`/`Author`/`Keywords` from `#set document(...)`, so the master `.typ` sets `title: "CV"` with no keywords and there is nothing to strip. Running this skill over an already-clean PDF makes it ~30% larger and swaps a neutral `Creator: Typst <version>` for `XMP Toolkit: Image::ExifTool <version>` — a worse tell than the one it removes.
 
 ## Harness Adaptation
 
@@ -17,9 +19,9 @@ Depending on who you are as an AI agent, load exactly one metadata-linked refere
 
 ## When to use
 
-- Before sending ANY PDF CV to a recruiter.
-- After `export-pdf` runs and before `prepare-to-send` declares the file ready.
-- Manually if the user suspects a PDF has stale metadata (e.g. previously edited / renamed).
+- Before sending a PDF CV that this plugin did not generate.
+- When the user suspects a PDF has stale metadata (previously edited, renamed, or exported by another tool).
+- **Not** as a routine step after `export-pdf` — see above.
 
 ## Inputs
 
@@ -28,21 +30,20 @@ Depending on who you are as an AI agent, load exactly one metadata-linked refere
 
 ## Preconditions
 
-### exiftool installed
+### qpdf and exiftool installed
 
 ```bash
-command -v exiftool >/dev/null 2>&1
+command -v qpdf >/dev/null 2>&1 && command -v exiftool >/dev/null 2>&1
 ```
 
-If missing:
+If either is missing:
 
 ```
-ERROR: exiftool is not installed. Install it:
-  brew install exiftool
+ERROR: this skill needs qpdf (strip) and exiftool (set clean fields):
+  brew install qpdf exiftool
 
-We don't fall back to other scrubbers — different tools handle different
-metadata fields, and partial scrubbing is worse than no scrubbing because
-it creates false confidence.
+We don't substitute other scrubbers — partial scrubbing is worse than no
+scrubbing because it creates false confidence.
 ```
 
 ## Workflow
@@ -68,13 +69,15 @@ Specifically highlight any of these that are non-empty:
 - Any `XMP` custom fields
 - File path embedded in header/footer — grep the PDF text for `file://` or absolute path fragments
 
-### 2. Strip everything
+### 2. Strip everything, with qpdf
 
 ```bash
-exiftool -all= -overwrite_original "$pdf"
+qpdf --remove-info --remove-metadata "$pdf" "$pdf.clean" && mv "$pdf.clean" "$pdf"
 ```
 
-`-all=` removes all metadata, including Author; re-set it next. `-overwrite_original` skips creating a `.pdf_original` backup alongside the PDF.
+This drops the Info dictionary and the entire XMP packet in one pass. Use qpdf and not `exiftool -all=` here: qpdf rewrites the whole file, so the removal is irreversible, whereas exiftool appends an incremental update that leaves the old values recoverable (see Hard rules). Verified: output is *smaller* than the input, `TaggedPDF` survives, and the text layer is unchanged.
+
+`--remove-info` / `--remove-metadata` need qpdf ≥ 11.10 (Feb 2025); `brew install qpdf` ships 12.x.
 
 ### 3. Set clean Author + Title
 
@@ -88,27 +91,12 @@ exiftool \
 
 Use `Title = "CV"`; do not include company, role, or date.
 
-### 3b. Flatten the file (mandatory)
-
-Steps 2 and 3 only *append* a new version; the original `Title`/`Keywords` are still recoverable from the file bytes. Rewrite the PDF to drop the incremental update:
-
-```bash
-qpdf --linearize "$pdf" "$pdf.flat" && mv "$pdf.flat" "$pdf"
-```
-
-`mutool clean -gggg "$pdf" "$pdf"` works equally well. Verified: after flattening, `exiftool -PDF-update:all=` reports "File contains no previous ExifTool update", the old title is gone from the raw bytes, and the text layer is unchanged.
-
-If neither tool is installed, **stop and say so** — do not report the PDF as scrubbed.
+Order matters, and this order is safe by construction: exiftool still writes an incremental update, but Step 2 already emptied what that update could restore. Never run these two the other way round.
 
 ### 4. Inspect (after)
 
 ```bash
-exiftool "$pdf" | grep -Ei 'author|title|producer|creator|date|keywords|subject'
-```
-
-`exiftool` alone is not proof — it reads the newest update and will report clean either way. Confirm against the raw bytes:
-
-```bash
+exiftool "$pdf" | grep -Ei 'author|title|creator|date|keywords|subject'
 grep -ac "$(basename "$(dirname "$pdf")")" "$pdf"   # company slug must not appear
 ```
 
@@ -151,9 +139,9 @@ Ready for sending. Run the `job-hunt-toolkit:prepare-to-send` skill for the full
 
 ## Hard rules
 
-- **exiftool edits are reversible — you MUST flatten the file afterwards.** exiftool rewrites a PDF as an *incremental update*: the old objects stay in the file and `exiftool -PDF-update:all=` restores them. exiftool says so itself (`Warning: [minor] ExifTool PDF edits are reversible`). A scrubbed CV therefore still contains "tailored for Acme" in its bytes while `exiftool` reports a clean `Title` — exactly the false confidence this skill exists to prevent. Always finish with Step 3b, then verify by grepping the raw bytes, not with `exiftool`.
-- **Require exiftool.** No silent fallbacks. Partial scrubbing is worse than no scrubbing.
-- **Strip, then set.** Always run `-all=` first, then set Author/Title. If you only set Author, the other fields (Producer, CreationDate) stick around.
+- **Strip with qpdf, never with `exiftool -all=`.** exiftool writes PDFs as an *incremental update*: the old objects stay in the file and `exiftool -PDF-update:all=` restores them — it warns about this itself. A CV "scrubbed" that way still holds "tailored for Acme" in its bytes while `exiftool` reports a clean `Title`, which is exactly the false confidence this skill exists to prevent. qpdf rewrites the file, so its removal is real.
+- **qpdf first, exiftool last.** In that order the result is safe by construction; reversed, it is not.
+- **Never run this over a PDF from `export-pdf`.** Those are clean already, and scrubbing them only adds size and an "I used a scrubber" tell.
 - **Title = "CV".** Not the role, not the company, not a timestamp. Generic.
 - **Never embed the company name anywhere in metadata.** Same rule as filenames.
 - **Do not silently scrub without showing before/after.** User needs to see what leaked — it teaches pattern recognition for the Typst side too.
@@ -164,8 +152,8 @@ Recruiters and hiring managers sometimes open `File → Properties` on a PDF. AT
 
 ## Gotchas
 
-- **`exiftool -all=` strips Author too.** Step 3 (Set clean Author + Title) is mandatory; see `references/exiftool-commands.md` for commands.
-- **Typst writes its own PDF metadata.** `typst compile` sets `Creator` to the Typst version (it sets no `Producer`), and `#set document(title: …, author: …, keywords: …)` becomes the PDF `Title`/`Author`/`Keywords`. A document title like "CV tailored for Acme" ships in the PDF properties. **Step 2 does not truly remove it** — see the hard rule on reversible edits. Fix the source: the master should set `title: "CV"` and no `keywords`, so there is nothing to strip.
+- **qpdf strips Author too.** Step 3 (Set clean Author + Title) is mandatory; see `references/exiftool-commands.md` for commands.
+- **Typst writes its own PDF metadata.** `typst compile` sets `Creator` to the Typst version (it sets no `Producer`), and `#set document(title: …, author: …, keywords: …)` becomes the PDF `Title`/`Author`/`Keywords`. So for a CV from this pipeline the fix belongs in the `.typ`, not here.
 - **Paths printed by a page header/footer render into PDF text and survive metadata stripping.** `exiftool` cannot remove visible header/footer text, so always run Step 5 after a clean report.
 
 ## References

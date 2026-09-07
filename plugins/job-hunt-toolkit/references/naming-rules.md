@@ -91,14 +91,6 @@ jobs/acme_robotics/<First>_<Last>_Senior_ML_Engineer_CV.typ
 jobs/acme_robotics/<First>_<Last>_Senior_ML_Engineer_CV.pdf
 ```
 
-```bash
-# Creates `file.pdf` in working directory.
-typst compile file.typ
-
-# Creates a PDF file at the desired path.
-typst compile path/to/source.typ path/to/output.pdf
-```
-
 ### Cover letters
 
 ```
