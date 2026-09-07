@@ -3,17 +3,15 @@
 Usage: `uv run python -m plugin_maintenance.build`
 """
 
-from pathlib import Path
-
+from plugin_maintenance import REPO_ROOT
 from plugin_maintenance.generate import run_generators
 from plugin_maintenance.render import DIST_DIRS, BuildError, render_tree
 
 
-def build(repo_root: Path | None = None) -> None:
-    repo_root = Path(repo_root) if repo_root else Path.cwd()
+def build() -> None:
     run_generators()
     for harness, dist_dir in DIST_DIRS.items():
-        render_tree(repo_root, harness, repo_root / dist_dir)
+        render_tree(REPO_ROOT, harness, REPO_ROOT / dist_dir)
 
 
 def main() -> None:

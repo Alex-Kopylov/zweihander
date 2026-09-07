@@ -1,3 +1,4 @@
+from conftest import REPO_ROOT
 import inspect
 import json
 import re
@@ -9,7 +10,6 @@ from plugin_maintenance.generators.mermaid_diagrams.generated_docs import (
 )
 
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
 PLUGIN_ROOT = REPO_ROOT / "plugins" / "mermaid-diagrams"
 TOOLING_ROOT = REPO_ROOT / "plugin_maintenance" / "generators" / "mermaid_diagrams"
 

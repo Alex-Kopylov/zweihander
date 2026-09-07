@@ -1,3 +1,4 @@
+from conftest import REPO_ROOT
 """Marketplace manifests publish from the committed dist trees.
 
 Every manifest entry sources its plugin from the manifest's own `dist/` tree
@@ -9,7 +10,6 @@ import json
 from pathlib import Path
 
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
 
 
 def claude_entries() -> list[dict]:

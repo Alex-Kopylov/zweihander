@@ -1,3 +1,4 @@
+from conftest import REPO_ROOT
 """Purity and reproducibility invariants for the committed dist trees.
 
 Files rendered from `.j2` sources carry no foreign harness vocabulary and no
@@ -26,7 +27,6 @@ from plugin_maintenance.render import (
 )
 
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
 DEV_FILE_NAMES = {"AGENTS.md", "CLAUDE.md", "README.md"}
 DISPATCH_SENTENCE = "Depending on who you are as an AI agent"
 LEGACY_METADATA_LINKS = (

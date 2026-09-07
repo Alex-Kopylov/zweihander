@@ -1,3 +1,4 @@
+from conftest import REPO_ROOT
 """The interview skill's decision log, which is also its progress counter.
 
 Every count comes back out of the file the walk-through wrote, so an
@@ -12,7 +13,6 @@ from pathlib import Path
 import pytest
 
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
 SKILL_DIR = REPO_ROOT / "plugins" / "work-session-tools" / "skills" / "interview"
 SCRIPT_PATH = SKILL_DIR / "scripts" / "decision_log.py"
 SKILL_TEMPLATE = SKILL_DIR / "SKILL.md.j2"

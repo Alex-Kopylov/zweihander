@@ -1,3 +1,4 @@
+from conftest import REPO_ROOT
 """Schema contract for the harness action matrix.
 
 The matrix is the only source of callable names for the stage-2 renderer:
@@ -11,7 +12,6 @@ from pathlib import Path
 import pytest
 
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
 MATRIX_PATH = (
     REPO_ROOT
     / "plugins"

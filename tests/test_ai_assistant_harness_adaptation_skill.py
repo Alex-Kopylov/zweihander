@@ -1,3 +1,4 @@
+from conftest import REPO_ROOT
 """Contract for the adapt-skill-for-ai-harness skill.
 
 The skill instructs harness-parametric template authoring against the action
@@ -14,7 +15,6 @@ from pathlib import Path
 import pytest
 
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
 SKILL_ROOT = (
     REPO_ROOT
     / "plugins"

@@ -1,3 +1,4 @@
+from conftest import REPO_ROOT
 """Authoring policy for skill, agent, and template sources under `plugins/`.
 
 Templates take callable names from the action map or the wrapper filter,
@@ -21,7 +22,6 @@ from plugin_maintenance.render import (
 )
 
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
 PLUGINS_ROOT = REPO_ROOT / "plugins"
 FRONTMATTER_MATRIX = json.loads(
     (REPO_ROOT / MATRIX_PATH)
