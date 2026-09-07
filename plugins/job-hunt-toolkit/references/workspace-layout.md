@@ -42,7 +42,7 @@ jobs/<company>/
 
 ```
 jobs/<company>/
-├── cover_letter.html
+├── cover_letter.typ
 ├── cover_letter.pdf
 ├── interview_notes.md                       # notes after each round
 ├── questions_to_ask.md                      # questions for interviewers

@@ -1,6 +1,6 @@
 ---
 name: new-application
-description: Use when the user asks to "apply to <company>", "start a new application", "new company folder", "scaffold application for", "I'm applying to", "track this job", "set up application for", "create folder for", or provides a JD and wants to set up a tracked application. Creates a per-company folder in the workspace, scaffolds company.md with YAML frontmatter, saves the job description, copies the master HTML for tailoring, and optionally hands off to the resume-tailoring skill.
+description: Use when the user asks to "apply to <company>", "start a new application", "new company folder", "scaffold application for", "I'm applying to", "track this job", "set up application for", "create folder for", or provides a JD and wants to set up a tracked application.
 argument-hint: <company-slug> [role]
 metadata:
   ai-assistant-harness-adaptation.claude-code: references/ai-assistant-harnesses/claude-code.md
@@ -72,18 +72,20 @@ Use `templates/company.md.template`, substituting:
 - `{{DATE}}` — today's date in ISO (YYYY-MM-DD)
 - `{{PORTAL}}` — ask user if known, else leave blank
 
-### 7. Copy master HTML
+### 7. Copy the master Typst source
 
-Find the master: `<workspace>/<First>_<Last>_<Role>_CV.html` (glob for `*_CV.html` at workspace root, not inside company folders).
+Find the master: `<workspace>/<First>_<Last>_<Role>_CV.typ` (glob for `*_CV.typ` at workspace root, not inside company folders).
 
-Copy to `jobs/<slug>/<First>_<Last>_<NewRole>_CV.html`. The role in the filename matches the **target role**, not the master's role, since tailoring often reframes the title.
+Copy to `jobs/<slug>/<First>_<Last>_<NewRole>_CV.typ`. The role in the filename matches the **target role**, not the master's role, since tailoring often reframes the title.
 
-**Do not generate the PDF yet**; tailoring will edit the HTML first.
+If the master imports a shared template, copy that file into the company folder too. Do not instead widen Typst's project root: a relative `#import "template.typ"` resolves next to the importing file, so raising the root will not find it anyway, and a root that spans the whole workspace lets the CV `read()` files from every other company folder.
+
+**Do not generate the PDF yet**; tailoring will edit the Typst source first.
 
 ### 8. Offer to chain
 
 Ask the user to choose:
-- **Tailor now** → invoke the `job-hunt-toolkit:resume-tailoring` skill with the JD and this company's HTML as context
+- **Tailor now** → invoke the `job-hunt-toolkit:resume-tailoring` skill with the JD and this company's Typst source as context
 - **Tailor later** → stop here; user can run tailoring manually
 
 ### 9. Output summary
@@ -92,7 +94,7 @@ Ask the user to choose:
 ✓ Created <workspace>/jobs/<slug>/
   ├── company.md
   ├── job_description.md
-  └── <First>_<Last>_<NewRole>_CV.html
+  └── <First>_<Last>_<NewRole>_CV.typ
 
 Next:
   - Edit company.md with company details
@@ -105,7 +107,7 @@ Next:
 
 - **Validate company slug** against `^[a-z0-9]+(?:_[a-z0-9]+)*$` before creating the folder. Reject anything that doesn't match.
 - **Never overwrite an existing company folder** without explicit confirmation.
-- **Never copy the master PDF** — only HTML. The PDF will be regenerated after tailoring.
+- **Never copy the master PDF** — only the Typst source. The PDF will be regenerated after tailoring.
 - **Never include the company name in the CV filename** (see `references/naming-rules.md` in the plugin).
 - **Save the JD verbatim.** Don't paraphrase or summarize. The raw JD is evidence for tailoring decisions.
 
@@ -114,7 +116,7 @@ Next:
 | Scenario | Action |
 |---|---|
 | Workspace doesn't exist | Stop; direct user to the `job-hunt-toolkit:init-workspace` skill |
-| Master HTML not found | Stop; ask user to create one or use the `job-hunt-toolkit:init-workspace` skill |
+| Master Typst source not found | Stop; ask user to create one or use the `job-hunt-toolkit:init-workspace` skill |
 | WebFetch fails on JD URL | Ask user to paste the JD text instead |
 | Slug doesn't match `^[a-z0-9]+(?:_[a-z0-9]+)*$` | Reject; show the pattern; ask user for corrected slug |
 | Role label contains invalid characters | Reject; show naming rules; ask again |

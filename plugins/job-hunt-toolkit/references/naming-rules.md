@@ -41,13 +41,13 @@ Everything else — including **hyphens** — is permitted where the segment rul
 
 | Example | Good or bad | Why |
 |---|---|---|
-| `Alex_Smith_ML_Engineer_CV.pdf` | Good | Clear candidate, role, doc type |
-| `Alex_Smith_AI-LLM_Engineer_CV.pdf` | Good | Hyphen within a segment is fine |
+| `Jane_Doe_ML_Engineer_CV.pdf` | Good | Clear candidate, role, doc type |
+| `Jane_Doe_AI-LLM_Engineer_CV.pdf` | Good | Hyphen within a segment is fine |
 | `cv.pdf` | Bad | Invisible in a recruiter's Downloads folder |
 | `resume-final-v2-ACTUAL-FINAL.pdf` | Bad | Signals chaos and poor attention to detail |
 | `Lastname Firstname CV AI \| LLM \| ML Engineer.pdf` | Bad | Spaces and pipes from deny-list |
 | `Lastname Firstname CV AI, LLM, Machine Learning Engineer, Data Scienetist.pdf` | Bad | Spaces, commas from deny-list; typo; too long |
-| `Alex_Smith_LLM_Engineer_CV_OpenAI.pdf` | Bad | Company name in filename screams "tailored for you" |
+| `Jane_Doe_LLM_Engineer_CV_OpenAI.pdf` | Bad | Company name in filename screams "tailored for you" |
 | `resume_openai.pdf` | Bad | Cannot identify candidate from filename alone |
 | `FirstnameLastname_CV.pdf` | Bad | No role; CamelCase without segment separator |
 
@@ -89,14 +89,6 @@ jobs/anthropic/<First>_<Last>_AI_Engineer_CV.typ
 jobs/anthropic/<First>_<Last>_AI_Engineer_CV.pdf
 jobs/acme_robotics/<First>_<Last>_Senior_ML_Engineer_CV.typ
 jobs/acme_robotics/<First>_<Last>_Senior_ML_Engineer_CV.pdf
-```
-
-```bash
-# Creates `file.pdf` in working directory.
-typst compile file.typ
-
-# Creates a PDF file at the desired path.
-typst compile path/to/source.typ path/to/output.pdf
 ```
 
 ### Cover letters

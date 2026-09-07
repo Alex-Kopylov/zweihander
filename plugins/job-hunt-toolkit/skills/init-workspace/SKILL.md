@@ -1,6 +1,6 @@
 ---
 name: init-workspace
-description: Use when the user asks to "initialize job hunt workspace", "set up job seeking folder", "create CV workspace", "bootstrap resume folder", "prepare job search folder", "start job hunt setup", "create application tracking workspace", "first time setup for job applications", or is starting the job-hunt-toolkit for the first time. Creates the workspace directory structure, generates README/AGENTS.md/NAMING.md from plugin templates, copies master HTML CV into workspace, and primes the `jobs/` directory for per-company folders.
+description: Use when the user asks to "initialize job hunt workspace", "set up job seeking folder", "create CV workspace", "bootstrap resume folder", "prepare job search folder", "start job hunt setup", "create application tracking workspace", "first time setup for job applications", or is starting the job-hunt-toolkit for the first time.
 argument-hint: "[workspace-path] (optional, defaults to ~/Documents/job_seeking)"
 metadata:
   ai-assistant-harness-adaptation.claude-code: references/ai-assistant-harnesses/claude-code.md
@@ -50,13 +50,13 @@ Validate against `references/naming-rules.md` (underscores only, ASCII only).
 
 ### 3. Prompt for master CV
 
-Ask the user for the absolute path to the existing master CV HTML file.
+Ask the user for the absolute path to the existing master CV Typst file.
 
-- If the user provides a valid, readable `.html` path: **copy** it into the workspace root as `<First>_<Last>_<Role>_CV.html` and leave the source untouched. Print: `✓ Master CV copied to <workspace>/<First>_<Last>_<Role>_CV.html`.
+- If the user provides a valid, readable `.typ` path: **copy** it into the workspace root as `<First>_<Last>_<Role>_CV.typ` and leave the source untouched. Print: `✓ Master CV copied to <workspace>/<First>_<Last>_<Role>_CV.typ`.
 - If the user provides no path, an empty value, or a path that does not exist / is not readable: **HARD ERROR** — print exactly:
 
   ```
-  No CV file provided. A master HTML CV is required to initialize the workspace. Please provide a valid path and re-run.
+  No CV file provided. A master Typst CV is required to initialize the workspace. Please provide a valid path and re-run.
   ```
 
   Stop entirely.
@@ -86,7 +86,7 @@ Print a "next steps" block pointing to `new-application` and `prepare-to-send`.
 
 ## Hard rules
 
-- **A master HTML CV is mandatory.** If not provided, initialization stops with a hard error (see step 3).
+- **A master Typst CV is mandatory.** If not provided, initialization stops with a hard error (see step 3).
 - **Never overwrite an existing master CV file** without explicit user confirmation. Master CVs are irreplaceable.
 - **Never delete existing `jobs/<company>/` folders** — they may contain application history.
 - **Always use absolute paths** in bash — `cd` state doesn't persist between tool calls.
@@ -96,7 +96,7 @@ Print a "next steps" block pointing to `new-application` and `prepare-to-send`.
 
 | Scenario | Action |
 |---|---|
-| No CV path provided or path invalid | Hard error: "No CV file provided. A master HTML CV is required to initialize the workspace. Please provide a valid path and re-run." Stop entirely. |
+| No CV path provided or path invalid | Hard error: "No CV file provided. A master Typst CV is required to initialize the workspace. Please provide a valid path and re-run." Stop entirely. |
 | Target dir exists with existing docs | Ask user: overwrite / abort / new path |
 | User declines to provide name | Use placeholders `<First>_<Last>` and warn that filenames need manual fixup |
 
@@ -106,10 +106,10 @@ After success, print:
 
 ```
 ✓ Workspace initialized at <path>
-✓ Master CV copied to <path>/<First>_<Last>_<Role>_CV.html
+✓ Master CV copied to <path>/<First>_<Last>_<Role>_CV.typ
 ✓ Docs generated from plugin templates
 
 Next:
   - Use the `job-hunt-toolkit:new-application` skill with <company-slug> to start an application
-  - Use the `job-hunt-toolkit:export-pdf` skill to generate the master PDF from HTML
+  - Use the `job-hunt-toolkit:export-pdf` skill to generate the master PDF from the Typst source
 ```
