@@ -68,6 +68,7 @@ Write these files from this plugin's `references/` directory and templates at ge
 - `README.md` — workspace overview. Use `templates/README.md.template`, substituting `<First>`, `<Last>`, `<Role>`.
 - `AGENTS.md` — workspace-local agent rules. Use `templates/AGENTS.md.template`. Reference the plugin `AGENTS.md` for authoritative rules.
 - `NAMING.md` — quick reference. Use `templates/NAMING.md.template`, but prefer linking back to the plugin's `references/naming-rules.md` rather than duplicating content that will drift.
+- `sync-application-statuses.sh` — copy `scripts/sync-application-statuses.sh` to the workspace root and make the copy executable.
 - `.gitignore` — Write with standard ignore patterns for local notes, editor artifacts, and sensitive files:
   ```
   *.local.md
@@ -78,6 +79,8 @@ Write these files from this plugin's `references/` directory and templates at ge
   .vscode/
   .idea/
   ```
+
+After all files are present, run `<workspace>/sync-application-statuses.sh`. This validates application records and creates the initial `APPLICATIONS.md`. Stop if validation fails.
 
 ### 5. Finalize
 
@@ -107,6 +110,7 @@ After success, print:
 ✓ Workspace initialized at <path>
 ✓ Master CV copied to <path>/<First>_<Last>_<Role>_CV.html
 ✓ Docs generated from plugin templates
+✓ APPLICATIONS.md generated from company.md records
 
 Next:
   - Use the `job-hunt-toolkit:new-application` skill with <company-slug> to start an application

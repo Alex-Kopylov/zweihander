@@ -17,6 +17,7 @@ If the user is inside a detected workspace (has `AGENTS.md` referencing this plu
 - **Metadata scrubbing is mandatory before any PDF leaves the workspace.** Always run `scrub-pdf-metadata` before reporting a CV as "ready to send". No exceptions.
 - **Never fabricate experience.** Only rephrase / re-order / emphasize what the master CV already contains. If the JD requires something absent, flag it to the user — do not invent.
 - **Never leak secrets.** Salary offers, recruiter private contacts, passport numbers, home addresses — never include in shared artifacts without explicit user confirmation.
+- **Keep status in `company.md` only.** After changing a status, run the workspace `sync-application-statuses.sh`; never edit `APPLICATIONS.md` directly.
 
 ## Tool expectations
 
@@ -41,6 +42,7 @@ Match user intent to the right skill:
 | "ready to send", "final check", "what's the checklist" | `prepare-to-send` |
 | "scrub metadata", "clean the PDF" | `scrub-pdf-metadata` |
 | "set up the workspace", "first time setup" | `init-workspace` |
+| "check email for hiring updates", "update applications from email" | `track-hiring-emails` |
 
 ## Skill chaining
 
@@ -49,6 +51,7 @@ Match user intent to the right skill:
 - `export-pdf` auto-invokes `scrub-pdf-metadata` as its final step. Every exported PDF is scrubbed.
 - `prepare-to-send` verifies scrubbing as a gate before declaring the file ready.
 - `export-pdf` is a utility any skill can call after HTML edits.
+- `new-application` and `track-hiring-emails` run the workspace `sync-application-statuses.sh` after creating or changing a record.
 
 ## Reference docs
 
