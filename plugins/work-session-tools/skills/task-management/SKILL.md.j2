@@ -172,7 +172,7 @@ Set a metadata key to `null` to remove it.
 | Huge inline descriptions | Reference external plan files |
 | Blocking main session for slow agents | Use `run_in_background: true` |
 | Polling background tasks in a loop | Wait for notification, or use TaskOutput with `block: true` |
-{% else %}
+{% elif harness == "Codex" %}
 ## Tracking Work
 
 Track work as ordered {{ actions.UpdateTask }} items. Keep plan items concise,

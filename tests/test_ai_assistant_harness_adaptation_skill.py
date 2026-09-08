@@ -70,6 +70,7 @@ def test_skill_instructs_template_authoring() -> None:
     assert "{{ actions.AskUser | call }}" in body
     assert '{{ "plugin-name:skill-name" | call }}' in body
     assert '{% if harness == "Codex" %}' in body
+    assert '{% elif harness == "ClaudeCode" %}' in body
     assert "{% raw %}" in body
     assert "byte-for-byte" in body
     assert "explicitly named" in body

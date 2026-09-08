@@ -64,7 +64,7 @@ name: demo
 Ask via {{ actions.AskUser | call }}, the {{ actions.AskUser }} mechanism.
 Delegate via {{ actions.CreateAgent | call }}.
 Invoke {{ "commit" | call }} or {{ "dev-workflow:commit" | call }}.
-{% if harness == "Codex" %}Codex-specific narrative.{% else %}Claude Code-specific narrative.{% endif %}
+{% if harness == "Codex" %}Codex-specific narrative.{% elif harness == "ClaudeCode" %}Claude Code-specific narrative.{% endif %}
 {% raw %}Keep the literal {{COMPANY}} placeholder.{% endraw %}
 """
 

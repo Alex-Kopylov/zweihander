@@ -23,7 +23,7 @@ find . \( -name "AGENTS.md" -o -name ".codex.md" -o -name ".codex.local.md" \) 2
 Treat `./.codex.local.md` as local personal settings and `~/.codex/AGENTS.md`
 as user-wide defaults when explaining context locations. Account for
 parent-directory and nested `AGENTS.md` discovery in monorepos.
-{% else %}
+{% elif harness == "ClaudeCode" %}
 ```bash
 find . -name "AGENTS.md" 2>/dev/null | head -50
 ```
@@ -170,7 +170,7 @@ When presenting recommendations, remind users:
 {% if harness == "Codex" %}
 For personal preferences, point users to `.codex.local.md` or
 `~/.codex/AGENTS.md`.
-{% else %}
+{% elif harness == "ClaudeCode" %}
 Mention the `#` shortcut only when it is relevant to capturing Claude Code
 memory in the active session.
 {% endif %}

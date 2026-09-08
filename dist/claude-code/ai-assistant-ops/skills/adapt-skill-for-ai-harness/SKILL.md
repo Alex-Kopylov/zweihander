@@ -53,15 +53,23 @@ callable name inside a harness conditional — names always come from the
 action map, so they never need branching.
 
 Use harness conditionals only for narrative that genuinely differs between
-harnesses:
+harnesses, and name the harness in every branch:
 
 ```jinja
 {% if harness == "Codex" %}
 Codex-only guidance in Codex vocabulary.
-{% else %}
+{% elif harness == "ClaudeCode" %}
 Claude Code-only guidance in Claude Code vocabulary.
 {% endif %}
 ```
+
+Never close a harness conditional with `{% else %}`. Each branch answers
+"which harness is this wording for?", and `else` answers "every harness I did
+not think of" — which reads the same as an explicit branch only while exactly
+two harnesses exist. Adding a third would silently hand it another harness's
+vocabulary; an explicit chain makes the build surface every passage that has
+to choose again. The repository policy test names any file that branches
+implicitly. A `{% else %}` under a non-harness `if` is unaffected.
 
 When rendered output needs literal `{{` or `{%` sequences, wrap that content
 in `{% raw %}` blocks. Plain (non-template) files never need this; they are

@@ -16,6 +16,7 @@ from pathlib import Path
 from plugin_maintenance.render import (
     FRONTMATTER_MATRIX_NAME,
     MATRIX_PATH,
+    RAW_BLOCK,
     TEMPLATE_SUFFIX,
     VERBATIM_FORM,
     frontmatter_lines,
@@ -47,6 +48,9 @@ TASK_MANAGEMENT_PATTERNS_TEMPLATE = (
 
 HARNESS_CONDITIONAL_BLOCK = re.compile(
     r"\{%-?\s*if\s+harness[\s\S]*?\{%-?\s*endif\s*-?%\}"
+)
+BRANCH_TAG = re.compile(
+    r"\{%-?\s*(?P<tag>if|elif|else|endif)\b(?P<test>.*?)-?%\}", re.DOTALL
 )
 DOLLAR_INVOCATION = re.compile(r"\$[a-z0-9][a-z0-9-]*(:[a-z0-9_-]+)?")
 DECLARED_ARGUMENTS = re.compile(r"""arguments\(\s*["']([^"']+)["']\s*\)""")
@@ -139,6 +143,91 @@ def test_declaring_one_argument_exempts_only_that_name():
     )
 
     assert selects_a_callable_inside_a_conditional(text)
+
+
+def implicit_harness_branches(text: str) -> list[int]:
+    """Return the line of every harness branch that does not name its harness.
+
+    A harness conditional selects wording for the harness it is rendered for,
+    so each branch answers "which harness is this for?". `{% else %}` answers
+    "every harness I did not think of", which is the same content today only
+    because there happen to be two harnesses: adding a third silently hands it
+    the second harness's vocabulary. Requiring `{% elif harness == "..." %}`
+    keeps the answer in the template, where adding a harness surfaces every
+    passage that has to choose again.
+
+    Raw blocks are removed first: their braces are literal output, not
+    branches. The scan tracks nesting, so a plain `{% else %}` under a
+    non-harness `if` inside a harness conditional stays untouched.
+    """
+    scanned = RAW_BLOCK.sub("", text)
+    open_conditionals: list[bool] = []
+    lines: list[int] = []
+    for match in BRANCH_TAG.finditer(scanned):
+        tag = match.group("tag")
+        if tag == "if":
+            open_conditionals.append("harness" in match.group("test"))
+            continue
+        if tag == "endif":
+            if open_conditionals:
+                open_conditionals.pop()
+            continue
+        if not open_conditionals or not open_conditionals[-1]:
+            continue
+        if tag == "else" or "harness" not in match.group("test"):
+            lines.append(scanned.count("\n", 0, match.start()) + 1)
+    return lines
+
+
+def test_harness_conditionals_name_the_harness_in_every_branch():
+    violations = [
+        f"{path.relative_to(REPO_ROOT)}:{line}"
+        for path in template_sources()
+        for line in implicit_harness_branches(path.read_text(encoding="utf-8"))
+    ]
+
+    assert not violations, (
+        "every harness branch must name its harness, so adding a harness "
+        'surfaces each passage instead of inheriting another\'s wording; use '
+        '`{% elif harness == "..." %}` instead of `{% else %}`:\n'
+        + "\n".join(violations)
+    )
+
+
+def test_implicit_branch_scan_accepts_an_explicit_chain():
+    text = (
+        '{% if harness == "ClaudeCode" %}A.\n'
+        '{% elif harness == "Codex" %}B.\n'
+        "{% endif %}\n"
+    )
+
+    assert not implicit_harness_branches(text)
+
+
+def test_implicit_branch_scan_rejects_an_else_branch():
+    text = '{% if harness == "Codex" %}A.{% else %}B.{% endif %}\n'
+
+    assert implicit_harness_branches(text) == [1]
+
+
+def test_implicit_branch_scan_ignores_a_nested_non_harness_else():
+    text = (
+        '{% if harness == "Codex" %}\n'
+        "{% if items %}A.{% else %}B.{% endif %}\n"
+        '{% elif harness == "ClaudeCode" %}C.\n'
+        "{% endif %}\n"
+    )
+
+    assert not implicit_harness_branches(text)
+
+
+def test_implicit_branch_scan_ignores_a_raw_block():
+    text = (
+        "{% raw %}{% if harness %}A.{% else %}B.{% endif %}{% endraw %}\n"
+        '{% if harness == "Codex" %}C.{% elif harness == "ClaudeCode" %}D.{% endif %}\n'
+    )
+
+    assert not implicit_harness_branches(text)
 
 
 def test_task_management_pattern_sections_stay_outside_harness_conditionals():

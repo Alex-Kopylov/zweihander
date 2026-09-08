@@ -41,7 +41,7 @@ Use it directly. If it's a directory, list `.jsonl` files inside and pick the mo
 Search Codex session logs under `~/.codex/sessions/` for recent `.jsonl`
 files that match the current project path or session timing. The most recent
 match is the current session's main log.
-{% else %}
+{% elif harness == "ClaudeCode" %}
 Default logs live under `~/.claude/projects/<encoded-project>/*.jsonl`.
 
 Find logs automatically:

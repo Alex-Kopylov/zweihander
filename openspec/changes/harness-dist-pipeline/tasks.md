@@ -87,3 +87,10 @@ The whole change lands in one PR. Development is test-first (TDD): each behavior
 - [x] 10.8 Vendor the Agent Skills specification into the adaptation skill's references under Apache-2.0, record it in `third_party/`, and name it from the matrix so the portable list cannot drift from the document
 - [x] 10.9 Document in the adaptation skill that a product's UI, invocation policy, and tool dependencies belong in `agents/openai.yaml`, never in frontmatter
 - [x] 10.10 Rebuild both trees and run full verification: `uv run pytest tests`, JSON validation, `git diff --check`
+
+## 11. Explicit harness branches
+
+- [x] 11.1 Write the source policy test rejecting an implicit harness branch: scan `.j2` sources outside raw blocks, track conditional nesting, and name the file and line of every `{% else %}` or non-harness `{% elif %}` governed by a harness `if`
+- [x] 11.2 Convert every harness conditional in `plugins/` to an explicit `{% elif harness == "..." %}` chain, preserving whitespace-control markers, and confirm both trees render byte-identical
+- [x] 11.3 Document the explicit-chain rule and the reason `{% else %}` is refused in `adapt-skill-for-ai-harness`, and record it in the invocation-notation spec
+- [x] 11.4 Bump `ai-assistant-ops`, rebuild both trees, and run full verification

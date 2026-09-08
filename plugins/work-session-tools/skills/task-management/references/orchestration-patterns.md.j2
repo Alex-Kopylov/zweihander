@@ -17,7 +17,7 @@ implementation starts.
 
 Step 1 uses an `Explore` agent. Step 2 uses a `Plan` agent. Steps 3
 and 4 use `general-purpose` agents.
-{% else %}
+{% elif harness == "Codex" %}
 ```
 {{ actions.UpdateTask }}(plan: [
   {"step": "Explore codebase architecture", "status": "in_progress"},
@@ -49,7 +49,7 @@ aggregate their results.
 {{ actions.CreateAgent }}(description: "Check type safety", prompt: "...", run_in_background: true)
 {{ actions.CreateAgent }}(description: "Run security audit", prompt: "...", run_in_background: true)
 ```
-{% else %}
+{% elif harness == "Codex" %}
 Delegate only when the user or applicable project instructions authorize it.
 
 ```
@@ -85,7 +85,7 @@ work.
   run_in_background: true
 )
 ```
-{% else %}
+{% elif harness == "Codex" %}
 ```
 {{ actions.CreateAgent }}(
   task_name: "research_oauth",
@@ -116,7 +116,7 @@ required branch finishes.
 {{ actions.CreateTask }}: "Migrate notification service"          → #4, blockedBy: [#1]
 {{ actions.CreateTask }}: "Run integration tests"                 → #5, blockedBy: [#2, #3, #4]
 ```
-{% else %}
+{% elif harness == "Codex" %}
 ```
 {{ actions.UpdateTask }}(plan: [
   {"step": "Prepare the migration plan", "status": "completed"},
@@ -148,7 +148,7 @@ Run one iteration, validate it, and repeat until the acceptance criteria pass.
 {{ actions.CreateTask }}: "Fix validation findings"               → #3, blockedBy: [#2]
 {{ actions.CreateTask }}: "Re-run validation"                     → #4, blockedBy: [#3]
 ```
-{% else %}
+{% elif harness == "Codex" %}
 ```
 {{ actions.UpdateTask }}(plan: [
   {"step": "Generate the initial implementation", "status": "completed"},
@@ -179,7 +179,7 @@ Represent explicit relationships with task dependencies.
 Linear:  #1 → #2 → #3
 Fan-out: #1 → [#2, #3] → #4
 ```
-{% else %}
+{% elif harness == "Codex" %}
 The plan is an ordered checklist, not a dependency graph. Express dependencies
 through step order and clear step text. Use agent lifecycle tools only for
 delegated work.
@@ -218,7 +218,7 @@ complete its task and return a useful result.
 {% if harness == "ClaudeCode" %}
 - Use `haiku` for simple searches
 - Reserve `opus` for complex reasoning
-{% else %}
+{% elif harness == "Codex" %}
 - Omit model overrides unless the user or applicable instructions require one
 {% endif %}
 
@@ -231,7 +231,7 @@ complete its task and return a useful result.
   prompt: "Continue from where you stopped. The dependency is now ready."
 )
 ```
-{% else %}
+{% elif harness == "Codex" %}
 Use a lifecycle tool exposed in the current session. Continue the existing
 agent when its prior context remains relevant.
 {% endif %}
@@ -248,7 +248,7 @@ Attach task metadata when the extra fields improve coordination.
   "estimated_duration": "2m"
 })
 ```
-{% else %}
+{% elif harness == "Codex" %}
 Plan items accept only the fields exposed by the active tool schema. Put
 priority, file paths, and other context in the step text or delegated-agent
 message.

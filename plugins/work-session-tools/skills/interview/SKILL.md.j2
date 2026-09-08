@@ -18,7 +18,7 @@ Walk through a list of items one by one by asking the user one bounded question 
 
 {% if harness == "ClaudeCode" -%}
 Collect the items `$items` names. When the invocation carries no argument, collect the items from the conversation context.
-{%- else -%}
+{%- elif harness == "Codex" -%}
 Collect the items the invocation argument names. When the invocation carries no argument, collect the items from the conversation context.
 {%- endif %}
 
