@@ -16,6 +16,7 @@ If the user is inside a detected workspace (has `AGENTS.md` referencing this plu
 - **Clean metadata is the source's job.** Typst writes `Title`/`Author`/`Keywords` from `#set document(...)`, so the master `.typ` sets `title: "CV"` with no keywords and every export is clean by construction. Verify that before sending; never try to fix it by post-processing the PDF.
 - **Never fabricate experience.** Only rephrase / re-order / emphasize what the master CV already contains. If the JD requires something absent, flag it to the user — do not invent.
 - **Never leak secrets.** Salary offers, recruiter private contacts, passport numbers, home addresses — never include in shared artifacts without explicit user confirmation.
+- **Keep status in `company.md` only.** After changing a status, run the workspace `sync-application-statuses.sh`; never edit `APPLICATIONS.md` directly.
 
 ## Tool expectations
 
@@ -38,6 +39,7 @@ Match user intent to the right skill:
 | "export the PDF", "rebuild the PDF", "regenerate" | `export-pdf` |
 | "ready to send", "final check", "what's the checklist" | `prepare-to-send` |
 | "set up the workspace", "first time setup" | `init-workspace` |
+| "check email for hiring updates", "update applications from email" | `track-hiring-emails` |
 
 ## Skill chaining
 
@@ -46,6 +48,7 @@ Match user intent to the right skill:
 - `export-pdf` verifies the source sets clean document metadata; it does not scrub the output.
 - `prepare-to-send` gates on the PDF's metadata being clean before declaring the file ready.
 - `export-pdf` is a utility any skill can call after Typst source edits.
+- `new-application` and `track-hiring-emails` run the workspace `sync-application-statuses.sh` after creating or changing a record.
 
 ## Reference docs
 

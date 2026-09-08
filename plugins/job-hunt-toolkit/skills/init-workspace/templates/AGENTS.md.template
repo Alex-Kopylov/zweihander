@@ -9,3 +9,5 @@ All rules, naming conventions, and workflow details live in the plugin (authorit
 - Workspace layout: see the plugin's `references/workspace-layout.md`
 
 This file exists so supported agents recognize this directory as a job-hunt-toolkit workspace. Do not duplicate plugin rules here — they will drift. Update the plugin instead.
+
+After changing any application status, run `./sync-application-statuses.sh` to validate all application records and regenerate `APPLICATIONS.md`.

@@ -453,8 +453,9 @@ Cloud storage workflows for MEGA-style user-file storage tools.
 
 ### `job-hunt-toolkit`
 
-**Use when:** you want a structured job application workspace, tailored resumes,
-Typst-to-PDF export, or a final pre-send checklist.
+**Use when:** you want to structure and automate the job application process,
+including status tracking, resume and cover-letter tailoring, Typst-to-PDF
+export, and pre-send checks.
 
 **Skills**
 
@@ -464,6 +465,7 @@ Typst-to-PDF export, or a final pre-send checklist.
 | `export-pdf` | Compile Typst CVs to PDF with `typst compile`. |
 | `init-workspace` | Scaffold the job application workspace. |
 | `new-application` | Create a company application folder and starter files. |
+| `track-hiring-emails` | Process hiring email updates and sync application statuses. |
 | `prepare-to-send` | Run final filename, metadata, and content checks. |
 | `resume-tailoring` | Tailor a CV to a job description without fabrication. |
 | `submit-job-application` | Fill employer portals and require approval before final submission. |

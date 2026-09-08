@@ -174,7 +174,7 @@
     {
       "name": "job-hunt-toolkit",
       "source": "./plugins/job-hunt-toolkit",
-      "description": "Version-controlled job application workspace with resume tailoring, Typst-to-PDF export, and pre-send checks.",
+      "description": "Version-controlled job application workspace with email status tracking, resume tailoring, Typst-to-PDF export, and pre-send checks.",
       "category": "productivity",
       "tags": [
         "resume",

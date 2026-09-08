@@ -48,8 +48,8 @@ If the workspace doesn't exist or lacks a master CV, stop and direct the user to
 ### 3. Gather role
 
 Ask if not provided:
-- Role label (e.g. `Senior_ML_Engineer`, `LLM_Engineer`, `AI_Engineer`)
-- Must follow naming rules (TitleCase segments, underscores, ASCII).
+- Exact role title for `company.md` (e.g. `Senior ML Engineer`).
+- Filename role label (e.g. `Senior_ML_Engineer`). Derive it from the title when unambiguous; otherwise ask the user. It must follow the naming rules.
 
 ### 4. Create folder
 
@@ -68,7 +68,7 @@ Ask user how they'll provide the JD:
 
 Use `templates/company.md.template`, substituting:
 - `{{COMPANY}}` — original casing (e.g. "Acme Robotics", not the slug)
-- `{{ROLE}}` — the role label
+- `{{ROLE}}` — the exact human-readable role title, not the filename label
 - `{{DATE}}` — today's date in ISO (YYYY-MM-DD)
 - `{{PORTAL}}` — ask user if known, else leave blank
 
@@ -82,19 +82,25 @@ If the master imports a shared template, copy that file into the company folder 
 
 **Do not generate the PDF yet**; tailoring will edit the Typst source first.
 
-### 8. Offer to chain
+### 8. Sync the application index
+
+Run `<workspace>/sync-application-statuses.sh` after `company.md` and the company folder are complete. Stop and report the exact invalid record path if validation fails. Do not generate or edit `APPLICATIONS.md` directly.
+
+### 9. Offer to chain
 
 Ask the user to choose:
 - **Tailor now** → invoke the `job-hunt-toolkit:resume-tailoring` skill with the JD and this company's Typst source as context
 - **Tailor later** → stop here; user can run tailoring manually
 
-### 9. Output summary
+### 10. Output summary
 
 ```
 ✓ Created <workspace>/jobs/<slug>/
   ├── company.md
   ├── job_description.md
   └── <First>_<Last>_<NewRole>_CV.typ
+
+✓ Regenerated <workspace>/APPLICATIONS.md
 
 Next:
   - Edit company.md with company details
@@ -110,6 +116,7 @@ Next:
 - **Never copy the master PDF** — only the Typst source. The PDF will be regenerated after tailoring.
 - **Never include the company name in the CV filename** (see `references/naming-rules.md` in the plugin).
 - **Save the JD verbatim.** Don't paraphrase or summarize. The raw JD is evidence for tailoring decisions.
+- **Always run the workspace sync script after creating `company.md`.** Never duplicate its table-generation logic.
 
 ## Error handling
 

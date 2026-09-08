@@ -1,6 +1,6 @@
 # job-hunt-toolkit
 
-Version-controlled job application workspace with resume tailoring, Typst-to-PDF export, and pre-send checks.
+Version-controlled job application workspace with email status tracking, resume tailoring, Typst-to-PDF export, and pre-send checks.
 A paranoid, disciplined workflow for job applications. Assumes every PDF leaks metadata, every filename signals something, and every company you apply to will find a way to notice if you cut corners.
 
 ## What it does
@@ -9,6 +9,8 @@ Turns your chaotic Downloads folder into a disciplined, structured workspace:
 
 - **Typst is source, PDF is export.** Edit the `.typ` source; regenerate PDF. Never hand-edit PDFs.
 - **One folder per company, all under `jobs/`.** Each holds a tailored CV, the JD, research notes, and status.
+- **Email status tracking.** Classify new hiring messages and update an exact company-and-role match without creating another status store.
+- **Disposable status index.** `company.md` remains authoritative; `sync-application-statuses.sh` atomically rebuilds `APPLICATIONS.md`.
 - **HR-safe file naming.** `FirstName_LastName_Role_CV.pdf` — no company tags in filenames (that's a tailoring tell). Forbidden characters: spaces, pipes `|`, commas, slashes, emojis, non-ASCII. Hyphens and underscores are fine.
 - **Clean PDF metadata by construction.** Title / Author / Keywords come from the Typst source, so a tailored CV never ships a "tailored for Acme" title in its properties. Timestamps are pinned to UTC so the export does not leak your timezone.
 - **Pre-send checklist.** Catch leaks before they leave your machine.
@@ -22,6 +24,7 @@ Turns your chaotic Downloads folder into a disciplined, structured workspace:
 |---|---|---|
 | `init-workspace` | slash command | One-time setup: scaffolds `~/Documents/job_seeking/` (or configured path) with README, AGENTS.md, and NAMING.md |
 | `new-application` | slash command | Start a new company application: create folder, scaffold `company.md`, copy the master Typst source, invoke tailoring |
+| `track-hiring-emails` | conversational or scheduled | Process hiring email updates through a provider agent and sync application statuses |
 | `resume-tailoring` | conversational | Tailor the CV against a JD. Research → template → discovery → assembly → export. |
 | `cover-letter-writing` | conversational | Write an evidence-backed cover letter as Typst, then export and check the PDF. |
 | `submit-job-application` | conversational | Fill employer portals from workspace data and stop for explicit approval before final submission. |
@@ -36,6 +39,7 @@ You can invoke skills conversationally — The assistant recognizes these phrase
 |---|---|
 | "set up my job search workspace", "first-time setup", "initialise the workspace", "create the job hunt folder", "bootstrap my applications folder", "I'm starting fresh, set things up" | `init-workspace` |
 | "start a new application at Acme", "apply to Stripe", "new job application for Shopify", "create a folder for FAANG", "I want to apply to this company", "kick off an application" | `new-application` |
+| "check email for hiring updates", "process recruiting email", "update applications from email" | `track-hiring-emails` |
 | "tailor my CV for this JD", "customise my resume for this role", "optimise my CV against this job description", "adapt my CV to this posting", "rewrite my CV for this position", "help me tailor my resume" | `resume-tailoring` |
 | "write a cover letter", "draft a cover letter", "make a cover letter for this role", "generate a cover letter" | `cover-letter-writing` |
 | "fill this application portal", "submit this job application", "apply through this portal", "upload my CV to this application" | `submit-job-application` |
@@ -102,4 +106,5 @@ Or point the active runtime at a local path:
 4. Walk through resume-tailoring                    # per application
 5. $job-hunt-toolkit:prepare-to-send                # before attaching PDF
 6. Send PDF                                         # ship it
+7. Ask to check hiring email                        # during the process
 ```
