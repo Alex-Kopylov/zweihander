@@ -1,12 +1,12 @@
 {
   "name": "job-hunt-toolkit",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "Version-controlled job application workspace with resume tailoring, Typst-to-PDF export, and pre-send checks.",
   "author": {
     "name": "Alex Kopylov",
     "email": "alexkopylov123@gmail.com"
   },
-  "license": "UNLICENSED",
+  "license": "Apache-2.0",
   "skills": "./skills/",
   "interface": {
     "displayName": "Job Hunt Toolkit",
