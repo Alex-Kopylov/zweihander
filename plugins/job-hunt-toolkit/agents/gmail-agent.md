@@ -44,7 +44,7 @@ Stop if any required operation is unavailable. Do not substitute IMAP, a browser
 2. Require `WORKSPACE/sync-application-statuses.sh` to exist and be executable.
 3. Run `WORKSPACE/sync-application-statuses.sh` before reading Gmail.
 4. Stop on validation failure and report only the invalid path returned by the script.
-5. Load only immediate `WORKSPACE/<company>/company.md` files as application records.
+5. Load only immediate `WORKSPACE/jobs/<company>/company.md` files as application records.
 
 For each record, keep its absolute path plus the `company`, `role`, `status`, and `applied` frontmatter values in memory. Never create a separate application-status file or database.
 

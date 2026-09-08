@@ -18,8 +18,8 @@ def test_resume_tailoring_produces_required_artifacts_without_checkpoints() -> N
     assert "## Autonomy" not in skill
     assert "autonomously" not in skill
     assert "## Completion Check" in skill
-    assert "HTML tailored to the target vacancy and role" in skill
-    assert "PDF was generated from that HTML" in skill
+    assert "Typst source tailored to the target vacancy and role" in skill
+    assert "PDF was generated from that Typst source" in skill
     assert "`Before | After | Why`" in skill
     assert "_CV_Report.md" not in skill
     assert (

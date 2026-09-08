@@ -84,7 +84,7 @@ parse_record() {
 }
 
 shopt -s nullglob
-for record in "$workspace"/*/company.md; do
+for record in "$workspace"/jobs/*/company.md; do
   if ! parsed=$(parse_record "$record"); then
     printf 'Invalid application record: %s\n' "$record" >&2
     exit 1

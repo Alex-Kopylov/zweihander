@@ -36,7 +36,6 @@ kanban
     jht_resume_tailoring[resume-tailoring]
     jht_cover_letter_writing[cover-letter-writing]
     jht_export_pdf[export-pdf]
-    jht_scrub_pdf_metadata[scrub-pdf-metadata]
     jht_prepare_to_send[prepare-to-send]
     jht_submit_job_application[submit-job-application]
   cloud_storage_tools[cloud-storage-tools]
@@ -455,21 +454,20 @@ Cloud storage workflows for MEGA-style user-file storage tools.
 ### `job-hunt-toolkit`
 
 **Use when:** you want to structure and automate the job application process,
-including status tracking, resume and cover-letter tailoring, document export,
-and pre-send checks.
+including status tracking, resume and cover-letter tailoring, Typst-to-PDF
+export, and pre-send checks.
 
 **Skills**
 
 | Skill | Description |
 |---|---|
-| `cover-letter-writing` | Write an evidence-backed cover letter as HTML and PDF. |
-| `export-pdf` | Render HTML CVs to PDF with headless Chromium. |
+| `cover-letter-writing` | Write an evidence-backed cover letter as Typst and PDF. |
+| `export-pdf` | Compile Typst CVs to PDF with `typst compile`. |
 | `init-workspace` | Scaffold the job application workspace. |
 | `new-application` | Create a company application folder and starter files. |
 | `track-hiring-emails` | Process hiring email updates and sync application statuses. |
 | `prepare-to-send` | Run final filename, metadata, and content checks. |
 | `resume-tailoring` | Tailor a CV to a job description without fabrication. |
-| `scrub-pdf-metadata` | Strip sensitive PDF metadata before sending. |
 | `submit-job-application` | Fill employer portals and require approval before final submission. |
 
 ## Recommended Third-Party Plugins

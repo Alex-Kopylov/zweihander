@@ -24,8 +24,8 @@ def install_sync_script(workspace: Path) -> Path:
 
 
 def write_record(workspace: Path, folder: str, frontmatter: str) -> Path:
-    company_dir = workspace / folder
-    company_dir.mkdir()
+    company_dir = workspace / "jobs" / folder
+    company_dir.mkdir(parents=True)
     record = company_dir / "company.md"
     record.write_text(f"{frontmatter}\n\n# Application\n", encoding="utf-8")
     return record
