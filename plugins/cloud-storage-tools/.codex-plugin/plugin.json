@@ -1,11 +1,11 @@
 {
   "name": "cloud-storage-tools",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Dropbox, Google Drive, OneDrive, and MEGA style user-file storage tools.",
   "author": {
     "name": "Alex Kopylov"
   },
-  "license": "UNLICENSED",
+  "license": "Apache-2.0",
   "skills": "./skills/",
   "interface": {
     "displayName": "Cloud Storage Tools",

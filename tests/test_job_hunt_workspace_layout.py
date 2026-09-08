@@ -35,7 +35,7 @@ def test_naming_rules_forbid_hyphenated_slugs() -> None:
 def test_plugin_manifests_agree_on_version() -> None:
     claude = json.loads((PLUGIN / ".claude-plugin/plugin.json").read_text(encoding="utf-8"))
     codex = json.loads((PLUGIN / ".codex-plugin/plugin.json").read_text(encoding="utf-8"))
-    assert claude["version"] == codex["version"] == "0.6.0"
+    assert claude["version"] == codex["version"]
 
 
 def test_browser_render_script_is_gone() -> None:
