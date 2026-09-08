@@ -36,7 +36,6 @@ kanban
     jht_resume_tailoring[resume-tailoring]
     jht_cover_letter_writing[cover-letter-writing]
     jht_export_pdf[export-pdf]
-    jht_scrub_pdf_metadata[scrub-pdf-metadata]
     jht_prepare_to_send[prepare-to-send]
     jht_submit_job_application[submit-job-application]
   cloud_storage_tools[cloud-storage-tools]
@@ -86,7 +85,6 @@ kanban
     dw_render_diff_html[render-diff-html]
     dw_requesting_code_review[requesting-code-review]
     dw_systematic_debugging[systematic-debugging]
-    dw_test_driven_development[test-driven-development]
     dw_ticket_branch[ticket-branch]
     dw_ticket_comment_status[ticket-comment-status]
     dw_using_git_worktrees[using-git-worktrees]
@@ -253,16 +251,17 @@ reasoning.
 
 ### `python-dev-workflow`
 
-**Use when:** you are deriving scenarios from requirements, writing or reviewing
-Python tests, deciding E2E vs integration vs unit coverage, testing Celery or
-Redis behavior, or configuring Celery for production behavior.
+**Use when:** you are doing TDD or test-first development in Python, deriving
+scenarios from requirements, writing or reviewing Python tests, deciding E2E
+vs integration vs unit coverage, testing Celery or Redis behavior, or
+configuring Celery for production behavior.
 
 **Skills**
 
 | Skill | Description |
 |---|---|
 | `celery-expert` | Configure Celery tasks, workers, retries, schedules, performance, and security. |
-| `tests-manager` | Plan scenarios and write pytest E2E, integration, and unit tests with focused references. |
+| `tests-manager` | Own Python test-first development and test craft: red-green-refactor, plan scenarios, and write pytest E2E, integration, and unit tests with focused references. |
 
 **Agents**
 
@@ -276,7 +275,7 @@ Redis behavior, or configuring Celery for production behavior.
 
 ### `dev-workflow`
 
-**Use when:** you need structured development workflow support: TDD, debugging,
+**Use when:** you need structured development workflow support: debugging,
 visual diff reports, review, commits, PRs, ticket branches, status updates,
 version bumps, or spec checks.
 
@@ -301,7 +300,6 @@ provenance.
 | `spec-contradiction-hunter` | Find contradictions and inconsistencies in specs. |
 | `spec-interview` | Interview the user and produce an implementation spec. |
 | `systematic-debugging` | Investigate bugs through evidence, patterns, hypotheses, and fixes. |
-| `test-driven-development` | Enforce red-green-refactor for features, bug fixes, and behavior changes. |
 | `ticket-branch` | Create a git branch from a ticket ID or URL. |
 | `ticket-comment-status` | Post status updates to tickets or work items. |
 | `using-git-worktrees` | Set up isolated workspace branches for feature work. |
@@ -456,19 +454,18 @@ Cloud storage workflows for MEGA-style user-file storage tools.
 ### `job-hunt-toolkit`
 
 **Use when:** you want a structured job application workspace, tailored resumes,
-HTML-to-PDF export, PDF metadata scrubbing, or a final pre-send checklist.
+Typst-to-PDF export, or a final pre-send checklist.
 
 **Skills**
 
 | Skill | Description |
 |---|---|
-| `cover-letter-writing` | Write an evidence-backed cover letter as HTML and PDF. |
-| `export-pdf` | Render HTML CVs to PDF with headless Chromium. |
+| `cover-letter-writing` | Write an evidence-backed cover letter as Typst and PDF. |
+| `export-pdf` | Compile Typst CVs to PDF with `typst compile`. |
 | `init-workspace` | Scaffold the job application workspace. |
 | `new-application` | Create a company application folder and starter files. |
 | `prepare-to-send` | Run final filename, metadata, and content checks. |
 | `resume-tailoring` | Tailor a CV to a job description without fabrication. |
-| `scrub-pdf-metadata` | Strip sensitive PDF metadata before sending. |
 | `submit-job-application` | Fill employer portals and require approval before final submission. |
 
 ## Recommended Third-Party Plugins

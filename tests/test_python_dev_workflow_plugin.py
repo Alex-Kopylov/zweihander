@@ -3,14 +3,6 @@ from pathlib import Path
 
 
 PLUGIN_ROOT = REPO_ROOT / "plugins" / "python-dev-workflow"
-TDD_SKILL = (
-    REPO_ROOT
-    / "plugins"
-    / "dev-workflow"
-    / "skills"
-    / "test-driven-development"
-    / "SKILL.md.j2"
-)
 
 
 def frontmatter(path: Path) -> str:
@@ -132,7 +124,6 @@ def test_tests_manager_e2e_contract() -> None:
         "../../agents/test-scenario-planner.md",
     } <= metadata_keys
     assert "E2E → Integration → Unit" in manager_body
-    assert "E2E → Integration → Unit" in body(TDD_SKILL)
     assert "not by test count or code\ncoverage percentage" in manager_body
     assert "mock" in manager_body and "observable behavior" in manager_body
     assert "stop immediately" in e2e_reference
