@@ -32,7 +32,7 @@ SLUG_LIMIT = 40
 BAR_WIDTH = 20
 FILLED, EMPTY = "▰", "▱"
 TABLE_HEADER = "| Item | Decision | Note |\n|------|----------|------|\n"
-ROW = re.compile(r"^\|", re.MULTILINE)
+ROW = re.compile(r"^\|(?P<rest>.*)$", re.MULTILINE)
 TOTAL = re.compile(r"^total: (?P<total>\d+)$", re.MULTILINE)
 
 
@@ -84,12 +84,18 @@ def read_log(path: Path) -> str:
 
 
 def totals(text: str, path: Path) -> tuple[int, int]:
-    """Return the recorded row count and the declared item total."""
+    """Return the count of distinct recorded items and the declared item total.
+
+    Rows accumulate on every `record` call, including amendments that
+    re-record an already-decided item — so progress counts distinct item
+    identities from the rows, not the row count itself.
+    """
     match = TOTAL.search(text)
     if not match:
         raise LogError(f"decision log {path} declares no total")
-    recorded = max(len(ROW.findall(text)) - 2, 0)
-    return recorded, int(match.group("total"))
+    rows = ROW.findall(text)[2:]
+    items = {row.split(" | ", 1)[0].strip() for row in rows}
+    return len(items), int(match.group("total"))
 
 
 def start(args: argparse.Namespace) -> str:
@@ -118,7 +124,7 @@ def start(args: argparse.Namespace) -> str:
 def record(args: argparse.Namespace) -> str:
     path = Path(args.log)
     text = read_log(path)
-    recorded, total = totals(text, path)
+    _, total = totals(text, path)
 
     lines = []
     note = f" ({cell(args.note)})" if args.note else ""
@@ -127,7 +133,8 @@ def record(args: argparse.Namespace) -> str:
             log.write(f"| {cell(item)} | {cell(args.decision)} | {cell(args.note)} |\n")
             lines.append(f"{cell(item)}: **{cell(args.decision)}**{note}")
 
-    return "\n".join([*lines, bar(recorded + len(args.item), total)])
+    recorded, _ = totals(read_log(path), path)
+    return "\n".join([*lines, bar(recorded, total)])
 
 
 def extend(args: argparse.Namespace) -> str:

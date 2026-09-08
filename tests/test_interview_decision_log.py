@@ -176,6 +176,15 @@ class TestRecord:
         row = log.read_text(encoding="utf-8").splitlines()[-1]
         assert row == r"| #1 a \| b | Fix now |  |"
 
+    def test_amending_an_already_recorded_item_does_not_move_the_bar(self, tmp_path):
+        log = start(tmp_path, total=2)
+        run("record", "--log", str(log), "--item", "#1", "--decision", "Fix now")
+
+        printed = run("record", "--log", str(log), "--item", "#1", "--decision", "Skip")
+
+        assert printed.splitlines()[-1] == "▰▱  1/2"
+        assert log.read_text(encoding="utf-8").count("| #1 |") == 2
+
     def test_missing_log_fails_loudly(self, tmp_path):
         with pytest.raises(decision_log.LogError, match="start"):
             run(
