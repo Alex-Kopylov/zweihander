@@ -1,8 +1,8 @@
+from conftest import REPO_ROOT
 import re
 from pathlib import Path
 
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
 README = REPO_ROOT / "README.md"
 EXPECTED_CATALOG_HEADINGS = [
     "General User Productivity",

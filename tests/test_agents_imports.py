@@ -1,7 +1,7 @@
+from conftest import REPO_ROOT
 from pathlib import Path
 
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
 
 
 def test_every_agents_file_has_claude_bridge() -> None:

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Select Agent Patterns"
+  short_description: "Select LLM agent design patterns"
+  default_prompt: "Use $select-agent-patterns to choose suitable patterns for this LLM workflow."

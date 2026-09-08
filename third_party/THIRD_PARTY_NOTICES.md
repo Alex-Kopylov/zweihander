@@ -139,3 +139,37 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+## Agent Skills Specification
+
+The file
+`plugins/ai-assistant-ops/skills/adapt-skill-for-ai-harness/references/agent-skills-specification.md`
+is a copy of the Agent Skills format specification, kept locally so the
+adaptation skill reads the specification it renders against instead of the
+network.
+
+- Upstream: https://github.com/agentskills/agentskills
+- Source document: https://agentskills.io/specification.md
+- Retrieved: 2026-08-26
+- Author: Anthropic, PBC
+- License: Apache-2.0
+- Change from upstream: the site's "Documentation Index" preamble block is
+  removed; the specification text itself is unmodified.
+
+### Apache License 2.0 Notice
+
+Copyright 2025 Anthropic, PBC
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not
+use this file except in compliance with the License. You may obtain a copy of
+the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+License for the specific language governing permissions and limitations under
+the License.
+
+The complete license text is in [agentskills-LICENSE.txt](agentskills-LICENSE.txt).

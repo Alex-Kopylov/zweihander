@@ -1,9 +1,9 @@
+from conftest import REPO_ROOT
 import json
 import re
 from pathlib import Path
 
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
 PLUGIN_ROOT = REPO_ROOT / "plugins" / "ai-assistant-ops"
 SKILL_ROOT = PLUGIN_ROOT / "skills" / "improve-skill"
 SKILL_FILE = SKILL_ROOT / "SKILL.md"
