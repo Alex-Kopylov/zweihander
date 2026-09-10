@@ -81,7 +81,7 @@ Alternative — render on a release branch/CI publish: rejected; both marketplac
 
 ### D6. CI
 
-- PR-gate workflow: full build (stage 1 + stage 2), then `git diff --exit-code` over the whole tree (catches stale `dist/` and stale generated files wherever they live), then `uv run pytest tests`.
+- PR-gate workflow: `uv run python -m plugin_maintenance.verify` over the whole tree (catches stale `dist/` and stale generated files wherever they live), then `uv run pytest tests`. Verify builds a copy of the tree and compares the copy back rather than building in place and diffing: an in-place build answers the question only in a clean checkout, because by the time the diff runs the build has already repaired the drift it was meant to report. Comparing a copy needs no clean checkout, so CI and a developer mid-edit run one command, not two implementations of one check.
 - Weekly mermaid job: fetch the upstream snapshot, delete the temporary checkout, run the same full build, then open a pull request with the combined `plugins/` + `dist/` changes — no direct pushes. The PR passes the standard gate like any other change.
 - The old mermaid PR-validation job dissolves into the gate: one build, one diff check.
 
