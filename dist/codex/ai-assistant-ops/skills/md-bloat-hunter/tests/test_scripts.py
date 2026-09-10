@@ -237,7 +237,7 @@ def test_measure_size_marks_hard_budget_exceeded(tmp_path: Path) -> None:
 
 def test_size_budget_markdown_delegates_calculation_to_script() -> None:
     markdown_files = [
-        SKILL_DIR / "SKILL.md",
+        SKILL_DIR / "SKILL.md.j2",
         SKILL_DIR / "agents" / "size-budget-reporter.md",
         SKILL_DIR / "docs" / "SPEC.md",
     ]
@@ -259,7 +259,7 @@ def test_size_budget_markdown_delegates_calculation_to_script() -> None:
 
 
 def test_tiktoken_optional_requirement_uses_compatibility_frontmatter() -> None:
-    skill_text = (SKILL_DIR / "SKILL.md").read_text(encoding="utf-8")
+    skill_text = (SKILL_DIR / "SKILL.md.j2").read_text(encoding="utf-8")
     frontmatter = skill_text.split("---", 2)[1]
 
     assert "compatibility:" in frontmatter
