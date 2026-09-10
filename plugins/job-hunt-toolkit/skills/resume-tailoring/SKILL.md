@@ -32,7 +32,7 @@ Depending on who you are as an AI agent, load exactly one metadata-linked refere
 2. Resume library location (defaults to `<workspace>/library/` where workspace = `${JOB_HUNT_WORKSPACE:-$HOME/Documents/job_seeking}`)
 
 **Sub-skill dependencies:**
-- `job-hunt-toolkit:export-pdf` - HTML → PDF export via `${PLUGIN_ROOT}/skills/export-pdf/scripts/html-to-pdf.sh`
+- `job-hunt-toolkit:export-pdf` - Typst → PDF export via `${PLUGIN_ROOT}/skills/export-pdf/scripts/typst-to-pdf.sh`
 
 ## Workflow
 
@@ -43,7 +43,7 @@ Before starting, check if the user provides 2+ JDs, mentions "multiple jobs", "b
 ### Phase 0: Library Initialization
 
 1. Locate resume library directory (user-provided or `${JOB_HUNT_WORKSPACE:-$HOME/Documents/job_seeking}/library/`)
-2. Scan for HTML and markdown files
+2. Scan for Typst and markdown files
 3. Parse each resume: extract roles, bullets, skills, education
 4. Build in-memory experience database - tag each bullet with themes, metrics, keywords, and source resume
 5. Record library size for the final report
@@ -89,13 +89,13 @@ Follow scoring from `references/matching-strategies.md`.
 
 ### Phase 5: Generation
 
-Output directory: `${JOB_HUNT_WORKSPACE:-$HOME/Documents/job_seeking}/<company>/`
+Output directory: `${JOB_HUNT_WORKSPACE:-$HOME/Documents/job_seeking}/jobs/<company>/`
 Filename format: `<First>_<Last>_<Role>_CV.<ext>` — NO company name in the filename.
 
-**Edit-guard:** If this skill needs to modify the master HTML at `${JOB_HUNT_WORKSPACE:-$HOME/Documents/job_seeking}/<First>_<Last>_<Role>_CV.html`, ask the user for explicit confirmation before doing so.
+**Edit-guard:** If this skill needs to modify the master Typst source at `${JOB_HUNT_WORKSPACE:-$HOME/Documents/job_seeking}/<First>_<Last>_<Role>_CV.typ`, ask the user for explicit confirmation before doing so.
 
-1. **HTML:** Using the master CV template, compile mapped content and save it as `<First>_<Last>_<Role>_CV.html` in the company subfolder.
-2. **PDF:** Invoke the `job-hunt-toolkit:export-pdf` skill for the generated HTML. Always use absolute paths.
+1. **Typst:** Using the master CV template, compile mapped content and save it as `<First>_<Last>_<Role>_CV.typ` in the company subfolder.
+2. **PDF:** Invoke the `job-hunt-toolkit:export-pdf` skill for the generated Typst source. Always use absolute paths.
 3. **Review:** Present the completed files, remaining gaps, and every substantive rewrite using `Before | After | Why`.
 
 ### Phase 6: Library Update
@@ -111,7 +111,7 @@ Keep tailored files in the company directory. Update the master library only whe
 | Research failures (WebSearch unavailable, sparse results) | Fall back to JD-only analysis and note the limitation |
 | Vague JD | Record assumptions and proceed with best effort |
 | Content exceeds page limit | Rank bullets by relevance, prune the lowest-scored content, and record the decision |
-| PDF export failure | HTML is still saved; report error with exit code; user can use the `job-hunt-toolkit:export-pdf` skill separately |
+| PDF export failure | The Typst source is still saved; report error with exit code; user can use the `job-hunt-toolkit:export-pdf` skill separately |
 
 ## Hard Rules
 
@@ -123,6 +123,6 @@ Keep tailored files in the company directory. Update the master library only whe
 ## Completion Check
 
 - [ ] Company output directory exists
-- [ ] HTML tailored to the target vacancy and role is saved in that directory
-- [ ] PDF was generated from that HTML by the `job-hunt-toolkit:export-pdf` script; never create or edit PDF content directly
+- [ ] A Typst source tailored to the target vacancy and role is saved in that directory
+- [ ] PDF was generated from that Typst source by the `job-hunt-toolkit:export-pdf` script; never create or edit PDF content directly
 - [ ] Final response shows `Before | After | Why` for substantive changes

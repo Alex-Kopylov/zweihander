@@ -1,10 +1,8 @@
 # Testing Anti-Patterns
 
-**Load this reference when:** writing or changing tests, adding mocks, or tempted to add test-only methods to production code.
-
 ## Overview
 
-Tests must verify real behavior, not mock behavior. Mocks are a means to isolate, not the thing being tested.
+Tests must verify real behavior, not mock behavior. Mocks isolate; they are not what you test.
 
 **Core principle:** Test what the code does, not what the mocks do.
 
@@ -194,7 +192,7 @@ const mockResponse = {
 - **Tests pass but integration fails** - Mock incomplete, real API complete
 - **False confidence** - Test proves nothing about real behavior
 
-**The Iron Rule:** Mock the COMPLETE data structure as it exists in reality, not just fields your immediate test uses.
+**The Iron Rule:** Mock the COMPLETE data structure, not just fields your immediate test uses.
 
 **The fix:**
 ```typescript
@@ -219,33 +217,10 @@ BEFORE creating mock responses:
     3. Verify mock matches real response schema completely
 
   Critical:
-    If you're creating a mock, you must understand the ENTIRE structure
+    Understand the ENTIRE structure before creating a mock.
     Partial mocks fail silently when code depends on omitted fields
 
   If uncertain: Include all documented fields
-```
-
-## Anti-Pattern 5: Integration Tests as Afterthought
-
-**The violation:**
-```
-✅ Implementation complete
-❌ No tests written
-"Ready for testing"
-```
-
-**Why this is wrong:**
-- Testing is part of implementation, not optional follow-up
-- TDD would have caught this
-- Can't claim complete without tests
-
-**The fix:**
-```
-TDD cycle:
-1. Write failing test
-2. Implement to pass
-3. Refactor
-4. THEN claim complete
 ```
 
 ## When Mocks Become Too Complex
@@ -278,7 +253,6 @@ TDD cycle:
 | Test-only methods in production | Move to test utilities |
 | Mock without understanding | Understand dependencies first, mock minimally |
 | Incomplete mocks | Mirror real API completely |
-| Tests as afterthought | TDD - tests first |
 | Over-complex mocks | Consider integration tests |
 
 ## Red Flags
