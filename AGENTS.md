@@ -70,6 +70,17 @@ uv run python -m plugin_maintenance.render --harness ClaudeCode --output dist/cl
 uv run python -m plugin_maintenance.render --harness Codex --output dist/codex
 ```
 
+To ask whether the tree is current without writing to it:
+
+```shell
+uv run python -m plugin_maintenance.verify
+```
+
+It builds a copy of the tree and compares the copy back, naming every path
+that drifted. CI runs this exact command, and because it touches neither the
+working tree nor the index it gives the same answer mid-edit — so it is also
+the check to run before committing.
+
 Harness-specific wording in skills lives in `.j2` templates that resolve every
 harness fact from a matrix under
 `plugins/ai-assistant-ops/skills/adapt-skill-for-ai-harness/references/`:
@@ -96,6 +107,7 @@ uv run python -m plugin_maintenance.build
 7. Run the tests and JSON validation before finishing:
 
 ```shell
+uv run python -m plugin_maintenance.verify
 uv run pytest tests
 jq empty .agents/plugins/marketplace.json .claude-plugin/marketplace.json
 find plugins dist -path '*/plugin.json' -print0 | xargs -0 jq empty

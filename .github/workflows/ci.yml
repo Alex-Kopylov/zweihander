@@ -22,13 +22,8 @@ jobs:
           version: latest
           enable-cache: true
 
-      - name: Run the full build
-        run: uv run python -m plugin_maintenance.build
-
       - name: Check the committed tree is current
-        run: |
-          git add -A
-          git diff --cached --exit-code
+        run: uv run python -m plugin_maintenance.verify
 
       - name: Run tests
         run: uv run pytest tests
