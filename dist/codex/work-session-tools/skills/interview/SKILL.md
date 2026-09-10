@@ -37,7 +37,7 @@ A selected group becomes one question in step 4. An unselected group splits back
 Run once, with the item total and a short name for this interview:
 
 ```
-scripts/decision_log.py start --total [N] --name "[short-name]"
+scripts/decision_log.sh start --total [N] --name "[short-name]"
 ```
 
 Keep the printed path. Every later call takes it back as `--log`. Then present:
@@ -87,7 +87,7 @@ Multi-select: false
 Record the answer before asking the next question:
 
 ```
-scripts/decision_log.py record --log "[path]" --decision "[decision]" --item "[#3 HIGH — Missing null check]"
+scripts/decision_log.sh record --log "[path]" --decision "[decision]" --item "[#3 HIGH — Missing null check]"
 ```
 
 Repeat `--item` once per item when one answer covers a group. Show the script output as it comes back — its last line is the progress bar:
@@ -97,14 +97,14 @@ Repeat `--item` once per item when one answer covers a group. Show the script ou
 ▰▰▰▱▱▱▱▱▱▱  3/10
 ```
 
-Never count addressed items yourself; the log holds the count. When new items appear, run `scripts/decision_log.py extend --log "[path]" --by [n]`, then add them to the queue and tell the user.
+Never count addressed items yourself; the log holds the count. When new items appear, run `scripts/decision_log.sh extend --log "[path]" --by [n]`, then add them to the queue and tell the user.
 
 ### 6. Review the Decision Log
 
 Nothing has been executed yet. Print the whole log:
 
 ```
-scripts/decision_log.py show --log "[path]"
+scripts/decision_log.sh show --log "[path]"
 ```
 
 Then ask via $request_user_input whether to execute it, amend a decision, or stop. Amending re-asks that item's question and records the new answer.

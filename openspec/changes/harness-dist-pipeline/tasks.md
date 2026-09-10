@@ -80,7 +80,7 @@ The whole change lands in one PR. Development is test-first (TDD): each behavior
 - [x] 10.1b Sweep every hand-written `argument-hint:` onto the global, renaming the four plain sources that carried one
 - [x] 10.2 Add the `config` metadata namespace for a skill's own runtime defaults, in the source policy test and the specs
 - [x] 10.3 Exempt a declared argument name from the `$name`-in-a-conditional policy check, with unit tests for the narrow exemption
-- [x] 10.4 Give the interview skill a `scripts/decision_log.py` that owns both the append-only log and the progress bar, with tests under `tests/`
+- [x] 10.4 Give the interview skill a `scripts/decision_log.sh` that owns both the append-only log and the progress bar, with tests under `tests/`
 - [x] 10.5 Rewrite `interview/SKILL.md.j2`: group questions before the walk, record every decision to the log, review the log, execute only after approval, delegate non-blocking work
 - [x] 10.6 Rewrite the frontmatter section of `adapt-skill-for-ai-harness` around the matrix, its forms, its contract, and the lookup script
 - [x] 10.7 Correct the matrix against the Codex parser and the Agent Skills specification: six portable fields stay top level (`allowed-tools` among them), add `license`, `compatibility`, and Codex's `metadata.short-description`, and record each note against the parser it came from
