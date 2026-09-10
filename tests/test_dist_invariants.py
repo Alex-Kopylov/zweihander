@@ -5,7 +5,7 @@ Files rendered from `.j2` sources carry no foreign harness vocabulary and no
 leftover Jinja markers; neither tree carries templates, legacy dispatch
 artifacts, foreign runtime metadata, or development files; published
 frontmatter stays inside each harness's portability boundary; consecutive
-builds are byte-identical.
+builds are byte-identical; the committed trees match a fresh render.
 """
 
 import json
@@ -14,6 +14,7 @@ from pathlib import Path
 
 import pytest
 
+from plugin_maintenance.build import stale_paths
 from plugin_maintenance.generate import run_generators
 from plugin_maintenance.render import (
     DIST_DIRS,
@@ -24,6 +25,7 @@ from plugin_maintenance.render import (
     frontmatter_lines,
     leftover_jinja_markers,
     render_tree,
+    tree_snapshot,
 )
 
 
@@ -251,17 +253,6 @@ def test_codex_orchestration_patterns_use_current_spawn_fields():
         assert foreign_marker not in text
 
 
-def tree_snapshot(root: Path) -> dict[str, tuple[bytes, int]]:
-    return {
-        path.relative_to(root).as_posix(): (
-            path.read_bytes(),
-            path.stat().st_mode & 0o777,
-        )
-        for path in root.rglob("*")
-        if path.is_file()
-    }
-
-
 def test_consecutive_full_builds_are_byte_identical(tmp_path):
     snapshots = []
     for build_dir in (tmp_path / "first", tmp_path / "second"):
@@ -271,3 +262,8 @@ def test_consecutive_full_builds_are_byte_identical(tmp_path):
         snapshots.append(tree_snapshot(build_dir))
 
     assert snapshots[0] == snapshots[1]
+
+
+def test_committed_trees_match_a_fresh_render():
+    """No hand edit survives in `dist/`: every byte comes from the renderer."""
+    assert stale_paths() == []

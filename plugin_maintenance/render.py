@@ -184,6 +184,18 @@ def ignored_path(repo_root: Path) -> Callable[[Path], bool]:
     return lambda path: spec.match_file(path.relative_to(repo_root))
 
 
+def tree_snapshot(root: Path) -> dict[str, tuple[bytes, int]]:
+    """Every file under `root` by content and mode, for comparing two trees."""
+    return {
+        path.relative_to(root).as_posix(): (
+            path.read_bytes(),
+            path.stat().st_mode & 0o777,
+        )
+        for path in root.rglob("*")
+        if path.is_file()
+    }
+
+
 def raw_literals(template_text: str) -> list[str]:
     """Return each raw block's text exactly as it reaches the rendered output.
 
