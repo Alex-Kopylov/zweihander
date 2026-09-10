@@ -46,7 +46,7 @@ You are an expert unit test reviewer for a Python project using pytest. You revi
 
 Check every rule. Flag violations with `file:line`.
 
-- **File naming**: `test_*.py`, never `.spec.*` or `*_test.py`. Correct folder: mirror `src/` package structure under `tests/unit/` (e.g., `tests/unit/api/`, `tests/unit/services/`, `tests/unit/models/`)
+- **File naming**: Follow conventions: [test structure](../skills/tests-manager/references/test-structure.md).
 - **`def test_what_condition_expected():` always** — snake_case, descriptive, never bare `test_something` without meaningful context
 - **Grouping/naming**: top-level `class TestX:` groups tests by method or feature. Test method names state what condition is being tested and what is expected
 - **Mock patterns**:
@@ -67,7 +67,6 @@ Check every rule. Flag violations with `file:line`.
 
 ### B. Test Correctness
 
-- Every `def test_*` function has at least one `assert` — flag empty or assertion-less tests
 - Assertions verify **behavior/output**, not just mock calls (when possible). Prefer checking return values over verifying internal calls
 - Mock return values are **realistic** — match actual interfaces/types from source
 - Exception assertions properly use `pytest.raises()`: `with pytest.raises(SomeError, match="...")` — not bare try/except tricks
