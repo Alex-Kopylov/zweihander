@@ -24,11 +24,17 @@ Consolidate if scattered. Number sequentially from 1.
 
 Two items belong to one group when a single answer resolves both: the same root cause, the same convention, or the same repository-wide rule.
 
-When at least one group exists, ask once via Skill(AskUserQuestion), before any item question:
+Before any item question, confirm candidate groups via Skill(AskUserQuestion).
+
+Offer two to four candidate groups per question:
 
 - `question`: `"Some items share one decision. Which groups do you want to answer once?"`
 - `options`: one per group — label the shared decision, list the item indexes in the description
 - `multiSelect`: true
+
+Repeat for additional groups. When only one candidate group remains, ask a
+single-choice question with "Group together (Recommended)" and "Keep separate"
+instead, using `multiSelect: false`. If the user wants no groups, keep all items separate.
 
 A selected group becomes one question in step 4. An unselected group splits back into one question per item. Skip this step when no two items share a decision.
 

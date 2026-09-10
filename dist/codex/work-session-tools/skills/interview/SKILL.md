@@ -24,11 +24,17 @@ Consolidate if scattered. Number sequentially from 1.
 
 Two items belong to one group when a single answer resolves both: the same root cause, the same convention, or the same repository-wide rule.
 
-When at least one group exists, ask once via $request_user_input, before any item question:
+Before any item question, confirm candidate groups via $request_user_input.
 
-- `question`: `"Some items share one decision. Which groups do you want to answer once?"`
-- `options`: one per group — label the shared decision, list the item indexes in the description
-- `multiSelect`: true
+Ask one single-choice question per candidate group and at most three questions per call:
+
+- `id`: a unique group identifier, such as `group_1`
+- `header`: a short group label, at most 12 characters
+- `question`: name the shared decision and item indexes, then ask whether to discuss them together
+- `options`: exactly two choices — "Group together (Recommended)" and "Keep separate", each with a brief description
+
+Repeat for additional groups. If the tool is unavailable, ask the same question
+in chat and wait for the answer before continuing.
 
 A selected group becomes one question in step 4. An unselected group splits back into one question per item. Skip this step when no two items share a decision.
 
@@ -79,7 +85,6 @@ Options:
   Preview: "def parse_config(path: str) -> Config:\n    config = load_yaml(path)\n    if config is None:\n        raise ConfigError(f\"Missing: {path}\")\n    return Config(timeout=config.timeout)"
 - Label: "Skip"
   Description: "Accept the risk"
-Multi-select: false
 ```
 
 ### 5. Record Each Decision
