@@ -62,6 +62,7 @@ kanban
     aao_agents_md_improver[agents-md-improver]
     aao_ai_setup_audit[ai-setup-audit]
     aao_ai_insights_hunter[ai-insights-hunter]
+    aao_docs_language_review[docs-language-review]
     aao_md_bloat_hunter[md-bloat-hunter]
     aao_improve_skill[improve-skill]
     aao_adapt_skill_for_ai_harness[adapt-skill-for-ai-harness]
@@ -402,7 +403,7 @@ and
 
 **Use when:** you want to audit assistant instructions, improve AGENTS.md files,
 improve existing skills, adapt skills for assistant harnesses, capture useful
-session insights, or reduce Markdown bloat.
+session insights, review documentation language, or reduce Markdown bloat.
 
 **Skills**
 
@@ -412,6 +413,7 @@ session insights, or reduce Markdown bloat.
 | `agents-md-improver` | Audit and improve repository AGENTS.md files. |
 | `ai-insights-hunter` | Extract reusable decisions, patterns, and preferences from a session. |
 | `ai-setup-audit` | Audit assistant configuration files for conflicts and bloat. |
+| `docs-language-review` | Review or rewrite Markdown documentation using plain-language and cognitive-accessibility standards. |
 | `improve-skill` | Improve existing skills through eval feedback, baseline comparison, iteration, and trigger checks. |
 | `md-bloat-hunter` | Trim redundancy, verbosity, and filler in Markdown. |
 
