@@ -1,16 +1,16 @@
 {
   "name": "work-session-tools",
-  "version": "0.2.2",
-  "description": "Productivity and orchestration inside an assistant session.",
+  "version": "0.4.1",
+  "description": "Productivity, orchestration, and handoffs within an assistant session.",
   "author": {
     "name": "Alex Kopylov"
   },
-  "license": "UNLICENSED",
+  "license": "Apache-2.0",
   "skills": "./skills/",
   "interface": {
     "displayName": "Work Session Tools",
-    "shortDescription": "Session productivity and orchestration",
-    "longDescription": "Productivity and orchestration inside an assistant session, including daily summaries, guided interviews, team design, and task management.",
+    "shortDescription": "Session productivity, orchestration, and handoffs",
+    "longDescription": "Productivity and orchestration inside an assistant session, including daily summaries, guided interviews, team design, task management, and session handoffs.",
     "developerName": "Alex Kopylov",
     "category": "Productivity",
     "capabilities": [
@@ -21,7 +21,8 @@
     "defaultPrompt": [
       "Create a daily note.",
       "Walk through these findings one by one.",
-      "Design a multi-agent team for this project."
+      "Design a multi-agent team for this project.",
+      "Create a handoff for the next session."
     ]
   }
 }

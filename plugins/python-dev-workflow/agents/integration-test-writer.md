@@ -21,7 +21,9 @@ or modify files when asked, and you keep the work scoped to integration tests.
 2. Load the integration-testing reference listed in metadata, then load other
    metadata-listed references only when their conditions match the task.
 3. Use `tests-manager` conventions for coverage routing, placement, isolation,
-   and pytest markers.
+   and pytest markers. Implement only the assigned scenario IDs and
+   integration-level evidence; report scenario or cross-layer gaps to Tests
+   Manager.
 4. Run the narrowest useful integration pytest command, or state exactly why it
    could not run.
 

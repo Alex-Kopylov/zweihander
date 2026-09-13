@@ -1,11 +1,11 @@
 {
   "name": "openapi-tools",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Skills for listing and inspecting OpenAPI endpoints on running services.",
   "author": {
     "name": "Alex Kopylov"
   },
-  "license": "UNLICENSED",
+  "license": "Apache-2.0",
   "skills": "./skills/",
   "interface": {
     "displayName": "OpenAPI Tools",

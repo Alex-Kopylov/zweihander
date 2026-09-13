@@ -2,7 +2,7 @@
 
 ## Overview
 
-Guidance for Redis unit and integration tests in Python projects using pytest: fixtures, isolation, fakeredis, testcontainers, pub/sub, Lua scripts, and concurrency.
+Redis unit and integration tests in Python with pytest: fixtures, isolation, fakeredis, testcontainers, pub/sub, Lua scripts, and concurrency.
 
 ## When to Load
 
@@ -14,16 +14,12 @@ intent:
 - Fixtures that create a `redis.Redis` client
 - Cache/session/queue services backed by Redis under test
 
-## Strategy Decision Matrix
+## Backend Choice
 
-| Strategy | Isolation | Speed | Production Parity | When to Choose |
-|---|---|---|---|---|
-| **fakeredis** | Full | Fastest | Low | Unit tests, no Docker available, CI speed critical |
-| **Separate Redis DB** | Good | Fast | High | Local dev with Redis already running |
-| **Testcontainers** | Full | Medium | Highest | Integration tests, CI with Docker |
-| **Key prefix** | Medium | Fast | High | Shared Redis, parallel test suites |
+Do not hand-roll Redis mocks. Use fakeredis and/or Testcontainers.
 
-Default recommendation: **fakeredis for unit tests**, **testcontainers for integration tests**.
+Mandatory read: `references/redis/fakeredis-vs-testcontainers.md` -- when to use
+which, and how to avoid testing everything twice.
 
 ## Fixture Patterns
 
@@ -70,54 +66,21 @@ def cache_service(redis_client):
     return CacheService(client=redis_client)
 ```
 
-### fakeredis for unit tests
-
-```python
-import pytest
-import fakeredis
-
-@pytest.fixture
-def mock_redis():
-    return fakeredis.FakeRedis(decode_responses=True)
-
-@pytest.fixture
-def cache_service(mock_redis):
-    from app.cache import CacheService
-    return CacheService(client=mock_redis)
-```
-
-Install: `uv add --dev fakeredis`
-
-### Testcontainers for integration tests
-
-```python
-import pytest
-from testcontainers.redis import RedisContainer
-
-@pytest.fixture(scope="session")
-def redis_container():
-    with RedisContainer("redis:7-alpine") as container:
-        yield container
-
-@pytest.fixture(scope="session")
-def redis_client(redis_container):
-    import redis
-    client = redis.Redis(
-        host=redis_container.get_container_host_ip(),
-        port=redis_container.get_exposed_port(6379),
-        decode_responses=True,
-    )
-    yield client
-    client.close()
-```
-
-Install: `uv add --dev testcontainers[redis]`
+Backend-specific fixtures live in `references/redis/fakeredis.md` and
+`references/redis/testcontainers.md`.
 
 ## Key Isolation Strategies
 
+These apply when tests point at a Redis that is already running -- a CI service
+container, or a local dev server. They are not an alternative to Testcontainers;
+they are how to share one server safely once you have it. If nothing is running
+yet, start a container instead of asking developers to install Redis.
+
 ### Separate DB index
 
-Use `db=15` (or any unused index 1-15) for tests. Simple, fast, no key collisions. Limited to 16 DBs by default.
+Use `db=15` (or any unused index 1-15). Simple, fast, no key collisions, and
+`FLUSHDB` clears only that index. Limited to 16 DBs by default, and `SELECT` is
+unavailable on Redis Cluster.
 
 ### Key prefix with UUID
 
@@ -133,6 +96,10 @@ def test_prefix():
 
 Wrap the client to auto-prefix all keys. See
 `references/redis/isolation-patterns.md` for the full `PrefixedRedis` wrapper.
+
+Prefer a DB index. A wrapper only prefixes the commands it implements, so any
+call the code under test makes through an unwrapped method escapes isolation
+silently. Reach for prefixes only when parallel jobs must share one DB.
 
 ## Test Structure
 
@@ -154,7 +121,8 @@ class TestCacheIntegration:
     ...
 ```
 
-Configure in `pyproject.toml`:
+Configure in `pyproject.toml` (see
+[pytest markers](https://docs.pytest.org/en/stable/example/markers.html)):
 
 ```toml
 [tool.pytest.ini_options]
@@ -214,31 +182,32 @@ services:
 ```
 
 Set env vars `REDIS_HOST=localhost` and `REDIS_PORT=6379`; see
-`references/redis/ci-config.md` for GitHub Actions and GitLab CI examples. Use
-`references/redis/azure-devops-ci.md` for Azure DevOps Pipelines.
-
-## Dependencies
-
-| Package | Purpose | Install |
-|---|---|---|
-| `redis` | Redis client | `uv add redis` |
-| `fakeredis` | In-memory mock | `uv add --dev fakeredis` |
-| `testcontainers[redis]` | Disposable containers | `uv add --dev testcontainers[redis]` |
+`references/redis/ci-config.md` (GitHub Actions, GitLab CI) and
+`references/redis/azure-devops-ci.md` (Azure DevOps Pipelines).
 
 ## Additional Resources
 
 ### Reference Files
 
+- **`references/redis/fakeredis-vs-testcontainers.md`** -- Which backend to use when, and the shared contract-suite pattern
+- **`references/redis/fakeredis.md`** -- Install, extras, fixtures, and the limitations that force a real-Redis test
+- **`references/redis/testcontainers.md`** -- Install, fixtures, image pinning, Ryuk, and cost control
 - **`references/redis/isolation-patterns.md`** -- Key-prefix wrapper, DB-per-suite rotation, and parallel-safe patterns
 - **`references/redis/ci-config.md`** -- GitHub Actions and GitLab CI service container configs
 - **`references/redis/azure-devops-ci.md`** -- Azure DevOps Pipelines service container configs
 
 ### Example Files
 
-Working test examples in `examples/`:
-
 - **`examples/redis/test_cache.py`** -- CRUD, TTL, increment, hash operations, concurrency
 - **`examples/redis/test_pubsub.py`** -- Channel subscribe, pattern subscribe
 - **`examples/redis/test_lua_scripts.py`** -- Rate limiter, atomic transfer scripts
 - **`examples/redis/conftest_fakeredis.py`** -- fakeredis-based conftest for unit tests
 - **`examples/redis/conftest_testcontainers.py`** -- testcontainers-based conftest for integration tests
+
+### External Documentation
+
+- [redis-py](https://redis-py.readthedocs.io/en/stable/) -- official Python client
+- [pytest fixtures](https://docs.pytest.org/en/stable/how-to/fixtures.html) and [markers](https://docs.pytest.org/en/stable/example/markers.html)
+- [Redis command reference](https://redis.io/docs/latest/commands/)
+
+Backend library docs live in the per-library references above.

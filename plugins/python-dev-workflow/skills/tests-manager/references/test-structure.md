@@ -2,8 +2,9 @@
 
 ## Rule
 
-Mirror the `src/` package structure under both `tests/unit/` and
-`tests/integration/`.
+Mirror the `src/` package structure under each applicable `tests/unit/` and
+`tests/integration/` suite. Organize `tests/e2e/` by externally observable
+journey instead of source module.
 
 Create folders only when adding tests for that area; do not pre-create empty
 trees.
@@ -17,6 +18,9 @@ tests/
     __init__.py
     users.py
   fixtures/
+  e2e/
+    checkout/
+      test_checkout.py
   unit/
     api/
       routes/

@@ -6,10 +6,13 @@ Write integration tests for real wiring: routes, dependency injection, services,
 persistence/cache resources, and resource lifecycle behavior.
 
 Place endpoint integration tests under mirrored `tests/integration/api/...`
-paths. Add small integration coverage for one happy path per endpoint or major
-flow, plus failures that depend on route, dependency, or resource wiring.
-Cover route -> dependencies -> service -> persistence/cache wiring through the
-real route stack.
+paths. Cover the wiring-sensitive success and failure paths assigned by Tests
+Manager through the real route -> dependencies -> service ->
+persistence/cache stack.
+
+Integration tests may enter through a route, but they prove component wiring
+and resource semantics. A complete externally observable business journey
+belongs to E2E coverage.
 
 ## Boundaries
 
