@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout current repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v8.1.0
+        with:
+          version: latest
+          enable-cache: true
+
+      - name: Set up Python 3.12
+        run: uv python install 3.12
+
+      - name: Validate marketplace manifests
+        run: jq empty .agents/plugins/marketplace.json .claude-plugin/marketplace.json
+
+      - name: Validate plugin manifests
+        run: find plugins -path '*/plugin.json' -print0 | xargs -0 jq empty
+
+      - name: Check whitespace errors
+        if: github.event_name == 'pull_request'
+        run: git diff --check ${{ github.event.pull_request.base.sha }} HEAD
+
+      - name: Run tests
+        run: uv run --python 3.12 pytest tests
