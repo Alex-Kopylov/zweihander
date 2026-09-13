@@ -22,7 +22,7 @@ Superpowers distribution.
 | `dev-workflow:dispatching-parallel-agents` | Copied skill | https://github.com/obra/superpowers/tree/main/skills/dispatching-parallel-agents |
 | `dev-workflow:requesting-code-review` | Copied skill | https://github.com/obra/superpowers/tree/main/skills/requesting-code-review |
 | `dev-workflow:systematic-debugging` | Copied skill | https://github.com/obra/superpowers/tree/main/skills/systematic-debugging |
-| `dev-workflow:test-driven-development` | Copied skill | https://github.com/obra/superpowers/tree/main/skills/test-driven-development |
+| `python-dev-workflow:tests-manager` | Test-first process absorbed from the formerly separate `dev-workflow:test-driven-development` copied skill | https://github.com/obra/superpowers/tree/main/skills/test-driven-development |
 | `dev-workflow:using-git-worktrees` | Copied skill | https://github.com/obra/superpowers/tree/main/skills/using-git-worktrees |
 | `dev-workflow:verification-before-completion` | Copied skill | https://github.com/obra/superpowers/tree/main/skills/verification-before-completion |
 
@@ -49,6 +49,25 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+## Matt Pocock Skills
+
+The following `work-session-tools` skills were copied from Matt Pocock's skills
+repository and adapted for this marketplace.
+
+| Local skill | Upstream source |
+|---|---|
+| `work-session-tools:handoff` | https://github.com/mattpocock/skills/tree/main/skills/productivity/handoff |
+| `work-session-tools:wait-what` | https://github.com/mattpocock/skills/tree/main/skills/productivity/wait-what |
+
+- Upstream: https://github.com/mattpocock/skills
+- Synced commit: `84fdeffd12f2ee307994d1eb6feb48173b6e0502`
+- Author: Matt Pocock
+- License: MIT
+
+### MIT License Notice
+
+See [mattpocock-skills-LICENSE.txt](mattpocock-skills-LICENSE.txt).
 
 ## Hermes Agent-Derived Research Skills
 
