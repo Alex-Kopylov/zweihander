@@ -33,14 +33,16 @@ The marketplace install identifier is `zweihander`; the display name is
 2. Update both runtime manifests when plugin metadata changes.
 3. Update both marketplace files when adding, removing, renaming, or recategorizing plugins.
 4. Update `README.md` when user-facing install, usage, or catalog information changes.
-5. Run JSON validation before finishing:
+5. Keep `third_party/` links, notices, and license copies current when
+   third-party material changes.
+6. Run JSON validation before finishing:
 
 ```shell
 jq empty .agents/plugins/marketplace.json .claude-plugin/marketplace.json
 find plugins -path '*/plugin.json' -print0 | xargs -0 jq empty
 ```
 
-6. Run Markdown whitespace checks before finishing:
+7. Run Markdown whitespace checks before finishing:
 
 ```shell
 git diff --check

@@ -41,37 +41,40 @@ Everything else — including **hyphens** — is permitted where the segment rul
 
 | Example | Good or bad | Why |
 |---|---|---|
-| `Alex_Smith_ML_Engineer_CV.pdf` | Good | Clear candidate, role, doc type |
-| `Alex_Smith_AI-LLM_Engineer_CV.pdf` | Good | Hyphen within a segment is fine |
+| `Jane_Doe_ML_Engineer_CV.pdf` | Good | Clear candidate, role, doc type |
+| `Jane_Doe_AI-LLM_Engineer_CV.pdf` | Good | Hyphen within a segment is fine |
 | `cv.pdf` | Bad | Invisible in a recruiter's Downloads folder |
 | `resume-final-v2-ACTUAL-FINAL.pdf` | Bad | Signals chaos and poor attention to detail |
 | `Lastname Firstname CV AI \| LLM \| ML Engineer.pdf` | Bad | Spaces and pipes from deny-list |
 | `Lastname Firstname CV AI, LLM, Machine Learning Engineer, Data Scienetist.pdf` | Bad | Spaces, commas from deny-list; typo; too long |
-| `Alex_Smith_LLM_Engineer_CV_OpenAI.pdf` | Bad | Company name in filename screams "tailored for you" |
+| `Jane_Doe_LLM_Engineer_CV_OpenAI.pdf` | Bad | Company name in filename screams "tailored for you" |
 | `resume_openai.pdf` | Bad | Cannot identify candidate from filename alone |
 | `FirstnameLastname_CV.pdf` | Bad | No role; CamelCase without segment separator |
 
 ## Company folder naming
 
-Lowercase. No spaces. No characters from the deny-list. Hyphens are allowed.
+All company folders live under `jobs/`. Slug: lowercase alphanumerics separated by single underscores. No spaces, no hyphens, no uppercase.
 
-```
-acme-robotics/
-acme_robotics/
-openai/
-anthropic/
-deep-mind/
-hugging-face/
+```bash
+# Validate a slug before creating jobs/<slug>/
+slug="acme_robotics"
+[[ "$slug" =~ ^[a-z0-9]+(_[a-z0-9]+)*$ ]] && echo ok || echo "bad slug: $slug"
 ```
 
-Both underscore and hyphen forms are acceptable. Pick one style and stay consistent within a workspace.
+```
+jobs/acme_robotics/
+jobs/openai/
+jobs/anthropic/
+jobs/deep_mind/
+jobs/hugging_face/
+```
 
 ## Examples
 
-### Master (at workspace root) — HTML + PDF pair, same stem
+### Master (at workspace root) — Typst + PDF pair, same stem
 
 ```
-<First>_<Last>_<Role>_CV.html
+<First>_<Last>_<Role>_CV.typ
 <First>_<Last>_<Role>_CV.pdf
 ```
 
@@ -80,12 +83,12 @@ Both underscore and hyphen forms are acceptable. Pick one style and stay consist
 Same filename shape as master — the role may shift to match the JD, but no company tag:
 
 ```
-openai/<First>_<Last>_LLM_Engineer_CV.html
-openai/<First>_<Last>_LLM_Engineer_CV.pdf
-anthropic/<First>_<Last>_AI_Engineer_CV.html
-anthropic/<First>_<Last>_AI_Engineer_CV.pdf
-acme-robotics/<First>_<Last>_Senior_ML_Engineer_CV.html
-acme-robotics/<First>_<Last>_Senior_ML_Engineer_CV.pdf
+jobs/openai/<First>_<Last>_LLM_Engineer_CV.typ
+jobs/openai/<First>_<Last>_LLM_Engineer_CV.pdf
+jobs/anthropic/<First>_<Last>_AI_Engineer_CV.typ
+jobs/anthropic/<First>_<Last>_AI_Engineer_CV.pdf
+jobs/acme_robotics/<First>_<Last>_Senior_ML_Engineer_CV.typ
+jobs/acme_robotics/<First>_<Last>_Senior_ML_Engineer_CV.pdf
 ```
 
 ### Cover letters

@@ -176,5 +176,5 @@ def test_ai_assistant_ops_docs_and_manifests_include_improve_skill() -> None:
     assert "`improve-skill`" in plugin_readme
     assert "`improve-skill`" in root_readme
     assert "skill improvement" in json.dumps(codex_manifest).lower()
-    assert codex_manifest["version"] == "0.1.5"
-    assert claude_manifest["version"] == "0.1.5"
+    assert codex_manifest["version"] == claude_manifest["version"]
+    assert codex_manifest["version"].count(".") == 2

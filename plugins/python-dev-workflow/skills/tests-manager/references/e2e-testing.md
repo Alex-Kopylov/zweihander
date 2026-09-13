@@ -1,0 +1,33 @@
+# E2E Testing
+
+## Scope
+
+Write E2E tests for externally observable business journeys through the public
+entrypoint and the real system-owned stack. Prove the outcome a user or external
+consumer can observe, not internal implementation details.
+
+Follow an existing project convention. Otherwise organize journeys under
+`tests/e2e/<journey>/test_<flow>.py`; E2E paths follow business flows rather
+than mirroring source modules.
+
+Use only local, test, or development resources; never point E2E tests at
+production data or services. Follow the project's established test flow. If
+that flow or its safe resource boundary is unclear, stop immediately. Do not
+write or run E2E tests; ask the user to confirm both before proceeding.
+
+## Boundaries
+
+- Use the real application, public interface, and system-owned dependencies.
+- Replace only uncontrollable external systems at their boundary, using an
+  existing sandbox or deterministic substitute, and report that boundary.
+- Use isolated, uniquely addressable test data with reliable cleanup or
+  rollback.
+- Wait for observable conditions instead of sleeping for arbitrary durations.
+- Assert public responses, persisted outcomes, emitted events, or other
+  externally visible state.
+- Do not assert internal mock calls as proof that the journey works.
+- Do not duplicate integration wiring cases or unit branch matrices.
+
+Mark E2E tests with `pytestmark = pytest.mark.e2e` when the project uses
+markers. Reuse the project's runner and fixtures rather than adding a new test
+stack for this layer.

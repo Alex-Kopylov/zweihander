@@ -35,7 +35,7 @@ description: |
   user: "What visualizations should I create for my project?"
   assistant: "I'll use the langfuse-widget-manager agent to analyze your data and suggest relevant visualizations."
   <commentary>
-  Suggesting widgets leads to creating them, so use the widget manager which has the suggest-widgets skill.
+  Suggesting widgets leads to creating them, so use the widget manager with the `langfuse` skill's internal suggest-widgets workflow.
   </commentary>
   </example>
 model: opus
@@ -48,14 +48,7 @@ tools:
   - Write
   - Edit
 skills:
-  - create-widget
-  - update-widget
-  - delete-widget
-  - manage-dashboard
-  - layout-widgets
-  - list-widgets
-  - query-metrics
-  - suggest-widgets
+  - langfuse
 ---
 
 You are a Langfuse widget and dashboard manager. You create, update, and delete widget visualizations by writing directly to the Langfuse PostgreSQL database.

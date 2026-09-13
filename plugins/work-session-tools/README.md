@@ -1,3 +1,3 @@
 # work-session-tools
 
-Productivity and orchestration inside an assistant session.
+Productivity, orchestration, and handoffs within an assistant session.

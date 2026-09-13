@@ -9,5 +9,5 @@ Use only when discovery reports `claude-code-plugin-manifest`.
 ## Edit Rules
 
 - Update only the Claude Code manifest `"version": "X.Y.Z"` field.
-- Keep confirmation scoped to discovered files and loaded references; do not load sibling-runtime rules unless discovery reports them separately.
+- Keep edits scoped to discovered files and loaded references; do not load sibling-runtime rules unless discovery reports them separately.
 - Validate changed JSON with `jq empty`.

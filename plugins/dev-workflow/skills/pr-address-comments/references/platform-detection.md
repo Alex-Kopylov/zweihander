@@ -9,7 +9,7 @@ Determine the platform from the origin URL or PR link:
 | `dev.azure.com` or `visualstudio.com` | Azure DevOps | `platforms/azure-devops.md` |
 | `github.com` | GitHub | `platforms/github.md` |
 
-If the platform cannot be determined, ask the user via AskUserQuestion.
+If the platform cannot be determined, ask the user.
 
 ## Auto-Detecting PR from Current Branch
 
@@ -18,7 +18,7 @@ If the platform cannot be determined, ask the user via AskUserQuestion.
 3. Run `git branch --show-current`
 4. Use the platform-specific PR lookup (see platform files) to find open PRs from this branch
 5. If exactly one PR found — use it
-6. If multiple — present via AskUserQuestion
+6. If multiple — ask the user to choose one
 7. If none — ask for the PR link
 
 ## Parsing PR URLs

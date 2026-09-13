@@ -1,11 +1,18 @@
 ---
 name: task-management
 description: This skill should be used when the user asks to "track tasks", "create a todo list", "manage background tasks", "use TaskCreate", "orchestrate agents", "run tasks in parallel", "break this into tasks", "track progress", "create a checklist", "plan steps", "divide work into subtasks", or when working on multi-step tasks. Also activates when the user mentions TaskCreate, TaskGet, TaskList, TaskUpdate, TaskOutput, or TaskStop.
+metadata:
+  ai-assistant-harness-adaptation.claude-code: references/ai-assistant-harnesses/claude-code.md
+  ai-assistant-harness-adaptation.codex: references/ai-assistant-harnesses/codex.md
 ---
 
 # Task Management & Background Agent Orchestration
 
 Use native task tools to track work, manage dependencies, and orchestrate background agents.
+
+## Harness Adaptation
+
+Depending on who you are as an AI agent, load exactly one metadata-linked reference and skip every non-matching file.
 
 ## When to Use Task Tools
 

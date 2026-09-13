@@ -8,81 +8,112 @@ API exploration, development workflows, assistant operations, research notes,
 cloud storage, local automation, runtime app verification, and job-search
 workflows.
 
+## About
+
+I am currently working on AI harness tools and trying to stay ahead of the curve.
+
+I am open to new opportunities in AI engineering, LLM applications, and developer
+tools.
+
+[✉️ Email me](mailto:alexkopylov123@gmail.com)
+
+## Selected Projects
+
+- [Zweihander](https://github.com/Alex-Kopylov/zweihander) — an agent-plugin marketplace for Codex and Claude Code.
+- [AI-Ready Modern Python Template](https://github.com/Alex-Kopylov/ai-ready-modern-python-template) — a practical starting point for AI-ready Python projects.
+- [GH Babysitter](https://github.com/Alex-Kopylov/gh-babysitter) — GitHub workflow automation for keeping work moving.
+
+
 ## Plugin Catalog
 
+### General User Productivity
+
 ```mermaid
-flowchart TB
+kanban
+  job_hunt_toolkit[job-hunt-toolkit]
+    jht_init_workspace[init-workspace]
+    jht_new_application[new-application]
+    jht_resume_tailoring[resume-tailoring]
+    jht_cover_letter_writing[cover-letter-writing]
+    jht_export_pdf[export-pdf]
+    jht_prepare_to_send[prepare-to-send]
+    jht_submit_job_application[submit-job-application]
+  cloud_storage_tools[cloud-storage-tools]
+    cst_mega_cmd[mega-cmd]
+  research[research]
+    research_obsidian[obsidian]
+    research_llm_wiki[llm-wiki]
+  os_tools[os-tools]
+    os_loop_macos[loop_macos]
+```
 
-subgraph RowOne[" "]
-  direction LR
-  Langfuse["`**langfuse**
-  Trace exploration, datasets,
-  evaluators, dashboards, and experiments`"]:::langfuse
-  OpenAPITools["`**openapi-tools**
-  List and inspect OpenAPI endpoints
-  on running services`"]:::openapi
-  LLMApplicationDev["`**llm-application-dev**
-  Agent pattern selection and
-  schema-guided reasoning`"]:::llm
-  PythonDevWorkflow["`**python-dev-workflow**
-  Pytest, Redis test patterns,
-  Celery, and unit-test review agents`"]:::python
-  DevWorkflow["`**dev-workflow**
-  Commits, PRs, tickets, releases,
-  and review-comment workflows`"]:::dev
-end
+### General AI User Productivity
 
-subgraph RowTwo[" "]
-  direction LR
-  WorkSessionTools["`**work-session-tools**
-  Daily notes, task tracking,
-  interviews, and team planning`"]:::session
-  AIAssistantOps["`**ai-assistant-ops**
-  Assistant setup audits, skill improvement,
-  harness adaptation, and Markdown cleanup`"]:::ops
-  OSTools["`**os-tools**
-  Local macOS automation utilities
-  for assistant workflows`"]:::os
-  CloudStorageTools["`**cloud-storage-tools**
-  User-file storage workflows for
-  Dropbox, Drive, OneDrive, and MEGA`"]:::storage
-  JobHuntToolkit["`**job-hunt-toolkit**
-  Versioned job applications with
-  resume tailoring and PDF checks`"]:::job
-end
+```mermaid
+kanban
+  work_session_tools[work-session-tools]
+    wst_daily[daily]
+    wst_task_management[task-management]
+    wst_interview[interview]
+    wst_create_team[create-team]
+    wst_wait_what[wait-what]
+    wst_handoff[handoff]
+  ai_assistant_ops[ai-assistant-ops]
+    aao_agents_md_improver[agents-md-improver]
+    aao_ai_setup_audit[ai-setup-audit]
+    aao_ai_insights_hunter[ai-insights-hunter]
+    aao_md_bloat_hunter[md-bloat-hunter]
+    aao_improve_skill[improve-skill]
+    aao_adapt_skill_for_ai_harness[adapt-skill-for-ai-harness]
+  mermaid_diagrams[mermaid-diagrams]
+    md_mermaid[mermaid]
+    md_mermaid_lint[mermaid-lint]
+```
 
-subgraph RowThree[" "]
-  direction LR
-  RunAndVerifyApp["`**run-and-verify-app**
-  Launch apps, verify runtime behavior,
-  and record run recipes`"]:::runverify
-  MermaidDiagrams["`**mermaid-diagrams**
-  Mermaid generation,
-  syntax references, and linting`"]:::mermaid
-end
+### Programming
 
-Langfuse ~~~ OpenAPITools ~~~ LLMApplicationDev ~~~ PythonDevWorkflow ~~~ DevWorkflow
-WorkSessionTools ~~~ AIAssistantOps ~~~ Research ~~~ OSTools ~~~ CloudStorageTools ~~~ JobHuntToolkit
-RowOne ~~~ RowTwo
-RowTwo ~~~ RowThree
-RunAndVerifyApp ~~~ MermaidDiagrams
+```mermaid
+kanban
+  dev_workflow[dev-workflow]
+    dw_approve_pr[approve-pr]
+    dw_commit[commit]
+    dw_create_pr[create-pr]
+    dw_dispatching_parallel_agents[dispatching-parallel-agents]
+    dw_pr_checkout[pr-checkout]
+    dw_pr_comment[pr-comment]
+    dw_pr_address_comments[pr-address-comments]
+    dw_render_diff_html[render-diff-html]
+    dw_requesting_code_review[requesting-code-review]
+    dw_systematic_debugging[systematic-debugging]
+    dw_ticket_branch[ticket-branch]
+    dw_ticket_comment_status[ticket-comment-status]
+    dw_using_git_worktrees[using-git-worktrees]
+    dw_verification_before_completion[verification-before-completion]
+    dw_version_bumper[version-bumper]
+    dw_yolo_push[yolo-push]
+    dw_spec_interview[spec-interview]
+    dw_spec_contradiction_hunter[spec-contradiction-hunter]
+  run_and_verify_app[run-and-verify-app]
+    rva_run[run]
+    rva_verify[verify]
+    rva_run_skill_generator[run-skill-generator]
+  python_dev_workflow[python-dev-workflow]
+    pdw_tests_manager[tests-manager]
+    pdw_celery_expert[celery-expert]
+  openapi_tools[openapi-tools]
+    oat_openapi_list[openapi-list]
+    oat_openapi_inspect[openapi-inspect]
+```
 
-classDef langfuse fill:#dff7ff,stroke:#0284c7,stroke-width:2px,color:#0f172a;
-classDef openapi fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#052e16;
-classDef llm fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#451a03;
-classDef python fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#2e1065;
-classDef dev fill:#fee2e2,stroke:#dc2626,stroke-width:2px,color:#450a0a;
-classDef runverify fill:#e0f2fe,stroke:#0369a1,stroke-width:2px,color:#082f49;
-classDef session fill:#ccfbf1,stroke:#0f766e,stroke-width:2px,color:#042f2e;
-classDef ops fill:#fce7f3,stroke:#db2777,stroke-width:2px,color:#500724;
-classDef research fill:#fef9c3,stroke:#ca8a04,stroke-width:2px,color:#422006;
-classDef os fill:#e0e7ff,stroke:#4f46e5,stroke-width:2px,color:#1e1b4b;
-classDef storage fill:#ecfccb,stroke:#65a30d,stroke-width:2px,color:#1a2e05;
-classDef job fill:#ffedd5,stroke:#ea580c,stroke-width:2px,color:#431407;
-classDef mermaid fill:#f0fdf4,stroke:#059669,stroke-width:2px,color:#052e16;
-style RowOne fill:transparent,stroke:transparent,color:transparent;
-style RowTwo fill:transparent,stroke:transparent,color:transparent;
-style RowThree fill:transparent,stroke:transparent,color:transparent;
+### AI Engineer
+
+```mermaid
+kanban
+  llm_application_dev[llm-application-dev]
+    lad_select_agent_patterns[select-agent-patterns]
+    lad_schema_guided_reasoning[schema-guided-reasoning]
+  langfuse[langfuse]
+    lf_langfuse[langfuse]
 ```
 
 ## Notes for Users
@@ -90,6 +121,9 @@ style RowThree fill:transparent,stroke:transparent,color:transparent;
 Use this README when you want to install the marketplace, install a plugin, or
 choose what each plugin is for. Developer and maintenance notes live in
 `AGENTS.md`.
+
+Third-party provenance and license notices live in
+`third_party/`.
 
 ## Quick Install
 
@@ -167,33 +201,7 @@ assets, compare experiment runs, or manage dashboard widgets.
 
 | Skill | Description |
 |---|---|
-| `analyze-experiment-results` | Analyze scores and per-item results for a dataset run. |
-| `compare-experiments` | Compare experiment runs and detect regressions. |
-| `configure-remote-experiment` | Configure remote experiment webhooks and payloads. |
-| `create-dataset` | Create Langfuse datasets with optional schemas. |
-| `create-evaluator` | Create LLM-as-a-Judge evaluators. |
-| `create-widget` | Create dashboard widgets. |
-| `delete-evaluator` | Remove evaluators after safety checks. |
-| `delete-widget` | Remove dashboard widgets safely. |
-| `design-dataset-schema` | Design dataset item input and output schemas. |
-| `discover-datasets` | List datasets, items, runs, and metadata. |
-| `discover-filter-options` | Discover trace filter values for evaluators. |
-| `discover-models` | List tracked models and pricing. |
-| `discover-scores` | Enumerate score names, types, and sources. |
-| `discover-traces` | Explore trace names, tags, environments, and users. |
-| `inspect-evaluator` | Show evaluator prompts, versions, and job configs. |
-| `layout-widgets` | Calculate dashboard widget grid placement. |
-| `list-dataset-runs` | Browse experiment runs for datasets. |
-| `list-evaluators` | Summarize evaluator configurations. |
-| `list-widgets` | Inventory dashboard widgets. |
-| `manage-dashboard` | Create, update, delete, and arrange dashboards. |
-| `manage-dataset-items` | Add, update, archive, delete, or import dataset items. |
-| `query-metrics` | Query Langfuse metrics and aggregates. |
-| `suggest-widgets` | Recommend useful dashboard visualizations. |
-| `toggle-evaluator-status` | Enable, disable, pause, or resume evaluators. |
-| `trigger-experiment` | Start dataset runs or remote experiments. |
-| `update-evaluator` | Update evaluator prompts, filters, or model config. |
-| `update-widget` | Modify existing widget configuration. |
+| `langfuse` | Unified Langfuse skill for data discovery, metrics, datasets, experiment runs, evaluators, dashboard widgets, and dashboard management. Former task-specific workflows are bundled as internal references. |
 
 **Agents**
 
@@ -233,47 +241,71 @@ reasoning.
 | `select-agent-patterns` | Choose LLM workflow and agent design patterns by decomposing a problem into stages and comparing candidates. Based on [A Two-Dimensional Framework for AI Agent Design Patterns](https://arxiv.org/pdf/2605.13850). |
 | `schema-guided-reasoning` | Design structured Pydantic schemas that guide LLM reasoning. |
 
+**Skill Agents**
+
+| Skill | Agent | Description |
+|---|---|---|
+| `select-agent-patterns` | `pattern-fit-reviewer` | Independently review one candidate pattern for one workflow stage. |
+
 </details>
 
 ### `python-dev-workflow`
 
-**Use when:** you are writing or reviewing Python tests, working with Redis test
-isolation, or configuring Celery for production behavior.
+**Use when:** you are doing TDD or test-first development in Python, deriving
+scenarios from requirements, writing or reviewing Python tests, deciding E2E
+vs integration vs unit coverage, testing Celery or Redis behavior, or
+configuring Celery for production behavior.
 
 **Skills**
 
 | Skill | Description |
 |---|---|
-| `celery-expert` | Configure Celery, workers, retries, schedules, and tests. |
-| `pytest-redis` | Test Redis code with fakeredis, fixtures, or containers. |
-| `writing-unit-tests` | Write pytest unit tests with reliable mocks and fixtures. |
+| `celery-expert` | Configure Celery tasks, workers, retries, schedules, performance, and security. |
+| `tests-manager` | Own Python test-first development and test craft: red-green-refactor, plan scenarios, and write pytest E2E, integration, and unit tests with focused references. |
 
 **Agents**
 
 | Agent | Description |
 |---|---|
+| `integration-test-writer` | Write endpoint and real-wiring integration tests. |
+| `test-scenario-planner` | Derive requirement-linked scenarios and corner cases before coverage routing. |
 | `test-runner` | Run focused pytest or `uv run pytest` commands. |
 | `test-unit-reviewer` | Review unit tests for quality, coverage, and patterns. |
+| `unit-test-writer` | Write focused unit tests with mocks, fixtures, and factories. |
 
 ### `dev-workflow`
 
-**Use when:** you need structured development workflow support: commits, PRs,
-review comments, ticket branches, status updates, version bumps, or spec checks.
+**Use when:** you need structured development workflow support: debugging,
+visual diff reports, review, commits, PRs, ticket branches, status updates,
+version bumps, or spec checks.
+
+**Origin note:** several methodology skills in this plugin were copied from the
+MIT-licensed [Superpowers](https://github.com/obra/superpowers) project by
+Jesse Vincent. See `third_party/THIRD_PARTY_NOTICES.md` for skill-by-skill
+provenance.
 
 **Skills**
 
 | Skill | Description |
 |---|---|
+| `approve-pr` | Approve and merge PRs with current checks and policy gates. |
 | `commit` | Create single-line Conventional Commits. |
 | `create-pr` | Open pull requests from the current branch. |
+| `dispatching-parallel-agents` | Coordinate independent subagent tasks that can run concurrently. |
 | `pr-address-comments` | Fetch, fix, reply to, and resolve PR feedback. |
 | `pr-checkout` | Switch to a PR branch for review or changes. |
 | `pr-comment` | Post general or inline PR comments. |
+| `render-diff-html` | Render git diffs and file comparisons as HTML reports. |
+| `requesting-code-review` | Request focused review before task completion or merge. |
 | `spec-contradiction-hunter` | Find contradictions and inconsistencies in specs. |
 | `spec-interview` | Interview the user and produce an implementation spec. |
+| `systematic-debugging` | Investigate bugs through evidence, patterns, hypotheses, and fixes. |
 | `ticket-branch` | Create a git branch from a ticket ID or URL. |
 | `ticket-comment-status` | Post status updates to tickets or work items. |
+| `using-git-worktrees` | Set up isolated workspace branches for feature work. |
+| `verification-before-completion` | Verify claims before reporting work as complete or fixed. |
 | `version-bumper` | Bump versions in plugin and package metadata. |
+| `yolo-push` | Slash-command gated commit, PR, CI, merge, and CD workflow. |
 
 **Agents**
 
@@ -324,8 +356,11 @@ Mermaid code blocks with the Mermaid CLI.
 
 ### `work-session-tools`
 
-**Use when:** you want daily notes, task tracking, structured interviews, or a
-designed multi-agent team for a larger work session.
+<details>
+<summary>Productivity, orchestration, and handoffs within an assistant session.</summary>
+
+**Use when:** you want daily notes, task tracking, structured interviews,
+session handoffs, or a designed multi-agent team.
 
 **Skills**
 
@@ -333,8 +368,12 @@ designed multi-agent team for a larger work session.
 |---|---|
 | `create-team` | Design a multi-agent team and handoff plan. |
 | `daily` | Generate a daily note from project activity. |
+| `handoff` | Compact the current conversation for another agent. |
 | `interview` | Walk through a list of items one by one. |
 | `task-management` | Track, split, and orchestrate session tasks. |
+| `wait-what` | Ask for a clearer re-pitch when the last message did not land. |
+
+</details>
 
 ### `research`
 
@@ -415,18 +454,19 @@ Cloud storage workflows for MEGA-style user-file storage tools.
 ### `job-hunt-toolkit`
 
 **Use when:** you want a structured job application workspace, tailored resumes,
-HTML-to-PDF export, PDF metadata scrubbing, or a final pre-send checklist.
+Typst-to-PDF export, or a final pre-send checklist.
 
 **Skills**
 
 | Skill | Description |
 |---|---|
-| `export-pdf` | Render HTML CVs to PDF with headless Chromium. |
+| `cover-letter-writing` | Write an evidence-backed cover letter as Typst and PDF. |
+| `export-pdf` | Compile Typst CVs to PDF with `typst compile`. |
 | `init-workspace` | Scaffold the job application workspace. |
 | `new-application` | Create a company application folder and starter files. |
 | `prepare-to-send` | Run final filename, metadata, and content checks. |
 | `resume-tailoring` | Tailor a CV to a job description without fabrication. |
-| `scrub-pdf-metadata` | Strip sensitive PDF metadata before sending. |
+| `submit-job-application` | Fill employer portals and require approval before final submission. |
 
 ## Recommended Third-Party Plugins
 
@@ -435,6 +475,8 @@ this marketplace:
 
 - [browser-harness](https://github.com/browser-use/browser-harness) - direct browser control through CDP.
 - [plannotator](https://github.com/backnotprop/plannotator) - browser-based plan review, annotation, and visual explanation workflows.
+- [destructive_command_guard](https://github.com/Dicklesworthstone/destructive_command_guard) - guardrails for destructive shell commands.
+- [ponytail](https://github.com/DietrichGebert/ponytail/) - lazy senior developer mode that favors the simplest solution that works.
 - [worktrunk](https://github.com/max-sixty/worktrunk) - worktree and branch workflow support.
 - [ralphex](https://github.com/umputun/ralphex) - AI-assisted development planning and project workflow tools.
 - [wshobson/agents](https://github.com/wshobson/agents) - Claude Code workflow skills for Python, LLM applications, debugging, testing, and PR work.

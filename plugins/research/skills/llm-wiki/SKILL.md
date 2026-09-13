@@ -8,8 +8,6 @@ platforms: [linux, macos, windows]
 metadata:
   origin.url: https://raw.githubusercontent.com/NousResearch/hermes-agent/refs/heads/main/skills/research/llm-wiki/SKILL.md
   origin.repository: NousResearch/hermes-agent
-  ai-assistant-harness-adaptation.claude-code: references/ai-assistant-harnesses/claude-code.md
-  ai-assistant-harness-adaptation.codex: references/ai-assistant-harnesses/codex.md
 ---
 
 # Karpathy's LLM Wiki
@@ -24,14 +22,6 @@ everything ingested.
 
 **Division of labor:** The human curates sources and directs analysis. The
 assistant summarizes, cross-references, files, and maintains consistency.
-
-## Harness Adaptation
-
-Before using harness-specific tools, identify the active assistant harness. When
-the active harness matches one metadata-linked reference above, load exactly
-that one reference and skip the non-matching harness files. Use the shared
-workflow below for decisions and the harness reference only to translate file,
-search, shell, web, edit, and user-question operations into the active toolset.
 
 ## When To Use
 

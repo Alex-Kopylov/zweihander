@@ -4,7 +4,6 @@ description: This skill should be used when the user asks to "audit my setup", "
 disable-model-invocation: false
 context: fork
 agent: Explore
-allowed-tools: Read, Grep, Glob
 ---
 
 # AI Setup Audit

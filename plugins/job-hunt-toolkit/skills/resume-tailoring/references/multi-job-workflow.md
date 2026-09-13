@@ -2,7 +2,7 @@
 
 ## Overview
 
-Handle 3-5 similar jobs efficiently by consolidating experience discovery while maintaining per-job research depth.
+Handle 3-5 similar jobs by consolidating experience discovery while preserving per-job research depth.
 
 **Architecture:** Shared Discovery + Per-Job Tailoring
 
@@ -13,10 +13,7 @@ Handle 3-5 similar jobs efficiently by consolidating experience discovery while 
 
 ## Phase 0: Job Intake & Batch Initialization
 
-Present intake options:
-1. Paste all JDs at once (recommended)
-2. Provide one at a time
-3. Provide URLs to fetch
+Accept JDs together, individually, or as URLs.
 
 For each job, collect:
 - Job description (text or URL)
@@ -44,7 +41,6 @@ ${JOB_HUNT_WORKSPACE:-$HOME/Documents/job_seeking}/batches/batch-{YYYY-MM-DD}-{s
   "batch_id": "batch-{date}-{slug}",
   "created": "{timestamp}",
   "current_phase": "intake",
-  "processing_mode": "interactive",
   "jobs": [
     {
       "job_id": "job-1",
@@ -61,9 +57,7 @@ ${JOB_HUNT_WORKSPACE:-$HOME/Documents/job_seeking}/batches/batch-{YYYY-MM-DD}-{s
 }
 ```
 
-Run standard library initialization once for the entire batch: scan resume directory for markdown files, parse each resume to extract roles/bullets/skills/education, build tagged experience database.
-
-**Checkpoint:** Confirm batch is complete before proceeding.
+Run single-job Phase 0 once for the entire batch.
 
 ## Phase 1: Aggregate Gap Analysis
 
@@ -77,59 +71,28 @@ Run standard library initialization once for the entire batch: scan resume direc
    - Job-specific (1 job): Priority 1
 4. **Generate `_aggregate_gaps.md`** with coverage summary per job, gaps by priority tier, and estimated discovery time
 
-**Output to user:**
+**Record for final review:**
 - Coverage summary per job (percentage)
 - Aggregate gaps: X critical, Y important, Z job-specific
 - Recommended discovery time estimate
-- Options: start discovery / skip discovery / review gaps first
-
-**Checkpoint:** User chooses next action.
 
 ## Phase 2: Shared Experience Discovery
 
 ### Session Flow
 
-1. Process gaps in priority order: critical first, then important, then job-specific
-2. For each gap, provide multi-job context before branching interview (see branching-questions.md for templates)
-3. Conduct branching interview using standard patterns
-4. Capture each discovery to `_discovered_experiences.md` with:
-   - Context, scope, metrics
-   - Which jobs/gaps it addresses
-   - Confidence improvement (before/after)
-   - Bullet draft
-5. Track coverage improvement in real-time - update user after each discovery
-6. Present integration options per experience: add to library for all jobs / add selectively / skip
-7. Enrich library with approved experiences
-
-**Checkpoint:** User approves before moving to per-job processing.
+Run single-job Phase 3 once across the aggregate gaps, ordered critical, important, then job-specific. Record discoveries in `_discovered_experiences.md`, map them to affected jobs and gaps, track batch coverage improvements, and use confirmed evidence in each affected job's later tailoring.
 
 ## Phase 3: Per-Job Processing
 
-### Processing Modes
-
-Ask user before starting:
-- **INTERACTIVE** (default) - checkpoints at each step per job
-- **EXPRESS** - auto-approve using best judgment, review all finals together
-
-Recommendation: INTERACTIVE for first 1-2 jobs, then switch to EXPRESS.
-
 ### Per-Job Loop
 
-For each pending job:
-
-**3A: Research** - same depth as single-job Phase 1. Save `success_profile.md`. Checkpoint if INTERACTIVE.
-
-**3B: Template Generation** - same as single-job Phase 2. Save `template.md`. Checkpoint if INTERACTIVE.
-
-**3C: Content Matching** - same as single-job Phase 3, using enriched library. Save `content_mapping.md`. Checkpoint if INTERACTIVE.
-
-**3D: Generation** - produce HTML + PDF (via export-pdf skill) + Report. Output to `${JOB_HUNT_WORKSPACE:-$HOME/Documents/job_seeking}/<company>/`. Filename: `<First>_<Last>_<Role>_CV.*` — no company name in filename. No checkpoint, just generate.
+For each pending job, run single-job Phases 1, 2, 4, and 5 with the enriched library. Save `success_profile.md`, `template.md`, and `content_mapping.md` as working artifacts.
 
 Job directory structure: `job-{N}-{company-slug}/` (working scratch only; final outputs go to company subfolder in workspace root)
 
 ### Progress Tracking
 
-After each job completes, report: quality metrics, jobs remaining, estimated time. Offer to continue, pause, or switch processing mode.
+Save progress after each job.
 
 ### Pause/Resume
 
@@ -141,6 +104,7 @@ Save batch state after each major milestone. Provide resume instructions with ba
 
 Generate `_batch_summary.md` with:
 - Per-job status, coverage, key strengths, remaining gaps, file listings
+- Per-resume change review using `Before | After | Why | Evidence`
 - Discovery impact stats (experiences found, coverage improvement)
 - Coverage metrics (average JD coverage, average direct matches)
 - Gap resolution stats
@@ -148,23 +112,16 @@ Generate `_batch_summary.md` with:
 - Cover letter focus per job
 - Application priority ranking based on coverage scores
 
-### Review Options
-
-1. **APPROVE ALL** - save all to library, rebuild indices
-2. **REVIEW INDIVIDUALLY** - approve/revise each job separately
-3. **REVISE BATCH** - make cross-resume changes (e.g., "make all summaries shorter")
-4. **SAVE WITHOUT LIBRARY UPDATE** - keep files, don't enrich library
+Present the completed batch and apply requested revisions. Leave the master library unchanged unless the user requested an update.
 
 ## Incremental Batch Addition
-
-Support adding new jobs to completed batches.
 
 ### Process
 
 1. Load existing batch state
 2. Intake new jobs (continue job numbering)
 3. Run **incremental** gap analysis - only check new requirements not already covered
-4. Run **incremental** discovery - only ask about NEW gaps (skip previously answered)
+4. Run **incremental** discovery only for new, unanswered gaps
 5. Process new jobs through per-job loop
 6. Update batch summary with new jobs and stats
 
@@ -178,15 +135,15 @@ Support adding new jobs to completed batches.
 
 ### Jobs Are More Diverse Than Expected
 
-If <40% gap overlap between jobs, recommend splitting into sub-batches by similarity. Offer: split into batches / continue unified / remove dissimilar jobs.
+If <40% gap overlap between jobs, split into sub-batches by similarity and report the decision.
 
 ### Discovery Only Addresses Some Jobs
 
-If an experience is cloud-specific (e.g., Azure only), tag it for specific jobs. Offer to explore broader concepts that transfer across platforms.
+Tag cloud-specific experience (e.g., Azure only) to relevant jobs; use broader transferable concepts only when supported.
 
 ### One Job's Research Fails
 
-Fall back to JD-only analysis for that job. Do not block other jobs. Offer: continue with JD-only / skip job / user provides context / remove job.
+Fall back to JD-only analysis for that job and continue with the others.
 
 ### Add/Remove Jobs Mid-Process
 
@@ -203,12 +160,11 @@ Skip discovery. Proceed directly to per-job processing with existing library.
 
 ### Library Update Conflicts (Mixed Approval)
 
-Support individual approval: add approved jobs now, defer pending jobs, revisit rejected jobs.
+If a library update was requested, add only confirmed experiences and leave disputed material out.
 
 ## Error Recovery Principles
 
 1. Never lose progress - auto-save batch state frequently
 2. Partial success is success - some jobs completing is better than none
-3. Transparent failures - always explain what went wrong and present options
+3. Explain failures, apply the safest fallback, and include alternatives in the final review
 4. Graceful degradation - fall back to JD-only, single-job mode, or skip as needed
-5. User control - always provide options, never force a path
