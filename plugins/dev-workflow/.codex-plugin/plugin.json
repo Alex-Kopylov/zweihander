@@ -1,11 +1,11 @@
 {
   "name": "dev-workflow",
-  "version": "0.10.1",
+  "version": "0.10.2",
   "description": "Git, PRs, tickets, releases, visual diffs, debugging, and review workflows.",
   "author": {
     "name": "Alex Kopylov"
   },
-  "license": "UNLICENSED",
+  "license": "Apache-2.0",
   "skills": "./skills/",
   "interface": {
     "displayName": "Dev Workflow",
