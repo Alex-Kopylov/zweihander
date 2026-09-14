@@ -19,6 +19,7 @@ EMAIL_ADAPTER = TypeAdapter(EmailStr)
 def install_sync_script(workspace: Path) -> Path:
     target = workspace / "sync-application-statuses.sh"
     shutil.copy2(SYNC_SCRIPT, target)
+    shutil.copy2(SYNC_SCRIPT.with_name("application_records.py"), workspace / "application_records.py")
     target.chmod(0o755)
     return target
 
@@ -107,6 +108,17 @@ def test_sync_rejects_invalid_records_without_replacing_output(
     assert output.read_text(encoding="utf-8") == previous
 
 
+def test_sync_accepts_quoted_yaml_status_with_comment(tmp_path: Path) -> None:
+    script = install_sync_script(tmp_path)
+    write_record(
+        tmp_path, "acme",
+        '---\ncompany: "Acme #1" # name\nrole: Engineer\napplied: null\nstatus: "applied" # confirmed\n---',
+    )
+    result = run_sync(script)
+    assert result.returncode == 0, result.stderr
+    assert "| Acme #1 | Engineer | applied | null |" in (tmp_path / "APPLICATIONS.md").read_text()
+
+
 def valid_email_tokens(text: str) -> list[str]:
     addresses = []
     for token in text.split():
@@ -118,38 +130,16 @@ def valid_email_tokens(text: str) -> list[str]:
     return addresses
 
 
-def test_email_provider_runbook_pins_contracts() -> None:
+def test_email_entrypoints_load_shared_runtime_contract() -> None:
+    import yaml
     agent = PROVIDER_AGENT.read_text(encoding="utf-8")
     skill = TRACKING_SKILL.read_text(encoding="utf-8")
-    provider = PROVIDER_AGENT.stem.removesuffix("-agent")
-
-    assert "model: gpt-5.6-luna" in agent
-    assert len(PROVIDER_AGENTS) == 1
-    assert not (TRACKING_SKILL.parent / "references").exists()
-    assert '"classification":"yes|no|needs_thread_review"' in agent
-    assert "provider_message_id" in agent
-    assert "the idempotency key" in agent
-    assert "message is the only checkpoint" in agent
-    assert "already equals the proposed status, skip the edit" in agent
-    assert "matches both normalized values" in agent
-    assert "Do not remove legal suffixes" in agent
-    assert "Recruiter starts process contact or screening" in agent
-    assert "Interview round is confirmed" in agent
-    assert "Offer is made" in agent
-    assert "Rejection is explicit" in agent
-    assert "Candidate withdrawal is explicit" in agent
-    assert "Offer acceptance or signing is explicit" in agent
-    assert "WORKSPACE/sync-application-statuses.sh" in agent
-    assert "company.md` as the only source of application status" in skill
-
-    required_tools = {
-        f"{provider}_search_email_ids",
-        f"{provider}_read_email",
-        f"{provider}_read_email_thread",
-        f"{provider}_list_labels",
-        f"{provider}_apply_labels_to_emails",
-    }
-    assert required_tools <= set(re.findall(rf"{provider}_[a-z_]+", agent))
-
+    assert "model" not in yaml.safe_load(agent.split("---", 2)[1])
+    assert "hiring-email-rules.md" in agent
+    assert "hiring-email-orchestration.md" in skill
+    assert "gmail_apply_labels" not in agent
+    for document in (PROVIDER_AGENT, TRACKING_SKILL):
+        for target in re.findall(r"\]\(([^)]+)\)", document.read_text()):
+            assert (document.parent / target).is_file(), target
     assert valid_email_tokens(agent) == []
     assert valid_email_tokens(skill) == []

@@ -13,6 +13,8 @@ The canonical directory structure for a job-hunt workspace. Default location: `~
 ├── NAMING.md                              # naming quick reference (generated)
 ├── APPLICATIONS.md                        # disposable status index (generated)
 ├── sync-application-statuses.sh           # validates company.md and rebuilds the index
+├── application_records.py                 # YAML validation and atomic status/index writer
+├── .hiring-email/                         # private, gitignored routing/checkpoint state
 └── jobs/                                  # all applications live here
     └── <company>/                         # one folder per application
 ```
@@ -98,3 +100,23 @@ priority: high | medium | low
 - Use spaces, hyphens, or mixed case in folder names.
 - Store application status anywhere except each application's `company.md` frontmatter.
 - Edit `APPLICATIONS.md` directly. Run `./sync-application-statuses.sh` after every status change.
+
+## Private email state
+
+`.hiring-email/` is created with mode `0700`; `state.sqlite3` and result files use
+`0600`. The directory is gitignored. SQLite stores a non-secret connection/scope
+key, message/thread routing IDs, provider timestamps, processing outcomes,
+application-folder links, review result tickets, and expiring reader claims.
+It stores no application status, email bodies, headers, contacts, or credentials.
+Raw routing IDs are necessary to retrieve pending/review history; they are the
+only email-derived identifier exception, confined to this private directory.
+
+`results/<ticket>.json` holds redacted outcomes with a known application folder,
+status enum, reason enum, and security flag enums. It is not an application record.
+`company.md` remains authoritative. Do not commit or copy private state into reports.
+A new clone has no checkpoints and rereads the authorized date range; equal-status
+updates do not append duplicate audit entries. State is local to one workspace;
+sharing it across machines is unsupported.
+
+The YAML status must be a plain or quoted scalar; comments are supported. Duplicate
+keys, anchors/aliases, and block-style status values are rejected before writes.

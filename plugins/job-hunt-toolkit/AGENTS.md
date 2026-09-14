@@ -48,7 +48,13 @@ Match user intent to the right skill:
 - `export-pdf` verifies the source sets clean document metadata; it does not scrub the output.
 - `prepare-to-send` gates on the PDF's metadata being clean before declaring the file ready.
 - `export-pdf` is a utility any skill can call after Typst source edits.
-- `new-application` and `track-hiring-emails` run the workspace `sync-application-statuses.sh` after creating or changing a record.
+- `new-application` runs the workspace `sync-application-statuses.sh` after creating a record. The email host calls the same index writer after status updates.
+
+## Email tracking
+
+Use `track-hiring-emails` and its isolated reader launcher for message bodies.
+The Gmail agent is only an operation map. Read [orchestration](references/hiring-email-orchestration.md)
+for the private queue and runtime boundary; never classify mail in a privileged agent.
 
 ## Reference docs
 

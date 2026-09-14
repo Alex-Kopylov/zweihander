@@ -1,160 +1,115 @@
 ## Context
 
-See proposal.md — Why. Two constraints shape everything below.
-
-The capability's entire input is text written by third parties, and the runtimes it
-executes in put mail-mutating operations in the same context as that text. Nothing in
-a prompt can prevent a model from calling a tool that exists; the design's job is to
-remove the need for those tools and to make their absence checkable.
-
-Provider connectors differ more than a rename. The Codex Gmail app exposes
-message-level search and message-level labelling. The Claude Gmail connector exposes
-thread-level search, message retrieval, and a read-write label API that also carries
-send, trash, and spam. A contract written against one connector's operation names
-does not survive contact with the other.
-
-Current state: `agents/gmail-agent.md` holds the entire runbook — connector names,
-classification, matching, transitions, redaction, checkpointing. `SKILL.md` routes to
-it. `sync-application-statuses.sh` validates records and regenerates the index and is
-unaffected by this design.
+A message may contain arbitrary instructions. Giving its reader the parent's mail
+connector and shell tools violates the requested boundary. The original Gmail
+runbook also batches triggers and reads history only when the newest message is
+ambiguous. The implementation separates provider access, assessment, and writes.
 
 ## Goals / Non-Goals
 
-**Goals:**
-
-- One set of behavioural rules, loaded by every provider, with the adapter reduced to
-  what genuinely differs between connectors.
-- A run that needs no mailbox write grant, so the blast radius of a successful prompt
-  injection is bounded by the grant rather than by the model's compliance.
-- Progress tracking that survives a provider with no per-message labels.
-
-**Non-Goals:**
-
-- Triaging, filing, or replying to mail. The capability reads and reports.
-- Detecting hiring mail the user has not already applied to. Matching is against
-  existing records only; discovery is out of scope.
-- Multi-machine synchronisation of processing state. Two checkouts may each process
-  the same message; updates are idempotent, so the cost is duplicated work, not a
-  corrupt record.
+Goals: one trigger per reader, complete two-way history, durable deduplication,
+shared business rules, enforced tool isolation, exact application updates.
+Non-goals: sending/triaging mail, attachment analysis, new application discovery,
+provider credential management, or multi-machine synchronization.
 
 ## Decisions
 
-### Cursor plus unresolved set, replacing the mailbox label
+### Private message ledger, not cursor/digests
 
-The completion checkpoint moves into the workspace as a cursor file holding one
-provider timestamp and a set of digests for messages awaiting user review.
+SQLite stores connection/scope, message/thread routing IDs, provider timestamps,
+outcomes, review-result tickets, application links, and expiring claims. It does
+not store email content or application status. Directory mode is 0700; database
+and redacted result files use 0600; initialization adds a gitignore entry.
 
-Alternatives considered:
+A digest cannot retrieve an unresolved message. A pruned overlap set cannot reject
+an old webhook before body retrieval. Retaining routing IDs solves both, with an
+explicit privacy exception limited to private local state. Poll metadata from the
+earliest applied date (30-day fallback); merge saved pending IDs independently of
+that range. `review-items` retrieves the durable backlog and `--reconsider` retries
+it explicitly. No review silently disappears behind an advancing cursor.
 
-- **Keep the mailbox label.** Rejected. It is the single reason the capability needs
-  a write grant, and with `gmail.modify` that grant also carries trash and spam.
-  It is also the least portable piece of the contract — the checkpoint is per-message,
-  and a thread-only connector cannot express it.
-- **Store raw provider message IDs locally.** Rejected. It contradicts the redaction
-  requirement, and the ID set is a durable map of who has mailed the user about work.
-- **Timestamp cursor alone, no unresolved set.** Rejected. A message routed to review
-  would be passed over by the advancing cursor and silently never revisited. The
-  review case is precisely the one a human still needs.
+### One trigger with complete history
 
-Digests are `SHA-256(salt || provider_id)` with a random per-workspace salt generated
-on first run and stored beside the cursor. The digest is what "cannot be recovered"
-means in the spec: an attacker holding the workspace cannot enumerate the ID space
-without the salt. The salt is not a secret to be protected in transit — it exists to
-break offline correlation between a leaked workspace and a mailbox.
+Metadata is deduplicated before body retrieval. Group pending messages by thread;
+lease the newest trigger per changed thread for 15 minutes. Process jobs oldest
+first. The initial reader gets all messages in its thread, even before the search
+bound, including sent replies. After a successful assessment, checkpoint every
+message in the snapshot. Unchanged standalone messages never need another reader.
 
-### Cursor advance uses an overlap window
+Threads link to an exact existing company/role match. A new thread that identifies
+an application with earlier linked threads returns `needs_context`; reassess the
+same trigger with all those threads before writing. Known threads always include
+that linked set. Missing/truncated history fails before classification. An
+application-link conflict requires review, never silent reassignment.
 
-The cursor stores the newest resolved message's timestamp; the next query asks for
-messages at or after `cursor − overlap`, with a default overlap of one hour, and
-discards anything whose digest is already resolved.
+### Provider maps and a body bridge
 
-Provider search granularity is coarse — Gmail's date operators are day-resolution and
-its internal timestamps are second-resolution — and messages arriving in the same
-second as the cursor would otherwise be skipped. The overlap costs a small amount of
-repeated retrieval and eliminates a silent-loss class of bug. Rework is bounded
-because resolved digests are cheap to check before any content is fetched.
+Gmail instructions only map search, metadata, pagination, full-thread retrieval,
+and normalization. They contain no model selection or business policy. A new
+provider supplies those read operations and reuses the queue, reader, and writer.
+Thread-only search is supported only with metadata-only expansion before dedup.
 
-The resolved-digest set is pruned to entries newer than `cursor − overlap`; only the
-unresolved set is retained indefinitely.
+Provider results stay in a programmatic bridge. The host starts a stdin reader;
+the bridge fetches assigned threads and passes one JSON snapshot without returning
+bodies to the privileged controlling model. Codex can compose connected tools
+and `write_stdin` in one tool execution. A bridge that cannot withhold content
+must stop before full reads. Claude's reader supports its CLI, but connectors that
+expose bodies directly to a parent require an equivalent bridge.
 
-### Adapter boundary
+The interactive PTY bridge disables echo and canonical buffering, waits for a
+readiness message, and writes one JSON line. Message data never enters shell text,
+process arguments, temporary body files, or user-visible output.
 
-An adapter supplies exactly three operations, and the query language is expressed in
-capability-neutral terms — a time lower bound, an exclusion of self-sent mail, an
-exclusion of spam and trash, and an optional operator scope — which the adapter
-translates.
+### Native isolation and fixed output
 
-A thread-only connector satisfies message search by expanding each matching thread
-into its messages and filtering by the time bound in the adapter. That expansion is
-the adapter's problem precisely because it is what differs between connectors; making
-it the adapter's problem is what lets the rules stay identical.
+The Codex launcher uses `openai-codex==0.154.0` and its bundled runtime: no environments
+on thread/turn, no dynamic tools/MCP, optional tools disabled, no approvals,
+ephemeral execution, and output schema. The SDK owns transport and process
+lifecycle. Its low-level client accepts explicit environment/tool lists absent
+from the high-level facade. The native test inspects an actual bundled-runtime
+request against a local fake API endpoint, including in CI.
 
-Placement: rules move from `agents/gmail-agent.md` to a reference document loaded by
-`SKILL.md`. The agent file keeps operation mapping, query translation, and pagination.
-The `model:` pin is removed — it is a Codex model id, and it makes the agent
-unloadable elsewhere.
+The Claude launcher uses safe mode, an empty built-in tool set, strict empty MCP,
+disabled skills/Chrome, noninteractive permissions, no session persistence, and a
+JSON schema. Unsupported flags fail. Managed policy configuration remains an
+operator prerequisite. Both launchers inherit runtime model selection, with no
+`model` field or CLI model argument.
 
-### Scope and confirmation for live runs
+The reader receives local message handles and company/role/status fields. It
+returns evidence and enum values, not commands or paths. The host validates the
+result and chooses `.hiring-email/results/<ticket>.json`. Only trusted code writes
+the matched `company.md`, generated index, and private processing state.
 
-Runs accept an operator scope that is ANDed into the query. Without a scope, the
-capability counts matches first and asks before retrieving any content.
+### Status writes and recovery
 
-This exists because the realistic test and first-use environment is a mailbox that
-also holds real correspondence. An unscoped first run against a 244-message inbox
-reads 244 real bodies into a model context to discover that three of them are
-relevant. Counting first is cheap and makes the breadth of a run visible before it
-happens rather than after.
+PyYAML validates records including quoted values/comments. Matching normalizes
+only case and whitespace. Recheck unique company/role matching immediately before
+writing under a SQLite transaction. Reject aliases/anchors and block status
+scalars whose source spans cannot be safely replaced in place.
 
-### Refusal is documented as insufficient
-
-The spec requires refusing mutating operations, and the documentation states plainly
-that this is a prompt-level control rather than a boundary, with harness deny rules
-and a read-only grant given as the actual controls. Stating the limitation is part of
-the deliverable; a reader who believes the refusal is enforcement will under-configure
-the grant.
+Replace one status scalar and append a fixed event phrase under `## Status`.
+Use the evidence message's provider date, not body or Date-header text. Equal
+status is a no-op; terminal reopening and backward movement require review. Rename
+atomically, regenerate the index, save the result, then checkpoint. On failure,
+keep pending IDs and release the claim. A retry after partial writes avoids a
+duplicate audit entry. A crashed claim expires.
 
 ## Risks / Trade-offs
 
-- **A model calls a mutating tool despite the rules.** → The rules are the weakest of
-  three layers. A read-only grant makes the call fail at the provider; harness deny
-  rules make it fail before it leaves the runtime. Both are documented as required for
-  live use, not optional hardening.
-- **Injection succeeds at the classification layer** — a message argues its way into a
-  status change it should not get. → Bounded by the evidence rules and exact matching:
-  the worst case is one wrong status on one matched record, recorded with an audit
-  entry, in a version-controlled file where `git diff` shows it. Terminal statuses
-  cannot be reopened without review.
-- **Unresolved set grows without bound** when the user never acts on review cases. →
-  Reported as a count every run; entries carry the timestamp of first review so the
-  backlog is visible and ageable.
-- **Cursor lost or workspace re-cloned** → the cursor is machine state and is
-  gitignored, so a fresh clone reprocesses the window. Updates are idempotent and the
-  mailbox is read-only, so reprocessing is safe; the cost is retrieval.
-- **Overlap window is too small for a badly skewed provider clock.** → Configurable;
-  the failure mode is a skipped message, which the unresolved set does not catch
-  because the message was never seen. Documented as the one case requiring a manual
-  cursor rewind.
-- **Two machines process the same mailbox** → duplicate work, no corruption, because
-  a transition whose proposed status equals the current status is a no-op.
+- Semantic injection can still cause a wrong classification. Native controls
+  remove execution capabilities; exact matching and fixed writes bound the effect
+  to one existing application. The tests do not claim perfect model accuracy.
+- Retained routing IDs and review entries grow with mailbox history. They are
+  necessary for retrieval/dedup; counts and oldest-review age make backlog visible.
+- Full thread history costs context. Never silently truncate; return retryable
+  when connector/runtime limits prevent complete assessment.
+- A fresh clone rereads the authorized range. Equal-status transitions remain
+  idempotent. Cross-machine state sharing is unsupported.
+- Codex SDK/runtime dependency updates require native isolation revalidation. Claude connectors still require a programmatic body bridge.
 
 ## Migration Plan
 
-The label-based implementation from PR #94 has not been released to users, so there is
-no state to migrate in the field.
-
-1. Land the rules reference, the neutral contract in `SKILL.md`, and the reduced Gmail
-   adapter together — the intermediate state where rules exist in two places is worth
-   avoiding.
-2. Initialise the cursor on first run to the earliest `applied` date across existing
-   records, falling back to 30 days ago when no record carries one. This makes the
-   first run cover the applications the user actually has.
-3. For anyone who ran the label version, the two `job-hunt-toolkit-*` labels become
-   inert. Removal is manual and optional; the capability never reads them again.
-4. Rollback is reverting the plugin version. No workspace data is destroyed by either
-   direction — the cursor file is additive and ignored by the old implementation.
-
-## Open Questions
-
-- Whether the unresolved set should expire entries after a long interval, or grow
-  until the user acts. Deferrable: it changes a default, not the contract, and the
-  run report makes the backlog visible either way.
+Publish the rules, queue, reader, and provider adapter together. Copy both workspace
+status scripts on initialization/upgrade. Initialize private state on first run;
+existing Gmail labels are ignored and never changed. Update both plugin manifests,
+user documentation, and validation tests in the same change.

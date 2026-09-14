@@ -465,7 +465,7 @@ export, and pre-send checks.
 | `export-pdf` | Compile Typst CVs to PDF with `typst compile`. |
 | `init-workspace` | Scaffold the job application workspace. |
 | `new-application` | Create a company application folder and starter files. |
-| `track-hiring-emails` | Process hiring email updates and sync application statuses. |
+| `track-hiring-emails` | Assess complete hiring conversations in an isolated reader and sync application statuses. |
 | `prepare-to-send` | Run final filename, metadata, and content checks. |
 | `resume-tailoring` | Tailor a CV to a job description without fabrication. |
 | `submit-job-application` | Fill employer portals and require approval before final submission. |

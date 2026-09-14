@@ -31,6 +31,7 @@ Depending on who you are as an AI agent, load exactly one metadata-linked refere
 
 ### 1. Check preconditions
 
+- Require `uv` and Python 3.11+ for the status scripts; their inline metadata installs PyYAML.
 - Resolve target path.
 - If the directory already exists AND contains `AGENTS.md`, ask the user:
   - **Overwrite docs** — regenerate README, AGENTS.md, NAMING.md from plugin templates (fresh source of truth)
@@ -69,11 +70,12 @@ Write these files from this plugin's `references/` directory and templates at ge
 - `AGENTS.md` — workspace-local agent rules. Use `templates/AGENTS.md.template`. Reference the plugin `AGENTS.md` for authoritative rules.
 - `NAMING.md` — quick reference. Use `templates/NAMING.md.template`, but prefer linking back to the plugin's `references/naming-rules.md` rather than duplicating content that will drift.
 - `jobs/` — create the directory that will hold all per-company application folders (`mkdir -p <workspace>/jobs`).
-- `sync-application-statuses.sh` — copy `scripts/sync-application-statuses.sh` to the workspace root and make the copy executable.
+- Status scripts — copy both `scripts/sync-application-statuses.sh` and `scripts/application_records.py` to the workspace root. Make the shell wrapper executable.
 - `.gitignore` — Write with standard ignore patterns for local notes, editor artifacts, and sensitive files:
   ```
   *.local.md
   salary_notes.md
+  /.hiring-email/
   .DS_Store
   *~
   .#*

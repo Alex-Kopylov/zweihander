@@ -1,6 +1,6 @@
 # job-hunt-toolkit
 
-Version-controlled job application workspace with email status tracking, resume tailoring, Typst-to-PDF export, and pre-send checks.
+Job application workspace with isolated email assessment, complete conversation tracking, resume tailoring, Typst-to-PDF export, and pre-send checks.
 A paranoid, disciplined workflow for job applications. Assumes every PDF leaks metadata, every filename signals something, and every company you apply to will find a way to notice if you cut corners.
 
 ## What it does
@@ -24,7 +24,7 @@ Turns your chaotic Downloads folder into a disciplined, structured workspace:
 |---|---|---|
 | `init-workspace` | slash command | One-time setup: scaffolds `~/Documents/job_seeking/` (or configured path) with README, AGENTS.md, and NAMING.md |
 | `new-application` | slash command | Start a new company application: create folder, scaffold `company.md`, copy the master Typst source, invoke tailoring |
-| `track-hiring-emails` | conversational or scheduled | Process hiring email updates through a provider agent and sync application statuses |
+| `track-hiring-emails` | conversational or scheduled | Assess one trigger with complete incoming/outgoing history in an isolated reader |
 | `resume-tailoring` | conversational | Tailor the CV against a JD. Research → template → discovery → assembly → export. |
 | `cover-letter-writing` | conversational | Write an evidence-backed cover letter as Typst, then export and check the PDF. |
 | `submit-job-application` | conversational | Fill employer portals from workspace data and stop for explicit approval before final submission. |
@@ -108,3 +108,21 @@ Or point the active runtime at a local path:
 6. Send PDF                                         # ship it
 7. Ask to check hiring email                        # during the process
 ```
+
+## Email tracking requirements
+
+Email assessment uses a shared reader and a provider operation map. Gmail is the
+first adapter. Each reader gets one trigger and complete linked conversations,
+including sent messages. Private local checkpoints skip previously processed mail.
+The workflow does not change mailbox labels or other mailbox state.
+
+Install `uv` and Python 3.11+, then initialize or refresh the workspace status scripts.
+The Codex reader uses the official `openai-codex` Python SDK and its pinned runtime;
+the Claude reader requires `--safe-mode` and empty-tool/schema-output support. Both need a
+programmatic connector bridge that forwards bodies to the isolated process without
+exposing them to the privileged parent agent. Unsupported bridges stop before reads.
+See [setup and execution](references/hiring-email-orchestration.md).
+
+The reader has no command, file, or mail tools. The trusted host validates its JSON
+and writes only the matched application, generated index, and private result/state.
+Ambiguous matches or conflicting transitions require review.

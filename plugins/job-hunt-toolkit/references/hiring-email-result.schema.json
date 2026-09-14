@@ -1,0 +1,14 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "classification": {"type": "string", "enum": ["related", "unrelated", "review"]},
+    "company": {"type": ["string", "null"]},
+    "role": {"type": ["string", "null"]},
+    "event": {"type": ["string", "null"], "enum": ["application_received", "screening_started", "interview_confirmed", "offer_received", "rejected", "withdrew", "accepted", null]},
+    "evidence": {"type": ["string", "null"]},
+    "reason": {"type": "string", "enum": ["explicit_event", "unrelated", "ambiguous", "unmatched", "conflict"]},
+    "security_flags": {"type": "array", "items": {"type": "string", "enum": ["command_request", "mail_mutation_request", "authority_claim", "data_exfiltration_request"]}}
+  },
+  "required": ["classification", "company", "role", "event", "evidence", "reason", "security_flags"]
+}
