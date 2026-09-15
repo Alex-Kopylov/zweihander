@@ -17,8 +17,9 @@ Triggered by finding a JD worth applying to.
 1. Run the `job-hunt-toolkit:new-application` skill with `<company-slug>` (e.g. `acme_robotics`).
 2. Paste or link the JD — saved to `jobs/<company>/job_description.md`.
 3. `company.md` scaffolded with frontmatter — fill in snapshot, stack, comp band.
-4. Master Typst source copied into `jobs/<company>/` as the tailoring starting point.
-5. **Decision point**: tailor now, or research first?
+4. `sync-application-statuses.sh` validates the record and regenerates root `APPLICATIONS.md`.
+5. Master Typst source copied into `jobs/<company>/` as the tailoring starting point.
+6. **Decision point**: tailor now, or research first?
 
 ## Stage 2: Research (optional but recommended)
 
@@ -68,6 +69,9 @@ As the process moves, update `company.md`:
 - Add `interview_notes.md` per round
 - Add `questions_to_ask.md` for interviewers
 - Add `followups.md` for thank-you drafts
+- Run `./sync-application-statuses.sh` after every status change.
+
+The `track-hiring-emails` skill can apply these updates from connected email messages. It uses `company.md` as the only status source and runs the same sync script after a change.
 
 ## Stage 8: Outcome
 
