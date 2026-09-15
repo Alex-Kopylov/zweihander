@@ -1,4 +1,4 @@
-# 🗡️ Zweihander
+# 🗡️ Zweihander (+5 Chaos)
 
 Simple, robust, and versatile marketplace for agent plugins,
 forged for the chaos of the AI world.
@@ -40,6 +40,7 @@ kanban
     jht_submit_job_application[submit-job-application]
   cloud_storage_tools[cloud-storage-tools]
     cst_mega_cmd[mega-cmd]
+    cst_gws_gmail[gws-gmail]
   research[research]
     research_obsidian[obsidian]
     research_llm_wiki[llm-wiki]
@@ -62,6 +63,7 @@ kanban
     aao_agents_md_improver[agents-md-improver]
     aao_ai_setup_audit[ai-setup-audit]
     aao_ai_insights_hunter[ai-insights-hunter]
+    aao_docs_language_review[docs-language-review]
     aao_md_bloat_hunter[md-bloat-hunter]
     aao_improve_skill[improve-skill]
     aao_adapt_skill_for_ai_harness[adapt-skill-for-ai-harness]
@@ -402,7 +404,7 @@ and
 
 **Use when:** you want to audit assistant instructions, improve AGENTS.md files,
 improve existing skills, adapt skills for assistant harnesses, capture useful
-session insights, or reduce Markdown bloat.
+session insights, review documentation language, or reduce Markdown bloat.
 
 **Skills**
 
@@ -412,6 +414,7 @@ session insights, or reduce Markdown bloat.
 | `agents-md-improver` | Audit and improve repository AGENTS.md files. |
 | `ai-insights-hunter` | Extract reusable decisions, patterns, and preferences from a session. |
 | `ai-setup-audit` | Audit assistant configuration files for conflicts and bloat. |
+| `docs-language-review` | Review or rewrite Markdown documentation using plain-language and cognitive-accessibility standards. |
 | `improve-skill` | Improve existing skills through eval feedback, baseline comparison, iteration, and trigger checks. |
 | `md-bloat-hunter` | Trim redundancy, verbosity, and filler in Markdown. |
 
@@ -443,13 +446,17 @@ Operating-system utilities for local machine automation.
 
 ### `cloud-storage-tools`
 
-Cloud storage workflows for MEGA-style user-file storage tools.
+<details>
+<summary>Cloud storage and mailbox workflows for user-file tools.</summary>
 
 **Skills**
 
 | Skill | Description |
 |---|---|
 | `mega-cmd` | Manage encrypted MEGA storage, links, sync, search, and backups. |
+| `gws-gmail` | Search Gmail, read headers, download attachments, and send mail through the `gws` CLI. |
+
+</details>
 
 ### `job-hunt-toolkit`
 
