@@ -1,4 +1,4 @@
-# 🗡️ Zweihander
+# 🗡️ Zweihander (+5 Chaos)
 
 Simple, robust, and versatile marketplace for agent plugins,
 forged for the chaos of the AI world.
