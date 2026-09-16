@@ -40,7 +40,6 @@ kanban
     jht_submit_job_application[submit-job-application]
   cloud_storage_tools[cloud-storage-tools]
     cst_mega_cmd[mega-cmd]
-    cst_gws_gmail[gws-gmail]
   research[research]
     research_obsidian[obsidian]
     research_llm_wiki[llm-wiki]
@@ -446,17 +445,13 @@ Operating-system utilities for local machine automation.
 
 ### `cloud-storage-tools`
 
-<details>
-<summary>Cloud storage and mailbox workflows for user-file tools.</summary>
+Cloud storage workflows for MEGA-style user-file storage tools.
 
 **Skills**
 
 | Skill | Description |
 |---|---|
 | `mega-cmd` | Manage encrypted MEGA storage, links, sync, search, and backups. |
-| `gws-gmail` | Search Gmail, read headers, download attachments, and send mail through the `gws` CLI. |
-
-</details>
 
 ### `job-hunt-toolkit`
 
