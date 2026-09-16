@@ -40,7 +40,6 @@ kanban
     jht_submit_job_application[submit-job-application]
   cloud_storage_tools[cloud-storage-tools]
     cst_mega_cmd[mega-cmd]
-    cst_gws_gmail[gws-gmail]
   research[research]
     research_obsidian[obsidian]
     research_llm_wiki[llm-wiki]
@@ -446,23 +445,18 @@ Operating-system utilities for local machine automation.
 
 ### `cloud-storage-tools`
 
-<details>
-<summary>Cloud storage and mailbox workflows for user-file tools.</summary>
+Cloud storage workflows for MEGA-style user-file storage tools.
 
 **Skills**
 
 | Skill | Description |
 |---|---|
 | `mega-cmd` | Manage encrypted MEGA storage, links, sync, search, and backups. |
-| `gws-gmail` | Search Gmail, read headers, download attachments, and send mail through the `gws` CLI. |
-
-</details>
 
 ### `job-hunt-toolkit`
 
-**Use when:** you want to structure and automate the job application process,
-including status tracking, resume and cover-letter tailoring, Typst-to-PDF
-export, and pre-send checks.
+**Use when:** you want a structured job application workspace, tailored resumes,
+Typst-to-PDF export, or a final pre-send checklist.
 
 **Skills**
 
@@ -472,7 +466,6 @@ export, and pre-send checks.
 | `export-pdf` | Compile Typst CVs to PDF with `typst compile`. |
 | `init-workspace` | Scaffold the job application workspace. |
 | `new-application` | Create a company application folder and starter files. |
-| `track-hiring-emails` | Assess complete hiring conversations in an isolated reader and sync application statuses. |
 | `prepare-to-send` | Run final filename, metadata, and content checks. |
 | `resume-tailoring` | Tailor a CV to a job description without fabrication. |
 | `submit-job-application` | Fill employer portals and require approval before final submission. |

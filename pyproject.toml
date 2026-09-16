@@ -7,8 +7,5 @@ dependencies = []
 
 [dependency-groups]
 dev = [
-    "openai-codex==0.154.0",
-    "pydantic[email]>=2.13.5",
     "pytest>=9.0.3",
-    "pyyaml>=6.0.3,<7",
 ]
