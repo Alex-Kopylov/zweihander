@@ -69,7 +69,7 @@ Final placement:
 | `tests/test_harness_frontmatter_matrix.py` | `tests/unit/plugin_maintenance/test_harness_frontmatter_matrix.py` |
 | `tests/test_template_source_policy.py` | `tests/unit/plugin_maintenance/test_template_source_policy.py` plus the two new policy checks |
 | `tests/test_ci_gate.py` | `tests/unit/plugin_maintenance/test_ci_gate.py` |
-| `tests/test_dist_invariants.py`, freshness and byte-identical rebuild | `tests/unit/plugin_maintenance/test_build.py` |
+| `tests/test_dist_invariants.py`, freshness, byte-identical rebuild, foreign-name scan, leftover-marker scan | `tests/unit/plugin_maintenance/test_build.py` |
 | `tests/test_dist_invariants.py`, everything else | `tests/integration/rendered/test_invariants.py` |
 | `tests/test_mermaid_diagrams_plugin.py`, generator half | `tests/unit/plugin_maintenance/generators/test_mermaid_diagrams.py` |
 | `tests/test_mermaid_diagrams_plugin.py`, skill-content half | `tests/integration/rendered/mermaid_diagrams/test_skill_content.py` |
@@ -132,6 +132,8 @@ Two consequences worth naming:
 - `test_resume_tailoring.py`'s template-syntax assertion is really the claim "this skill asks the user before proceeding". That is prompt behavior; checking it needs a model, so it is deleted here and belongs to a future `llm`-marked evaluation. Recorded as a non-goal so it is not mistaken for an oversight.
 - `test_python_dev_workflow_plugin.py` currently resolves a metadata reference path by falling back to a template name when the plain file is missing. Against `rendered` the fallback disappears: the path either resolves in the tree the user installs or it does not, which is the claim worth making.
 
+**Amended during implementation.** The first two of the three surviving checks cannot be rendered-content tests, so the placement table above moves them into `test_build.py` with the other two. Both need the template a published file was rendered from: the leftover-marker scan subtracts the template's raw blocks before scanning, and the foreign-name scan applies only to template-derived files — widening it to every file in a tree fails on nineteen plain files that say `Agent` as an ordinary English word. The spec already calls all three "build-layer checks"; only that reading is implementable.
+
 ### D6. The `tests/` rule is enforced at the source, not in the renderer
 
 The renderer gains no `tests/` skip. Adding one would make a re-added skill-local test directory silently vanish from the published tree while still sitting in the authored one, unrun by CI — the same class of invisibility this change exists to remove. Instead a source-policy check asserts that no `tests/` directory exists under the authored plugin tree, so a re-add is a named failure.
@@ -143,6 +145,8 @@ This is also why the `harness-dist-build` delta is an ADDED requirement rather t
 The check scans every file under `tests/` except `tests/unit/plugin_maintenance/**` and the root `tests/conftest.py`, and fails on a template suffix or on a path into the authored tree.
 
 Such a path has two spellings in this repository: the slash-bearing literal, and the quoted path segment joined onto `REPO_ROOT`. Five current test modules use the second. Matching only the first would leave the exact files this change is fixing free to come back, so the check matches both and nothing else — a bare unquoted word stays legal, because prose and identifiers use it constantly.
+
+**Amended during implementation.** Each spelling is matched at a path root rather than anywhere in the file, because two legitimate names share the word: the Codex marketplace manifest lives at `.agents/plugins/marketplace.json`, and `plugins` is the key every marketplace manifest stores its own plugin list under. So the slash-bearing literal must not be preceded by a path separator or word character, and the quoted segment is matched together with its `REPO_ROOT` join. Checked against their pre-move content, all eleven modules this change touched are still caught.
 
 ### D8. Publication tests assert the manifest, and membership against `rendered`
 
