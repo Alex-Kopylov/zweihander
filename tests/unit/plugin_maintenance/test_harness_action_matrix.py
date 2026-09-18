@@ -1,4 +1,3 @@
-from plugin_maintenance import REPO_ROOT
 """Schema contract for the harness action matrix.
 
 The matrix is the only source of callable names for the stage-2 renderer:
@@ -12,24 +11,13 @@ from typing import get_args
 
 import pytest
 
-from plugin_maintenance import HARNESSES
-from plugin_maintenance.render import Harness
-
-
-MATRIX_PATH = (
-    REPO_ROOT
-    / "plugins"
-    / "ai-assistant-ops"
-    / "skills"
-    / "adapt-skill-for-ai-harness"
-    / "references"
-    / "harness-action-matrix.json"
-)
+from plugin_maintenance import HARNESSES, REPO_ROOT
+from plugin_maintenance.render import MATRIX_PATH, Harness
 
 
 @pytest.fixture(scope="module")
 def matrix() -> dict:
-    return json.loads(MATRIX_PATH.read_text(encoding="utf-8"))
+    return json.loads((REPO_ROOT / MATRIX_PATH).read_text(encoding="utf-8"))
 
 
 @pytest.fixture(scope="module")

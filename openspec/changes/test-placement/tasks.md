@@ -22,11 +22,11 @@ Everything lands in one PR from `claude/test-placement` into `harness-dist-pipel
 ## 3. Build-layer tests
 
 - [x] 3.1 Move `tests/test_harness_renderer.py` to `tests/unit/plugin_maintenance/test_render.py`
-- [ ] 3.2 Move `tests/test_harness_action_matrix.py` and `tests/test_harness_frontmatter_matrix.py` to `tests/unit/plugin_maintenance/`
-- [ ] 3.3 Move `tests/test_ci_gate.py` to `tests/unit/plugin_maintenance/test_ci_gate.py`
-- [ ] 3.4 Split `tests/test_dist_invariants.py`: the freshness check (`stale_paths`) and the byte-identical-rebuild check become `tests/unit/plugin_maintenance/test_build.py`; they keep reading the committed trees, because that is what they are for
-- [ ] 3.5 Split `tests/test_mermaid_diagrams_plugin.py`: the generator-package assertions become `tests/unit/plugin_maintenance/generators/test_mermaid_diagrams.py`
-- [ ] 3.6 Replace `from conftest import REPO_ROOT` with `from plugin_maintenance import REPO_ROOT` in every moved module
+- [x] 3.2 Move `tests/test_harness_action_matrix.py` and `tests/test_harness_frontmatter_matrix.py` to `tests/unit/plugin_maintenance/`
+- [x] 3.3 Move `tests/test_ci_gate.py` to `tests/unit/plugin_maintenance/test_ci_gate.py`
+- [x] 3.4 Split `tests/test_dist_invariants.py`: the freshness check (`stale_paths`) and the byte-identical-rebuild check become `tests/unit/plugin_maintenance/test_build.py`; they keep reading the committed trees, because that is what they are for
+- [x] 3.5 Split `tests/test_mermaid_diagrams_plugin.py`: the generator-package assertions become `tests/unit/plugin_maintenance/generators/test_mermaid_diagrams.py`
+- [x] 3.6 Replace `from conftest import REPO_ROOT` with `from plugin_maintenance import REPO_ROOT` in every moved module
 
 ## 4. Rendered-content tests
 

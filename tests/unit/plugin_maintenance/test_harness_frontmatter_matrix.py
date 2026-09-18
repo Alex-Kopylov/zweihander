@@ -1,4 +1,3 @@
-from plugin_maintenance import REPO_ROOT
 """Schema contract for the harness frontmatter matrix.
 
 The matrix is the only source of frontmatter placement for the stage-2
@@ -11,6 +10,7 @@ from pathlib import Path
 
 import pytest
 
+from plugin_maintenance import REPO_ROOT
 from plugin_maintenance.render import (
     FRONTMATTER_MATRIX_NAME,
     MATRIX_PATH,
