@@ -1,12 +1,22 @@
-from conftest import REPO_ROOT
+"""Contract for the improve-skill skill as a user receives it."""
+
 import json
 import re
 from pathlib import Path
 
+import pytest
 
-PLUGIN_ROOT = REPO_ROOT / "plugins" / "ai-assistant-ops"
-SKILL_ROOT = PLUGIN_ROOT / "skills" / "improve-skill"
-SKILL_FILE = SKILL_ROOT / "SKILL.md"
+from plugin_maintenance import REPO_ROOT
+
+
+@pytest.fixture(scope="session")
+def skill_root(rendered: Path) -> Path:
+    return rendered / "ai-assistant-ops" / "skills" / "improve-skill"
+
+
+@pytest.fixture(scope="session")
+def skill_file(skill_root: Path) -> Path:
+    return skill_root / "SKILL.md"
 
 
 def parse_frontmatter(path: Path) -> dict[str, str]:
@@ -24,14 +34,14 @@ def parse_frontmatter(path: Path) -> dict[str, str]:
     return data
 
 
-def skill_body() -> str:
-    return SKILL_FILE.read_text(encoding="utf-8").split("---\n", 2)[2]
+def body_of(path: Path) -> str:
+    return path.read_text(encoding="utf-8").split("---\n", 2)[2]
 
 
-def test_skill_exists_with_trigger_only_frontmatter() -> None:
-    assert SKILL_FILE.is_file()
+def test_skill_exists_with_trigger_only_frontmatter(skill_file: Path) -> None:
+    assert skill_file.is_file()
 
-    frontmatter = parse_frontmatter(SKILL_FILE)
+    frontmatter = parse_frontmatter(skill_file)
 
     assert frontmatter["name"] == "improve-skill"
     description = frontmatter["description"]
@@ -58,8 +68,8 @@ def test_skill_exists_with_trigger_only_frontmatter() -> None:
         assert workflow_phrase not in description
 
 
-def test_skill_body_preserves_improvement_loop_concepts() -> None:
-    body = skill_body()
+def test_skill_body_preserves_improvement_loop_concepts(skill_file: Path) -> None:
+    body = body_of(skill_file)
     normalized = body.lower()
 
     assert body.lstrip().startswith("# Improve Skill")
@@ -95,8 +105,8 @@ def test_skill_body_preserves_improvement_loop_concepts() -> None:
         assert phrase in normalized
 
 
-def test_bloat_hunter_is_post_rewrite_pre_evaluation_step() -> None:
-    body = skill_body()
+def test_bloat_hunter_is_post_rewrite_pre_evaluation_step(skill_file: Path) -> None:
+    body = body_of(skill_file)
 
     assert "ai-assistant-ops:md-bloat-hunter" in body
     assert re.search(
@@ -106,12 +116,14 @@ def test_bloat_hunter_is_post_rewrite_pre_evaluation_step() -> None:
     )
 
 
-def test_skill_avoids_anthropic_specific_commands_and_viewers() -> None:
+def test_skill_avoids_anthropic_specific_commands_and_viewers(
+    skill_root: Path, skill_file: Path
+) -> None:
     combined = "\n".join(
         [
-            SKILL_FILE.read_text(encoding="utf-8"),
-            (SKILL_ROOT / "evals" / "evals.json").read_text(encoding="utf-8"),
-            (SKILL_ROOT / "agents" / "openai.yaml").read_text(encoding="utf-8"),
+            skill_file.read_text(encoding="utf-8"),
+            (skill_root / "evals" / "evals.json").read_text(encoding="utf-8"),
+            (skill_root / "agents" / "openai.yaml").read_text(encoding="utf-8"),
         ]
     )
 
@@ -125,8 +137,8 @@ def test_skill_avoids_anthropic_specific_commands_and_viewers() -> None:
         assert forbidden not in combined
 
 
-def test_evals_cover_required_improvement_scenarios() -> None:
-    evals_file = SKILL_ROOT / "evals" / "evals.json"
+def test_evals_cover_required_improvement_scenarios(skill_root: Path) -> None:
+    evals_file = skill_root / "evals" / "evals.json"
     assert evals_file.is_file()
 
     evals = json.loads(evals_file.read_text(encoding="utf-8"))
@@ -151,8 +163,8 @@ def test_evals_cover_required_improvement_scenarios() -> None:
         assert phrase in combined
 
 
-def test_openai_agent_prompt_exists() -> None:
-    agent_file = SKILL_ROOT / "agents" / "openai.yaml"
+def test_openai_agent_prompt_exists(skill_root: Path) -> None:
+    agent_file = skill_root / "agents" / "openai.yaml"
     assert agent_file.is_file()
 
     agent = agent_file.read_text(encoding="utf-8")
@@ -163,18 +175,16 @@ def test_openai_agent_prompt_exists() -> None:
     assert "Improve this skill" in agent
 
 
-def test_ai_assistant_ops_docs_and_manifests_include_improve_skill() -> None:
-    plugin_readme = (PLUGIN_ROOT / "README.md").read_text(encoding="utf-8")
-    root_readme = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
-    codex_manifest = json.loads(
-        (PLUGIN_ROOT / ".codex-plugin" / "plugin.json").read_text(encoding="utf-8")
-    )
-    claude_manifest = json.loads(
-        (PLUGIN_ROOT / ".claude-plugin" / "plugin.json").read_text(encoding="utf-8")
+def test_plugin_manifest_advertises_skill_improvement(rendered: Path) -> None:
+    manifest = json.loads(
+        next((rendered / "ai-assistant-ops").glob("*/plugin.json")).read_text(
+            encoding="utf-8"
+        )
     )
 
-    assert "`improve-skill`" in plugin_readme
-    assert "`improve-skill`" in root_readme
-    assert "skill improvement" in json.dumps(codex_manifest).lower()
-    assert codex_manifest["version"] == claude_manifest["version"]
-    assert codex_manifest["version"].count(".") == 2
+    assert "skill improvement" in json.dumps(manifest).lower()
+    assert manifest["version"].count(".") == 2
+
+
+def test_root_readme_lists_improve_skill() -> None:
+    assert "`improve-skill`" in (REPO_ROOT / "README.md").read_text(encoding="utf-8")

@@ -1,4 +1,4 @@
-from conftest import REPO_ROOT
+from plugin_maintenance import REPO_ROOT
 """Authoring policy for skill, agent, and template sources under `plugins/`.
 
 Templates take callable names from the action map or the wrapper filter,

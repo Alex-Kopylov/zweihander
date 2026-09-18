@@ -4,13 +4,13 @@ Everything lands in one PR from `claude/test-placement` into `harness-dist-pipel
 
 ## 1. Mechanism
 
-- [ ] 1.1 Add `HARNESSES = tuple(HARNESS_MANIFESTS)` to `plugin_maintenance/__init__.py`, importing `HARNESS_MANIFESTS` from `plugin_maintenance.render`; add no second list of harness names anywhere
-- [ ] 1.2 Assert in the action-matrix schema test that `HARNESSES` and the `Harness` Literal name the same harnesses, so the two cannot drift
-- [ ] 1.3 Rewrite `tests/conftest.py` to hold only the shared mechanism: `pytest_addoption` for `--harness` and `--llm`, a session-scoped `harness` fixture parametrized over `HARNESSES`, a session-scoped `rendered` fixture calling `render_tree(REPO_ROOT, harness, <tmp tree>)`, and the `llm` skip in `pytest_collection_modifyitems`
-- [ ] 1.4 Implement harness narrowing in `pytest_generate_tests`: start from `HARNESSES`, cut to one entry on `@pytest.mark.harness("<name>")`, intersect with `--harness`, apply with `indirect=True, scope="session"`
-- [ ] 1.5 Move `fixture_repo` and `fixture_matrix` out of `tests/conftest.py` into a new `tests/unit/plugin_maintenance/conftest.py`
-- [ ] 1.6 Update `pytest.ini`: keep `norecursedirs` and `pythonpath`, add `addopts = --import-mode=importlib`, register the `harness(name)` and `llm` markers
-- [ ] 1.7 Prove the mechanism on one file: move `tests/test_improve_skill.py` to `tests/integration/rendered/ai_assistant_ops/test_improve_skill.py`, reading the skill through `rendered`; confirm it runs twice, once per harness
+- [x] 1.1 Add `HARNESSES = tuple(HARNESS_MANIFESTS)` to `plugin_maintenance/__init__.py`, importing `HARNESS_MANIFESTS` from `plugin_maintenance.render`; add no second list of harness names anywhere
+- [x] 1.2 Assert in the action-matrix schema test that `HARNESSES` and the `Harness` Literal name the same harnesses, so the two cannot drift
+- [x] 1.3 Rewrite `tests/conftest.py` to hold only the shared mechanism: `pytest_addoption` for `--harness` and `--llm`, a session-scoped `harness` fixture parametrized over `HARNESSES`, a session-scoped `rendered` fixture calling `render_tree(REPO_ROOT, harness, <tmp tree>)`, and the `llm` skip in `pytest_collection_modifyitems`
+- [x] 1.4 Implement harness narrowing in `pytest_generate_tests`: start from `HARNESSES`, cut to one entry on `@pytest.mark.harness("<name>")`, intersect with `--harness`, apply with `indirect=True, scope="session"`
+- [x] 1.5 Move `fixture_repo` and `fixture_matrix` out of `tests/conftest.py` into a new `tests/unit/plugin_maintenance/conftest.py`
+- [x] 1.6 Update `pytest.ini`: keep `norecursedirs` and `pythonpath`, add `addopts = --import-mode=importlib`, register the `harness(name)` and `llm` markers
+- [x] 1.7 Prove the mechanism on one file: move `tests/test_improve_skill.py` to `tests/integration/rendered/ai_assistant_ops/test_improve_skill.py`, reading the skill through `rendered`; confirm it runs twice, once per harness
 
 ## 2. Policy checks (fail first)
 
@@ -21,7 +21,7 @@ Everything lands in one PR from `claude/test-placement` into `harness-dist-pipel
 
 ## 3. Build-layer tests
 
-- [ ] 3.1 Move `tests/test_harness_renderer.py` to `tests/unit/plugin_maintenance/test_render.py`
+- [x] 3.1 Move `tests/test_harness_renderer.py` to `tests/unit/plugin_maintenance/test_render.py`
 - [ ] 3.2 Move `tests/test_harness_action_matrix.py` and `tests/test_harness_frontmatter_matrix.py` to `tests/unit/plugin_maintenance/`
 - [ ] 3.3 Move `tests/test_ci_gate.py` to `tests/unit/plugin_maintenance/test_ci_gate.py`
 - [ ] 3.4 Split `tests/test_dist_invariants.py`: the freshness check (`stale_paths`) and the byte-identical-rebuild check become `tests/unit/plugin_maintenance/test_build.py`; they keep reading the committed trees, because that is what they are for

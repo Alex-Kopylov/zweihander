@@ -1,4 +1,4 @@
-from conftest import REPO_ROOT
+from plugin_maintenance import REPO_ROOT
 """Marketplace manifests publish from the committed dist trees.
 
 Every manifest entry sources its plugin from the manifest's own `dist/` tree

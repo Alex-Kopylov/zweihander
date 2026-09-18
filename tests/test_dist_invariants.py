@@ -1,4 +1,4 @@
-from conftest import REPO_ROOT
+from plugin_maintenance import HARNESSES, REPO_ROOT
 """Purity and reproducibility invariants for the committed dist trees.
 
 Files rendered from `.j2` sources carry no foreign harness vocabulary and no
@@ -78,11 +78,10 @@ def template_source(harness: str, dist_path: Path) -> Path:
     return REPO_ROOT / "plugins" / relative.parent / f"{relative.name}.j2"
 
 
-@pytest.mark.parametrize(
-    ("harness", "foreign_harness"), [("ClaudeCode", "Codex"), ("Codex", "ClaudeCode")]
-)
-def test_rendered_files_carry_no_foreign_callable_names(harness, foreign_harness):
-    foreign_names = callable_names(foreign_harness) - callable_names(harness)
+def test_rendered_files_carry_no_foreign_callable_names(harness):
+    foreign_names = set().union(
+        *(callable_names(other) for other in HARNESSES if other != harness)
+    ) - callable_names(harness)
     violations = []
 
     for path in dist_files(harness):
@@ -99,7 +98,6 @@ def test_rendered_files_carry_no_foreign_callable_names(harness, foreign_harness
     assert not violations, "\n".join(violations)
 
 
-@pytest.mark.parametrize("harness", ["ClaudeCode", "Codex"])
 def test_rendered_files_carry_no_leftover_jinja_markers(harness):
     violations = []
 
@@ -114,12 +112,10 @@ def test_rendered_files_carry_no_leftover_jinja_markers(harness):
     assert not violations, "\n".join(violations)
 
 
-@pytest.mark.parametrize("harness", ["ClaudeCode", "Codex"])
 def test_dist_carries_no_templates(harness):
     assert not [path for path in dist_files(harness) if path.name.endswith(".j2")]
 
 
-@pytest.mark.parametrize("harness", ["ClaudeCode", "Codex"])
 def test_dist_carries_no_legacy_dispatch_artifacts(harness):
     violations = []
 
@@ -140,7 +136,6 @@ def test_dist_carries_no_legacy_dispatch_artifacts(harness):
     assert not violations, "\n".join(violations)
 
 
-@pytest.mark.parametrize("harness", ["ClaudeCode", "Codex"])
 def test_dist_strips_foreign_runtime_metadata(harness):
     foreign_metadata = FOREIGN_METADATA_DIRS[harness]
 
@@ -149,7 +144,6 @@ def test_dist_strips_foreign_runtime_metadata(harness):
     ]
 
 
-@pytest.mark.parametrize("harness", ["ClaudeCode", "Codex"])
 def test_dist_carries_no_dev_files(harness):
     assert not [path for path in dist_files(harness) if path.name in DEV_FILE_NAMES]
 
@@ -186,7 +180,6 @@ def metadata_placed_keys(harness: str) -> set[str]:
     }
 
 
-@pytest.mark.parametrize("harness", ["ClaudeCode", "Codex"])
 def test_tree_carries_no_top_level_key_the_harness_does_not_read(harness):
     """A key placed under `metadata` never reaches the top level.
 

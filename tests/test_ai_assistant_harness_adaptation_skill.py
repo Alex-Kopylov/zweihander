@@ -1,4 +1,4 @@
-from conftest import REPO_ROOT
+from plugin_maintenance import REPO_ROOT
 """Contract for the adapt-skill-for-ai-harness skill.
 
 The skill instructs harness-parametric template authoring against the action

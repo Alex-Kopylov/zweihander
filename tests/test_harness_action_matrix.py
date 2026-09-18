@@ -1,4 +1,4 @@
-from conftest import REPO_ROOT
+from plugin_maintenance import REPO_ROOT
 """Schema contract for the harness action matrix.
 
 The matrix is the only source of callable names for the stage-2 renderer:
@@ -8,8 +8,12 @@ name per assistant, and each assistant stores exactly one invocation wrapper.
 
 import json
 from pathlib import Path
+from typing import get_args
 
 import pytest
+
+from plugin_maintenance import HARNESSES
+from plugin_maintenance.render import Harness
 
 
 MATRIX_PATH = (
@@ -36,6 +40,15 @@ def assistants(matrix) -> dict:
 @pytest.fixture(scope="module")
 def actions(matrix) -> dict:
     return matrix["actions"]
+
+
+def test_harnesses_constant_matches_the_harness_literal():
+    """One harness list, so the renderer's type and the suite cannot drift."""
+    assert set(HARNESSES) == set(get_args(Harness))
+
+
+def test_every_harness_is_an_assistant_in_the_matrix(assistants):
+    assert set(HARNESSES) <= set(assistants)
 
 
 def test_lookup_order_is_action_then_assistant(matrix):

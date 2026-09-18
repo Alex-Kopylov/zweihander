@@ -11,7 +11,7 @@ from pathlib import Path
 
 import pytest
 
-from conftest import REPO_ROOT
+from plugin_maintenance import REPO_ROOT
 
 SKILL_DIR = REPO_ROOT / "plugins" / "work-session-tools" / "skills" / "interview"
 SCRIPT = SKILL_DIR / "scripts" / "decision_log.sh"

@@ -1,4 +1,4 @@
-from conftest import REPO_ROOT
+from plugin_maintenance import REPO_ROOT
 import inspect
 import json
 import re

@@ -13,6 +13,7 @@ from pathlib import Path
 
 import pytest
 
+from plugin_maintenance import HARNESSES
 from plugin_maintenance.render import (
     DEV_FILE_NAMES,
     FRONTMATTER_MATRIX_NAME,
@@ -54,16 +55,18 @@ class TestActionResolution:
 
 
 class TestWrapperFilter:
-    @pytest.mark.parametrize(
-        ("harness", "bare", "qualified"),
-        [
-            ("ClaudeCode", "Skill(commit)", "Skill(dev-workflow:commit)"),
-            ("Codex", "$commit", "$dev-workflow:commit"),
-        ],
-    )
+    # Keyed by harness rather than parametrized beside it, so the suite keeps
+    # one harness list: a harness added to the matrix lands here as a KeyError
+    # naming the wrapper nobody wrote yet.
+    WRAPPER_FORMS = {
+        "ClaudeCode": ("Skill(commit)", "Skill(dev-workflow:commit)"),
+        "Codex": ("$commit", "$dev-workflow:commit"),
+    }
+
     def test_wrapper_covers_bare_and_qualified_names(
-        self, fixture_repo, fixture_matrix, harness, bare, qualified
+        self, fixture_repo, fixture_matrix, harness
     ):
+        bare, qualified = self.WRAPPER_FORMS[harness]
         text = demo_skill(render(fixture_repo, fixture_matrix, harness))
 
         assert bare in text
@@ -197,7 +200,6 @@ class TestFrontmatterPortability:
         assert "\nmetadata:\n  allowed-tools: Bash(git:*) Read\n" in text
         assert "\nallowed-tools:" not in text
 
-    @pytest.mark.parametrize("harness", ["ClaudeCode", "Codex"])
     def test_list_argument_joins_with_spaces(
         self, fixture_repo, fixture_matrix, harness
     ):
@@ -210,7 +212,6 @@ class TestFrontmatterPortability:
         assert "allowed-tools: Bash(git:*) Read\n" in text
 
     @pytest.mark.parametrize("argument", ['""', "[]"])
-    @pytest.mark.parametrize("harness", ["ClaudeCode", "Codex"])
     def test_empty_argument_emits_no_key(
         self, fixture_repo, fixture_matrix, harness, argument
     ):
@@ -224,7 +225,6 @@ class TestFrontmatterPortability:
     @pytest.mark.parametrize(
         "value", ["Bash(git: *)", "*Read", "Read # comment", "Read\nWrite"]
     )
-    @pytest.mark.parametrize("harness", ["ClaudeCode", "Codex"])
     def test_unquotable_value_fails_the_build(
         self, fixture_repo, fixture_matrix, harness, value
     ):
@@ -279,7 +279,6 @@ class TestArgumentFrontmatter:
         assert "\nargument-hint:" not in text
         assert "\narguments:" not in text
 
-    @pytest.mark.parametrize("harness", ["ClaudeCode", "Codex"])
     def test_hint_is_quoted_so_yaml_reads_it_as_one_string(
         self, fixture_repo, fixture_matrix, harness
     ):
@@ -290,7 +289,6 @@ class TestArgumentFrontmatter:
 
         assert 'argument-hint: "[file] [format]"\n' in text
 
-    @pytest.mark.parametrize("harness", ["ClaudeCode", "Codex"])
     def test_quotes_inside_a_hint_are_escaped(
         self, fixture_repo, fixture_matrix, harness
     ):
@@ -300,7 +298,6 @@ class TestArgumentFrontmatter:
 
         assert 'argument-hint: "say \\"hi\\""\n' in text
 
-    @pytest.mark.parametrize("harness", ["ClaudeCode", "Codex"])
     def test_argument_list_joins_with_spaces(
         self, fixture_repo, fixture_matrix, harness
     ):
@@ -312,7 +309,6 @@ class TestArgumentFrontmatter:
 
     @pytest.mark.parametrize("global_call", ["argument_hint", "arguments"])
     @pytest.mark.parametrize("argument", ['""', "[]"])
-    @pytest.mark.parametrize("harness", ["ClaudeCode", "Codex"])
     def test_empty_argument_emits_no_key(
         self, fixture_repo, fixture_matrix, harness, global_call, argument
     ):
@@ -322,7 +318,6 @@ class TestArgumentFrontmatter:
 
         assert text == f"{self.HEAD}---\n\n# Demo\n"
 
-    @pytest.mark.parametrize("harness", ["ClaudeCode", "Codex"])
     def test_multi_line_hint_fails_the_build(
         self, fixture_repo, fixture_matrix, harness
     ):
@@ -332,7 +327,6 @@ class TestArgumentFrontmatter:
             render(fixture_repo, fixture_matrix, harness)
 
     @pytest.mark.parametrize("name", ["Items", "two words", "1st", "items!"])
-    @pytest.mark.parametrize("harness", ["ClaudeCode", "Codex"])
     def test_name_that_cannot_spell_a_placeholder_fails_the_build(
         self, fixture_repo, fixture_matrix, harness, name
     ):
@@ -413,7 +407,6 @@ class TestFrontmatterMetadataMerge:
         assert text.count("metadata:") == 1
         assert "\nallowed-tools: Read\n" in text
 
-    @pytest.mark.parametrize("harness", ["ClaudeCode", "Codex"])
     def test_single_block_file_is_untouched(
         self, fixture_repo, fixture_matrix, harness
     ):
@@ -428,7 +421,6 @@ class TestFrontmatterMetadataMerge:
 
         assert text == source
 
-    @pytest.mark.parametrize("harness", ["ClaudeCode", "Codex"])
     def test_duplicate_of_another_key_fails_the_build(
         self, fixture_repo, fixture_matrix, harness
     ):
@@ -505,14 +497,13 @@ class TestFailLoud:
 
 class TestTreeMembership:
     def test_dev_files_never_emitted(self, fixture_repo, fixture_matrix):
-        for harness in ("ClaudeCode", "Codex"):
+        for harness in HARNESSES:
             output = render(fixture_repo, fixture_matrix, harness)
             emitted = {path.name for path in output.rglob("*") if path.is_file()}
 
             assert not emitted & {"AGENTS.md", "CLAUDE.md", "README.md"}
 
     @pytest.mark.parametrize("dev_name", sorted(DEV_FILE_NAMES))
-    @pytest.mark.parametrize("harness", ["ClaudeCode", "Codex"])
     def test_dev_file_template_fails_instead_of_emitting(
         self, fixture_repo, fixture_matrix, harness, dev_name
     ):
@@ -568,7 +559,6 @@ class TestIgnoredArtifacts:
         (plugin / ".venv" / "lib").mkdir(parents=True)
         (plugin / ".venv" / "lib" / "site.py").write_text("x = 1\n", encoding="utf-8")
 
-    @pytest.mark.parametrize("harness", ["ClaudeCode", "Codex"])
     def test_gitignored_artifacts_never_reach_the_tree(
         self, fixture_repo, fixture_matrix, harness
     ):

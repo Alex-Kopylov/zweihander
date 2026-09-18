@@ -1,4 +1,4 @@
-from conftest import REPO_ROOT
+from plugin_maintenance import REPO_ROOT
 """Schema contract for the harness frontmatter matrix.
 
 The matrix is the only source of frontmatter placement for the stage-2
