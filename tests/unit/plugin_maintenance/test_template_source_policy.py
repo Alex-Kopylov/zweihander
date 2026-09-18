@@ -1,5 +1,4 @@
-from plugin_maintenance import REPO_ROOT
-"""Authoring policy for skill, agent, and template sources under `plugins/`.
+"""Authoring policy for the sources under `plugins/`, and for the test tree.
 
 Templates take callable names from the action map or the wrapper filter,
 never as hardcoded harness-specific literals, and never select names inside
@@ -7,12 +6,18 @@ harness conditionals. No output path may have both a plain and a template
 source. Frontmatter stays inside the portability boundary: every key the
 frontmatter matrix places is declared through the renderer global named after
 it, and every `metadata` entry sits under a namespace the same matrix declares.
+
+The last two checks guard the test boundary itself: every test outside this
+directory validates the artifact a user installs, so naming a template or a
+path into the authored tree is a policy failure rather than a convention
+someone remembers.
 """
 
 import json
 import re
 from pathlib import Path
 
+from plugin_maintenance import REPO_ROOT
 from plugin_maintenance.render import (
     FRONTMATTER_MATRIX_NAME,
     MATRIX_PATH,
@@ -20,10 +25,25 @@ from plugin_maintenance.render import (
     TEMPLATE_SUFFIX,
     VERBATIM_FORM,
     frontmatter_lines,
+    ignored_path,
 )
 
 
 PLUGINS_ROOT = REPO_ROOT / "plugins"
+TESTS_ROOT = REPO_ROOT / "tests"
+# This directory is the one carve-out from the boundary: the build layer's
+# subject matter is the authored tree and the template rules, so it reads both.
+BUILD_LAYER = Path(__file__).resolve().parent
+SHARED_CONFTEST = TESTS_ROOT / "conftest.py"
+# A path into the authored tree has two spellings here: the slash-bearing
+# literal, and the quoted segment joined onto `REPO_ROOT`. A bare unquoted
+# word stays legal, because prose and identifiers use it constantly.
+AUTHORED_TREE_SPELLINGS = (
+    TEMPLATE_SUFFIX,
+    f"{PLUGINS_ROOT.name}/",
+    f'"{PLUGINS_ROOT.name}"',
+    f"'{PLUGINS_ROOT.name}'",
+)
 FRONTMATTER_MATRIX = json.loads(
     (REPO_ROOT / MATRIX_PATH)
     .with_name(FRONTMATTER_MATRIX_NAME)
@@ -305,3 +325,46 @@ def test_no_plain_and_template_source_collisions():
     ]
 
     assert not collisions, "\n".join(collisions)
+
+
+def boundary_scanned_files() -> list[Path]:
+    """Every test file the boundary rule applies to."""
+    is_ignored = ignored_path(REPO_ROOT)
+    return sorted(
+        path
+        for path in TESTS_ROOT.rglob("*")
+        if path.is_file()
+        and not is_ignored(path)
+        and path != SHARED_CONFTEST
+        and BUILD_LAYER not in path.parents
+    )
+
+
+def test_tests_outside_the_build_layer_never_name_the_authored_tree():
+    violations = [
+        f"{path.relative_to(REPO_ROOT)}: {spelling}"
+        for path in boundary_scanned_files()
+        for spelling in AUTHORED_TREE_SPELLINGS
+        if spelling in path.read_text(encoding="utf-8")
+    ]
+
+    assert not violations, (
+        "a test outside the build layer validates the artifact a user "
+        "installs, so it reaches plugin content through the `rendered` "
+        "fixture and names neither a template nor the authored tree:\n"
+        + "\n".join(violations)
+    )
+
+
+def test_no_test_directory_under_the_authored_tree():
+    """Every test lives in the root tree, so CI runs it and no user gets it."""
+    directories = [
+        str(path.relative_to(REPO_ROOT))
+        for path in sorted(PLUGINS_ROOT.rglob("tests"))
+        if path.is_dir()
+    ]
+
+    assert not directories, (
+        "move these into the root `tests/` tree: a test here is never run by "
+        "CI and is copied into every published tree:\n" + "\n".join(directories)
+    )

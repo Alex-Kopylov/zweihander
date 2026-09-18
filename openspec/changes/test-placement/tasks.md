@@ -14,10 +14,10 @@ Everything lands in one PR from `claude/test-placement` into `harness-dist-pipel
 
 ## 2. Policy checks (fail first)
 
-- [ ] 2.1 Move `tests/test_template_source_policy.py` to `tests/unit/plugin_maintenance/test_template_source_policy.py` unchanged, replacing `from conftest import REPO_ROOT` with an import from `plugin_maintenance`
-- [ ] 2.2 Add the test-boundary policy check there: no file under `tests/`, outside `tests/unit/plugin_maintenance/` and the root `tests/conftest.py`, contains a template suffix or a path into the authored plugin tree in either spelling (slash-bearing literal or quoted path segment); the failure names every offending file
-- [ ] 2.3 Add the centralization policy check there: no directory named `tests/` exists anywhere under the authored plugin tree; the failure names the directory
-- [ ] 2.4 Confirm both checks fail now, listing the seven template-reading modules and the two skill-local test directories — this is the definition of done for groups 3 to 5
+- [x] 2.1 Move `tests/test_template_source_policy.py` to `tests/unit/plugin_maintenance/test_template_source_policy.py` unchanged, replacing `from conftest import REPO_ROOT` with an import from `plugin_maintenance`
+- [x] 2.2 Add the test-boundary policy check there: no file under `tests/`, outside `tests/unit/plugin_maintenance/` and the root `tests/conftest.py`, contains a template suffix or a path into the authored plugin tree in either spelling (slash-bearing literal or quoted path segment); the failure names every offending file
+- [x] 2.3 Add the centralization policy check there: no directory named `tests/` exists anywhere under the authored plugin tree; the failure names the directory
+- [x] 2.4 Confirm both checks fail now, listing the seven template-reading modules and the two skill-local test directories — this is the definition of done for groups 3 to 5
 
 ## 3. Build-layer tests
 
