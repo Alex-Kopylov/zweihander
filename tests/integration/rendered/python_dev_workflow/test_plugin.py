@@ -5,12 +5,12 @@ from pathlib import Path
 import pytest
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def plugin_root(rendered: Path) -> Path:
     return rendered / "python-dev-workflow"
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def tests_manager_root(plugin_root: Path) -> Path:
     return plugin_root / "skills" / "tests-manager"
 

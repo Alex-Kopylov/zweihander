@@ -10,7 +10,7 @@ import pytest
 from plugin_maintenance import REPO_ROOT
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def plugin_root(rendered: Path) -> Path:
     return rendered / "mermaid-diagrams"
 

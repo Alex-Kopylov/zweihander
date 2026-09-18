@@ -17,12 +17,12 @@ DIR_ENV = "INTERVIEW_DECISION_LOG_DIR"
 DIR_NAME = "interview-decision-logs"
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def skill_dir(rendered: Path) -> Path:
     return rendered / "work-session-tools" / "skills" / "interview"
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def script(skill_dir: Path) -> Path:
     return skill_dir / "scripts" / "decision_log.sh"
 
@@ -38,7 +38,7 @@ def sourced(script: Path, snippet: str) -> str:
     return done.stdout.rstrip("\n")
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def bar_width(script: Path) -> int:
     """Read from the script rather than restated, so the two cannot drift."""
     return int(sourced(script, 'printf "%s" "$BAR_WIDTH"'))

@@ -12,12 +12,12 @@ SLUG_RE = "^[a-z0-9]+(?:_[a-z0-9]+)*$"
 SLUG_RE_ERE = "^[a-z0-9]+(_[a-z0-9]+)*$"
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def plugin(rendered: Path) -> Path:
     return rendered / "job-hunt-toolkit"
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def export_pdf_skill(plugin: Path) -> Path:
     return plugin / "skills/export-pdf/SKILL.md"
 

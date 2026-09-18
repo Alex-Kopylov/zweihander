@@ -21,7 +21,7 @@ import pytest
 from plugin_maintenance.render import TEMPLATE_SUFFIX
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def skill_root(rendered: Path) -> Path:
     return rendered / "ai-assistant-ops" / "skills" / "adapt-skill-for-ai-harness"
 
@@ -34,17 +34,17 @@ LEGACY_MARKERS = (
 )
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def skill_text(skill_root: Path) -> str:
     return (skill_root / "SKILL.md").read_text(encoding="utf-8")
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def skill_body(skill_text: str) -> str:
     return skill_text.split("---\n", 2)[2]
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def frontmatter_matrix_file(skill_root: Path) -> Path:
     return skill_root / "references" / "harness-frontmatter-matrix.json"
 

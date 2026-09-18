@@ -9,12 +9,12 @@ import pytest
 from plugin_maintenance import REPO_ROOT
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def skill_root(rendered: Path) -> Path:
     return rendered / "ai-assistant-ops" / "skills" / "improve-skill"
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def skill_file(skill_root: Path) -> Path:
     return skill_root / "SKILL.md"
 

@@ -7,7 +7,7 @@ from pathlib import Path
 import pytest
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def find_versions(rendered: Path) -> Callable:
     script = (
         rendered / "dev-workflow" / "skills" / "version-bumper" / "scripts"

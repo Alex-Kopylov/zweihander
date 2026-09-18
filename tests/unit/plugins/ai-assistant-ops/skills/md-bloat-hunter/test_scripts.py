@@ -10,12 +10,12 @@ from types import ModuleType
 import pytest
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def skill_dir(rendered: Path) -> Path:
     return rendered / "ai-assistant-ops" / "skills" / "md-bloat-hunter"
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def scripts_dir(skill_dir: Path) -> Path:
     return skill_dir / "scripts"
 

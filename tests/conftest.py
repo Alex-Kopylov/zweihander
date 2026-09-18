@@ -7,6 +7,7 @@ The single exception is `tests/unit/plugin_maintenance/`, whose subject matter
 is the authored tree and the template rules.
 """
 
+from collections.abc import Callable
 from pathlib import Path
 
 import pytest
@@ -35,7 +36,8 @@ def pytest_generate_tests(metafunc: pytest.Metafunc) -> None:
 
     A test whose marker names a harness the option excludes ends up with an
     empty parameter set and is reported skipped: the run was asked not to
-    cover that harness.
+    cover that harness. A marker naming a harness that does not exist is a
+    typo rather than a narrowing, so it fails the run instead.
     """
     if "harness" not in metafunc.fixturenames:
         return
@@ -43,12 +45,19 @@ def pytest_generate_tests(metafunc: pytest.Metafunc) -> None:
     selected = HARNESSES
     marker = metafunc.definition.get_closest_marker("harness")
     if marker:
+        unknown = sorted(set(marker.args) - set(HARNESSES))
+        if unknown:
+            raise pytest.UsageError(
+                f"{metafunc.definition.nodeid}: unknown harness "
+                f"{', '.join(unknown)} in @pytest.mark.harness; "
+                f"supported harnesses: {', '.join(HARNESSES)}"
+            )
         selected = tuple(name for name in selected if name in marker.args)
     chosen = metafunc.config.getoption("--harness")
     if chosen:
         selected = tuple(name for name in selected if name == chosen)
 
-    metafunc.parametrize("harness", selected, indirect=True, scope="session")
+    metafunc.parametrize("harness", selected, indirect=True)
 
 
 def pytest_collection_modifyitems(
@@ -63,20 +72,37 @@ def pytest_collection_modifyitems(
             item.add_marker(skip)
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def harness(request: pytest.FixtureRequest) -> str:
     """The harness under test, one parameter per supported harness."""
     return request.param
 
 
 @pytest.fixture(scope="session")
-def rendered(harness: str, tmp_path_factory: pytest.TempPathFactory) -> Path:
-    """A fresh render of the current sources for `harness`.
+def _rendered_trees(tmp_path_factory: pytest.TempPathFactory) -> Callable[[str], Path]:
+    """A per-harness cache of rendered trees, filled on first request.
 
-    Session-scoped, so the tree is built once per harness. Stage 1 is
-    deliberately not run: it writes into the authored tree, which a test run
-    must not do, and the CI gate runs the full build before the tests.
+    The cache is what makes "once per harness" true. A session-scoped
+    parametrized fixture would render once per harness only as long as pytest
+    never revisits a parameter, and it does: narrowing shifts parameter
+    indices, so the reordering that groups them stops grouping them.
+
+    Stage 1 is deliberately not run: it writes into the authored tree, which a
+    test run must not do, and the CI gate runs the full build before the tests.
     """
-    tree = tmp_path_factory.mktemp("rendered") / harness
-    render_tree(REPO_ROOT, harness, tree)
-    return tree
+    trees: dict[str, Path] = {}
+
+    def tree_for(name: str) -> Path:
+        if name not in trees:
+            tree = tmp_path_factory.mktemp(f"rendered-{name}", numbered=False)
+            render_tree(REPO_ROOT, name, tree)
+            trees[name] = tree
+        return trees[name]
+
+    return tree_for
+
+
+@pytest.fixture
+def rendered(harness: str, _rendered_trees: Callable[[str], Path]) -> Path:
+    """A fresh render of the current sources for `harness`, built once."""
+    return _rendered_trees(harness)

@@ -8,22 +8,22 @@ from pathlib import Path
 import pytest
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def skill_dir(rendered: Path) -> Path:
     return rendered / "ai-assistant-ops" / "skills" / "md-bloat-hunter"
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def detector_schema(skill_dir: Path) -> Path:
     return skill_dir / "references" / "detector-output.schema.json"
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def file_reduction_schema(skill_dir: Path) -> Path:
     return skill_dir / "references" / "file-reduction.schema.json"
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def size_report_schema(skill_dir: Path) -> Path:
     return skill_dir / "references" / "size-report.schema.json"
 
