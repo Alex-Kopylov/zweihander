@@ -1,6 +1,12 @@
-"""The mermaid-diagrams stage-1 generator package and the job that drives it."""
+"""The mermaid-diagrams stage-1 generator package and the job that drives it.
+
+The plugin README is stage-1 output too, rendered from this package's
+`templates/readme.md`, so the claims about its content belong here rather than
+among the rendered-content tests.
+"""
 
 import inspect
+import re
 
 from plugin_maintenance import REPO_ROOT
 from plugin_maintenance.generators import mermaid_diagrams
@@ -15,6 +21,10 @@ TOOLING_ROOT = REPO_ROOT / "plugin_maintenance" / "generators" / "mermaid_diagra
 
 def tooling_text(relative_path: str) -> str:
     return (TOOLING_ROOT / relative_path).read_text(encoding="utf-8")
+
+
+def plugin_text(relative_path: str) -> str:
+    return (PLUGIN_ROOT / relative_path).read_text(encoding="utf-8")
 
 
 def test_generator_package_follows_stage_one_convention() -> None:
@@ -91,3 +101,22 @@ def test_sync_workflow_uses_root_project_and_full_build() -> None:
     assert "git-auto-commit-action" not in workflow
     assert "create-pull-request" in workflow
     assert "npm run" not in workflow
+
+
+def test_generated_readme_records_the_synced_commit() -> None:
+    """The README's provenance line and the notice name the same commit."""
+    synced = re.search(
+        r"Last synced from Mermaid: mermaid-js/mermaid @ ([0-9a-f]+) on ",
+        plugin_text("README.md"),
+    )
+
+    assert synced is not None
+    assert synced.group(1) in plugin_text("THIRD_PARTY_NOTICES.md")
+
+
+def test_generated_readme_avoids_claude_specific_source_packaging() -> None:
+    """The skill half of this claim is asserted against the rendered tree."""
+    readme = plugin_text("README.md")
+
+    for phrase in ["Claude", ".claude/skills"]:
+        assert phrase not in readme
