@@ -36,13 +36,14 @@ TESTS_ROOT = REPO_ROOT / "tests"
 BUILD_LAYER = Path(__file__).resolve().parent
 SHARED_CONFTEST = TESTS_ROOT / "conftest.py"
 # A path into the authored tree has two spellings here: the slash-bearing
-# literal, and the quoted segment joined onto `REPO_ROOT`. A bare unquoted
-# word stays legal, because prose and identifiers use it constantly.
+# literal, and the quoted segment joined onto `REPO_ROOT`. The second is
+# matched with its join, because the bare quoted word is also the key every
+# marketplace manifest stores its plugin list under. A bare unquoted word
+# stays legal too, because prose and identifiers use it constantly.
 AUTHORED_TREE_SPELLINGS = (
-    TEMPLATE_SUFFIX,
-    f"{PLUGINS_ROOT.name}/",
-    f'"{PLUGINS_ROOT.name}"',
-    f"'{PLUGINS_ROOT.name}'",
+    re.escape(TEMPLATE_SUFFIX),
+    re.escape(f"{PLUGINS_ROOT.name}/"),
+    rf"""REPO_ROOT\s*/\s*["']{PLUGINS_ROOT.name}["']""",
 )
 FRONTMATTER_MATRIX = json.loads(
     (REPO_ROOT / MATRIX_PATH)
@@ -342,10 +343,11 @@ def boundary_scanned_files() -> list[Path]:
 
 def test_tests_outside_the_build_layer_never_name_the_authored_tree():
     violations = [
-        f"{path.relative_to(REPO_ROOT)}: {spelling}"
+        f"{path.relative_to(REPO_ROOT)}: {found.group()}"
         for path in boundary_scanned_files()
         for spelling in AUTHORED_TREE_SPELLINGS
-        if spelling in path.read_text(encoding="utf-8")
+        for found in [re.search(spelling, path.read_text(encoding="utf-8"))]
+        if found
     ]
 
     assert not violations, (

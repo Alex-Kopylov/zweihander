@@ -1,5 +1,8 @@
-from plugin_maintenance import REPO_ROOT
+"""Every AGENTS.md has a CLAUDE.md beside it, so both runtimes read one file."""
+
 from pathlib import Path
+
+from plugin_maintenance import REPO_ROOT
 
 
 

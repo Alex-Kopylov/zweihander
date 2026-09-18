@@ -1,6 +1,9 @@
-from plugin_maintenance import REPO_ROOT
+"""The README catalog kanban lists every plugin the marketplace publishes."""
+
 import re
-from pathlib import Path
+
+from plugin_maintenance import REPO_ROOT
+from plugin_maintenance.render import HARNESS_MANIFESTS, manifest_plugin_names
 
 
 README = REPO_ROOT / "README.md"
@@ -58,9 +61,13 @@ def test_readme_catalog_uses_requested_kanban_categories() -> None:
 
 
 def test_readme_catalog_kanban_lists_every_plugin_once() -> None:
+    """The catalog answers "what can I install?", so the manifests define it."""
     expected_plugins = sorted(
-        path.parent.parent.name
-        for path in (REPO_ROOT / "plugins").glob("*/.codex-plugin/plugin.json")
+        {
+            name
+            for manifest in HARNESS_MANIFESTS.values()
+            for name in manifest_plugin_names(REPO_ROOT / manifest)
+        }
     )
     actual_plugins = sorted(
         section_label(section)

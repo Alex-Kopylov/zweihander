@@ -30,15 +30,15 @@ Everything lands in one PR from `claude/test-placement` into `harness-dist-pipel
 
 ## 4. Rendered-content tests
 
-- [ ] 4.1 Move the remainder of `tests/test_dist_invariants.py` to `tests/integration/rendered/test_invariants.py` and repoint every scan from the committed tree to `rendered`, dropping the per-harness `parametrize` in favour of the `harness` fixture
-- [ ] 4.2 Move `tests/test_dist_publication.py` to `tests/integration/rendered/test_publication.py`: keep the manifest `source` string assertions, replace directory existence under the committed tree with plugin membership in `rendered`
-- [ ] 4.3 Move `tests/test_ai_assistant_harness_adaptation_skill.py` to `tests/integration/rendered/ai_assistant_ops/test_adapt_skill_for_ai_harness.py`, reading the skill through `rendered`; keep the assertions whose subject is genuinely the template model, since this skill's content is about templates, and drop any that assert the skill file's own template syntax
-- [ ] 4.4 Move `tests/test_python_dev_workflow_plugin.py` to `tests/integration/rendered/python_dev_workflow/test_plugin.py`; delete the template-existence assertions and the template fallback in the metadata reference resolution, so a reference path either resolves in the rendered tree or fails
-- [ ] 4.5 Move `tests/test_job_hunt_workspace_layout.py` to `tests/integration/rendered/job_hunt_toolkit/test_workspace_layout.py`, reading every path through `rendered`
-- [ ] 4.6 Move `tests/test_resume_tailoring.py` to `tests/integration/rendered/job_hunt_toolkit/test_resume_tailoring.py`, reading through `rendered` and deleting the template-syntax assertion that stood in for "the skill asks the user before proceeding"
-- [ ] 4.7 Move the skill-content half of `tests/test_interview_decision_log.py` to `tests/integration/rendered/work_session_tools/test_interview.py`, reading the skill through `rendered`
-- [ ] 4.8 Move the skill-content half of `tests/test_mermaid_diagrams_plugin.py` to `tests/integration/rendered/mermaid_diagrams/test_skill_content.py`, reading through `rendered`
-- [ ] 4.9 Move `tests/test_agents_imports.py` and `tests/test_readme_plugin_catalog.py` to `tests/integration/repo/`; derive the README catalog's expected plugin list from the marketplace manifest rather than from the authored plugin tree
+- [x] 4.1 Move the remainder of `tests/test_dist_invariants.py` to `tests/integration/rendered/test_invariants.py` and repoint every scan from the committed tree to `rendered`, dropping the per-harness `parametrize` in favour of the `harness` fixture
+- [x] 4.2 Move `tests/test_dist_publication.py` to `tests/integration/rendered/test_publication.py`: keep the manifest `source` string assertions, replace directory existence under the committed tree with plugin membership in `rendered`
+- [x] 4.3 Move `tests/test_ai_assistant_harness_adaptation_skill.py` to `tests/integration/rendered/ai_assistant_ops/test_adapt_skill_for_ai_harness.py`, reading the skill through `rendered`; keep the assertions whose subject is genuinely the template model, since this skill's content is about templates, and drop any that assert the skill file's own template syntax
+- [x] 4.4 Move `tests/test_python_dev_workflow_plugin.py` to `tests/integration/rendered/python_dev_workflow/test_plugin.py`; delete the template-existence assertions and the template fallback in the metadata reference resolution, so a reference path either resolves in the rendered tree or fails
+- [x] 4.5 Move `tests/test_job_hunt_workspace_layout.py` to `tests/integration/rendered/job_hunt_toolkit/test_workspace_layout.py`, reading every path through `rendered`
+- [x] 4.6 Move `tests/test_resume_tailoring.py` to `tests/integration/rendered/job_hunt_toolkit/test_resume_tailoring.py`, reading through `rendered` and deleting the template-syntax assertion that stood in for "the skill asks the user before proceeding"
+- [x] 4.7 Move the skill-content half of `tests/test_interview_decision_log.py` to `tests/integration/rendered/work_session_tools/test_interview.py`, reading the skill through `rendered`
+- [x] 4.8 Move the skill-content half of `tests/test_mermaid_diagrams_plugin.py` to `tests/integration/rendered/mermaid_diagrams/test_skill_content.py`, reading through `rendered`
+- [x] 4.9 Move `tests/test_agents_imports.py` and `tests/test_readme_plugin_catalog.py` to `tests/integration/repo/`; derive the README catalog's expected plugin list from the marketplace manifest rather than from the authored plugin tree
 
 ## 5. Skill-script tests
 
