@@ -1,3 +1,5 @@
+"""The md-bloat-hunter scripts, loaded from the tree a user installs."""
+
 import importlib.util
 import json
 import subprocess
@@ -5,13 +7,21 @@ import sys
 from pathlib import Path
 from types import ModuleType
 
-
-SKILL_DIR = Path(__file__).resolve().parents[1]
-SCRIPTS_DIR = SKILL_DIR / "scripts"
+import pytest
 
 
-def load_script(name: str) -> ModuleType:
-    path = SCRIPTS_DIR / f"{name}.py"
+@pytest.fixture(scope="session")
+def skill_dir(rendered: Path) -> Path:
+    return rendered / "ai-assistant-ops" / "skills" / "md-bloat-hunter"
+
+
+@pytest.fixture(scope="session")
+def scripts_dir(skill_dir: Path) -> Path:
+    return skill_dir / "scripts"
+
+
+def load_script(scripts_dir: Path, name: str) -> ModuleType:
+    path = scripts_dir / f"{name}.py"
     spec = importlib.util.spec_from_file_location(name, path)
     assert spec is not None
     module = importlib.util.module_from_spec(spec)
@@ -56,8 +66,8 @@ def clean_git_repo(tmp_path: Path, target_name: str = "doc.md") -> tuple[Path, P
     return repo, target
 
 
-def test_apply_findings_uses_context_to_disambiguate() -> None:
-    apply_findings = load_script("apply_findings")
+def test_apply_findings_uses_context_to_disambiguate(scripts_dir: Path) -> None:
+    apply_findings = load_script(scripts_dir, "apply_findings")
     content = "alpha target omega\nbeta target omega\n"
 
     matches = apply_findings.accepted_occurrences(content, "target", "beta ", " omega")
@@ -65,8 +75,8 @@ def test_apply_findings_uses_context_to_disambiguate() -> None:
     assert matches == [(24, 30)]
 
 
-def test_apply_findings_rejects_ambiguous_excerpt_without_writing(tmp_path: Path) -> None:
-    apply_findings = load_script("apply_findings")
+def test_apply_findings_rejects_ambiguous_excerpt_without_writing(scripts_dir: Path, tmp_path: Path) -> None:
+    apply_findings = load_script(scripts_dir, "apply_findings")
     target = tmp_path / "doc.md"
     original = "repeat repeat\n"
     target.write_text(original, encoding="utf-8")
@@ -90,8 +100,8 @@ def test_apply_findings_rejects_ambiguous_excerpt_without_writing(tmp_path: Path
     assert target.read_text(encoding="utf-8") == original
 
 
-def test_apply_findings_stops_file_after_first_failure(tmp_path: Path) -> None:
-    apply_findings = load_script("apply_findings")
+def test_apply_findings_stops_file_after_first_failure(scripts_dir: Path, tmp_path: Path) -> None:
+    apply_findings = load_script(scripts_dir, "apply_findings")
     target = tmp_path / "doc.md"
     target.write_text("first second\n", encoding="utf-8")
 
@@ -122,7 +132,7 @@ def test_apply_findings_stops_file_after_first_failure(tmp_path: Path) -> None:
     assert target.read_text(encoding="utf-8") == "first second\n"
 
 
-def test_apply_findings_cli_reports_failures(tmp_path: Path) -> None:
+def test_apply_findings_cli_reports_failures(scripts_dir: Path, tmp_path: Path) -> None:
     target = tmp_path / "doc.md"
     target.write_text("repeat repeat\n", encoding="utf-8")
     approved = write_json(
@@ -143,7 +153,7 @@ def test_apply_findings_cli_reports_failures(tmp_path: Path) -> None:
     )
 
     result = subprocess.run(
-        [sys.executable, str(SCRIPTS_DIR / "apply_findings.py"), str(approved)],
+        [sys.executable, str(scripts_dir / "apply_findings.py"), str(approved)],
         text=True,
         capture_output=True,
         check=False,
@@ -155,8 +165,8 @@ def test_apply_findings_cli_reports_failures(tmp_path: Path) -> None:
     assert summary["failed"] == 1
 
 
-def test_validate_output_invariants_reject_invalid_recommended_indexes() -> None:
-    validate_output = load_script("validate_output")
+def test_validate_output_invariants_reject_invalid_recommended_indexes(scripts_dir: Path) -> None:
+    validate_output = load_script(scripts_dir, "validate_output")
 
     errors = validate_output.validate_file_reduction_invariants(
         {
@@ -175,8 +185,8 @@ def test_validate_output_invariants_reject_invalid_recommended_indexes() -> None
     ]
 
 
-def test_validate_output_reports_missing_jsonschema(monkeypatch) -> None:
-    validate_output = load_script("validate_output")
+def test_validate_output_reports_missing_jsonschema(scripts_dir: Path, monkeypatch) -> None:
+    validate_output = load_script(scripts_dir, "validate_output")
 
     def fake_run(*_args, **_kwargs):
         raise FileNotFoundError
@@ -188,8 +198,8 @@ def test_validate_output_reports_missing_jsonschema(monkeypatch) -> None:
     assert status == 127
 
 
-def test_measure_size_uses_tiktoken_count_when_encoder_is_available(tmp_path: Path) -> None:
-    measure_size = load_script("measure_size")
+def test_measure_size_uses_tiktoken_count_when_encoder_is_available(scripts_dir: Path, tmp_path: Path) -> None:
+    measure_size = load_script(scripts_dir, "measure_size")
     target = tmp_path / "doc.md"
     target.write_text("alpha beta gamma\n", encoding="utf-8")
 
@@ -210,8 +220,8 @@ def test_measure_size_uses_tiktoken_count_when_encoder_is_available(tmp_path: Pa
     assert report["status"] == "ok"
 
 
-def test_measure_size_fallback_uses_conservative_char_word_estimate(tmp_path: Path) -> None:
-    measure_size = load_script("measure_size")
+def test_measure_size_fallback_uses_conservative_char_word_estimate(scripts_dir: Path, tmp_path: Path) -> None:
+    measure_size = load_script(scripts_dir, "measure_size")
     target = tmp_path / "doc.md"
     target.write_text(("word " * 900).strip(), encoding="utf-8")
 
@@ -224,8 +234,8 @@ def test_measure_size_fallback_uses_conservative_char_word_estimate(tmp_path: Pa
     assert report["status"] == "warning"
 
 
-def test_measure_size_marks_hard_budget_exceeded(tmp_path: Path) -> None:
-    measure_size = load_script("measure_size")
+def test_measure_size_marks_hard_budget_exceeded(scripts_dir: Path, tmp_path: Path) -> None:
+    measure_size = load_script(scripts_dir, "measure_size")
     target = tmp_path / "doc.md"
     target.write_text("x" * 9000, encoding="utf-8")
 
@@ -235,11 +245,11 @@ def test_measure_size_marks_hard_budget_exceeded(tmp_path: Path) -> None:
     assert report["status"] == "over_budget"
 
 
-def test_size_budget_markdown_delegates_calculation_to_script() -> None:
+def test_size_budget_markdown_delegates_calculation_to_script(skill_dir: Path) -> None:
     markdown_files = [
-        SKILL_DIR / "SKILL.md.j2",
-        SKILL_DIR / "agents" / "size-budget-reporter.md",
-        SKILL_DIR / "docs" / "SPEC.md",
+        skill_dir / "SKILL.md",
+        skill_dir / "agents" / "size-budget-reporter.md",
+        skill_dir / "docs" / "SPEC.md",
     ]
     forbidden_calculation_fragments = [
         "ceil(",
@@ -258,8 +268,8 @@ def test_size_budget_markdown_delegates_calculation_to_script() -> None:
         assert fragment not in combined
 
 
-def test_tiktoken_optional_requirement_uses_compatibility_frontmatter() -> None:
-    skill_text = (SKILL_DIR / "SKILL.md.j2").read_text(encoding="utf-8")
+def test_tiktoken_optional_requirement_uses_compatibility_frontmatter(skill_dir: Path) -> None:
+    skill_text = (skill_dir / "SKILL.md").read_text(encoding="utf-8")
     frontmatter = skill_text.split("---", 2)[1]
 
     assert "compatibility:" in frontmatter
@@ -267,8 +277,8 @@ def test_tiktoken_optional_requirement_uses_compatibility_frontmatter() -> None:
     assert "allowed-tools:" not in frontmatter
 
 
-def test_preflight_validate_target_accepts_clean_tracked_markdown(tmp_path: Path) -> None:
-    preflight = load_script("preflight")
+def test_preflight_validate_target_accepts_clean_tracked_markdown(scripts_dir: Path, tmp_path: Path) -> None:
+    preflight = load_script(scripts_dir, "preflight")
     repo, target = clean_git_repo(tmp_path)
 
     result = preflight.validate_target(target)
@@ -279,8 +289,8 @@ def test_preflight_validate_target_accepts_clean_tracked_markdown(tmp_path: Path
     assert result["sha256"] == preflight.sha256(target)
 
 
-def test_preflight_validate_target_accepts_uppercase_markdown_extension(tmp_path: Path) -> None:
-    preflight = load_script("preflight")
+def test_preflight_validate_target_accepts_uppercase_markdown_extension(scripts_dir: Path, tmp_path: Path) -> None:
+    preflight = load_script(scripts_dir, "preflight")
     repo, target = clean_git_repo(tmp_path, "doc.MD")
 
     result = preflight.validate_target(target)
@@ -290,8 +300,8 @@ def test_preflight_validate_target_accepts_uppercase_markdown_extension(tmp_path
     assert result["git_relative_path"] == "doc.MD"
 
 
-def test_preflight_rejects_dirty_target(tmp_path: Path) -> None:
-    preflight = load_script("preflight")
+def test_preflight_rejects_dirty_target(scripts_dir: Path, tmp_path: Path) -> None:
+    preflight = load_script(scripts_dir, "preflight")
     _repo, target = clean_git_repo(tmp_path)
     target.write_text("# Title\n\nChanged.\n", encoding="utf-8")
 
@@ -303,8 +313,8 @@ def test_preflight_rejects_dirty_target(tmp_path: Path) -> None:
         raise AssertionError("dirty target was accepted")
 
 
-def test_preflight_rejects_untracked_target(tmp_path: Path) -> None:
-    preflight = load_script("preflight")
+def test_preflight_rejects_untracked_target(scripts_dir: Path, tmp_path: Path) -> None:
+    preflight = load_script(scripts_dir, "preflight")
     repo, _target = clean_git_repo(tmp_path)
     untracked = repo / "untracked.md"
     untracked.write_text("draft\n", encoding="utf-8")
@@ -317,11 +327,11 @@ def test_preflight_rejects_untracked_target(tmp_path: Path) -> None:
         raise AssertionError("untracked target was accepted")
 
 
-def test_preflight_main_rejects_changed_hash_from_expect_map(tmp_path: Path) -> None:
+def test_preflight_main_rejects_changed_hash_from_expect_map(scripts_dir: Path, tmp_path: Path) -> None:
     repo, target = clean_git_repo(tmp_path)
     expect_map = tmp_path / "preflight.json"
     first = subprocess.run(
-        [sys.executable, str(SCRIPTS_DIR / "preflight.py"), str(target)],
+        [sys.executable, str(scripts_dir / "preflight.py"), str(target)],
         text=True,
         capture_output=True,
         check=False,
@@ -344,7 +354,7 @@ def test_preflight_main_rejects_changed_hash_from_expect_map(tmp_path: Path) -> 
     assert commit.returncode == 0, commit.stderr
 
     second = subprocess.run(
-        [sys.executable, str(SCRIPTS_DIR / "preflight.py"), "--expect-map", str(expect_map), str(target)],
+        [sys.executable, str(scripts_dir / "preflight.py"), "--expect-map", str(expect_map), str(target)],
         text=True,
         capture_output=True,
         check=False,

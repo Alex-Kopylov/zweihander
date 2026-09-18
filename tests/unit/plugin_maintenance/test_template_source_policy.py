@@ -36,13 +36,14 @@ TESTS_ROOT = REPO_ROOT / "tests"
 BUILD_LAYER = Path(__file__).resolve().parent
 SHARED_CONFTEST = TESTS_ROOT / "conftest.py"
 # A path into the authored tree has two spellings here: the slash-bearing
-# literal, and the quoted segment joined onto `REPO_ROOT`. The second is
-# matched with its join, because the bare quoted word is also the key every
-# marketplace manifest stores its plugin list under. A bare unquoted word
+# literal, and the quoted segment joined onto `REPO_ROOT`. Each is matched at
+# a path root only, so that the two names sharing the word stay legal: the
+# Codex marketplace manifest at `.agents/plugins/`, and the key every
+# marketplace manifest stores its own plugin list under. A bare unquoted word
 # stays legal too, because prose and identifiers use it constantly.
 AUTHORED_TREE_SPELLINGS = (
     re.escape(TEMPLATE_SUFFIX),
-    re.escape(f"{PLUGINS_ROOT.name}/"),
+    rf"(?<![/\w-]){re.escape(PLUGINS_ROOT.name)}/",
     rf"""REPO_ROOT\s*/\s*["']{PLUGINS_ROOT.name}["']""",
 )
 FRONTMATTER_MATRIX = json.loads(

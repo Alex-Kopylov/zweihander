@@ -1,12 +1,19 @@
+"""The version-bumper discovery script, loaded from the tree a user installs."""
+
 import importlib.util
+from collections.abc import Callable
 from pathlib import Path
 
+import pytest
 
-SCRIPT_PATH = Path(__file__).resolve().parents[1] / "scripts" / "find_versions.py"
 
-
-def load_find_versions():
-    spec = importlib.util.spec_from_file_location("find_versions", SCRIPT_PATH)
+@pytest.fixture(scope="session")
+def find_versions(rendered: Path) -> Callable:
+    script = (
+        rendered / "dev-workflow" / "skills" / "version-bumper" / "scripts"
+        / "find_versions.py"
+    )
+    spec = importlib.util.spec_from_file_location("find_versions", script)
     assert spec is not None
     module = importlib.util.module_from_spec(spec)
     assert spec.loader is not None
@@ -14,7 +21,7 @@ def load_find_versions():
     return module.find_versions
 
 
-def test_detects_claude_and_codex_plugin_manifests(tmp_path: Path) -> None:
+def test_detects_claude_and_codex_plugin_manifests(find_versions: Callable, tmp_path: Path) -> None:
     claude_manifest = tmp_path / ".claude-plugin" / "plugin.json"
     codex_manifest = tmp_path / ".codex-plugin" / "plugin.json"
     claude_manifest.parent.mkdir()
@@ -22,7 +29,7 @@ def test_detects_claude_and_codex_plugin_manifests(tmp_path: Path) -> None:
     claude_manifest.write_text('{"name": "example", "version": "1.2.3"}\n')
     codex_manifest.write_text('{"name": "example", "version": "1.2.3"}\n')
 
-    versions = load_find_versions()(tmp_path)
+    versions = find_versions(tmp_path)
 
     discovered = {Path(str(item["file"])).relative_to(tmp_path) for item in versions}
     assert discovered == {
@@ -36,27 +43,27 @@ def test_detects_claude_and_codex_plugin_manifests(tmp_path: Path) -> None:
     }
 
 
-def test_reports_only_python_project_reference_without_fastapi(tmp_path: Path) -> None:
+def test_reports_only_python_project_reference_without_fastapi(find_versions: Callable, tmp_path: Path) -> None:
     (tmp_path / "pyproject.toml").write_text('[project]\nversion = "1.2.3"\n')
 
-    versions = load_find_versions()(tmp_path)
+    versions = find_versions(tmp_path)
 
     assert [item["pattern"] for item in versions] == ["project"]
     assert {item["reference"] for item in versions} == {"references/python-project-files.md"}
 
 
-def test_reports_fastapi_reference_only_when_fastapi_version_detected(tmp_path: Path) -> None:
+def test_reports_fastapi_reference_only_when_fastapi_version_detected(find_versions: Callable, tmp_path: Path) -> None:
     src = tmp_path / "src" / "service"
     src.mkdir(parents=True)
     (src / "main.py").write_text('from fastapi import FastAPI\napp = FastAPI(version="1.2.3")\n')
 
-    versions = load_find_versions()(tmp_path)
+    versions = find_versions(tmp_path)
 
     assert [item["pattern"] for item in versions] == ["fastapi"]
     assert {item["reference"] for item in versions} == {"references/fastapi-apps.md"}
 
 
-def test_detects_claude_and_codex_marketplace_manifests(tmp_path: Path) -> None:
+def test_detects_claude_and_codex_marketplace_manifests(find_versions: Callable, tmp_path: Path) -> None:
     claude_manifest = tmp_path / ".claude-plugin" / "marketplace.json"
     codex_manifest = tmp_path / ".agents" / "plugins" / "marketplace.json"
     claude_manifest.parent.mkdir(parents=True)
@@ -64,7 +71,7 @@ def test_detects_claude_and_codex_marketplace_manifests(tmp_path: Path) -> None:
     claude_manifest.write_text('{"name": "example", "version": "1.2.3"}\n')
     codex_manifest.write_text('{"name": "example", "version": "1.2.3"}\n')
 
-    versions = load_find_versions()(tmp_path)
+    versions = find_versions(tmp_path)
 
     discovered = {Path(str(item["file"])).relative_to(tmp_path) for item in versions}
     assert discovered == {

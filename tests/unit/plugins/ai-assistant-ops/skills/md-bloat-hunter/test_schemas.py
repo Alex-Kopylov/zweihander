@@ -1,13 +1,31 @@
+"""The md-bloat-hunter schemas, validated in the tree a user installs."""
+
 import json
 import subprocess
 import sys
 from pathlib import Path
 
+import pytest
 
-SKILL_DIR = Path(__file__).resolve().parents[1]
-DETECTOR_SCHEMA = SKILL_DIR / "references" / "detector-output.schema.json"
-FILE_REDUCTION_SCHEMA = SKILL_DIR / "references" / "file-reduction.schema.json"
-SIZE_REPORT_SCHEMA = SKILL_DIR / "references" / "size-report.schema.json"
+
+@pytest.fixture(scope="session")
+def skill_dir(rendered: Path) -> Path:
+    return rendered / "ai-assistant-ops" / "skills" / "md-bloat-hunter"
+
+
+@pytest.fixture(scope="session")
+def detector_schema(skill_dir: Path) -> Path:
+    return skill_dir / "references" / "detector-output.schema.json"
+
+
+@pytest.fixture(scope="session")
+def file_reduction_schema(skill_dir: Path) -> Path:
+    return skill_dir / "references" / "file-reduction.schema.json"
+
+
+@pytest.fixture(scope="session")
+def size_report_schema(skill_dir: Path) -> Path:
+    return skill_dir / "references" / "size-report.schema.json"
 
 
 def run_jsonschema(instance: Path, schema: Path) -> subprocess.CompletedProcess[str]:
@@ -118,34 +136,34 @@ def size_report(**overrides: object) -> dict:
     return payload
 
 
-def test_detector_output_schema_accepts_valid_output(tmp_path: Path) -> None:
+def test_detector_output_schema_accepts_valid_output(detector_schema: Path, tmp_path: Path) -> None:
     payload = write_json(tmp_path / "detector.json", detector_output())
 
-    result = run_jsonschema(payload, DETECTOR_SCHEMA)
+    result = run_jsonschema(payload, detector_schema)
 
     assert result.returncode == 0, result.stderr
 
 
-def test_detector_output_schema_rejects_wrong_specialist_type(tmp_path: Path) -> None:
+def test_detector_output_schema_rejects_wrong_specialist_type(detector_schema: Path, tmp_path: Path) -> None:
     bad = detector_output(specialist="filler-eliminator")
     bad["findings"][0]["type"] = "verbosity"
     bad["findings"][0]["action"] = "replace"
     payload = write_json(tmp_path / "bad-detector.json", bad)
 
-    result = run_jsonschema(payload, DETECTOR_SCHEMA)
+    result = run_jsonschema(payload, detector_schema)
 
     assert result.returncode != 0
 
 
-def test_file_reduction_schema_accepts_valid_reduction(tmp_path: Path) -> None:
+def test_file_reduction_schema_accepts_valid_reduction(file_reduction_schema: Path, tmp_path: Path) -> None:
     payload = write_json(tmp_path / "file-reduction.json", file_reduction())
 
-    result = run_jsonschema(payload, FILE_REDUCTION_SCHEMA)
+    result = run_jsonschema(payload, file_reduction_schema)
 
     assert result.returncode == 0, result.stderr
 
 
-def test_file_reduction_schema_accepts_directory_redundancy_reduction(tmp_path: Path) -> None:
+def test_file_reduction_schema_accepts_directory_redundancy_reduction(file_reduction_schema: Path, tmp_path: Path) -> None:
     payload = file_reduction(
         source_specialists=["directory-redundancy-detector"],
         type="redundancy",
@@ -164,22 +182,22 @@ def test_file_reduction_schema_accepts_directory_redundancy_reduction(tmp_path: 
     ]
     path = write_json(tmp_path / "directory-reduction.json", payload)
 
-    result = run_jsonschema(path, FILE_REDUCTION_SCHEMA)
+    result = run_jsonschema(path, file_reduction_schema)
 
     assert result.returncode == 0, result.stderr
 
 
-def test_file_reduction_schema_rejects_duplicate_detector_status(tmp_path: Path) -> None:
+def test_file_reduction_schema_rejects_duplicate_detector_status(file_reduction_schema: Path, tmp_path: Path) -> None:
     payload = file_reduction()
     payload["detector_status"][1]["specialist"] = "redundancy-detector"
     path = write_json(tmp_path / "duplicate-status.json", payload)
 
-    result = run_jsonschema(path, FILE_REDUCTION_SCHEMA)
+    result = run_jsonschema(path, file_reduction_schema)
 
     assert result.returncode != 0
 
 
-def test_validate_output_script_rejects_out_of_range_recommended_index(tmp_path: Path) -> None:
+def test_validate_output_script_rejects_out_of_range_recommended_index(skill_dir: Path, tmp_path: Path) -> None:
     payload = file_reduction(
         resolution="alternatives",
         recommendation="apply-recommended",
@@ -208,7 +226,7 @@ def test_validate_output_script_rejects_out_of_range_recommended_index(tmp_path:
     result = subprocess.run(
         [
             sys.executable,
-            str(SKILL_DIR / "scripts" / "validate_output.py"),
+            str(skill_dir / "scripts" / "validate_output.py"),
             "file-reduction",
             str(path),
         ],
@@ -221,23 +239,23 @@ def test_validate_output_script_rejects_out_of_range_recommended_index(tmp_path:
     assert "recommended_alternative_index" in result.stderr
 
 
-def test_size_report_schema_accepts_valid_report(tmp_path: Path) -> None:
+def test_size_report_schema_accepts_valid_report(size_report_schema: Path, tmp_path: Path) -> None:
     payload = write_json(tmp_path / "size-report.json", size_report())
 
-    result = run_jsonschema(payload, SIZE_REPORT_SCHEMA)
+    result = run_jsonschema(payload, size_report_schema)
 
     assert result.returncode == 0, result.stderr
 
 
-def test_size_report_schema_rejects_invalid_budget_status(tmp_path: Path) -> None:
+def test_size_report_schema_rejects_invalid_budget_status(size_report_schema: Path, tmp_path: Path) -> None:
     payload = write_json(tmp_path / "bad-size-report.json", size_report(status="critical"))
 
-    result = run_jsonschema(payload, SIZE_REPORT_SCHEMA)
+    result = run_jsonschema(payload, size_report_schema)
 
     assert result.returncode != 0
 
 
-def test_apply_findings_script_applies_exact_single_match(tmp_path: Path) -> None:
+def test_apply_findings_script_applies_exact_single_match(skill_dir: Path, tmp_path: Path) -> None:
     target = tmp_path / "doc.md"
     target.write_text("Use in order to keep the example clear.\n", encoding="utf-8")
     approved = write_json(
@@ -258,7 +276,7 @@ def test_apply_findings_script_applies_exact_single_match(tmp_path: Path) -> Non
     )
 
     result = subprocess.run(
-        [sys.executable, str(SKILL_DIR / "scripts" / "apply_findings.py"), str(approved)],
+        [sys.executable, str(skill_dir / "scripts" / "apply_findings.py"), str(approved)],
         text=True,
         capture_output=True,
         check=False,

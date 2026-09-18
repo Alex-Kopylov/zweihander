@@ -42,12 +42,12 @@ Everything lands in one PR from `claude/test-placement` into `harness-dist-pipel
 
 ## 5. Skill-script tests
 
-- [ ] 5.1 Move md-bloat-hunter's `test_scripts.py` and `test_schemas.py` to `tests/unit/plugins/ai-assistant-ops/skills/md-bloat-hunter/`, loading the scripts, schemas and skill file from `rendered`; revert commit `8c987e1`'s template retarget in the process
-- [ ] 5.2 Move version-bumper's `test_find_versions.py` to `tests/unit/plugins/dev-workflow/skills/version-bumper/test_find_versions.py`, loading the script from `rendered`
-- [ ] 5.3 Move the script half of `tests/test_interview_decision_log.py` to `tests/unit/plugins/work-session-tools/skills/interview/test_decision_log.py`, running the shell script from `rendered` and keeping its executable-bit dependency honest
-- [ ] 5.4 Move `tests/test_typst_export_script.py` to `tests/unit/plugins/job-hunt-toolkit/skills/export-pdf/test_typst_to_pdf.py`, running the script from `rendered`; keep the `typst`-missing skip
-- [ ] 5.5 Delete `plugins/ai-assistant-ops/skills/md-bloat-hunter/tests/` and `plugins/dev-workflow/skills/version-bumper/tests/`; check 2.3 goes green
-- [ ] 5.6 Confirm 2.2 goes green: no file outside the build layer names a template or a path into the authored tree
+- [x] 5.1 Move md-bloat-hunter's `test_scripts.py` and `test_schemas.py` to `tests/unit/plugins/ai-assistant-ops/skills/md-bloat-hunter/`, loading the scripts, schemas and skill file from `rendered`; revert commit `8c987e1`'s template retarget in the process
+- [x] 5.2 Move version-bumper's `test_find_versions.py` to `tests/unit/plugins/dev-workflow/skills/version-bumper/test_find_versions.py`, loading the script from `rendered`
+- [x] 5.3 Move the script half of `tests/test_interview_decision_log.py` to `tests/unit/plugins/work-session-tools/skills/interview/test_decision_log.py`, running the shell script from `rendered` and keeping its executable-bit dependency honest
+- [x] 5.4 Move `tests/test_typst_export_script.py` to `tests/unit/plugins/job-hunt-toolkit/skills/export-pdf/test_typst_to_pdf.py`, running the script from `rendered`; keep the `typst`-missing skip
+- [x] 5.5 Delete `plugins/ai-assistant-ops/skills/md-bloat-hunter/tests/` and `plugins/dev-workflow/skills/version-bumper/tests/`; check 2.3 goes green
+- [x] 5.6 Confirm 2.2 goes green: no file outside the build layer names a template or a path into the authored tree
 
 ## 6. Consequences
 
