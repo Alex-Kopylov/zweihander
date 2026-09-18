@@ -59,10 +59,10 @@ Everything lands in one PR from `claude/test-placement` into `harness-dist-pipel
 
 ## 7. Verification
 
-- [ ] 7.1 `uv run pytest tests -q` collects at least 265 tests (236 previously under `tests/` plus 29 moved in) and passes, with only the pre-existing environment-dependent skips
-- [ ] 7.2 `uv run pytest plugins -q` collects zero tests
-- [ ] 7.3 `uv run pytest tests -q --harness Codex` runs the harness-independent tests plus the Codex ones and nothing for the other harness; the same for the other harness name
-- [ ] 7.4 `uv run pytest tests -q` reports no unknown-marker warning, and an `llm`-marked probe test skips without `--llm` and runs with it
-- [ ] 7.5 `uv run python -m plugin_maintenance.build --check` reports the published trees match
-- [ ] 7.6 `jq empty .agents/plugins/marketplace.json .claude-plugin/marketplace.json` and `find plugins dist -path '*/plugin.json' -print0 | xargs -0 jq empty` pass
-- [ ] 7.7 `git diff --check` is clean
+- [x] 7.1 `uv run pytest tests -q` collects at least 265 tests (236 previously under `tests/` plus 29 moved in) and passes, with only the pre-existing environment-dependent skips
+- [x] 7.2 `uv run pytest plugins -q` collects zero tests
+- [x] 7.3 `uv run pytest tests -q --harness Codex` runs the harness-independent tests plus the Codex ones and nothing for the other harness; the same for the other harness name
+- [x] 7.4 `uv run pytest tests -q` reports no unknown-marker warning, and an `llm`-marked probe test skips without `--llm` and runs with it
+- [x] 7.5 `uv run python -m plugin_maintenance.build --check` reports the published trees match
+- [x] 7.6 `jq empty .agents/plugins/marketplace.json .claude-plugin/marketplace.json` and `find plugins dist -path '*/plugin.json' -print0 | xargs -0 jq empty` pass
+- [x] 7.7 `git diff --check` is clean
