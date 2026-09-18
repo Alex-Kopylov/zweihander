@@ -51,11 +51,11 @@ Everything lands in one PR from `claude/test-placement` into `harness-dist-pipel
 
 ## 6. Consequences
 
-- [ ] 6.1 Edit `plugins/ai-assistant-ops/skills/md-bloat-hunter/SKILL.md.j2` so the sentence "During normal invocation, `docs/` and `tests/` are skill-dev artifacts only." no longer mentions `tests/`, which the skill no longer has
-- [ ] 6.2 Run the full build and commit both published trees, which now carry no `tests/` directories
-- [ ] 6.3 Bump `ai-assistant-ops` and `dev-workflow` in both runtime manifests with the repo's `version-bumper` skill, since their shipped trees change; leave every other plugin alone
-- [ ] 6.4 Document in `AGENTS.md` (Development Workflow) the test layout, the boundary rule and its one build-layer exception, the `harness` and `rendered` fixtures, the `harness` and `llm` markers, and the `--harness` and `--llm` options
-- [ ] 6.5 Confirm `.github/workflows/ci.yml` needs no edit: it already runs the full build, the staged diff, and `uv run pytest tests`; the `gate` job name must not change
+- [x] 6.1 Edit `plugins/ai-assistant-ops/skills/md-bloat-hunter/SKILL.md.j2` so the sentence "During normal invocation, `docs/` and `tests/` are skill-dev artifacts only." no longer mentions `tests/`, which the skill no longer has
+- [x] 6.2 Run the full build and commit both published trees, which now carry no `tests/` directories
+- [x] 6.3 Bump `ai-assistant-ops` and `dev-workflow` in both runtime manifests with the repo's `version-bumper` skill, since their shipped trees change; leave every other plugin alone
+- [x] 6.4 Document in `AGENTS.md` (Development Workflow) the test layout, the boundary rule and its one build-layer exception, the `harness` and `rendered` fixtures, the `harness` and `llm` markers, and the `--harness` and `--llm` options
+- [x] 6.5 Confirm `.github/workflows/ci.yml` needs no edit: it already runs the full build, the staged diff, and `uv run pytest tests`; the `gate` job name must not change
 
 ## 7. Verification
 

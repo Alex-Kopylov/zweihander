@@ -117,6 +117,64 @@ find plugins dist -path '*/plugin.json' -print0 | xargs -0 jq empty
 git diff --check
 ```
 
+## Tests
+
+Every test in the repository lives under the root `tests/`. No `tests/`
+directory exists under `plugins/**`: one there would never be run by CI and
+would be copied into both published trees. A policy check enforces both.
+
+**A test validates the artifact, not the source.** Users receive
+`dist/<harness>/`, so a test reaches plugin content through a fresh render,
+never through `plugins/` and never through a `.j2` file. The one exception is
+`tests/unit/plugin_maintenance/`, whose subject matter *is* the authored tree
+and the template rules. Outside that directory a second policy check fails on
+any path into the authored tree, in either spelling.
+
+Layout, mirroring what each test covers, with directories created only as
+needed:
+
+```text
+tests/
+  conftest.py                          the shared fixtures, markers and options
+  unit/
+    plugin_maintenance/                the build layer - the only reader of plugins/
+      conftest.py                      fixture_repo, fixture_matrix
+      generators/
+    plugins/<plugin>/skills/<skill>/   tests of a skill's scripts, read through `rendered`
+  integration/
+    rendered/                          assertions on rendered plugin content
+    repo/                              repository conventions that read no plugin content
+```
+
+Two fixtures carry the mechanism:
+
+- `harness` is the harness under test. Every test that requests it — directly,
+  or through `rendered` — runs once per harness in `HARNESSES`, which derives
+  from the renderer's harness-to-manifest mapping. Never restate the harness
+  names in a test.
+- `rendered` is a fresh distribution-stage render of the current `plugins/`
+  for that harness, built once per harness per session. It does not run stage
+  1; the CI gate runs the full build before the tests.
+
+Two markers, both registered in `pytest.ini`:
+
+- `@pytest.mark.harness("<name>")` narrows a test to one harness.
+- `@pytest.mark.llm` marks a test that calls a model; it is skipped unless the
+  run passes `--llm`.
+
+Two options narrow a local run; CI passes neither:
+
+```shell
+uv run pytest tests --harness Codex   # harness-independent tests plus Codex
+uv run pytest tests --llm             # include the `llm`-marked tests
+```
+
+Do not assert template syntax outside the build layer. Three build-layer
+checks carry the harness-format guarantee between them: a published tree for
+one harness carries no other harness's callable names, a file rendered from a
+template carries no leftover Jinja marker outside its raw blocks, and
+consecutive builds are byte-identical.
+
 ## Versioning
 
 When changing plugin or marketplace content, bump the relevant versions according
