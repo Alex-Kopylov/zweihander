@@ -34,17 +34,19 @@ TESTS_ROOT = REPO_ROOT / "tests"
 # This directory is the one carve-out from the boundary: the build layer's
 # subject matter is the authored tree and the template rules, so it reads both.
 BUILD_LAYER = Path(__file__).resolve().parent
-SHARED_CONFTEST = TESTS_ROOT / "conftest.py"
-# A path into the authored tree has two spellings here: the slash-bearing
-# literal, and the quoted segment joined onto `REPO_ROOT`. Each is matched at
-# a path root only, so that the two names sharing the word stay legal: the
-# Codex marketplace manifest at `.agents/plugins/`, and the key every
-# marketplace manifest stores its own plugin list under. A bare unquoted word
-# stays legal too, because prose and identifiers use it constantly.
+# A path into the authored tree has four spellings here: the slash-bearing
+# literal, and the quoted segment reached by joining it onto `REPO_ROOT`, by
+# constructing a `Path` from it, or by `joinpath`. Each is matched at a path
+# root only, so that the two names sharing the word stay legal: the Codex
+# marketplace manifest at `.agents/plugins/`, and the key every marketplace
+# manifest stores its own plugin list under. A bare unquoted word stays legal
+# too, because prose and identifiers use it constantly.
 AUTHORED_TREE_SPELLINGS = (
     re.escape(TEMPLATE_SUFFIX),
     rf"(?<![/\w-]){re.escape(PLUGINS_ROOT.name)}/",
     rf"""REPO_ROOT\s*/\s*["']{PLUGINS_ROOT.name}["']""",
+    rf"""Path\(\s*["']{PLUGINS_ROOT.name}["']""",
+    rf"""\.joinpath\(\s*["']{PLUGINS_ROOT.name}["']""",
 )
 FRONTMATTER_MATRIX = json.loads(
     (REPO_ROOT / MATRIX_PATH)
@@ -337,7 +339,6 @@ def boundary_scanned_files() -> list[Path]:
         for path in TESTS_ROOT.rglob("*")
         if path.is_file()
         and not is_ignored(path)
-        and path != SHARED_CONFTEST
         and BUILD_LAYER not in path.parents
     )
 

@@ -128,7 +128,7 @@ would be copied into both published trees. A policy check enforces both.
 never through `plugins/` and never through a `.j2` file. The one exception is
 `tests/unit/plugin_maintenance/`, whose subject matter *is* the authored tree
 and the template rules. Outside that directory a second policy check fails on
-any path into the authored tree, in either spelling.
+any path into the authored tree, in any of its spellings.
 
 Layout, mirroring what each test covers, with directories created only as
 needed:
