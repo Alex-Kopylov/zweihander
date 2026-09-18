@@ -1,11 +1,14 @@
 """The build's own guarantees about the trees it publishes.
 
-Three checks carry the harness-format guarantee between them: a published
-tree for one harness carries no other harness's callable names, a file
-rendered from a template carries no leftover Jinja marker outside its raw
-blocks, and consecutive builds are byte-identical. Each one compares a
-published file against the source it came from, so all three live here rather
-than among the rendered-content tests, which never open the authored tree.
+Three checks carry the harness-format guarantee between them: a rendered tree
+for one harness carries no other harness's callable names, a file rendered
+from a template carries no leftover Jinja marker outside its raw blocks, and
+consecutive builds are byte-identical. The first two live here rather than
+among the rendered-content tests because each needs the template a file was
+rendered from, which only the build layer may open; the tree they scan is a
+fresh render like everyone else's. Only the freshness check and the
+byte-identical rebuild answer for the committed trees, which is what they are
+for.
 """
 
 import json
@@ -55,20 +58,18 @@ def foreign_callable_names(harness: str) -> set[str]:
     ) - callable_names(harness)
 
 
-def dist_files(harness: str) -> list[Path]:
-    dist_root = REPO_ROOT / DIST_DIRS[harness]
-    assert dist_root.is_dir(), f"missing committed dist tree: {dist_root}"
-    return sorted(path for path in dist_root.rglob("*") if path.is_file())
+def rendered_files(tree: Path) -> list[Path]:
+    return sorted(path for path in tree.rglob("*") if path.is_file())
 
 
-def template_source(harness: str, dist_path: Path) -> Path:
-    relative = dist_path.relative_to(REPO_ROOT / DIST_DIRS[harness])
+def template_source(tree: Path, rendered_path: Path) -> Path:
+    relative = rendered_path.relative_to(tree)
     return (
         REPO_ROOT / "plugins" / relative.parent / f"{relative.name}{TEMPLATE_SUFFIX}"
     )
 
 
-def test_rendered_files_carry_no_foreign_callable_names(harness):
+def test_rendered_files_carry_no_foreign_callable_names(harness, rendered: Path):
     """A callable name only a template can introduce, so only they are scanned.
 
     Plain files copy byte-for-byte and say `Agent` as an ordinary English
@@ -77,10 +78,10 @@ def test_rendered_files_carry_no_foreign_callable_names(harness):
     foreign_names = foreign_callable_names(harness)
     violations = []
 
-    for path in dist_files(harness):
-        if not template_source(harness, path).is_file():
+    for path in rendered_files(rendered):
+        if not template_source(rendered, path).is_file():
             continue
-        relative = path.relative_to(REPO_ROOT / DIST_DIRS[harness]).as_posix()
+        relative = path.relative_to(rendered).as_posix()
         if relative in FOREIGN_NAME_SCAN_EXEMPT:
             continue
         text = path.read_text(encoding="utf-8")
@@ -91,11 +92,11 @@ def test_rendered_files_carry_no_foreign_callable_names(harness):
     assert not violations, "\n".join(violations)
 
 
-def test_rendered_files_carry_no_leftover_jinja_markers(harness):
+def test_rendered_files_carry_no_leftover_jinja_markers(rendered: Path):
     violations = []
 
-    for path in dist_files(harness):
-        source = template_source(harness, path)
+    for path in rendered_files(rendered):
+        source = template_source(rendered, path)
         if not source.is_file():
             continue
         template_text = source.read_text(encoding="utf-8")
