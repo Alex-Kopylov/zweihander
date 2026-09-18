@@ -6,7 +6,6 @@ from plugin_maintenance import REPO_ROOT
 
 
 
-
 def test_every_agents_file_has_claude_bridge() -> None:
     agents_files = sorted(
         path
