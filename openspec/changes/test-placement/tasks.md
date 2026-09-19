@@ -24,13 +24,13 @@ Everything lands in one PR from `claude/test-placement` into `harness-dist-pipel
 - [x] 3.1 Move `tests/test_harness_renderer.py` to `tests/unit/plugin_maintenance/test_render.py`
 - [x] 3.2 Move `tests/test_harness_action_matrix.py` and `tests/test_harness_frontmatter_matrix.py` to `tests/unit/plugin_maintenance/`
 - [x] 3.3 Move `tests/test_ci_gate.py` to `tests/unit/plugin_maintenance/test_ci_gate.py`
-- [x] 3.4 Split `tests/test_dist_invariants.py`: the freshness check (`stale_paths`) and the byte-identical-rebuild check become `tests/unit/plugin_maintenance/test_build.py`; they keep reading the committed trees, because that is what they are for
+- [x] 3.4 Split `tests/test_dist_invariants.py`: the freshness check (`stale_paths`), the byte-identical-rebuild check, the foreign-callable-name scan and the leftover-marker scan all become `tests/unit/plugin_maintenance/test_build.py`; the first two answer for the committed trees, the two scans walk `rendered` and open only the template each file was rendered from
 - [x] 3.5 Split `tests/test_mermaid_diagrams_plugin.py`: the generator-package assertions become `tests/unit/plugin_maintenance/generators/test_mermaid_diagrams.py`
 - [x] 3.6 Replace `from conftest import REPO_ROOT` with `from plugin_maintenance import REPO_ROOT` in every moved module
 
 ## 4. Rendered-content tests
 
-- [x] 4.1 Move the remainder of `tests/test_dist_invariants.py` to `tests/integration/rendered/test_invariants.py` and repoint every scan from the committed tree to `rendered`, dropping the per-harness `parametrize` in favour of the `harness` fixture
+- [x] 4.1 Move everything else in `tests/test_dist_invariants.py` to `tests/integration/rendered/test_invariants.py`, reading `rendered` in place of the committed tree and dropping the per-harness `parametrize` in favour of the `harness` fixture
 - [x] 4.2 Move `tests/test_dist_publication.py` to `tests/integration/rendered/test_publication.py`: keep the manifest `source` string assertions, replace directory existence under the committed tree with plugin membership in `rendered`
 - [x] 4.3 Move `tests/test_ai_assistant_harness_adaptation_skill.py` to `tests/integration/rendered/ai_assistant_ops/test_adapt_skill_for_ai_harness.py`, reading the skill through `rendered`; keep the assertions whose subject is genuinely the template model, since this skill's content is about templates, and drop any that assert the skill file's own template syntax
 - [x] 4.4 Move `tests/test_python_dev_workflow_plugin.py` to `tests/integration/rendered/python_dev_workflow/test_plugin.py`; delete the template-existence assertions and the template fallback in the metadata reference resolution, so a reference path either resolves in the rendered tree or fails
@@ -66,3 +66,14 @@ Everything lands in one PR from `claude/test-placement` into `harness-dist-pipel
 - [x] 7.5 `uv run python -m plugin_maintenance.build --check` reports the published trees match
 - [x] 7.6 `jq empty .agents/plugins/marketplace.json .claude-plugin/marketplace.json` and `find plugins dist -path '*/plugin.json' -print0 | xargs -0 jq empty` pass
 - [x] 7.7 `git diff --check` is clean
+
+## 8. Audit follow-ups
+
+- [x] 8.1 Render each harness tree exactly once per session: `harness` becomes an ordinary indirect param fixture and a session-scoped per-harness cache holds the trees, so collection order can no longer multiply renders
+- [x] 8.2 Raise `pytest.UsageError` when `@pytest.mark.harness(...)` names a harness that does not exist, instead of producing an empty parameter set indistinguishable from a deliberate narrowing
+- [x] 8.3 Match `Path("plugins")` and `.joinpath("plugins")` in the boundary check, and drop the root `tests/conftest.py` exemption so it is scanned like every other file outside the build layer
+- [x] 8.4 Point the foreign-callable-name scan and the leftover-marker scan at the `rendered` tree, leaving committed `dist/` to the freshness check and the byte-identical rebuild
+- [x] 8.5 Correct the `harness-dist-build` scenario that claimed a collector finds nothing in a published tree: a skill's shipped documentation examples do collect, and are not repository tests
+- [x] 8.6 Restore the two mermaid README checks in the generator tests, where that stage-1 output belongs: the provenance line names the commit the third-party notice records, and the generated README carries no Claude-specific packaging
+- [x] 8.7 Move `test_ci_gate.py` to `tests/integration/repo/`, where a test that reads only `.github/workflows/ci.yml` belongs by D2's own criterion
+- [x] 8.8 Cover the fixtures, markers and options with `tests/unit/test_conftest.py`: four `pytester` runs over probe files, the first of them the regression test for 8.1

@@ -58,7 +58,7 @@ tests/
 
 Directories are created only as a test needs them.
 
-`tests/integration/repo/` is a refinement of the placement list, not of the boundary rule. Two existing modules assert repository conventions and touch no plugin content: `test_agents_imports.py` (every `AGENTS.md` has a `CLAUDE.md` beside it) and `test_readme_plugin_catalog.py` (the README kanban lists every catalogued plugin). Filing them under `rendered/` would name them after a tree they never open. One extra directory is cheaper than two misfiled modules.
+`tests/integration/repo/` is a refinement of the placement list, not of the boundary rule. Three existing modules assert repository conventions and touch no plugin content: `test_agents_imports.py` (every `AGENTS.md` has a `CLAUDE.md` beside it), `test_readme_plugin_catalog.py` (the README kanban lists every catalogued plugin), and `test_ci_gate.py` (the CI gate stages the tree before it diffs it). Filing them under `rendered/` would name them after a tree they never open. One extra directory is cheaper than three misfiled modules.
 
 Final placement:
 
@@ -68,7 +68,7 @@ Final placement:
 | `tests/test_harness_action_matrix.py` | `tests/unit/plugin_maintenance/test_harness_action_matrix.py` |
 | `tests/test_harness_frontmatter_matrix.py` | `tests/unit/plugin_maintenance/test_harness_frontmatter_matrix.py` |
 | `tests/test_template_source_policy.py` | `tests/unit/plugin_maintenance/test_template_source_policy.py` plus the two new policy checks |
-| `tests/test_ci_gate.py` | `tests/unit/plugin_maintenance/test_ci_gate.py` |
+| `tests/test_ci_gate.py` | `tests/integration/repo/test_ci_gate.py` |
 | `tests/test_dist_invariants.py`, freshness, byte-identical rebuild, foreign-name scan, leftover-marker scan | `tests/unit/plugin_maintenance/test_build.py` |
 | `tests/test_dist_invariants.py`, everything else | `tests/integration/rendered/test_invariants.py` |
 | `tests/test_mermaid_diagrams_plugin.py`, generator half | `tests/unit/plugin_maintenance/generators/test_mermaid_diagrams.py` |
@@ -123,6 +123,10 @@ Alternative — a subprocess call to `python -m plugin_maintenance.render`: reje
 
 Stage 1 (generators) is deliberately not run by the fixture: it writes into `plugins/`, which a test run must not do, and the CI gate runs the full build before `pytest`.
 
+**Amended during implementation.** A session-scoped parametrized fixture gives one instance per harness only as long as pytest never revisits a parameter, and it does: marker narrowing shifts parameter indices, so the reordering that groups items by parameter stops grouping them and the fixture is torn down and rebuilt. The suite rendered six trees instead of two. "Once per harness" therefore stops being a consequence of the scope and becomes explicit: `harness` is an ordinary indirect param fixture, and a session-scoped private fixture holds a harness-to-tree cache that `rendered` reads, filling it on first request. Nothing about the narrowing semantics changes, and `tests/unit/test_conftest.py` pins the behaviour with `pytester`.
+
+Also amended: a marker naming a harness that does not exist used to yield an empty parameter set, reported as a skip indistinguishable from a deliberate narrowing. It now raises `pytest.UsageError` naming the node, the unknown name and `HARNESSES`.
+
 ### D5. Template-syntax assertions are deleted, not relocated
 
 Every assertion that names template syntax in a rendered-content test goes. The harness-format guarantee is already carried by three checks that survive: the matrix-derived foreign-name scan, the leftover-marker scan, and byte-identical consecutive builds. An assertion that a template contains `{{ actions.AskUser | call }}` adds nothing to those three and passes on a template that fails to render.
@@ -132,7 +136,9 @@ Two consequences worth naming:
 - `test_resume_tailoring.py`'s template-syntax assertion is really the claim "this skill asks the user before proceeding". That is prompt behavior; checking it needs a model, so it is deleted here and belongs to a future `llm`-marked evaluation. Recorded as a non-goal so it is not mistaken for an oversight.
 - `test_python_dev_workflow_plugin.py` currently resolves a metadata reference path by falling back to a template name when the plain file is missing. Against `rendered` the fallback disappears: the path either resolves in the tree the user installs or it does not, which is the claim worth making.
 
-**Amended during implementation.** The first two of the three surviving checks cannot be rendered-content tests, so the placement table above moves them into `test_build.py` with the other two. Both need the template a published file was rendered from: the leftover-marker scan subtracts the template's raw blocks before scanning, and the foreign-name scan applies only to template-derived files — widening it to every file in a tree fails on nineteen plain files that say `Agent` as an ordinary English word. The spec already calls all three "build-layer checks"; only that reading is implementable.
+**Amended during implementation.** The first two of the three surviving checks cannot be rendered-content tests, so the placement table above moves them into `test_build.py` with the other two. Both need the template a rendered file came from: the leftover-marker scan subtracts the template's raw blocks before scanning, and the foreign-name scan applies only to template-derived files — widening it to every file in a tree fails on nineteen plain files that say `Agent` as an ordinary English word. Reading the template is the whole reason they are build-layer tests; the tree they walk is the `rendered` fixture's, like every other test's. The committed trees stay the business of the freshness check and the byte-identical rebuild. The spec already calls all three "build-layer checks"; only that reading is implementable.
+
+**Amended during implementation.** Two mermaid checks were dropped in the move because they read `plugins/mermaid-diagrams/README.md`. That README is stage-1 output of the mermaid generator rather than authored prose, so both belong in the build layer and are restored in `tests/unit/plugin_maintenance/generators/test_mermaid_diagrams.py`: the README's provenance line names the commit the third-party notice records, and the generated README names neither `Claude` nor `.claude/skills`. The skill half of the second claim already runs against `rendered`, so only the README half is restored.
 
 ### D6. The `tests/` rule is enforced at the source, not in the renderer
 
@@ -142,11 +148,13 @@ This is also why the `harness-dist-build` delta is an ADDED requirement rather t
 
 ### D7. The policy check matches both spellings of the authored tree
 
-The check scans every file under `tests/` except `tests/unit/plugin_maintenance/**` and the root `tests/conftest.py`, and fails on a template suffix or on a path into the authored tree.
+The check scans every file under `tests/` except `tests/unit/plugin_maintenance/**`, and fails on a template suffix or on a path into the authored tree.
 
 Such a path has two spellings in this repository: the slash-bearing literal, and the quoted path segment joined onto `REPO_ROOT`. Five current test modules use the second. Matching only the first would leave the exact files this change is fixing free to come back, so the check matches both and nothing else — a bare unquoted word stays legal, because prose and identifiers use it constantly.
 
 **Amended during implementation.** Each spelling is matched at a path root rather than anywhere in the file, because two legitimate names share the word: the Codex marketplace manifest lives at `.agents/plugins/marketplace.json`, and `plugins` is the key every marketplace manifest stores its own plugin list under. So the slash-bearing literal must not be preceded by a path separator or word character, and the quoted segment is matched together with its `REPO_ROOT` join. Checked against their pre-move content, all eleven modules this change touched are still caught.
+
+**Amended again during implementation.** Two spellings were not enough: `Path("plugins")` and `.joinpath("plugins")` reach the authored tree without a `REPO_ROOT` join, so the check matches four, each still anchored at a path root. The root `tests/conftest.py` lost its exemption in the same pass — it names neither a template nor the authored tree, so nothing about it ever needed one.
 
 ### D8. Publication tests assert the manifest, and membership against `rendered`
 

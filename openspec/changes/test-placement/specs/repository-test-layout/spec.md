@@ -107,7 +107,7 @@ Every marker the suite defines SHALL be registered in the pytest configuration, 
 - **THEN** the run reports the unknown marker
 
 ### Requirement: Template syntax is never asserted outside the build layer
-A test of rendered content SHALL NOT assert the presence of template syntax. The harness-format guarantee is carried entirely by three build-layer checks: a rendered tree for one harness carries no other harness's callable names, a rendered file carries no leftover template markers outside raw blocks, and consecutive builds are byte-identical.
+A test of rendered content SHALL NOT assert the presence of template syntax. The one exception is a test whose subject is the template-authoring skill itself, `adapt-skill-for-ai-harness`: templates are that skill's subject matter, so a passage about them is the skill's content rather than an assertion about how the skill file was produced. The harness-format guarantee is carried entirely by three build-layer checks. Two walk a fresh render and compare each rendered file against the template it came from: one fails on another harness's callable names, the other on leftover template markers outside raw blocks. The third compares consecutive builds byte for byte.
 
 #### Scenario: A rendered-content assertion names no template syntax
 - **WHEN** a test asserts that a rendered skill instructs the reader to ask the user
@@ -118,7 +118,7 @@ A test of rendered content SHALL NOT assert the presence of template syntax. The
 - **THEN** the build-layer foreign-name scan fails and names the file and the name
 
 ### Requirement: Policy checks guard the boundary
-Build-layer policy checks SHALL enforce the boundary so that it cannot erode by an ordinary edit. No file under `tests/` outside `tests/unit/plugin_maintenance/` and the root `tests/conftest.py` SHALL contain the string `.j2` or the string `plugins/`. No `tests/` directory SHALL exist under `plugins/**`. Both checks SHALL name the offending file.
+Build-layer policy checks SHALL enforce the boundary so that it cannot erode by an ordinary edit. No file under `tests/` outside `tests/unit/plugin_maintenance/` SHALL name a template suffix, or a path into the authored plugin tree in any of its spellings: the slash-bearing literal at a path root, or the quoted directory name joined onto the repository root, passed to `Path(...)`, or passed to `.joinpath(...)`. The two names that merely share the word stay legal — the Codex marketplace manifest under `.agents/plugins/`, and the `plugins` key every marketplace manifest stores its own plugin list under — as does the bare unquoted word, which prose and identifiers use constantly. No `tests/` directory SHALL exist under `plugins/**`. Both checks SHALL name the offending file.
 
 #### Scenario: A test pointed back at a template fails the check
 - **WHEN** a test outside the build layer is edited to read a `.j2` file

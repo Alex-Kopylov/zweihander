@@ -13,6 +13,6 @@ A published harness tree SHALL contain no repository test files. Tests are devel
 - **WHEN** a `tests/` directory is added under a plugin or one of its skills
 - **THEN** the repository policy check fails and names the directory, rather than the build quietly omitting it
 
-#### Scenario: An installed plugin carries no test that could fail
-- **WHEN** a user installs a plugin from a published tree and runs a test collector inside it
-- **THEN** it collects nothing, because the tree carries no tests that depend on the repository's authored sources
+#### Scenario: An installed plugin carries no repository test
+- **WHEN** a user installs a plugin from a published tree and looks for repository tests in it
+- **THEN** no directory named `tests/` exists in the tree, and no shipped file is a repository test reading this repository's authored sources; example test files a skill ships as its own documentation, such as `tests-manager`'s, are skill content and stay
