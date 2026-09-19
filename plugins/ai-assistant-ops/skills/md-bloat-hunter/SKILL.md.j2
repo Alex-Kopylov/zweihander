@@ -37,7 +37,7 @@ Read these during normal invocation:
 
 Detector agents read `references/detector-output.schema.json` themselves.
 
-During normal invocation, `docs/` and `tests/` are skill-dev artifacts only.
+During normal invocation, `docs/` is a skill-dev artifact only.
 
 ## Safety
 
