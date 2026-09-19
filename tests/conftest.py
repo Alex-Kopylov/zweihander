@@ -94,7 +94,7 @@ def _rendered_trees(tmp_path_factory: pytest.TempPathFactory) -> Callable[[str],
 
     def tree_for(name: str) -> Path:
         if name not in trees:
-            tree = tmp_path_factory.mktemp(f"rendered-{name}", numbered=False)
+            tree = tmp_path_factory.mktemp(f"rendered-{name}")
             render_tree(REPO_ROOT, name, tree)
             trees[name] = tree
         return trees[name]
