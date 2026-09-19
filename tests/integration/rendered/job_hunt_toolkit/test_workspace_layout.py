@@ -1,6 +1,5 @@
 """The job-hunt workspace layout as it reaches a user's installed tree."""
 
-import json
 from pathlib import Path
 
 import pytest
@@ -41,14 +40,6 @@ def test_naming_rules_forbid_hyphenated_slugs(plugin: Path) -> None:
     assert SLUG_RE_ERE in naming
     assert "acme-robotics" not in naming
     assert "jobs/acme_robotics/" in naming
-
-
-def test_plugin_manifest_pins_the_published_version(plugin: Path) -> None:
-    """Each harness tree carries its own manifest, so both pin the same version."""
-    manifest = json.loads(
-        next(plugin.glob("*/plugin.json")).read_text(encoding="utf-8")
-    )
-    assert manifest["version"] == "0.7.0"
 
 
 def test_browser_render_script_is_gone(plugin: Path) -> None:

@@ -1,6 +1,6 @@
 ---
 name: version-bumper
-description: Bump version strings in project, package, plugin, and marketplace files. Activate when user asks to bump version, release, or says /version-bumper.
+description: Bump version strings in project, package, plugin, and marketplace files. Activate when user asks to bump version, release, or resolves a merge conflict in version strings.
 argument-hint: "[version] — e.g. 1.2.3, patch, minor, major. If omitted, auto-detected from recent commits."
 ---
 
@@ -22,6 +22,8 @@ rules.
 If the user-supplied version argument from the request is `1.2.3`, use it directly; if it is `patch`, `minor`, or `major`, increment the current version accordingly.
 
 If no argument is provided, run `git log --oneline -20`: `feat!:` or `BREAKING CHANGE` means **major**, `feat:` means **minor**, otherwise use **patch**.
+
+On a merge conflict, keep the higher version of the two sides.
 
 ## Instructions
 
