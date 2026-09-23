@@ -306,7 +306,7 @@ provenance.
 | `using-git-worktrees` | Set up isolated workspace branches for feature work. |
 | `verification-before-completion` | Verify claims before reporting work as complete or fixed. |
 | `version-bumper` | Bump versions in plugin and package metadata. |
-| `yolo-push` | Slash-command gated commit, PR, CI, merge, and CD workflow. |
+| `yolo-push` | Slash-command gated commit, PR, CI, merge, CD, and post-merge cleanup workflow. |
 
 **Agents**
 
