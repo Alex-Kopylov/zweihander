@@ -1,6 +1,6 @@
 ---
 name: yolo-push
-description: Run a guarded commit-to-deploy workflow that verifies branch freshness, invokes commit and create-pr, waits for green CI, invokes approve-pr, monitors CD, cleans up the merged branch and worktree, and reports final deployment state. Use when the user asks to yolo-push, ship current changes, or execute the full PR-to-deployment flow.
+description: Run a guarded commit-to-deploy workflow that verifies branch freshness, invokes commit and create-pr, waits for green CI, invokes approve-pr, monitors CD, offers to clean up the merged branch and worktree, and reports final deployment state. Use when the user asks to yolo-push, ship current changes, or execute the full PR-to-deployment flow.
 disable-model-invocation: true
 ---
 
@@ -43,8 +43,8 @@ Progress:
 
 ## Post-Merge Cleanup
 
-Removes the PR's worktree, local branch, and remote branch. Each guard skips
-only its own deletion; report what was kept and why. Examples use GitHub and
+Checks what deleting the PR's worktree, local branch, and remote branch would
+lose, asks the user once, and deletes only on consent. Examples use GitHub and
 reuse shell variables across blocks; substitute resolved values if the shell
 does not persist them. `$PR` is the PR from Step 3.
 
@@ -68,38 +68,44 @@ does not persist them. `$PR` is the PR from Step 3.
   Skip all cleanup unless `STATE` is `MERGED`, `BRANCH` is not `DEFAULT`, and
   `PROTECTED` is not `true`.
 
-- [ ] Cleanup 2: Remove the worktree. `git worktree remove` refuses modified
-  or untracked files but silently deletes ignored ones, so list them first:
+- [ ] Cleanup 2: Check for irreversible losses. These commands only read.
 
   ```bash
-  git -C "$WT" status --short --ignored
+  git fetch -q --prune origin && git fetch -q origin "refs/pull/$N/head"
+  echo "Worktree files:"
+  [ -n "$WT" ] && [ "$WT" != "$MAIN" ] && git -C "$WT" status --short --ignored
+  echo "Local commits missing from the PR:"
+  git log --oneline "$HEAD..$BRANCH" -- 2>/dev/null
+  echo "Remote commits missing from the PR:"
+  git log --oneline "$HEAD..origin/$BRANCH" -- 2>/dev/null
+  echo "Open PRs based on the branch:"
+  gh pr list --base "$BRANCH" --state open --json url --jq '.[].url'
   ```
 
-  Keep the worktree when an ignored path is not regenerable: `.env*` files
-  that differ from the main worktree's copy, local databases, credentials, or
-  notes. Dependency directories, caches, and build output are regenerable.
+  Only ignored files (`!!`) are lost irreversibly on delete. Modified or
+  untracked files keep the worktree, missing local commits keep the local
+  branch, and missing remote commits or based PRs keep the remote branch.
+
+- [ ] Cleanup 3: Ask the user exactly one question that lists the findings,
+  with two options:
+
+  - `Delete the merged branch locally, on the remote, and its worktree if any`
+  - `Keep everything for now`
+
+  On keep, touch nothing and report `Cleanup: kept by user`. Skip the question
+  when nothing is left to delete.
+
+- [ ] Cleanup 4: On delete, run the guarded deletions. The guards re-check
+  state, so anything that appeared after the question is kept too.
+  `git branch -d` rejects squash and rebase merges; the ancestor check
+  replaces it.
 
   ```bash
   if [ "$WT" = "$MAIN" ]; then git switch "$DEFAULT" && git pull --ff-only
   elif [ -n "$WT" ]; then git worktree remove "$WT"; fi
-  ```
-
-- [ ] Cleanup 3: Delete the local branch only when all its commits are in the
-  merged PR head. `git branch -d` rejects squash and rebase merges; this
-  ancestor check replaces it.
-
-  ```bash
-  git fetch -q origin "refs/pull/$N/head"
   if ! git show-ref -q --verify "refs/heads/$BRANCH"; then echo "Local: already gone"
   elif git merge-base --is-ancestor "$BRANCH" "$HEAD"; then git branch -D "$BRANCH"
   else echo "Local: kept, has commits not in the PR"; fi
-  ```
-
-- [ ] Cleanup 4: Delete the remote branch only when no open PR targets it and
-  its tip is still the PR head. The lease rejects the delete if anyone pushed
-  after the merge.
-
-  ```bash
   if [ -n "$(gh pr list --base "$BRANCH" --state open --json number --jq '.[].number')" ]; then
     echo "Remote: kept, open PRs target it"
   elif git ls-remote -q --exit-code --heads origin "$BRANCH" >/dev/null; then
@@ -116,8 +122,9 @@ does not persist them. `$PR` is the PR from Step 3.
 - Do not ask for confirmation to continue past red or unknown CI.
 - Do not claim shipped until CD reaches a clear success state when CD is
   configured; otherwise report CD as not configured.
-- Never pass `--force` to `git worktree remove` or delete a branch without
-  its cleanup guard.
+- Delete nothing after the merge unless the user picks the cleanup delete
+  option; even then, never pass `--force` to `git worktree remove` or skip a
+  cleanup guard.
 
 ## Reporting
 
@@ -128,4 +135,4 @@ Use terse status updates:
 - `CI: waiting | green | not configured | failed <stage>`
 - `Merge: merged | stopped`
 - `CD: waiting | succeeded <environment> | not configured | failed <stage>`
-- `Cleanup: worktree|local|remote removed | kept <reason>; restore: git branch <branch> <sha>`
+- `Cleanup: kept by user | worktree|local|remote removed or kept <reason>; restore: git branch <branch> <sha>`
