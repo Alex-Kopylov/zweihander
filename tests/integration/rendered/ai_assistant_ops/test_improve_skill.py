@@ -7,6 +7,7 @@ from pathlib import Path
 import pytest
 
 from plugin_maintenance import REPO_ROOT
+from plugin_maintenance.render import Harness
 
 
 @pytest.fixture
@@ -119,11 +120,13 @@ def test_bloat_hunter_is_post_rewrite_pre_evaluation_step(skill_file: Path) -> N
 def test_skill_avoids_anthropic_specific_commands_and_viewers(
     skill_root: Path, skill_file: Path
 ) -> None:
+    # `agents/openai.yaml` ships in the Codex tree only.
     combined = "\n".join(
-        [
-            skill_file.read_text(encoding="utf-8"),
-            (skill_root / "evals" / "evals.json").read_text(encoding="utf-8"),
-            (skill_root / "agents" / "openai.yaml").read_text(encoding="utf-8"),
+        path.read_text(encoding="utf-8")
+        for path in [
+            skill_file,
+            skill_root / "evals" / "evals.json",
+            *skill_root.glob("agents/openai.yaml"),
         ]
     )
 
@@ -163,6 +166,7 @@ def test_evals_cover_required_improvement_scenarios(skill_root: Path) -> None:
         assert phrase in combined
 
 
+@pytest.mark.harness(Harness.CODEX)
 def test_openai_agent_prompt_exists(skill_root: Path) -> None:
     agent_file = skill_root / "agents" / "openai.yaml"
     assert agent_file.is_file()

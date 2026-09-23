@@ -18,6 +18,7 @@ from plugin_maintenance.render import (
     MATRIX_PATH,
     TEMPLATE_SUFFIX,
     VERBATIM_FORM,
+    Harness,
     frontmatter_lines,
 )
 
@@ -128,7 +129,7 @@ def orchestration_patterns(rendered: Path) -> str:
     return (rendered / TASK_MANAGEMENT_PATTERNS).read_text(encoding="utf-8")
 
 
-@pytest.mark.harness("Codex")
+@pytest.mark.harness(Harness.CODEX)
 def test_codex_orchestration_patterns_use_plan_arrays(
     orchestration_patterns: str,
 ) -> None:
@@ -157,7 +158,7 @@ def test_codex_orchestration_patterns_use_plan_arrays(
         assert foreign_field not in orchestration_patterns
 
 
-@pytest.mark.harness("Codex")
+@pytest.mark.harness(Harness.CODEX)
 def test_codex_orchestration_patterns_use_current_spawn_fields(
     orchestration_patterns: str,
 ) -> None:

@@ -18,6 +18,7 @@ from plugin_maintenance.render import (
     VALUE_FORMS,
     VERBATIM_FORM,
     BuildError,
+    Harness,
     load_frontmatter_matrix,
 )
 
@@ -87,13 +88,13 @@ def test_a_key_needing_no_renderer_help_is_verbatim(keys):
 
 def test_product_extensions_travel_in_the_other_harness_metadata(keys):
     for key in ("argument-hint", "arguments"):
-        assert keys[key]["ClaudeCode"]["placement"] == "top-level"
-        assert keys[key]["Codex"]["placement"] == "metadata"
+        assert keys[key][Harness.CLAUDE_CODE]["placement"] == "top-level"
+        assert keys[key][Harness.CODEX]["placement"] == "metadata"
 
 
 def test_a_nested_key_is_metadata_placed_for_every_harness(keys):
     """`metadata.short-description` is defined as a sub-key, not a top-level one."""
-    for assistant in ("ClaudeCode", "Codex"):
+    for assistant in Harness:
         assert keys["short-description"][assistant]["placement"] == "metadata"
 
 
@@ -174,14 +175,14 @@ class TestLoaderRejects:
 
     def test_unknown_placement_fails(self, tmp_path, matrix):
         broken = json.loads(json.dumps(matrix))
-        broken["keys"]["arguments"]["Codex"]["placement"] = "footer"
+        broken["keys"]["arguments"][Harness.CODEX]["placement"] = "footer"
 
         with pytest.raises(BuildError, match="footer"):
             load_frontmatter_matrix(self.write(tmp_path, broken))
 
     def test_missing_placement_for_one_assistant_fails(self, tmp_path, matrix):
         broken = json.loads(json.dumps(matrix))
-        del broken["keys"]["arguments"]["Codex"]
+        del broken["keys"]["arguments"][Harness.CODEX]
 
         with pytest.raises(BuildError, match="arguments"):
             load_frontmatter_matrix(self.write(tmp_path, broken))

@@ -1,6 +1,6 @@
 {
   "name": "ai-assistant-ops",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "description": "Assistant setup, instruction hygiene, documentation review, memory capture, skill improvement, harness adaptation, and markdown/prompt maintenance.",
   "author": {
     "name": "Alex Kopylov"

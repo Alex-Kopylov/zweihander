@@ -7,12 +7,18 @@ name per assistant, and each assistant stores exactly one invocation wrapper.
 
 import json
 from pathlib import Path
-from typing import get_args
 
 import pytest
 
-from plugin_maintenance import HARNESSES, REPO_ROOT
-from plugin_maintenance.render import MATRIX_PATH, Harness
+from plugin_maintenance import REPO_ROOT
+from plugin_maintenance.render import (
+    DIST_DIRS,
+    FOREIGN_METADATA_DIRS,
+    HARNESS_MANIFESTS,
+    MATRIX_PATH,
+    POLICY_WRITERS,
+    Harness,
+)
 
 
 @pytest.fixture(scope="module")
@@ -30,13 +36,18 @@ def actions(matrix) -> dict:
     return matrix["actions"]
 
 
-def test_harnesses_constant_matches_the_harness_literal():
-    """One harness list, so the renderer's type and the suite cannot drift."""
-    assert set(HARNESSES) == set(get_args(Harness))
+@pytest.mark.parametrize(
+    "table",
+    [HARNESS_MANIFESTS, FOREIGN_METADATA_DIRS, DIST_DIRS, POLICY_WRITERS],
+    ids=["HARNESS_MANIFESTS", "FOREIGN_METADATA_DIRS", "DIST_DIRS", "POLICY_WRITERS"],
+)
+def test_every_per_harness_table_covers_exactly_the_harnesses(table):
+    """`Harness` is the one list; a table keyed by it names every member."""
+    assert set(table) == set(Harness)
 
 
 def test_every_harness_is_an_assistant_in_the_matrix(assistants):
-    assert set(HARNESSES) <= set(assistants)
+    assert set(Harness) <= set(assistants)
 
 
 def test_lookup_order_is_action_then_assistant(matrix):
@@ -103,8 +114,8 @@ def test_task_tracking_splits_per_operation(actions):
 
     for action_key, (claude_name, codex_name) in expected.items():
         assert actions[action_key]["callable"] is True, action_key
-        assert actions[action_key]["ClaudeCode"]["name"] == claude_name
-        assert actions[action_key]["Codex"]["name"] == codex_name
+        assert actions[action_key][Harness.CLAUDE_CODE]["name"] == claude_name
+        assert actions[action_key][Harness.CODEX]["name"] == codex_name
 
 
 def test_codex_task_fallbacks_record_why(actions):
@@ -114,8 +125,9 @@ def test_codex_task_fallbacks_record_why(actions):
     fallback, so the reason travels with the entry and survives the next edit.
     """
     for action_key in ("GetTask", "ListTasks", "StopTask"):
-        codex = actions[action_key]["Codex"]
-        assert codex["name"] == actions[action_key]["ClaudeCode"]["name"], action_key
+        codex = actions[action_key][Harness.CODEX]
+        claude = actions[action_key][Harness.CLAUDE_CODE]
+        assert codex["name"] == claude["name"], action_key
         assert "No Codex counterpart" in codex.get("note", ""), action_key
 
 
@@ -127,8 +139,8 @@ def test_codex_task_fallbacks_record_why(actions):
     ],
 )
 def test_mapped_mechanism_names(actions, action_key, claude_name, codex_name):
-    assert actions[action_key]["ClaudeCode"]["name"] == claude_name
-    assert actions[action_key]["Codex"]["name"] == codex_name
+    assert actions[action_key][Harness.CLAUDE_CODE]["name"] == claude_name
+    assert actions[action_key][Harness.CODEX]["name"] == codex_name
 
 
 def test_dropped_legacy_fields_are_absent(matrix, actions):

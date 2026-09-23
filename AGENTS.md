@@ -149,9 +149,9 @@ tests/
 Two fixtures carry the mechanism:
 
 - `harness` is the harness under test. Every test that requests it — directly,
-  or through `rendered` — runs once per harness in `HARNESSES`, which derives
-  from the renderer's harness-to-manifest mapping. Never restate the harness
-  names in a test.
+  or through `rendered` — runs once per member of the renderer's `Harness`
+  enum. Never restate a harness name as a string in a test; use
+  `Harness.CODEX`, including in `@pytest.mark.harness(...)`.
 - `rendered` is a fresh distribution-stage render of the current `plugins/`
   for that harness, built once per harness per session. It does not run stage
   1; the CI gate runs the full build before the tests.

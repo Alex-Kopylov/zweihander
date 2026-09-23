@@ -15,13 +15,14 @@ import json
 import re
 from pathlib import Path
 
-from plugin_maintenance import HARNESSES, REPO_ROOT
+from plugin_maintenance import REPO_ROOT
 from plugin_maintenance.build import stale_paths
 from plugin_maintenance.generate import run_generators
 from plugin_maintenance.render import (
     DIST_DIRS,
     MATRIX_PATH,
     TEMPLATE_SUFFIX,
+    Harness,
     leftover_jinja_markers,
     render_tree,
     tree_snapshot,
@@ -54,7 +55,7 @@ def callable_names(harness: str) -> set[str]:
 def foreign_callable_names(harness: str) -> set[str]:
     """Names that belong to some other harness and not to this one."""
     return set().union(
-        *(callable_names(other) for other in HARNESSES if other != harness)
+        *(callable_names(other) for other in Harness if other != harness)
     ) - callable_names(harness)
 
 

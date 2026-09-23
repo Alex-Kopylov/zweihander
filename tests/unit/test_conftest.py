@@ -3,15 +3,16 @@
 Every other test in this repository takes `harness`, `rendered` and the two
 markers on trust. These run the real `tests/conftest.py` over small probe
 files through pytest's `pytester`, so what it does to a run is asserted rather
-than assumed. The harness names come from `HARNESSES`, as everywhere else.
+than assumed. The harness names come from `Harness`, as everywhere else.
 """
 
 import pytest
 
-from plugin_maintenance import HARNESSES, REPO_ROOT
+from plugin_maintenance import REPO_ROOT
+from plugin_maintenance.render import Harness
 
 
-FIRST, SECOND = HARNESSES[0], HARNESSES[1]
+FIRST, SECOND, *_ = Harness
 INI = """\
 [pytest]
 markers =
@@ -72,7 +73,7 @@ def test_each_harness_tree_is_rendered_once(probe: pytest.Pytester) -> None:
         for path in basetemp.iterdir()
         if path.is_dir() and not path.is_symlink() and path.name.startswith("rendered-")
     ]
-    assert sorted(trees) == sorted(f"rendered-{name}0" for name in HARNESSES)
+    assert sorted(trees) == sorted(f"rendered-{name}0" for name in Harness)
 
 
 def test_llm_marked_test_waits_for_its_option(probe: pytest.Pytester) -> None:

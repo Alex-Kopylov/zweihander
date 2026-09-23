@@ -118,8 +118,8 @@ Neither product rejects an unknown key: the Codex parser reads `name`,
 Placement is therefore about writing only what a harness asked for, not about
 avoiding a crash.
 
-Codex UI, invocation policy, and tool dependencies never belong in frontmatter.
-They belong in `agents/openai.yaml` beside the skill:
+Codex UI and tool dependencies never belong in frontmatter. They belong in
+`agents/openai.yaml` beside the skill:
 
 ```yaml
 interface:
@@ -128,6 +128,13 @@ interface:
 policy:
   allow_implicit_invocation: false
 ```
+
+Invocation policy is the one setting with two spellings:
+`disable-model-invocation: true` in frontmatter and
+`policy.allow_implicit_invocation: false` in `agents/openai.yaml` mean the
+same thing. Write either or both. The build gives Claude Code the frontmatter
+key and no `agents/openai.yaml`, and gives Codex the policy and no frontmatter
+key. Two spellings that disagree fail the build.
 
 Each key's `form` decides how the value is written, and the matrix documents
 every form:
