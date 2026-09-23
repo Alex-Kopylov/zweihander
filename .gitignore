@@ -11,3 +11,4 @@ logs/
 .upstream
 **/workspaces/
 goals/
+plugins/mermaid-diagrams/mermaid-source/

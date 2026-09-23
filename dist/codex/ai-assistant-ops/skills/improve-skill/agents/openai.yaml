@@ -1,0 +1,4 @@
+interface:
+  display_name: "Improve Skill"
+  short_description: "Iterate on existing skills from evals and feedback"
+  default_prompt: "Improve this skill from eval feedback, compare it to the old-skill baseline, and tune its trigger description after the body stabilizes."

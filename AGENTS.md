@@ -8,10 +8,10 @@ Keep development, maintenance, and release workflow guidance in this file.
 
 ## Supported Runtimes
 
-| Runtime | Marketplace metadata | Plugin metadata |
-|---|---|---|
-| Codex | `.agents/plugins/marketplace.json` | `plugins/*/.codex-plugin/plugin.json` |
-| Claude Code | `.claude-plugin/marketplace.json` | `plugins/*/.claude-plugin/plugin.json` |
+| Runtime | Marketplace metadata | Plugin metadata (authored) | Installed source |
+|---|---|---|---|
+| Codex | `.agents/plugins/marketplace.json` | `plugins/*/.codex-plugin/plugin.json` | `dist/codex/<plugin-name>` |
+| Claude Code | `.claude-plugin/marketplace.json` | `plugins/*/.claude-plugin/plugin.json` | `dist/claude-code/<plugin-name>` |
 
 The marketplace install identifier is `zweihander`; the display name is
 `Zweihander`.
@@ -26,6 +26,67 @@ The marketplace install identifier is `zweihander`; the display name is
 - `plugins/<plugin-name>/references/` contains reusable reference docs for plugin skills.
 - `plugins/<plugin-name>/.codex-plugin/plugin.json` contains Codex plugin metadata.
 - `plugins/<plugin-name>/.claude-plugin/plugin.json` contains Claude Code plugin metadata.
+- `plugin_maintenance/` contains the build tooling: `generate.py` (stage-1
+  runner), `render.py` (stage-2 renderer), `build.py` (full build), and
+  `generators/<plugin_name>/` packages for plugins with generated content.
+- `dist/claude-code/` and `dist/codex/` are the committed rendered trees the
+  marketplace manifests install from.
+
+## Build Pipeline
+
+Plugins are authored once under `plugins/` and rendered per harness into
+`dist/`. **Author in `plugins/`; never edit `dist/`** — CI rejects any commit
+where `dist/` differs from a fresh build.
+
+The build has two stages:
+
+1. **Generation**: every package under `plugin_maintenance/generators/` runs
+   its zero-argument `generate()` in-place under `plugins/<plugin-name>/`.
+   Generators are offline, idempotent, and deterministic; anything fetching
+   external content lives outside the build (for example the weekly mermaid
+   sync workflow).
+2. **Distribution**: the renderer emits one complete installable tree per
+   harness containing exactly the plugins that harness's marketplace manifest
+   lists. Plain files copy byte-for-byte (mode bits preserved); `X.j2`
+   templates render with the harness context and emit `X`; `X` plus `X.j2`
+   fails the build. Files named `AGENTS.md`, `CLAUDE.md`, or `README.md` and
+   the other runtime's plugin metadata directory are never emitted. The
+   renderer also skips every path the root `.gitignore` excludes, so local
+   artifacts such as `__pycache__/` and `.DS_Store` stay out of `dist/`. Add a
+   pattern to `.gitignore` to keep a new kind of artifact out of both git and
+   `dist/`.
+
+Build commands:
+
+```shell
+uv run python -m plugin_maintenance.build
+```
+
+runs the full build (both stages, both trees). To run one piece:
+
+```shell
+uv run python -m plugin_maintenance.generate
+uv run python -m plugin_maintenance.render --harness ClaudeCode --output dist/claude-code
+uv run python -m plugin_maintenance.render --harness Codex --output dist/codex
+```
+
+To ask whether `dist/` still matches `plugins/` without writing anything:
+
+```shell
+uv run python -m plugin_maintenance.build --check
+```
+
+It renders both trees to a temporary directory and names every path that
+drifted. CI runs the full build and diffs the whole tree instead, which also
+covers stage-1 output; this flag is the quick local answer, not a second gate.
+
+Harness-specific wording in skills lives in `.j2` templates that resolve every
+harness fact from a matrix under
+`plugins/ai-assistant-ops/skills/adapt-skill-for-ai-harness/references/`:
+`harness-action-matrix.json` for callable names, and
+`harness-frontmatter-matrix.json` for where each frontmatter key goes. Use the
+`adapt-skill-for-ai-harness` skill when converting a skill's harness-specific
+wording into template form.
 
 ## Development Workflow
 
@@ -35,18 +96,84 @@ The marketplace install identifier is `zweihander`; the display name is
 4. Update `README.md` when user-facing install, usage, or catalog information changes.
 5. Keep `third_party/` links, notices, and license copies current when
    third-party material changes.
-6. Run JSON validation before finishing:
+6. Run the full build and commit the resulting `dist/` changes together with
+   the source changes:
 
 ```shell
-jq empty .agents/plugins/marketplace.json .claude-plugin/marketplace.json
-find plugins -path '*/plugin.json' -print0 | xargs -0 jq empty
+uv run python -m plugin_maintenance.build
 ```
 
-7. Run Markdown whitespace checks before finishing:
+7. Run the tests and JSON validation before finishing:
+
+```shell
+uv run pytest tests
+jq empty .agents/plugins/marketplace.json .claude-plugin/marketplace.json
+find plugins dist -path '*/plugin.json' -print0 | xargs -0 jq empty
+```
+
+8. Run Markdown whitespace checks before finishing:
 
 ```shell
 git diff --check
 ```
+
+## Tests
+
+Every test in the repository lives under the root `tests/`. No `tests/`
+directory exists under `plugins/**`: one there would never be run by CI and
+would be copied into both published trees. A policy check enforces both.
+
+**A test validates the artifact, not the source.** Users receive
+`dist/<harness>/`, so a test reaches plugin content through a fresh render,
+never through `plugins/` and never through a `.j2` file. The one exception is
+`tests/unit/plugin_maintenance/`, whose subject matter *is* the authored tree
+and the template rules. Outside that directory a second policy check fails on
+any path into the authored tree, in any of its spellings.
+
+Layout, mirroring what each test covers, with directories created only as
+needed:
+
+```text
+tests/
+  conftest.py                          the shared fixtures, markers and options
+  unit/
+    plugin_maintenance/                the build layer - the only reader of plugins/
+      conftest.py                      fixture_repo, fixture_matrix
+      generators/
+    plugins/<plugin>/skills/<skill>/   tests of a skill's scripts, read through `rendered`
+  integration/
+    rendered/                          assertions on rendered plugin content
+    repo/                              repository conventions that read no plugin content
+```
+
+Two fixtures carry the mechanism:
+
+- `harness` is the harness under test. Every test that requests it — directly,
+  or through `rendered` — runs once per member of the renderer's `Harness`
+  enum. Never restate a harness name as a string in a test; use
+  `Harness.CODEX`, including in `@pytest.mark.harness(...)`.
+- `rendered` is a fresh distribution-stage render of the current `plugins/`
+  for that harness, built once per harness per session. It does not run stage
+  1; the CI gate runs the full build before the tests.
+
+Two markers, both registered in `pytest.ini`:
+
+- `@pytest.mark.harness("<name>")` narrows a test to one harness.
+- `@pytest.mark.llm` marks a test that calls a model; it is skipped unless the
+  run passes `--llm`.
+
+Two options narrow a local run; CI passes neither:
+
+```shell
+uv run pytest tests --harness Codex   # harness-independent tests plus Codex
+uv run pytest tests --llm             # include the `llm`-marked tests
+```
+
+Do not assert template syntax outside the build layer. Three build-layer
+checks carry the harness-format guarantee between them: a published tree for
+one harness carries no other harness's callable names, a file rendered from a
+template carries no leftover Jinja marker outside its raw blocks, and
+consecutive builds are byte-identical.
 
 ## Versioning
 
@@ -61,20 +188,29 @@ metadata.
 README-only or AGENTS-only edits do not require a plugin version bump unless
 they also change plugin behavior, manifests, or marketplace metadata.
 
-## Shared Runtime Instructions
+## Plugin Runtime Context
 
-Use `AGENTS.md` as the shared instruction file when a plugin needs runtime
-context. Runtimes that read `AGENTS.md` can consume it directly.
+Runtime context reaches a user only through a file the renderer emits into
+`dist/`. Under `plugins/`, the names `AGENTS.md`, `CLAUDE.md`, and `README.md`
+are developer-only documentation at every level of the tree. The renderer skips
+them, so a runtime rule written in one of them ships to nobody, and a skill that
+links to one gets a dangling path.
 
-For runtimes that read `CLAUDE.md`, keep a sibling `CLAUDE.md` next to every
-`AGENTS.md` and import the shared file:
+Put runtime context a plugin needs in a file that ships:
 
-```md
-@AGENTS.md
-```
+- `plugins/<plugin-name>/references/<topic>.md`, linked from the skill that
+  needs it. See `plugins/langfuse/references/langfuse_domain_knowledge.md` and
+  `plugins/job-hunt-toolkit/references/`.
+- The `SKILL.md` itself, when the context is short and serves one skill.
 
-This keeps Codex and Claude Code on the same instructions without copying
-content between files.
+A template cannot work around the rule. `AGENTS.md.j2` fails the build, because
+it would emit a skipped name. A longer name that merely contains a skipped one
+still ships, such as `templates/AGENTS.md.template` in `job-hunt-toolkit`.
+
+The repository root is a separate case. Root `AGENTS.md` holds the shared
+instructions for this repo, and root `CLAUDE.md` is a symlink to it, so Codex
+and Claude Code read one file. The renderer never copies the root, so this
+convention stays as it is.
 
 ## Plugin Catalog Maintenance
 
@@ -84,6 +220,9 @@ When adding a plugin:
 - Add `plugins/<plugin-name>/.claude-plugin/plugin.json`.
 - Add the plugin to `.agents/plugins/marketplace.json`.
 - Add the plugin to `.claude-plugin/marketplace.json`.
+- Each manifest is the inclusion list for its own `dist/` tree; a plugin
+  listed in only one manifest ships to only that harness.
+- Run the full build so both `dist/` trees include the plugin.
 - Add a user-facing section to `README.md`.
 - If the plugin has more than one skill, put the README plugin details inside a
   Markdown `<details>` spoiler.

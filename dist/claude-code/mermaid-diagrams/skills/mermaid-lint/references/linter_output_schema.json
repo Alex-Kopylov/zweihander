@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "mermaid-lint output",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["status", "input", "errors"],
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": ["passed", "failed"]
+    },
+    "input": {
+      "type": "string",
+      "description": "The Markdown, Mermaid, or temporary input path passed to mmdc."
+    },
+    "errors": {
+      "description": "Null when lint passes; a non-empty list of mmdc error messages when lint fails.",
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "passed"
+          }
+        },
+        "required": ["status"]
+      },
+      "then": {
+        "properties": {
+          "errors": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "failed"
+          }
+        },
+        "required": ["status"]
+      },
+      "then": {
+        "properties": {
+          "errors": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      }
+    }
+  ]
+}

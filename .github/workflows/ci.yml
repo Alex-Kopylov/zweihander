@@ -27,11 +27,19 @@ jobs:
       - name: Set up Python 3.12
         run: uv python install 3.12
 
+      - name: Run the full build
+        run: uv run python -m plugin_maintenance.build
+
+      - name: Check the committed tree is current
+        run: |
+          git add -A
+          git diff --cached --exit-code
+
       - name: Validate marketplace manifests
         run: jq empty .agents/plugins/marketplace.json .claude-plugin/marketplace.json
 
       - name: Validate plugin manifests
-        run: find plugins -path '*/plugin.json' -print0 | xargs -0 jq empty
+        run: find plugins dist -path '*/plugin.json' -print0 | xargs -0 jq empty
 
       - name: Check whitespace errors
         if: github.event_name == 'pull_request'

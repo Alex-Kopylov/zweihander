@@ -1,15 +1,18 @@
 # adapt-skill-for-ai-harness
 
-This skill maintains the AI Assistant Harness Adaptation policy for explicitly named target skills.
+This skill maintains the AI Assistant Harness Adaptation policy for explicitly
+named target skills: harness-specific wording is authored as Jinja templates
+(`.j2`) that resolve callable names from
+`references/harness-action-matrix.json` at build time, so each harness's
+rendered tree speaks only its own vocabulary.
 
-`references/harness-action-matrix.json` is the scriptable source of truth for translating shared workflows, skills, tools, and commands across harnesses. Lookups are action-first, then assistant: `matrix["actions"]["CreateAgent"]["Codex"]`.
+The matrix maps TitleCase action keys to one callable name per assistant and
+stores one invocation wrapper per assistant. Lookups are action-first, then
+assistant: `matrix["actions"]["CreateAgent"]["Codex"]["name"]`.
+`scripts/lookup_harness_action.py` provides scriptable lookup, including the
+wrapped invocation form.
 
-End-result target skills can still use metadata-linked files under `references/ai-assistant-harnesses/` when host-specific wording, mechanism tool names, command names, and workflow details need to stay out of shared `SKILL.md`. Baseline capabilities (file reading, searching, editing, writing, shell execution) are never mapped or coached: every harness handles them natively, and matrix actions marked `"adaptation": "baseline"` never become reference content.
-
-Claude Code and Codex tool surfaces are moving targets. When the matrix or a target harness reference contains researched names or version-sensitive behavior, include:
-
-- `Checked: YYYY-MM-DD`
-- Source links to the official product documentation used for that check
-- A narrow note about what changed if the update is a follow-up
-
-Update harnesses through focused PRs that update the matrix, affected target harness references, and static tests or evals guarding the behavior.
+Harness tool surfaces are moving targets. When re-verifying names against the
+official product documentation, refresh the matrix `checked` date and
+assistant `source_urls`, and land matrix changes in focused PRs together with
+the tests guarding the affected behavior.
