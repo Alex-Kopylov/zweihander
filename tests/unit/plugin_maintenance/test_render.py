@@ -12,6 +12,7 @@ import re
 from pathlib import Path
 
 import pytest
+import yaml
 
 from plugin_maintenance import HARNESSES
 from plugin_maintenance.render import (
@@ -430,6 +431,133 @@ class TestFrontmatterMetadataMerge:
         )
 
         with pytest.raises(BuildError, match="description"):
+            render(fixture_repo, fixture_matrix, harness)
+
+
+class TestInvocationPolicy:
+    """One setting, two spellings: each tree gets the one its harness reads."""
+
+    MANUAL = "---\nname: demo\ndisable-model-invocation: true\n---\n\n# Demo\n"
+    UNSTATED = "---\nname: demo\n---\n\n# Demo\n"
+    MANUAL_POLICY = "policy:\n  allow_implicit_invocation: false\n"
+    INTERFACE = 'interface:\n  display_name: "Demo"\n  short_description: "Demo skill"\n'
+
+    @staticmethod
+    def write(repo: Path, skill: str | None = None, agent: str | None = None) -> None:
+        if skill is not None:
+            demo_template(repo).write_text(skill, encoding="utf-8")
+        if agent is not None:
+            agent_file = demo_template(repo).parent / "agents" / "openai.yaml"
+            agent_file.parent.mkdir(parents=True, exist_ok=True)
+            agent_file.write_text(agent, encoding="utf-8")
+
+    @staticmethod
+    def agent_file(output: Path) -> Path:
+        return output / "demo-plugin" / "skills" / "demo" / "agents" / "openai.yaml"
+
+    def test_frontmatter_declaration_reaches_codex(self, fixture_repo, fixture_matrix):
+        self.write(fixture_repo, skill=self.MANUAL)
+
+        output = render(fixture_repo, fixture_matrix, "Codex")
+
+        assert yaml.safe_load(self.agent_file(output).read_text(encoding="utf-8")) == {
+            "policy": {"allow_implicit_invocation": False}
+        }
+        assert demo_skill(output) == self.UNSTATED
+
+    def test_claude_keeps_the_frontmatter_key(self, fixture_repo, fixture_matrix):
+        self.write(fixture_repo, skill=self.MANUAL)
+
+        output = render(fixture_repo, fixture_matrix, "ClaudeCode")
+
+        assert demo_skill(output) == self.MANUAL
+
+    def test_plain_skill_file_compiles_like_a_template(
+        self, fixture_repo, fixture_matrix
+    ):
+        skill_dir = fixture_repo / "plugins" / "plain-plugin" / "skills" / "plain"
+        (skill_dir / "SKILL.md").write_text(self.MANUAL, encoding="utf-8")
+
+        output = render(fixture_repo, fixture_matrix, "Codex")
+
+        assert (
+            output / "plain-plugin" / "skills" / "plain" / "agents" / "openai.yaml"
+        ).read_text(encoding="utf-8") == self.MANUAL_POLICY
+
+    def test_codex_declaration_reaches_claude(self, fixture_repo, fixture_matrix):
+        self.write(fixture_repo, skill=self.UNSTATED, agent=self.MANUAL_POLICY)
+
+        output = render(fixture_repo, fixture_matrix, "ClaudeCode")
+
+        assert demo_skill(output) == self.MANUAL
+
+    def test_codex_keeps_a_file_that_already_states_the_policy(
+        self, fixture_repo, fixture_matrix
+    ):
+        agent = self.INTERFACE + self.MANUAL_POLICY
+        self.write(fixture_repo, skill=self.MANUAL, agent=agent)
+
+        output = render(fixture_repo, fixture_matrix, "Codex")
+
+        assert self.agent_file(output).read_text(encoding="utf-8") == agent
+        assert demo_skill(output) == self.UNSTATED
+
+    def test_interface_entries_survive_the_merge(self, fixture_repo, fixture_matrix):
+        self.write(fixture_repo, skill=self.MANUAL, agent=self.INTERFACE)
+
+        output = render(fixture_repo, fixture_matrix, "Codex")
+
+        assert yaml.safe_load(self.agent_file(output).read_text(encoding="utf-8")) == {
+            "interface": {"display_name": "Demo", "short_description": "Demo skill"},
+            "policy": {"allow_implicit_invocation": False},
+        }
+
+    def test_claude_tree_carries_no_codex_agent_file(
+        self, fixture_repo, fixture_matrix
+    ):
+        self.write(fixture_repo, agent=self.INTERFACE)
+
+        output = render(fixture_repo, fixture_matrix, "ClaudeCode")
+
+        assert not self.agent_file(output).parent.exists()
+
+    def test_unstated_policy_leaves_both_files_alone(self, fixture_repo, fixture_matrix):
+        self.write(fixture_repo, skill=self.UNSTATED, agent=self.INTERFACE)
+
+        output = render(fixture_repo, fixture_matrix, "Codex")
+
+        assert self.agent_file(output).read_text(encoding="utf-8") == self.INTERFACE
+        assert demo_skill(output) == self.UNSTATED
+
+    def test_contradiction_fails_naming_skill_and_both_values(
+        self, fixture_repo, fixture_matrix, harness
+    ):
+        self.write(
+            fixture_repo,
+            skill=self.MANUAL,
+            agent="policy:\n  allow_implicit_invocation: true\n",
+        )
+
+        with pytest.raises(
+            BuildError,
+            match=r"skills/demo.*disable-model-invocation: true.*"
+            r"allow_implicit_invocation: true",
+        ):
+            render(fixture_repo, fixture_matrix, harness)
+
+    @pytest.mark.parametrize(
+        ("skill", "agent", "value"),
+        [
+            ("---\nname: demo\ndisable-model-invocation: yes\n---\n", None, "yes"),
+            (None, 'policy:\n  allow_implicit_invocation: "false"\n', "false"),
+        ],
+    )
+    def test_non_boolean_value_fails_the_build(
+        self, fixture_repo, fixture_matrix, harness, skill, agent, value
+    ):
+        self.write(fixture_repo, skill=skill, agent=agent)
+
+        with pytest.raises(BuildError, match=rf"skills/demo.*'{value}'"):
             render(fixture_repo, fixture_matrix, harness)
 
 

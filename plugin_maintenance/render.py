@@ -12,6 +12,11 @@ Frontmatter is the portability boundary, and the frontmatter matrix draws it:
 each key carries a placement per harness and a value form. A key placed
 `top-level` for one harness and under `metadata` for another is declared once
 in a template through the global named after it, and the renderer places it.
+
+Invocation policy is one setting with two spellings, compiled per skill after
+rendering: `disable-model-invocation` in `SKILL.md` for Claude Code,
+`policy.allow_implicit_invocation` in `agents/openai.yaml` for Codex. Each tree
+gets only its own spelling, and two spellings that disagree stop the build.
 """
 
 import argparse
@@ -25,6 +30,7 @@ from pathlib import Path
 from typing import Literal
 
 import pathspec
+import yaml
 from jinja2 import Environment, StrictUndefined, TemplateError
 
 Harness = Literal["ClaudeCode", "Codex"]
@@ -72,6 +78,10 @@ DIST_DIRS = {
     "ClaudeCode": Path("dist/claude-code"),
     "Codex": Path("dist/codex"),
 }
+SKILL_FILE_GLOB = "skills/*/SKILL.md"
+AGENT_FILE = Path("agents/openai.yaml")
+INVOCATION_KEY = "disable-model-invocation"
+IMPLICIT_POLICY_KEY = "allow_implicit_invocation"
 
 
 class BuildError(Exception):
@@ -471,6 +481,98 @@ def _render_template(
     return rendered
 
 
+def _read_agent_policy(agent_file: Path, skill: Path) -> tuple[dict, bool | None]:
+    """Return the parsed `agents/openai.yaml` and its implicit-invocation value."""
+    try:
+        agent = yaml.safe_load(agent_file.read_text(encoding="utf-8")) or {}
+    except yaml.YAMLError as error:
+        raise BuildError(f"{skill}: cannot parse {AGENT_FILE}: {error}") from error
+    if not isinstance(agent, dict) or not isinstance(agent.get("policy", {}), dict):
+        raise BuildError(
+            f"{skill}: {AGENT_FILE} must be a mapping whose `policy` is a mapping"
+        )
+
+    implicit = agent.get("policy", {}).get(IMPLICIT_POLICY_KEY)
+    if implicit is not None and not isinstance(implicit, bool):
+        raise BuildError(
+            f"{skill}: {AGENT_FILE} sets policy.{IMPLICIT_POLICY_KEY} to "
+            f"{implicit!r}; use true or false"
+        )
+    return agent, implicit
+
+
+def compile_invocation_policy(skill_dir: Path, harness: Harness, skill: Path) -> None:
+    """Write the skill's invocation policy in the spelling `harness` reads.
+
+    `disable-model-invocation: true` in `SKILL.md` and
+    `policy.allow_implicit_invocation: false` in `agents/openai.yaml` are the
+    same setting; an author writes either or both. Claude Code gets the
+    frontmatter key and no `agents/openai.yaml`; Codex gets the policy and no
+    frontmatter key. Only what changes is rewritten, so an authored line stays
+    in place and an `openai.yaml` that already states the policy is untouched.
+    """
+    skill_file = skill_dir / "SKILL.md"
+    agent_file = skill_dir / AGENT_FILE
+    text = skill_file.read_text(encoding="utf-8")
+    frontmatter = FRONTMATTER.match(text)
+    lines = frontmatter.group("body").splitlines() if frontmatter else []
+    key_line = next(
+        (line for line in lines if line.startswith(f"{INVOCATION_KEY}:")), None
+    )
+
+    disabled = None
+    if key_line is not None:
+        value = key_line.partition(":")[2].strip()
+        if value not in ("true", "false"):
+            raise BuildError(
+                f"{skill}: SKILL.md sets {INVOCATION_KEY} to {value!r}; "
+                "use true or false"
+            )
+        disabled = value == "true"
+    agent, implicit = (
+        _read_agent_policy(agent_file, skill) if agent_file.is_file() else ({}, None)
+    )
+
+    if disabled is not None and implicit is not None and disabled == implicit:
+        raise BuildError(
+            f"{skill}: SKILL.md sets {INVOCATION_KEY}: {str(disabled).lower()} but "
+            f"{AGENT_FILE} sets policy.{IMPLICIT_POLICY_KEY}: "
+            f"{str(implicit).lower()}; one must be the negation of the other, "
+            "or keep only one"
+        )
+
+    if harness == "ClaudeCode":
+        if agent_file.is_file():
+            agent_file.unlink()
+            if not any(agent_file.parent.iterdir()):
+                agent_file.parent.rmdir()
+        if disabled is None and implicit is not None:
+            if not frontmatter:
+                raise BuildError(
+                    f"{skill}: SKILL.md has no frontmatter to carry {INVOCATION_KEY}"
+                )
+            end = frontmatter.end("body")
+            line = f"{INVOCATION_KEY}: {str(not implicit).lower()}\n"
+            skill_file.write_text(text[:end] + line + text[end:], encoding="utf-8")
+        return
+
+    if key_line is not None:
+        body = "".join(f"{line}\n" for line in lines if line != key_line)
+        skill_file.write_text(
+            text[: frontmatter.start("body")] + body + text[frontmatter.end("body") :],
+            encoding="utf-8",
+        )
+    if disabled is not None and implicit is None:
+        agent.setdefault("policy", {})[IMPLICIT_POLICY_KEY] = not disabled
+        agent_file.parent.mkdir(exist_ok=True)
+        agent_file.write_text(
+            yaml.safe_dump(
+                agent, sort_keys=False, allow_unicode=True, width=float("inf")
+            ),
+            encoding="utf-8",
+        )
+
+
 def _render_plugin(
     source_dir: Path,
     target_dir: Path,
@@ -513,6 +615,12 @@ def _render_plugin(
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(source, target)
         shutil.copymode(source, target)
+
+    for skill_file in sorted(target_dir.glob(SKILL_FILE_GLOB)):
+        skill_dir = skill_file.parent
+        compile_invocation_policy(
+            skill_dir, harness, source_dir / skill_dir.relative_to(target_dir)
+        )
 
 
 def render_tree(
