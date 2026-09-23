@@ -19,8 +19,8 @@ Landed in two PRs into `harness-dist-pipeline`: #110 shipped a compile step and 
 ## 3. Content and docs
 
 - [x] 3.1 Wrap `disable-model-invocation`, `model`, `context`, and `agent` in a Claude Code harness branch in `handoff`, `wait-what`, `yolo-push`, `schema-guided-reasoning`, and `ai-setup-audit`, turning the last four into templates
-- [x] 3.2 Add `plugins/work-session-tools/skills/wait-what/agents/openai.yaml` with its interface and `policy.allow_implicit_invocation: false`
-- [x] 3.3 Move `llm-wiki` and `obsidian` upstream `author`, `version`, and `platforms` under `metadata.origin`; drop `resume-tailoring`'s `version` and `ai-setup-audit`'s default `disable-model-invocation: false`
+- [x] 3.2 Add `agents/openai.yaml` with an interface and `policy.allow_implicit_invocation: false` to `wait-what` and `ai-setup-audit`; make `ai-setup-audit` user-only for Claude Code too and rewrite its description to say what it does
+- [x] 3.3 Move `llm-wiki` and `obsidian` upstream `author`, `version`, and `platforms` under `metadata.origin`; drop `resume-tailoring`'s `version`
 - [x] 3.4 Rephrase the `schema-guided-reasoning` table row that the template policy read as a callable name
 - [x] 3.5 Update `adapt-skill-for-ai-harness/SKILL.md` and the frontmatter matrix `note`: `agents/openai.yaml` ships to Codex only, Claude Code-only keys go in a harness branch, a user-only skill sets both
 - [x] 3.6 Mark the `agents/openai.yaml` checks in `tests/integration/rendered/ai_assistant_ops/test_improve_skill.py` Codex-only

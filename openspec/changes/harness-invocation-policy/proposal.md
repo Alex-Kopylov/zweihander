@@ -14,7 +14,7 @@ A skill that only the user may start has to say so twice: Claude Code reads `dis
 - Three rendered-tree tests keep this honest: the Claude Code tree carries no `openai.yaml`; every Codex `SKILL.md` carries only specification keys; the skills Claude Code may not start are exactly the skills Codex may not start.
 - `Harness` becomes a `StrEnum`, the one list of harness names; per-harness tables and tests key by its members, and `HARNESSES` is removed.
 - The adaptation skill and the frontmatter matrix note describe `agents/openai.yaml`, the Claude Code branch, and the pairing.
-- Content: `wait-what` gains `agents/openai.yaml` with its interface and policy. `handoff`, `wait-what`, `yolo-push`, `ai-setup-audit`, and `schema-guided-reasoning` put their Claude Code-only keys in a harness branch; the last four become templates. `llm-wiki` and `obsidian` move upstream `author`, `version`, and `platforms` under `metadata.origin`. `resume-tailoring` drops its `version` key, and `ai-setup-audit` drops the default `disable-model-invocation: false`.
+- Content: `wait-what` gains `agents/openai.yaml` with its interface and policy. `ai-setup-audit` was model-invocable by mistake: it becomes user-only in both harnesses, gains `agents/openai.yaml`, and its description says what it does instead of listing triggers. `handoff`, `wait-what`, `yolo-push`, `ai-setup-audit`, and `schema-guided-reasoning` put their Claude Code-only keys in a harness branch; the last four become templates. `llm-wiki` and `obsidian` move upstream `author`, `version`, and `platforms` under `metadata.origin`. `resume-tailoring` drops its `version` key.
 - Consequences: rebuild and commit `dist/`; bump every plugin whose shipped tree changes.
 
 ## Capabilities
