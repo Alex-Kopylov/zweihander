@@ -1,7 +1,9 @@
 ---
 name: yolo-push
 description: Run a guarded commit-to-deploy workflow that verifies branch freshness, invokes commit and create-pr, waits for green CI, invokes approve-pr, monitors CD, offers to clean up the merged branch and worktree, and reports final deployment state.
+{% if harness == "ClaudeCode" -%}
 disable-model-invocation: true
+{% endif -%}
 ---
 
 # YOLO Push

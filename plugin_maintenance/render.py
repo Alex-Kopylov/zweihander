@@ -5,18 +5,14 @@ Usage: `uv run python -m plugin_maintenance.render --harness ClaudeCode --output
 File rules per output path X: copy X byte-for-byte when only X exists,
 render X.j2 into X when only X.j2 exists, fail when both exist. Files named
 AGENTS.md/CLAUDE.md/README.md, the other harness's runtime metadata
-directory, and every path `.gitignore` excludes are never emitted. Each tree
+directory and skill files, and every path `.gitignore` excludes are never
+emitted. Each tree
 contains exactly the plugins listed in that harness's marketplace manifest.
 
 Frontmatter is the portability boundary, and the frontmatter matrix draws it:
 each key carries a placement per harness and a value form. A key placed
 `top-level` for one harness and under `metadata` for another is declared once
 in a template through the global named after it, and the renderer places it.
-
-Invocation policy is one setting with two spellings, compiled per skill after
-rendering: `disable-model-invocation` in `SKILL.md` for Claude Code,
-`policy.allow_implicit_invocation` in `agents/openai.yaml` for Codex. Each tree
-gets only its own spelling, and two spellings that disagree stop the build.
 """
 
 import argparse
@@ -30,7 +26,6 @@ from enum import StrEnum
 from pathlib import Path
 
 import pathspec
-import yaml
 from jinja2 import Environment, StrictUndefined, TemplateError
 
 class Harness(StrEnum):
@@ -83,10 +78,12 @@ DIST_DIRS = {
     Harness.CLAUDE_CODE: Path("dist/claude-code"),
     Harness.CODEX: Path("dist/codex"),
 }
-SKILL_FILE_GLOB = "skills/*/SKILL.md"
-AGENT_FILE = Path("agents/openai.yaml")
-INVOCATION_KEY = "disable-model-invocation"
-IMPLICIT_POLICY_KEY = "allow_implicit_invocation"
+# Codex reads a skill's UI and invocation policy from `agents/openai.yaml`;
+# Claude Code never reads it, so its tree never carries it.
+FOREIGN_SKILL_FILES = {
+    Harness.CLAUDE_CODE: ("skills/*/agents/openai.yaml",),
+    Harness.CODEX: (),
+}
 
 
 class BuildError(Exception):
@@ -486,147 +483,6 @@ def _render_template(
     return rendered
 
 
-def _read_agent_policy(agent_file: Path, skill: Path) -> tuple[dict, bool | None]:
-    """Return the parsed `agents/openai.yaml` and its implicit-invocation value."""
-    try:
-        agent = yaml.safe_load(agent_file.read_text(encoding="utf-8")) or {}
-    except yaml.YAMLError as error:
-        raise BuildError(f"{skill}: cannot parse {AGENT_FILE}: {error}") from error
-    if not isinstance(agent, dict) or not isinstance(agent.get("policy", {}), dict):
-        raise BuildError(
-            f"{skill}: {AGENT_FILE} must be a mapping whose `policy` is a mapping"
-        )
-
-    implicit = agent.get("policy", {}).get(IMPLICIT_POLICY_KEY)
-    if implicit is not None and not isinstance(implicit, bool):
-        raise BuildError(
-            f"{skill}: {AGENT_FILE} sets policy.{IMPLICIT_POLICY_KEY} to "
-            f"{implicit!r}; use true or false"
-        )
-    return agent, implicit
-
-
-def _is_invocation_line(line: str) -> bool:
-    return line.startswith(f"{INVOCATION_KEY}:")
-
-
-def _read_invocation_policy(
-    skill_dir: Path, skill: Path
-) -> tuple[bool | None, bool | None]:
-    """Return both spellings of the setting, failing when they disagree."""
-    frontmatter = frontmatter_lines(
-        (skill_dir / "SKILL.md").read_text(encoding="utf-8")
-    )
-    key_line = next(filter(_is_invocation_line, frontmatter or []), None)
-    disabled = None
-    if key_line is not None:
-        value = key_line.partition(":")[2].strip()
-        if value not in ("true", "false"):
-            raise BuildError(
-                f"{skill}: SKILL.md sets {INVOCATION_KEY} to {value!r}; "
-                "use true or false"
-            )
-        disabled = value == "true"
-
-    agent_file = skill_dir / AGENT_FILE
-    implicit = (
-        _read_agent_policy(agent_file, skill)[1] if agent_file.is_file() else None
-    )
-    if disabled is not None and implicit is not None and disabled == implicit:
-        raise BuildError(
-            f"{skill}: SKILL.md sets {INVOCATION_KEY}: {str(disabled).lower()} but "
-            f"{AGENT_FILE} sets policy.{IMPLICIT_POLICY_KEY}: "
-            f"{str(implicit).lower()}; one must be the negation of the other, "
-            "or keep only one"
-        )
-    return disabled, implicit
-
-
-def _write_claude_code_policy(
-    skill_dir: Path, skill: Path, disabled: bool | None, implicit: bool | None
-) -> None:
-    """Claude Code reads the frontmatter key and never `agents/openai.yaml`.
-
-    An authored key stays where it is; one that came from `openai.yaml` becomes
-    the last frontmatter line.
-    """
-    agent_file = skill_dir / AGENT_FILE
-    if agent_file.is_file():
-        agent_file.unlink()
-        if not any(agent_file.parent.iterdir()):
-            agent_file.parent.rmdir()
-    if disabled is not None or implicit is None:
-        return
-
-    skill_file = skill_dir / "SKILL.md"
-    text = skill_file.read_text(encoding="utf-8")
-    frontmatter = FRONTMATTER.match(text)
-    if not frontmatter:
-        raise BuildError(
-            f"{skill}: SKILL.md has no frontmatter to carry {INVOCATION_KEY}"
-        )
-    end = frontmatter.end("body")
-    line = f"{INVOCATION_KEY}: {str(not implicit).lower()}\n"
-    skill_file.write_text(text[:end] + line + text[end:], encoding="utf-8")
-
-
-def _write_codex_policy(
-    skill_dir: Path, skill: Path, disabled: bool | None, implicit: bool | None
-) -> None:
-    """Codex reads `policy.allow_implicit_invocation` and no frontmatter key.
-
-    An `openai.yaml` that already states the policy stays byte-for-byte; one
-    that lacks it is created or re-serialized with the policy added.
-    """
-    if disabled is None:
-        return
-
-    skill_file = skill_dir / "SKILL.md"
-    text = skill_file.read_text(encoding="utf-8")
-    frontmatter = FRONTMATTER.match(text)
-    body = "".join(
-        f"{line}\n"
-        for line in frontmatter.group("body").splitlines()
-        if not _is_invocation_line(line)
-    )
-    skill_file.write_text(
-        text[: frontmatter.start("body")] + body + text[frontmatter.end("body") :],
-        encoding="utf-8",
-    )
-    if implicit is not None:
-        return
-
-    agent_file = skill_dir / AGENT_FILE
-    agent = _read_agent_policy(agent_file, skill)[0] if agent_file.is_file() else {}
-    agent.setdefault("policy", {})[IMPLICIT_POLICY_KEY] = not disabled
-    agent_file.parent.mkdir(exist_ok=True)
-    agent_file.write_text(
-        yaml.safe_dump(agent, sort_keys=False, allow_unicode=True, width=float("inf")),
-        encoding="utf-8",
-    )
-
-
-# Where each harness reads a skill's invocation policy, keyed like the other
-# per-harness tables so a new harness fails here until it names its spelling.
-PolicyWriter = Callable[[Path, Path, bool | None, bool | None], None]
-POLICY_WRITERS: dict[Harness, PolicyWriter] = {
-    Harness.CLAUDE_CODE: _write_claude_code_policy,
-    Harness.CODEX: _write_codex_policy,
-}
-
-
-def compile_invocation_policy(skill_dir: Path, harness: Harness, skill: Path) -> None:
-    """Write the skill's invocation policy in the spelling `harness` reads.
-
-    `disable-model-invocation: true` in `SKILL.md` and
-    `policy.allow_implicit_invocation: false` in `agents/openai.yaml` are the
-    same setting; an author writes either or both, and each tree gets only its
-    own harness's spelling.
-    """
-    disabled, implicit = _read_invocation_policy(skill_dir, skill)
-    POLICY_WRITERS[harness](skill_dir, skill, disabled, implicit)
-
-
 def _render_plugin(
     source_dir: Path,
     target_dir: Path,
@@ -639,6 +495,8 @@ def _render_plugin(
     for source in sorted(source_dir.rglob("*")):
         relative = source.relative_to(source_dir)
         if foreign_metadata in relative.parts or source.is_dir():
+            continue
+        if any(relative.match(pattern) for pattern in FOREIGN_SKILL_FILES[harness]):
             continue
         if is_ignored(source):
             continue
@@ -669,12 +527,6 @@ def _render_plugin(
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(source, target)
         shutil.copymode(source, target)
-
-    for skill_file in sorted(target_dir.glob(SKILL_FILE_GLOB)):
-        skill_dir = skill_file.parent
-        compile_invocation_policy(
-            skill_dir, harness, source_dir / skill_dir.relative_to(target_dir)
-        )
 
 
 def render_tree(

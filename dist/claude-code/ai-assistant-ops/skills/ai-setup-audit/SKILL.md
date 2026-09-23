@@ -1,6 +1,7 @@
 ---
 name: ai-setup-audit
-description: This skill should be used when the user asks to "audit my setup", "check my CLAUDE.md/AGENTS.md", "check my instruction files", "review my AI config", "clean up my instructions", "find conflicts in my setup", "optimize my agent setup", or mentions reviewing instruction files, skills folders, context files, or preferences for contradictions, redundancy, or dead weight.
+description: Audit the whole AI assistant setup — AGENTS.md, runtime instruction files, skills, and context files — and list rules to cut as default, conflicting, redundant, reactive, or vague, plus a cleaned-up AGENTS.md.
+disable-model-invocation: true
 context: fork
 agent: Explore
 ---

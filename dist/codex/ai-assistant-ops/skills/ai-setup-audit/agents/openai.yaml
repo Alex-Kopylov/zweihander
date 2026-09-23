@@ -1,0 +1,5 @@
+interface:
+  display_name: "AI Setup Audit"
+  short_description: "Audit instruction files and skills for dead weight and conflicts"
+policy:
+  allow_implicit_invocation: false

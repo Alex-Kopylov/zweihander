@@ -1,14 +1,14 @@
 ---
 name: llm-wiki
 description: Use when creating, maintaining, querying, ingesting into, or auditing an interlinked Markdown research wiki or knowledge base
-version: 2.1.0
-author: Hermes Agent
 license: MIT
-platforms: [linux, macos, windows]
 metadata:
   origin:
     url: https://raw.githubusercontent.com/NousResearch/hermes-agent/refs/heads/main/skills/research/llm-wiki/SKILL.md
     repository: NousResearch/hermes-agent
+    version: 2.1.0
+    author: Hermes Agent
+    platforms: [linux, macos, windows]
 ---
 
 # Karpathy's LLM Wiki
