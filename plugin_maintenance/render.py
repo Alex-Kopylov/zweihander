@@ -501,25 +501,18 @@ def _read_agent_policy(agent_file: Path, skill: Path) -> tuple[dict, bool | None
     return agent, implicit
 
 
-def compile_invocation_policy(skill_dir: Path, harness: Harness, skill: Path) -> None:
-    """Write the skill's invocation policy in the spelling `harness` reads.
+def _is_invocation_line(line: str) -> bool:
+    return line.startswith(f"{INVOCATION_KEY}:")
 
-    `disable-model-invocation: true` in `SKILL.md` and
-    `policy.allow_implicit_invocation: false` in `agents/openai.yaml` are the
-    same setting; an author writes either or both. Claude Code gets the
-    frontmatter key and no `agents/openai.yaml`; Codex gets the policy and no
-    frontmatter key. Only what changes is rewritten, so an authored line stays
-    in place and an `openai.yaml` that already states the policy is untouched.
-    """
-    skill_file = skill_dir / "SKILL.md"
-    agent_file = skill_dir / AGENT_FILE
-    text = skill_file.read_text(encoding="utf-8")
-    frontmatter = FRONTMATTER.match(text)
-    lines = frontmatter.group("body").splitlines() if frontmatter else []
-    key_line = next(
-        (line for line in lines if line.startswith(f"{INVOCATION_KEY}:")), None
+
+def _read_invocation_policy(
+    skill_dir: Path, skill: Path
+) -> tuple[bool | None, bool | None]:
+    """Return both spellings of the setting, failing when they disagree."""
+    frontmatter = frontmatter_lines(
+        (skill_dir / "SKILL.md").read_text(encoding="utf-8")
     )
-
+    key_line = next(filter(_is_invocation_line, frontmatter or []), None)
     disabled = None
     if key_line is not None:
         value = key_line.partition(":")[2].strip()
@@ -529,10 +522,11 @@ def compile_invocation_policy(skill_dir: Path, harness: Harness, skill: Path) ->
                 "use true or false"
             )
         disabled = value == "true"
-    agent, implicit = (
-        _read_agent_policy(agent_file, skill) if agent_file.is_file() else ({}, None)
-    )
 
+    agent_file = skill_dir / AGENT_FILE
+    implicit = (
+        _read_agent_policy(agent_file, skill)[1] if agent_file.is_file() else None
+    )
     if disabled is not None and implicit is not None and disabled == implicit:
         raise BuildError(
             f"{skill}: SKILL.md sets {INVOCATION_KEY}: {str(disabled).lower()} but "
@@ -540,37 +534,91 @@ def compile_invocation_policy(skill_dir: Path, harness: Harness, skill: Path) ->
             f"{str(implicit).lower()}; one must be the negation of the other, "
             "or keep only one"
         )
+    return disabled, implicit
 
-    if harness == "ClaudeCode":
-        if agent_file.is_file():
-            agent_file.unlink()
-            if not any(agent_file.parent.iterdir()):
-                agent_file.parent.rmdir()
-        if disabled is None and implicit is not None:
-            if not frontmatter:
-                raise BuildError(
-                    f"{skill}: SKILL.md has no frontmatter to carry {INVOCATION_KEY}"
-                )
-            end = frontmatter.end("body")
-            line = f"{INVOCATION_KEY}: {str(not implicit).lower()}\n"
-            skill_file.write_text(text[:end] + line + text[end:], encoding="utf-8")
+
+def _write_claude_code_policy(
+    skill_dir: Path, skill: Path, disabled: bool | None, implicit: bool | None
+) -> None:
+    """Claude Code reads the frontmatter key and never `agents/openai.yaml`.
+
+    An authored key stays where it is; one that came from `openai.yaml` becomes
+    the last frontmatter line.
+    """
+    agent_file = skill_dir / AGENT_FILE
+    if agent_file.is_file():
+        agent_file.unlink()
+        if not any(agent_file.parent.iterdir()):
+            agent_file.parent.rmdir()
+    if disabled is not None or implicit is None:
         return
 
-    if key_line is not None:
-        body = "".join(f"{line}\n" for line in lines if line != key_line)
-        skill_file.write_text(
-            text[: frontmatter.start("body")] + body + text[frontmatter.end("body") :],
-            encoding="utf-8",
+    skill_file = skill_dir / "SKILL.md"
+    text = skill_file.read_text(encoding="utf-8")
+    frontmatter = FRONTMATTER.match(text)
+    if not frontmatter:
+        raise BuildError(
+            f"{skill}: SKILL.md has no frontmatter to carry {INVOCATION_KEY}"
         )
-    if disabled is not None and implicit is None:
-        agent.setdefault("policy", {})[IMPLICIT_POLICY_KEY] = not disabled
-        agent_file.parent.mkdir(exist_ok=True)
-        agent_file.write_text(
-            yaml.safe_dump(
-                agent, sort_keys=False, allow_unicode=True, width=float("inf")
-            ),
-            encoding="utf-8",
-        )
+    end = frontmatter.end("body")
+    line = f"{INVOCATION_KEY}: {str(not implicit).lower()}\n"
+    skill_file.write_text(text[:end] + line + text[end:], encoding="utf-8")
+
+
+def _write_codex_policy(
+    skill_dir: Path, skill: Path, disabled: bool | None, implicit: bool | None
+) -> None:
+    """Codex reads `policy.allow_implicit_invocation` and no frontmatter key.
+
+    An `openai.yaml` that already states the policy stays byte-for-byte; one
+    that lacks it is created or re-serialized with the policy added.
+    """
+    if disabled is None:
+        return
+
+    skill_file = skill_dir / "SKILL.md"
+    text = skill_file.read_text(encoding="utf-8")
+    frontmatter = FRONTMATTER.match(text)
+    body = "".join(
+        f"{line}\n"
+        for line in frontmatter.group("body").splitlines()
+        if not _is_invocation_line(line)
+    )
+    skill_file.write_text(
+        text[: frontmatter.start("body")] + body + text[frontmatter.end("body") :],
+        encoding="utf-8",
+    )
+    if implicit is not None:
+        return
+
+    agent_file = skill_dir / AGENT_FILE
+    agent = _read_agent_policy(agent_file, skill)[0] if agent_file.is_file() else {}
+    agent.setdefault("policy", {})[IMPLICIT_POLICY_KEY] = not disabled
+    agent_file.parent.mkdir(exist_ok=True)
+    agent_file.write_text(
+        yaml.safe_dump(agent, sort_keys=False, allow_unicode=True, width=float("inf")),
+        encoding="utf-8",
+    )
+
+
+# Where each harness reads a skill's invocation policy, keyed like the other
+# per-harness tables so a new harness fails here until it names its spelling.
+POLICY_WRITERS: dict[str, Callable[[Path, Path, bool | None, bool | None], None]] = {
+    "ClaudeCode": _write_claude_code_policy,
+    "Codex": _write_codex_policy,
+}
+
+
+def compile_invocation_policy(skill_dir: Path, harness: Harness, skill: Path) -> None:
+    """Write the skill's invocation policy in the spelling `harness` reads.
+
+    `disable-model-invocation: true` in `SKILL.md` and
+    `policy.allow_implicit_invocation: false` in `agents/openai.yaml` are the
+    same setting; an author writes either or both, and each tree gets only its
+    own harness's spelling.
+    """
+    disabled, implicit = _read_invocation_policy(skill_dir, skill)
+    POLICY_WRITERS[harness](skill_dir, skill, disabled, implicit)
 
 
 def _render_plugin(
