@@ -37,7 +37,3 @@ Code-specific checks for the gate function in `../SKILL.md`.
 ✅ [Run build] [See: exit 0] "Build passes"
 ❌ "Linter passed" (linter doesn't check compilation)
 ```
-
-## Why This Matters
-
-Undefined functions shipped - would crash.
