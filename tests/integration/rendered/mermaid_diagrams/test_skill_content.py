@@ -8,6 +8,7 @@ from pathlib import Path
 import pytest
 
 from plugin_maintenance import REPO_ROOT
+from plugin_maintenance.render import Harness
 
 
 @pytest.fixture
@@ -96,7 +97,7 @@ def test_plugin_manifest_points_to_neutral_skills(plugin_root: Path) -> None:
     assert manifest["skills"] == "./skills/"
 
 
-@pytest.mark.harness("Codex")
+@pytest.mark.harness(Harness.CODEX)
 def test_codex_manifest_declares_the_upstream_license(plugin_root: Path) -> None:
     manifest = json.loads(
         (plugin_root / ".codex-plugin" / "plugin.json").read_text(encoding="utf-8")

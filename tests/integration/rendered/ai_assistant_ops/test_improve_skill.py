@@ -7,6 +7,7 @@ from pathlib import Path
 import pytest
 
 from plugin_maintenance import REPO_ROOT
+from plugin_maintenance.render import Harness
 
 
 @pytest.fixture
@@ -165,7 +166,7 @@ def test_evals_cover_required_improvement_scenarios(skill_root: Path) -> None:
         assert phrase in combined
 
 
-@pytest.mark.harness("Codex")
+@pytest.mark.harness(Harness.CODEX)
 def test_openai_agent_prompt_exists(skill_root: Path) -> None:
     agent_file = skill_root / "agents" / "openai.yaml"
     assert agent_file.is_file()

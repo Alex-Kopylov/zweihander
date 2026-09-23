@@ -12,6 +12,7 @@ A skill that only the user may start has to say so twice: Claude Code reads `dis
 - The build fails, naming the skill and both values, when the two spellings disagree, and fails on a value that is not a boolean.
 - No per-skill config file: the two files the harnesses already read stay the only sources.
 - `PyYAML` joins the build dependencies to read and write `agents/openai.yaml`.
+- `Harness` becomes a `StrEnum`, the one list of harness names; per-harness tables and tests key by its members, and `HARNESSES` is removed.
 - The adaptation skill and the frontmatter matrix note stop saying invocation policy never belongs in frontmatter; they describe both spellings and the compile step.
 - Content: `wait-what` gains `agents/openai.yaml` with its Codex display name and short description; `ai-setup-audit` drops the default `disable-model-invocation: false`, which would otherwise compile into a policy-only `agents/openai.yaml`.
 - Consequences: tests that read `agents/openai.yaml` run for Codex only; rebuild and commit `dist/`; bump `ai-assistant-ops`, `dev-workflow`, `llm-application-dev`, and `work-session-tools`, whose shipped trees change.

@@ -38,6 +38,9 @@ Alternative — make one spelling mandatory: rejected; a Claude Code author thin
 
 **D6 — The value crosses over as written.** An explicit `false` compiles too, into `allow_implicit_invocation: true`. That keeps the rule free of exceptions. The price is a policy-only `openai.yaml` for a skill that states the default, so `ai-setup-audit` loses its `disable-model-invocation: false` line rather than gaining such a file.
 
+**D7 — `Harness` is a `StrEnum` and the one harness list.** The compile step first branched on `harness == "ClaudeCode"`, the renderer's only string comparison on a harness name. It now dispatches through `POLICY_WRITERS`, keyed like `HARNESS_MANIFESTS`, `FOREIGN_METADATA_DIRS`, and `DIST_DIRS`, and every such table is keyed by `Harness` members. `Harness` replaces both the `Literal` type and `HARNESSES` (test-placement D3): a `StrEnum` member is the string it names, so matrix lookups, Jinja comparisons, pytest ids, and paths are unchanged, while Python code names a harness as `Harness.CODEX` instead of restating it. One test asserts every per-harness table covers exactly the enum. Data stays text: matrix JSON keys, template conditionals, and the lookup script's arguments keep the plain names.
+Alternative — keep `HARNESSES = tuple(Harness)`: rejected; a second name for the same list.
+
 ## Risks / Trade-offs
 
 - [Re-serialized `openai.yaml` differs in quoting from the source] → the file is generated output; `safe_load` of both yields the same data, and a file that already carries the policy is not re-serialized.

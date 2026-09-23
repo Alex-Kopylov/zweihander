@@ -26,14 +26,19 @@ import re
 import shutil
 import tempfile
 from collections.abc import Callable, Mapping
+from enum import StrEnum
 from pathlib import Path
-from typing import Literal
 
 import pathspec
 import yaml
 from jinja2 import Environment, StrictUndefined, TemplateError
 
-Harness = Literal["ClaudeCode", "Codex"]
+class Harness(StrEnum):
+    """The one list of harnesses; each value is its key in both matrices."""
+
+    CLAUDE_CODE = "ClaudeCode"
+    CODEX = "Codex"
+
 
 MATRIX_PATH = Path(
     "plugins/ai-assistant-ops/skills/adapt-skill-for-ai-harness"
@@ -67,16 +72,16 @@ ARGUMENT_NAME = re.compile(r"\A[a-z][a-z0-9_]*\Z")
 YAML_INDICATORS = set("*&!|>%@`{}[],#\"'?")
 
 HARNESS_MANIFESTS = {
-    "ClaudeCode": Path(".claude-plugin/marketplace.json"),
-    "Codex": Path(".agents/plugins/marketplace.json"),
+    Harness.CLAUDE_CODE: Path(".claude-plugin/marketplace.json"),
+    Harness.CODEX: Path(".agents/plugins/marketplace.json"),
 }
 FOREIGN_METADATA_DIRS = {
-    "ClaudeCode": ".codex-plugin",
-    "Codex": ".claude-plugin",
+    Harness.CLAUDE_CODE: ".codex-plugin",
+    Harness.CODEX: ".claude-plugin",
 }
 DIST_DIRS = {
-    "ClaudeCode": Path("dist/claude-code"),
-    "Codex": Path("dist/codex"),
+    Harness.CLAUDE_CODE: Path("dist/claude-code"),
+    Harness.CODEX: Path("dist/codex"),
 }
 SKILL_FILE_GLOB = "skills/*/SKILL.md"
 AGENT_FILE = Path("agents/openai.yaml")
@@ -603,9 +608,10 @@ def _write_codex_policy(
 
 # Where each harness reads a skill's invocation policy, keyed like the other
 # per-harness tables so a new harness fails here until it names its spelling.
-POLICY_WRITERS: dict[str, Callable[[Path, Path, bool | None, bool | None], None]] = {
-    "ClaudeCode": _write_claude_code_policy,
-    "Codex": _write_codex_policy,
+PolicyWriter = Callable[[Path, Path, bool | None, bool | None], None]
+POLICY_WRITERS: dict[Harness, PolicyWriter] = {
+    Harness.CLAUDE_CODE: _write_claude_code_policy,
+    Harness.CODEX: _write_codex_policy,
 }
 
 
@@ -691,6 +697,7 @@ def render_tree(
         raise BuildError(
             f"unknown harness '{harness}'; supported harnesses: {', '.join(known)}"
         )
+    harness = Harness(harness)
 
     manifest = Path(manifest_path) if manifest_path else repo_root / HARNESS_MANIFESTS[harness]
     plugin_names = manifest_plugin_names(manifest)
@@ -760,7 +767,7 @@ def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(
         description="Render plugins/ into one harness-specific dist tree."
     )
-    parser.add_argument("--harness", required=True)
+    parser.add_argument("--harness", required=True, choices=list(Harness))
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--repo-root", type=Path, default=Path.cwd())
     args = parser.parse_args(argv)

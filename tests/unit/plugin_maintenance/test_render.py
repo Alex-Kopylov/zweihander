@@ -14,11 +14,11 @@ from pathlib import Path
 import pytest
 import yaml
 
-from plugin_maintenance import HARNESSES
 from plugin_maintenance.render import (
     DEV_FILE_NAMES,
     FRONTMATTER_MATRIX_NAME,
     BuildError,
+    Harness,
     render_tree,
 )
 
@@ -41,14 +41,14 @@ def demo_template(repo: Path) -> Path:
 
 class TestActionResolution:
     def test_claude_actions_resolve_to_claude_names(self, fixture_repo, fixture_matrix):
-        text = demo_skill(render(fixture_repo, fixture_matrix, "ClaudeCode"))
+        text = demo_skill(render(fixture_repo, fixture_matrix, Harness.CLAUDE_CODE))
 
         assert "Skill(AskUserQuestion)" in text
         assert "the AskUserQuestion mechanism" in text
         assert "Skill(Agent)" in text
 
     def test_codex_actions_resolve_to_codex_names(self, fixture_repo, fixture_matrix):
-        text = demo_skill(render(fixture_repo, fixture_matrix, "Codex"))
+        text = demo_skill(render(fixture_repo, fixture_matrix, Harness.CODEX))
 
         assert "$request_user_input" in text
         assert "the request_user_input mechanism" in text
@@ -60,8 +60,8 @@ class TestWrapperFilter:
     # one harness list: a harness added to the matrix lands here as a KeyError
     # naming the wrapper nobody wrote yet.
     WRAPPER_FORMS = {
-        "ClaudeCode": ("Skill(commit)", "Skill(dev-workflow:commit)"),
-        "Codex": ("$commit", "$dev-workflow:commit"),
+        Harness.CLAUDE_CODE: ("Skill(commit)", "Skill(dev-workflow:commit)"),
+        Harness.CODEX: ("$commit", "$dev-workflow:commit"),
     }
 
     def test_wrapper_covers_bare_and_qualified_names(
@@ -78,8 +78,8 @@ class TestNarrativeConditional:
     def test_each_harness_keeps_only_its_own_narrative(
         self, fixture_repo, fixture_matrix
     ):
-        claude = demo_skill(render(fixture_repo, fixture_matrix, "ClaudeCode"))
-        codex = demo_skill(render(fixture_repo, fixture_matrix, "Codex"))
+        claude = demo_skill(render(fixture_repo, fixture_matrix, Harness.CLAUDE_CODE))
+        codex = demo_skill(render(fixture_repo, fixture_matrix, Harness.CODEX))
 
         assert "Claude Code-specific narrative." in claude
         assert "Codex-specific narrative." not in claude
@@ -98,7 +98,7 @@ class TestFileRules:
             / "references"
             / "plain.md"
         )
-        output = render(fixture_repo, fixture_matrix, "ClaudeCode")
+        output = render(fixture_repo, fixture_matrix, Harness.CLAUDE_CODE)
         copied = output / "demo-plugin" / "skills" / "demo" / "references" / "plain.md"
 
         assert copied.read_bytes() == source.read_bytes()
@@ -106,13 +106,13 @@ class TestFileRules:
     def test_template_suffix_stripped_and_absent_from_output(
         self, fixture_repo, fixture_matrix
     ):
-        output = render(fixture_repo, fixture_matrix, "ClaudeCode")
+        output = render(fixture_repo, fixture_matrix, Harness.CLAUDE_CODE)
 
         assert (output / "demo-plugin" / "skills" / "demo" / "SKILL.md").is_file()
         assert not list(output.rglob("*.j2"))
 
     def test_raw_block_emits_literal_braces(self, fixture_repo, fixture_matrix):
-        text = demo_skill(render(fixture_repo, fixture_matrix, "ClaudeCode"))
+        text = demo_skill(render(fixture_repo, fixture_matrix, Harness.CLAUDE_CODE))
 
         assert "{{COMPANY}}" in text
 
@@ -135,7 +135,7 @@ class TestFileRules:
             encoding="utf-8",
         )
 
-        text = demo_skill(render(fixture_repo, fixture_matrix, "ClaudeCode"))
+        text = demo_skill(render(fixture_repo, fixture_matrix, Harness.CLAUDE_CODE))
 
         assert "Skill(AskUserQuestion)" in text
         assert "{{COMPANY}}" in text
@@ -143,7 +143,7 @@ class TestFileRules:
     def test_rendered_output_has_no_leftover_markers(
         self, fixture_repo, fixture_matrix
     ):
-        text = demo_skill(render(fixture_repo, fixture_matrix, "ClaudeCode"))
+        text = demo_skill(render(fixture_repo, fixture_matrix, Harness.CLAUDE_CODE))
 
         for marker in ("{%", "%}", "{{ actions", "| call"):
             assert marker not in text
@@ -157,10 +157,10 @@ class TestFileRules:
         colliding.write_text("collides\n", encoding="utf-8")
 
         with pytest.raises(BuildError, match="SKILL.md"):
-            render(fixture_repo, fixture_matrix, "ClaudeCode")
+            render(fixture_repo, fixture_matrix, Harness.CLAUDE_CODE)
 
     def test_executable_bit_survives(self, fixture_repo, fixture_matrix):
-        output = render(fixture_repo, fixture_matrix, "ClaudeCode")
+        output = render(fixture_repo, fixture_matrix, Harness.CLAUDE_CODE)
         hook = output / "demo-plugin" / "scripts" / "hook.sh"
 
         assert os.access(hook, os.X_OK)
@@ -186,7 +186,7 @@ class TestFrontmatterPortability:
     ):
         self.write_skill(fixture_repo, '{{ allowed_tools("Bash(git:*) Read") }}\n')
 
-        text = demo_skill(render(fixture_repo, fixture_matrix, "ClaudeCode"))
+        text = demo_skill(render(fixture_repo, fixture_matrix, Harness.CLAUDE_CODE))
 
         assert "\nallowed-tools: Bash(git:*) Read\n" in text
         assert "metadata:" not in text
@@ -196,7 +196,7 @@ class TestFrontmatterPortability:
     ):
         self.write_skill(fixture_repo, '{{ allowed_tools("Bash(git:*) Read") }}\n')
 
-        text = demo_skill(render(fixture_repo, fixture_matrix, "Codex"))
+        text = demo_skill(render(fixture_repo, fixture_matrix, Harness.CODEX))
 
         assert "\nmetadata:\n  allowed-tools: Bash(git:*) Read\n" in text
         assert "\nallowed-tools:" not in text
@@ -258,7 +258,7 @@ class TestArgumentFrontmatter:
             '{{ argument_hint("[items] to walk") }}\n{{ arguments("items") }}\n',
         )
 
-        text = demo_skill(render(fixture_repo, fixture_matrix, "ClaudeCode"))
+        text = demo_skill(render(fixture_repo, fixture_matrix, Harness.CLAUDE_CODE))
 
         assert '\nargument-hint: "[items] to walk"\n' in text
         assert "\narguments: items\n" in text
@@ -272,7 +272,7 @@ class TestArgumentFrontmatter:
             '{{ argument_hint("[items] to walk") }}\n{{ arguments("items") }}\n',
         )
 
-        text = demo_skill(render(fixture_repo, fixture_matrix, "Codex"))
+        text = demo_skill(render(fixture_repo, fixture_matrix, Harness.CODEX))
 
         assert text.count("metadata:") == 1
         assert '  argument-hint: "[items] to walk"\n' in text
@@ -352,10 +352,10 @@ class TestPlacementComesFromTheMatrix:
         )
 
     def test_flipping_a_placement_moves_the_key(self, fixture_repo, fixture_matrix):
-        self.repoint(fixture_matrix, "argument-hint", "ClaudeCode", "metadata")
+        self.repoint(fixture_matrix, "argument-hint", Harness.CLAUDE_CODE, "metadata")
         self.write_skill(fixture_repo, '{{ argument_hint("[items]") }}\n')
 
-        text = demo_skill(render(fixture_repo, fixture_matrix, "ClaudeCode"))
+        text = demo_skill(render(fixture_repo, fixture_matrix, Harness.CLAUDE_CODE))
 
         assert '\nmetadata:\n  argument-hint: "[items]"\n' in text
 
@@ -363,14 +363,14 @@ class TestPlacementComesFromTheMatrix:
         self.write_skill(fixture_repo, '{{ model("opus") }}\n')
 
         with pytest.raises(BuildError, match="model"):
-            render(fixture_repo, fixture_matrix, "ClaudeCode")
+            render(fixture_repo, fixture_matrix, Harness.CLAUDE_CODE)
 
     def test_a_verbatim_key_has_no_global(self, fixture_repo, fixture_matrix):
         """`name` is written literally, so nothing places it."""
         self.write_skill(fixture_repo, '{{ name("demo") }}\n')
 
         with pytest.raises(BuildError, match="name"):
-            render(fixture_repo, fixture_matrix, "ClaudeCode")
+            render(fixture_repo, fixture_matrix, Harness.CLAUDE_CODE)
 
 
 class TestFrontmatterMetadataMerge:
@@ -392,7 +392,7 @@ class TestFrontmatterMetadataMerge:
     def test_codex_folds_both_blocks_into_one(self, fixture_repo, fixture_matrix):
         demo_template(fixture_repo).write_text(self.BOTH_BLOCKS, encoding="utf-8")
 
-        text = demo_skill(render(fixture_repo, fixture_matrix, "Codex"))
+        text = demo_skill(render(fixture_repo, fixture_matrix, Harness.CODEX))
 
         assert text.count("metadata:") == 1
         assert "  allowed-tools: Read\n" in text
@@ -403,7 +403,7 @@ class TestFrontmatterMetadataMerge:
     ):
         demo_template(fixture_repo).write_text(self.BOTH_BLOCKS, encoding="utf-8")
 
-        text = demo_skill(render(fixture_repo, fixture_matrix, "ClaudeCode"))
+        text = demo_skill(render(fixture_repo, fixture_matrix, Harness.CLAUDE_CODE))
 
         assert text.count("metadata:") == 1
         assert "\nallowed-tools: Read\n" in text
@@ -458,7 +458,7 @@ class TestInvocationPolicy:
     def test_frontmatter_declaration_reaches_codex(self, fixture_repo, fixture_matrix):
         self.write(fixture_repo, skill=self.MANUAL)
 
-        output = render(fixture_repo, fixture_matrix, "Codex")
+        output = render(fixture_repo, fixture_matrix, Harness.CODEX)
 
         assert yaml.safe_load(self.agent_file(output).read_text(encoding="utf-8")) == {
             "policy": {"allow_implicit_invocation": False}
@@ -468,7 +468,7 @@ class TestInvocationPolicy:
     def test_claude_keeps_the_frontmatter_key(self, fixture_repo, fixture_matrix):
         self.write(fixture_repo, skill=self.MANUAL)
 
-        output = render(fixture_repo, fixture_matrix, "ClaudeCode")
+        output = render(fixture_repo, fixture_matrix, Harness.CLAUDE_CODE)
 
         assert demo_skill(output) == self.MANUAL
 
@@ -478,7 +478,7 @@ class TestInvocationPolicy:
         skill_dir = fixture_repo / "plugins" / "plain-plugin" / "skills" / "plain"
         (skill_dir / "SKILL.md").write_text(self.MANUAL, encoding="utf-8")
 
-        output = render(fixture_repo, fixture_matrix, "Codex")
+        output = render(fixture_repo, fixture_matrix, Harness.CODEX)
 
         assert (
             output / "plain-plugin" / "skills" / "plain" / "agents" / "openai.yaml"
@@ -487,7 +487,7 @@ class TestInvocationPolicy:
     def test_codex_declaration_reaches_claude(self, fixture_repo, fixture_matrix):
         self.write(fixture_repo, skill=self.UNSTATED, agent=self.MANUAL_POLICY)
 
-        output = render(fixture_repo, fixture_matrix, "ClaudeCode")
+        output = render(fixture_repo, fixture_matrix, Harness.CLAUDE_CODE)
 
         assert demo_skill(output) == self.MANUAL
 
@@ -497,7 +497,7 @@ class TestInvocationPolicy:
         agent = self.INTERFACE + self.MANUAL_POLICY
         self.write(fixture_repo, skill=self.MANUAL, agent=agent)
 
-        output = render(fixture_repo, fixture_matrix, "Codex")
+        output = render(fixture_repo, fixture_matrix, Harness.CODEX)
 
         assert self.agent_file(output).read_text(encoding="utf-8") == agent
         assert demo_skill(output) == self.UNSTATED
@@ -505,7 +505,7 @@ class TestInvocationPolicy:
     def test_interface_entries_survive_the_merge(self, fixture_repo, fixture_matrix):
         self.write(fixture_repo, skill=self.MANUAL, agent=self.INTERFACE)
 
-        output = render(fixture_repo, fixture_matrix, "Codex")
+        output = render(fixture_repo, fixture_matrix, Harness.CODEX)
 
         assert yaml.safe_load(self.agent_file(output).read_text(encoding="utf-8")) == {
             "interface": {"display_name": "Demo", "short_description": "Demo skill"},
@@ -517,14 +517,14 @@ class TestInvocationPolicy:
     ):
         self.write(fixture_repo, agent=self.INTERFACE)
 
-        output = render(fixture_repo, fixture_matrix, "ClaudeCode")
+        output = render(fixture_repo, fixture_matrix, Harness.CLAUDE_CODE)
 
         assert not self.agent_file(output).parent.exists()
 
     def test_unstated_policy_leaves_both_files_alone(self, fixture_repo, fixture_matrix):
         self.write(fixture_repo, skill=self.UNSTATED, agent=self.INTERFACE)
 
-        output = render(fixture_repo, fixture_matrix, "Codex")
+        output = render(fixture_repo, fixture_matrix, Harness.CODEX)
 
         assert self.agent_file(output).read_text(encoding="utf-8") == self.INTERFACE
         assert demo_skill(output) == self.UNSTATED
@@ -576,7 +576,7 @@ class TestFailLoud:
         template.write_text("{{ actions.NoSuchAction | call }}\n", encoding="utf-8")
 
         with pytest.raises(BuildError, match=r"NoSuchAction.*ClaudeCode"):
-            render(fixture_repo, fixture_matrix, "ClaudeCode")
+            render(fixture_repo, fixture_matrix, Harness.CLAUDE_CODE)
 
     @pytest.mark.parametrize(
         ("open_tag", "close_tag"),
@@ -594,9 +594,9 @@ class TestFailLoud:
         )
 
         with pytest.raises(BuildError, match=re.escape("Jinja marker '{{'")):
-            render(fixture_repo, fixture_matrix, "ClaudeCode")
+            render(fixture_repo, fixture_matrix, Harness.CLAUDE_CODE)
 
-        assert not (fixture_repo / "dist-under-test" / "ClaudeCode").exists()
+        assert not (fixture_repo / "dist-under-test" / Harness.CLAUDE_CODE).exists()
 
     def test_unknown_harness_fails_before_rendering(
         self, fixture_repo, fixture_matrix
@@ -618,14 +618,14 @@ class TestFailLoud:
         template.write_text("{{ actions.NoSuchAction | call }}\n", encoding="utf-8")
 
         with pytest.raises(BuildError):
-            render(fixture_repo, fixture_matrix, "ClaudeCode")
+            render(fixture_repo, fixture_matrix, Harness.CLAUDE_CODE)
 
-        assert not (fixture_repo / "dist-under-test" / "ClaudeCode").exists()
+        assert not (fixture_repo / "dist-under-test" / Harness.CLAUDE_CODE).exists()
 
 
 class TestTreeMembership:
     def test_dev_files_never_emitted(self, fixture_repo, fixture_matrix):
-        for harness in HARNESSES:
+        for harness in Harness:
             output = render(fixture_repo, fixture_matrix, harness)
             emitted = {path.name for path in output.rglob("*") if path.is_file()}
 
@@ -644,8 +644,8 @@ class TestTreeMembership:
         assert not (fixture_repo / "dist-under-test" / harness).exists()
 
     def test_foreign_runtime_metadata_stripped(self, fixture_repo, fixture_matrix):
-        claude = render(fixture_repo, fixture_matrix, "ClaudeCode")
-        codex = render(fixture_repo, fixture_matrix, "Codex")
+        claude = render(fixture_repo, fixture_matrix, Harness.CLAUDE_CODE)
+        codex = render(fixture_repo, fixture_matrix, Harness.CODEX)
 
         assert (claude / "demo-plugin" / ".claude-plugin" / "plugin.json").is_file()
         assert not list(claude.rglob(".codex-plugin"))
@@ -655,8 +655,8 @@ class TestTreeMembership:
     def test_membership_follows_each_harness_manifest(
         self, fixture_repo, fixture_matrix
     ):
-        claude = render(fixture_repo, fixture_matrix, "ClaudeCode")
-        codex = render(fixture_repo, fixture_matrix, "Codex")
+        claude = render(fixture_repo, fixture_matrix, Harness.CLAUDE_CODE)
+        codex = render(fixture_repo, fixture_matrix, Harness.CODEX)
 
         assert (claude / "plain-plugin" / "skills" / "plain" / "SKILL.md").is_file()
         assert (codex / "plain-plugin" / "skills" / "plain" / "SKILL.md").is_file()
@@ -723,7 +723,7 @@ class TestIgnoredArtifacts:
         generated.parent.mkdir(parents=True)
         generated.write_text("# Written by stage 1\n", encoding="utf-8")
 
-        output = render(fixture_repo, fixture_matrix, "ClaudeCode")
+        output = render(fixture_repo, fixture_matrix, Harness.CLAUDE_CODE)
 
         shipped = output / "plain-plugin" / "skills" / "plain" / "references"
         assert (shipped / "generated.md").read_text(encoding="utf-8") == (
@@ -737,25 +737,25 @@ class TestPublishedTreeMode:
     def test_new_tree_takes_the_parent_directory_mode(
         self, fixture_repo, fixture_matrix
     ):
-        output = fixture_repo / "dist-under-test" / "ClaudeCode"
+        output = fixture_repo / "dist-under-test" / Harness.CLAUDE_CODE
         output.parent.mkdir(parents=True)
         output.parent.chmod(0o770)
 
-        render_tree(fixture_repo, "ClaudeCode", output, matrix_path=fixture_matrix)
+        render_tree(fixture_repo, Harness.CLAUDE_CODE, output, matrix_path=fixture_matrix)
 
         assert output.stat().st_mode & 0o777 == 0o770
 
     def test_rebuild_repairs_a_private_tree_mode(self, fixture_repo, fixture_matrix):
-        output = render(fixture_repo, fixture_matrix, "ClaudeCode")
+        output = render(fixture_repo, fixture_matrix, Harness.CLAUDE_CODE)
         output.parent.chmod(0o770)
         output.chmod(0o700)
 
-        render_tree(fixture_repo, "ClaudeCode", output, matrix_path=fixture_matrix)
+        render_tree(fixture_repo, Harness.CLAUDE_CODE, output, matrix_path=fixture_matrix)
 
         assert output.stat().st_mode & 0o777 == 0o770
 
     def test_nested_directories_match_a_plain_mkdir(self, fixture_repo, fixture_matrix):
-        output = render(fixture_repo, fixture_matrix, "ClaudeCode")
+        output = render(fixture_repo, fixture_matrix, Harness.CLAUDE_CODE)
         reference = fixture_repo / "mkdir-reference"
         reference.mkdir()
 
@@ -768,10 +768,10 @@ class TestPublishedTreeMode:
     def test_stray_file_at_the_output_path_is_replaced(
         self, fixture_repo, fixture_matrix
     ):
-        output = fixture_repo / "dist-under-test" / "ClaudeCode"
+        output = fixture_repo / "dist-under-test" / Harness.CLAUDE_CODE
         output.parent.mkdir(parents=True)
         output.write_text("stale artifact\n", encoding="utf-8")
 
-        render_tree(fixture_repo, "ClaudeCode", output, matrix_path=fixture_matrix)
+        render_tree(fixture_repo, Harness.CLAUDE_CODE, output, matrix_path=fixture_matrix)
 
         assert (output / "demo-plugin" / "skills" / "demo" / "SKILL.md").is_file()

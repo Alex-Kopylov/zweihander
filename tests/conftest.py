@@ -12,14 +12,14 @@ from pathlib import Path
 
 import pytest
 
-from plugin_maintenance import HARNESSES, REPO_ROOT
-from plugin_maintenance.render import render_tree
+from plugin_maintenance import REPO_ROOT
+from plugin_maintenance.render import Harness, render_tree
 
 
 def pytest_addoption(parser: pytest.Parser) -> None:
     parser.addoption(
         "--harness",
-        choices=HARNESSES,
+        choices=tuple(Harness),
         default=None,
         help="run harness-dependent tests for this harness only",
     )
@@ -42,15 +42,15 @@ def pytest_generate_tests(metafunc: pytest.Metafunc) -> None:
     if "harness" not in metafunc.fixturenames:
         return
 
-    selected = HARNESSES
+    selected = tuple(Harness)
     marker = metafunc.definition.get_closest_marker("harness")
     if marker:
-        unknown = sorted(set(marker.args) - set(HARNESSES))
+        unknown = sorted(set(marker.args) - set(Harness))
         if unknown:
             raise pytest.UsageError(
                 f"{metafunc.definition.nodeid}: unknown harness "
                 f"{', '.join(unknown)} in @pytest.mark.harness; "
-                f"supported harnesses: {', '.join(HARNESSES)}"
+                f"supported harnesses: {', '.join(Harness)}"
             )
         selected = tuple(name for name in selected if name in marker.args)
     chosen = metafunc.config.getoption("--harness")

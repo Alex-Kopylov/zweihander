@@ -12,6 +12,7 @@ Everything lands in one PR from `invocation-policy-compile` into `harness-dist-p
 
 - [x] 2.1 Add the per-skill compile step to `plugin_maintenance/render.py` (design D3–D6) and document it in the module docstring
 - [x] 2.2 Confirm the unit tests from group 1 pass
+- [x] 2.3 Dispatch the per-harness writers through `POLICY_WRITERS`, turn `Harness` into a `StrEnum` that replaces `HARNESSES`, and key every per-harness table and test reference by it (design D7)
 
 ## 3. Content and docs
 
