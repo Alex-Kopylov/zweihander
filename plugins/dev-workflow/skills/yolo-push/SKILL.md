@@ -25,9 +25,9 @@ Progress:
   before committing because a PR must have a source branch.
 - [ ] Step 2: Invoke `dev-workflow:commit` to create atomic commit(s) for the
   current logical changes.
-- [ ] Step 3: Check whether the current branch already has an open PR. Reuse
-  it if one exists; otherwise invoke `dev-workflow:create-pr` to open one.
-- [ ] Step 4: Start babysitting the PR. Drive the remaining steps and continue
+- [ ] Step 3: Reuse the current branch's open PR if one
+  exists; otherwise invoke `dev-workflow:create-pr` to open one.
+- [ ] Step 4: Start babysitting the PR. Drive the remaining steps
   until it is merged or closed. If a non-negotiable failure gate is hit, stop
   and report it with the PR link.
 - [ ] Step 5: If no CI is configured, pass the CI gate. Otherwise, wait for CI.
