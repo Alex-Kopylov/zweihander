@@ -35,6 +35,10 @@ MATRIX_IN_TREE = Path(*MATRIX_PATH.parts[1:])
 TASK_MANAGEMENT_PATTERNS = Path(
     "work-session-tools/skills/task-management/references/orchestration-patterns.md"
 )
+# Skills whose invocation policy differs per harness on purpose, as
+# `<plugin>/skills/<skill>`. Empty today: every user-only skill is user-only in
+# both harnesses. Add a skill with the reason to let its trees disagree.
+INVOCATION_DIVERGES: set[str] = set()
 
 
 def tree_files(rendered: Path) -> list[Path]:
@@ -158,6 +162,9 @@ def test_user_only_skills_agree_across_harnesses(_rendered_trees) -> None:
     """A skill the model may not start says so in each harness's own spelling:
     `disable-model-invocation: true` for Claude Code, and
     `policy.allow_implicit_invocation: false` in `agents/openai.yaml` for Codex.
+
+    Only a skill listed in `INVOCATION_DIVERGES` may differ, and a listed skill
+    must actually differ, so the list cannot go stale.
     """
     claude = _rendered_trees(Harness.CLAUDE_CODE)
     codex = _rendered_trees(Harness.CODEX)
@@ -177,7 +184,11 @@ def test_user_only_skills_agree_across_harnesses(_rendered_trees) -> None:
         )
     }
 
-    assert claude_user_only == codex_user_only
+    assert claude_user_only ^ codex_user_only == INVOCATION_DIVERGES, (
+        f"user-only in Claude Code only: {sorted(claude_user_only - codex_user_only)}; "
+        f"user-only in Codex only: {sorted(codex_user_only - claude_user_only)}; "
+        "set both spellings, or list a deliberate difference in INVOCATION_DIVERGES"
+    )
 
 
 @pytest.fixture

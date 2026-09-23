@@ -12,8 +12,9 @@ Landed in two PRs into `harness-dist-pipeline`: #110 shipped a compile step and 
 
 - [x] 2.1 Add a renderer unit test: `agents/openai.yaml` ships byte-for-byte to Codex and not at all to Claude Code
 - [x] 2.2 Add rendered-tree tests: no `openai.yaml` in the Claude Code tree; Codex `SKILL.md` top-level keys within `specification.portable_keys`; user-only skills agree across trees (design D4)
-- [x] 2.3 Assert every per-harness table covers exactly the `Harness` members
-- [x] 2.4 Confirm the new tests fail against the unchanged content
+- [x] 2.3 Let the pairing test accept only skills declared in `INVOCATION_DIVERGES`, empty today, and fail on a declared skill that does not diverge
+- [x] 2.4 Assert every per-harness table covers exactly the `Harness` members
+- [x] 2.5 Confirm the new tests fail against the unchanged content
 
 ## 3. Content and docs
 

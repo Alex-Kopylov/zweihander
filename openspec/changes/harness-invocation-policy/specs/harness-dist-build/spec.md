@@ -25,8 +25,12 @@ Every `SKILL.md` in the Codex tree SHALL carry only the top-level keys the Agent
 - **THEN** the rendered-tree test fails and names the file and the key
 
 ### Requirement: User-only skills agree across harnesses
-A skill whose Claude Code `SKILL.md` sets `disable-model-invocation: true` SHALL ship `agents/openai.yaml` with `policy.allow_implicit_invocation: false` in the Codex tree, and a skill with that Codex policy SHALL set that Claude Code key. The renderer SHALL NOT derive either spelling from the other.
+A skill whose Claude Code `SKILL.md` sets `disable-model-invocation: true` SHALL ship `agents/openai.yaml` with `policy.allow_implicit_invocation: false` in the Codex tree, and a skill with that Codex policy SHALL set that Claude Code key. The renderer SHALL NOT derive either spelling from the other, so a skill MAY set a different policy per harness; the rendered-tree test SHALL accept such a skill only when it is declared as deliberately divergent, and SHALL fail when a declared skill does not diverge. No skill is declared today.
 
 #### Scenario: One spelling missing
 - **WHEN** a skill sets `disable-model-invocation: true` for Claude Code and its Codex `agents/openai.yaml` does not set `allow_implicit_invocation: false`
 - **THEN** the rendered-tree test fails and names the skill
+
+#### Scenario: Deliberate difference is declared
+- **WHEN** a skill is user-only for one harness on purpose and is declared as divergent
+- **THEN** the rendered-tree test passes, and it fails again once the skill stops diverging

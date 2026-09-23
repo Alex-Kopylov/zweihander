@@ -144,7 +144,10 @@ disable-model-invocation: true
 
 A skill the model may not start says so in both places:
 `disable-model-invocation: true` in that branch, and
-`policy.allow_implicit_invocation: false` in `agents/openai.yaml`.
+`policy.allow_implicit_invocation: false` in `agents/openai.yaml`. The build
+never derives one from the other, so a skill may set a different policy per
+harness; the repository's rendered-tree test accepts that only for a skill it
+declares as deliberately divergent.
 
 Each key's `form` decides how the value is written, and the matrix documents
 every form:
