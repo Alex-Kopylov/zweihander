@@ -37,15 +37,16 @@ BEFORE claiming any status or expressing satisfaction:
 Skip any step = lying, not verifying
 ```
 
+## Code Claims
+
+When a claim covers code (tests, lint, builds, bug fixes, regression tests),
+read `references/code-verification.md` before running the gate. Skip it for
+non-code work.
+
 ## Common Failures
 
 | Claim | Requires | Not Sufficient |
 |-------|----------|----------------|
-| Tests pass | Test command output: 0 failures | Previous run, "should pass" |
-| Linter clean | Linter output: 0 errors | Partial check, extrapolation |
-| Build succeeds | Build command: exit 0 | Linter passing, logs look good |
-| Bug fixed | Test original symptom: passes | Code changed, assumed fixed |
-| Regression test works | Red-green cycle verified | Test passes once |
 | Agent completed | VCS diff shows changes | Agent reports "success" |
 | Requirements met | Line-by-line checklist | Tests passing |
 
@@ -67,31 +68,12 @@ Skip any step = lying, not verifying
 | "Should work now" | RUN the verification |
 | "I'm confident" | Confidence ≠ evidence |
 | "Just this once" | No exceptions |
-| "Linter passed" | Linter ≠ compiler |
 | "Agent said success" | Verify independently |
 | "I'm tired" | Exhaustion ≠ excuse |
 | "Partial check is enough" | Partial proves nothing |
 | "Different words so rule doesn't apply" | Spirit over letter |
 
 ## Key Patterns
-
-**Tests:**
-```
-✅ [Run test command] [See: 34/34 pass] "All tests pass"
-❌ "Should pass now" / "Looks correct"
-```
-
-**Regression tests (TDD Red-Green):**
-```
-✅ Write → Run (pass) → Revert fix → Run (MUST FAIL) → Restore → Run (pass)
-❌ "I've written a regression test" (without red-green verification)
-```
-
-**Build:**
-```
-✅ [Run build] [See: exit 0] "Build passes"
-❌ "Linter passed" (linter doesn't check compilation)
-```
 
 **Requirements:**
 ```
@@ -109,7 +91,6 @@ Skip any step = lying, not verifying
 
 From 24 failure memories:
 - your human partner said "I don't believe you" - trust broken
-- Undefined functions shipped - would crash
 - Missing requirements shipped - incomplete features
 - Time wasted on false completion → redirect → rework
 - Violates: "Honesty is a core value. If you lie, you'll be replaced."
