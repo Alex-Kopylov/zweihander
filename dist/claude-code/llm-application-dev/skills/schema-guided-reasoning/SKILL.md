@@ -257,7 +257,7 @@ LLMs are unreliable at arithmetic. When your schema involves calculations (prici
 | Step-by-step analysis toward a conclusion | **Cascade** | Forces ordered reasoning |
 | Classification / triage / branching | **Routing** | Commits to one path via discriminator |
 | Multiple items with bounded count | **Cycle** | Prevents too few or too many |
-| Agent tool dispatch | **Routing** (or Cycle + Routing) | Each tool is a union variant |
+| Tool dispatch in an agent | **Routing** (or Cycle + Routing) | Each tool is a union variant |
 | Multi-step agent with planning | **All three** | Reflect → Plan → Check → Dispatch |
 | Improving accuracy of a weak model | **Cascade** with throwaway fields | Extra reasoning tokens help |
 

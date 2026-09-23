@@ -1,7 +1,9 @@
 ---
 name: schema-guided-reasoning
 description: Use this skill when designing Pydantic models that guide LLM reasoning through structured output. Triggers include "schema-guided reasoning", "SGR", "structured reasoning schema", "pydantic structured output", "reasoning steps schema", "constrained decoding", "step-by-step schema", "LLM reasoning pipeline", "discriminated union for tool routing", "tool-calling schema design", or any situation where the user wants to improve LLM accuracy by defining the shape of the output. Also use when the user builds Pydantic models for OpenAI/Anthropic structured output and wants to maximize reasoning quality, designs agent tool dispatch with discriminated unions, or structures chain-of-thought via field ordering — even if they don't mention SGR by name.
+{% if harness == "ClaudeCode" -%}
 model: opus
+{% endif -%}
 ---
 
 # Schema-Guided Reasoning (SGR)
@@ -257,7 +259,7 @@ LLMs are unreliable at arithmetic. When your schema involves calculations (prici
 | Step-by-step analysis toward a conclusion | **Cascade** | Forces ordered reasoning |
 | Classification / triage / branching | **Routing** | Commits to one path via discriminator |
 | Multiple items with bounded count | **Cycle** | Prevents too few or too many |
-| Agent tool dispatch | **Routing** (or Cycle + Routing) | Each tool is a union variant |
+| Tool dispatch in an agent | **Routing** (or Cycle + Routing) | Each tool is a union variant |
 | Multi-step agent with planning | **All three** | Reflect → Plan → Check → Dispatch |
 | Improving accuracy of a weak model | **Cascade** with throwaway fields | Extra reasoning tokens help |
 

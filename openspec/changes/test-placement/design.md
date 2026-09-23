@@ -90,7 +90,7 @@ Final placement:
 
 ### D3. `HARNESSES` is derived, and the package root is where it goes
 
-> Superseded by `harness-invocation-policy` D7: `Harness` is a `StrEnum` and the one harness list; `HARNESSES` is gone.
+> Superseded by `harness-invocation-policy` D5: `Harness` is a `StrEnum` and the one harness list; `HARNESSES` is gone.
 
 ```python
 from plugin_maintenance.render import HARNESS_MANIFESTS
