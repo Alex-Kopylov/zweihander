@@ -9,8 +9,14 @@
 # The default directory is `$INTERVIEW_DECISION_LOG_DIR`, then the system
 # temporary directory. `SKILL.md` declares the same default under
 # `metadata.config.decision-log-dir`.
+#
+# Logs carry the user's decisions, so they are private: files are created
+# owner-only, and a log directory someone else owns is refused rather than
+# written into. That matters under the shared system temp directory, where any
+# user can create the default path first.
 
 set -euo pipefail
+umask 077
 
 SLUG_LIMIT=40
 BAR_WIDTH=20
@@ -114,6 +120,7 @@ start)
 
     directory=${INTERVIEW_DECISION_LOG_DIR:-${TMPDIR:-/tmp}/interview-decision-logs}
     mkdir -p "$directory"
+    [ -O "$directory" ] || die "decision log directory $directory is not owned by you"
     read -r stamp started <<<"$(date +'%Y%m%d-%H%M%S %Y-%m-%dT%H:%M:%S')"
     named=$(slug "$name")
     log=$directory/$stamp-$named.md
@@ -159,8 +166,10 @@ extend)
     total=$(declared_total "$log")
     raised=$(( total + by ))
 
-    sed "s/^total: $total\$/total: $raised/" "$log" >"$log.tmp"
-    mv "$log.tmp" "$log"
+    rewritten=$(mktemp "$log.XXXXXX")
+    trap 'rm -f "$rewritten"' EXIT
+    sed "s/^total: $total\$/total: $raised/" "$log" >"$rewritten"
+    mv "$rewritten" "$log"
     bar "$(recorded "$log")" "$raised"
     ;;
 

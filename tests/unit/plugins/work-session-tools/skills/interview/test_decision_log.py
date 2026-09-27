@@ -6,7 +6,9 @@ actually taken. The script under test is the one a user installs, executable
 bit included.
 """
 
+import os
 import re
+import stat
 import subprocess
 from pathlib import Path
 
@@ -132,6 +134,19 @@ class TestStart:
         assert start(script).parent == tmp_path / "systmp" / DIR_NAME
 
 
+    def test_a_new_log_is_private_to_its_owner(self, log_dir, script):
+        log = start(script)
+
+        assert stat.S_IMODE(log_dir.stat().st_mode) == 0o700
+        assert stat.S_IMODE(log.stat().st_mode) == 0o600
+
+    @pytest.mark.skipif(os.geteuid() == 0, reason="root owns every directory")
+    def test_a_directory_owned_by_someone_else_is_refused(self, monkeypatch, script):
+        monkeypatch.setenv(DIR_ENV, "/")
+
+        assert "not owned by you" in fails(script, "start", "--total", "1", "--name", "x")
+
+
 class TestRecord:
     def test_one_item_appends_one_row(self, script):
         log = start(script)
@@ -227,6 +242,24 @@ class TestExtend:
 
         assert printed == "▰▱▱▱▱  1/5"
         assert "total: 5" in log.read_text(encoding="utf-8")
+
+    def test_a_planted_temp_file_is_neither_followed_nor_left_behind(
+        self, tmp_path, script
+    ):
+        log = start(script, total=3)
+        target = tmp_path / "target"
+        target.write_text("untouched", encoding="utf-8")
+        Path(f"{log}.tmp").symlink_to(target)
+
+        run(script, "extend", "--log", str(log), "--by", "2")
+
+        assert target.read_text(encoding="utf-8") == "untouched"
+        assert not log.is_symlink()
+        assert sorted(path.name for path in log.parent.iterdir()) == [
+            log.name,
+            f"{log.name}.tmp",
+        ]
+        assert stat.S_IMODE(log.stat().st_mode) == 0o600
 
     def test_extending_by_nothing_fails_loudly(self, script):
         log = start(script)
