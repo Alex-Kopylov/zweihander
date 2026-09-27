@@ -55,7 +55,7 @@ The action matrix SHALL mark every action as callable or non-callable, SHALL map
 - **THEN** each harness defines exactly one invocation wrapper, and no per-action entry defines its own wrapper or invocation-form list
 
 ### Requirement: Templates take names from the matrix
-Template sources SHALL obtain callable names through the resolved action map or the wrapper mechanism, SHALL NOT hardcode another mechanism's harness-specific callable names as literals, and SHALL use harness conditionals only for narrative that genuinely differs between harnesses.
+Template sources SHALL obtain callable names through the resolved action map or the wrapper mechanism, SHALL NOT hardcode another mechanism's harness-specific callable names as literals, and SHALL use harness conditionals only for narrative that genuinely differs between harnesses. Every branch of a harness conditional SHALL name the harness it selects, so a harness conditional SHALL NOT carry an `{% else %}` branch.
 
 #### Scenario: Literal mapped names rejected in template sources
 - **WHEN** a `.j2` source file names a matrix-mapped callable literally instead of through the action map
@@ -64,6 +64,14 @@ Template sources SHALL obtain callable names through the resolved action map or 
 #### Scenario: Names never branch on harness
 - **WHEN** a `.j2` source file selects a callable name inside a harness conditional
 - **THEN** the repository policy check fails and names the file
+
+#### Scenario: Implicit harness branch rejected
+- **WHEN** a `.j2` source file closes a harness conditional with `{% else %}` instead of an `{% elif harness == "..." %}` branch
+- **THEN** the repository policy check fails and names the file and line
+
+#### Scenario: Non-harness else is unaffected
+- **WHEN** a `.j2` source file nests a non-harness `{% if %}` carrying an `{% else %}` inside a harness conditional
+- **THEN** the repository policy check passes, because the `else` selects on something other than the harness
 
 #### Scenario: Declared argument placeholder is not a callable
 - **WHEN** a `.j2` source file spells a `$name` inside a harness conditional and the same file declares that name through the `arguments` global

@@ -59,11 +59,15 @@ The renderer SHALL emit one complete installable tree per supported harness, con
 - **THEN** `dist/codex/` contains the plugin and `dist/claude-code/` contains no directory for it
 
 ### Requirement: Foreign runtime metadata stripped
-Each harness tree SHALL contain only its own runtime plugin metadata: no `.codex-plugin/` directory under `dist/claude-code/**` and no `.claude-plugin/` directory under `dist/codex/**`.
+Each harness tree SHALL contain only its own runtime plugin metadata: no `.codex-plugin/` directory under `dist/claude-code/**` and no `.claude-plugin/` directory under `dist/codex/**`. A skill's `agents/openai.yaml` is Codex runtime metadata: the Codex tree SHALL carry it exactly as authored, and the Claude Code tree SHALL NOT carry it.
 
 #### Scenario: Metadata filtered per tree
 - **WHEN** the full build completes
 - **THEN** `dist/claude-code/**` contains no `.codex-plugin/` directory and `dist/codex/**` contains no `.claude-plugin/` directory
+
+#### Scenario: Codex agent file ships to Codex only
+- **WHEN** a skill has `agents/openai.yaml`
+- **THEN** the Codex tree carries it byte-for-byte and the Claude Code tree carries no `openai.yaml`
 
 ### Requirement: Development files excluded
 Files named `AGENTS.md`, `CLAUDE.md`, or `README.md` under `plugins/` are authoring-time files; the renderer SHALL NOT emit them into either harness tree. The rule is a predicate on the emitted name, so it SHALL apply to a `.j2` template of a skipped name and SHALL NOT apply to a longer name that merely contains one. Runtime context a plugin needs SHALL live in a file the renderer emits: `plugins/<plugin-name>/references/<topic>.md`, linked from the skill that needs it, or the `SKILL.md` itself.
@@ -230,3 +234,40 @@ Rendering SHALL be deterministic: identical source, matrix, and harness inputs S
 #### Scenario: Consecutive renders identical
 - **WHEN** the full build runs twice with no intervening changes
 - **THEN** the two `dist/` outputs are byte-identical
+
+### Requirement: Repository tests never ship
+A published harness tree SHALL contain no repository test files. Tests are development artifacts of this repository, not plugin content: a user who installs a rendered plugin receives a plain skill with no template traces and no tests. The rule is upheld at the authoring side — no `tests/` directory exists under `plugins/**` for the renderer to copy — rather than by a renderer filter, so a re-added skill-local test fails a policy check instead of being silently dropped from the published tree.
+
+#### Scenario: No test directory in either tree
+- **WHEN** the full build completes
+- **THEN** no directory named `tests/` exists anywhere under `dist/claude-code/**` or `dist/codex/**`
+
+#### Scenario: A re-added skill-local test is refused, not dropped
+- **WHEN** a `tests/` directory is added under a plugin or one of its skills
+- **THEN** the repository policy check fails and names the directory, rather than the build quietly omitting it
+
+#### Scenario: An installed plugin carries no repository test
+- **WHEN** a user installs a plugin from a published tree and looks for repository tests in it
+- **THEN** no directory named `tests/` exists in the tree, and no shipped file is a repository test reading this repository's authored sources; example test files a skill ships as its own documentation, such as `tests-manager`'s, are skill content and stay
+
+### Requirement: Codex skill frontmatter carries only specification keys
+Every `SKILL.md` in the Codex tree SHALL carry only the top-level keys the Agent Skills specification defines, as listed under `specification.portable_keys` in the frontmatter matrix. A key only Claude Code reads that the frontmatter matrix does not place SHALL sit in a `{% if harness == "ClaudeCode" %}` branch of the template.
+
+#### Scenario: Claude Code-only key stays out of Codex
+- **WHEN** a template writes `disable-model-invocation: true` inside a Claude Code harness branch
+- **THEN** the Claude Code `SKILL.md` carries the key and the Codex `SKILL.md` does not
+
+#### Scenario: Non-specification key fails the check
+- **WHEN** a Codex `SKILL.md` carries a top-level key outside the specification's list
+- **THEN** the rendered-tree test fails and names the file and the key
+
+### Requirement: User-only skills agree across harnesses
+A skill whose Claude Code `SKILL.md` sets `disable-model-invocation: true` SHALL ship `agents/openai.yaml` with `policy.allow_implicit_invocation: false` in the Codex tree, and a skill with that Codex policy SHALL set that Claude Code key. The renderer SHALL NOT derive either spelling from the other, so a skill MAY set a different policy per harness; the rendered-tree test SHALL accept such a skill only when it is declared as deliberately divergent, and SHALL fail when a declared skill does not diverge. No skill is declared today.
+
+#### Scenario: One spelling missing
+- **WHEN** a skill sets `disable-model-invocation: true` for Claude Code and its Codex `agents/openai.yaml` does not set `allow_implicit_invocation: false`
+- **THEN** the rendered-tree test fails and names the skill
+
+#### Scenario: Deliberate difference is declared
+- **WHEN** a skill is user-only for one harness on purpose and is declared as divergent
+- **THEN** the rendered-tree test passes, and it fails again once the skill stops diverging
