@@ -11,7 +11,7 @@ The whole change lands in one PR. Development is test-first (TDD): each behavior
 - [x] 1.5 Implement the stage-2 renderer against the 1.2 tests: harness argument, matrix loading, resolved `actions` map, wrapper filter for bare and qualified names, `StrictUndefined`
 - [x] 1.6 Implement the file rules: plain files copied byte-for-byte with mode bits preserved; `*.j2` rendered with the suffix stripped; `X`+`X.j2` collision fails the build; files named `AGENTS.md`/`CLAUDE.md`/`README.md` never emitted; each tree contains exactly the plugins its marketplace manifest lists
 - [x] 1.7 Implement foreign-runtime-metadata stripping (`.codex-plugin/` out of the Claude Code tree, `.claude-plugin/` out of the Codex tree)
-- [x] 1.8 Implement fail-loud checks: unknown harness, missing action/name, malformed matrix, render error, leftover Jinja markers in rendered files (`{% raw %}` output exempt), plain/template collision
+- [x] 1.8 Implement fail-loud checks: unknown harness, missing action/name, malformed matrix, native Jinja render error, plain/template collision
 - [x] 1.9 Update `harness-action-matrix.json` to the D3 schema: `callable` flag on every action; one `name` per assistant for callable actions; task tracking split into `CreateTask`/`GetTask`/`ListTasks`/`UpdateTask`/`StopTask` (all → `update_plan` on Codex); `PluginManifest`/`SlashCommand` non-callable; `InvokeSkill`, `surface`, and `terms` dropped; keep `lookup_order`; refresh `checked`; 1.3 goes green
 
 ## 2. Mermaid generator relocation
@@ -22,7 +22,7 @@ The whole change lands in one PR. Development is test-first (TDD): each behavior
 
 ## 3. Dist invariant tests
 
-- [x] 3.1 Write dist purity tests: matrix-derived foreign-name scan on `.j2`-rendered files (exemption list honored), no leftover markers in rendered files (`{% raw %}` output exempt), no `*.j2` in dist, no legacy dispatch artifacts, metadata stripping, no dev files (`AGENTS.md`/`CLAUDE.md`/`README.md`)
+- [x] 3.1 Write dist purity tests: matrix-derived foreign-name scan on `.j2`-rendered files (exemption list honored), no `*.j2` in dist, no legacy dispatch artifacts, metadata stripping, no dev files (`AGENTS.md`/`CLAUDE.md`/`README.md`)
 - [x] 3.2 Write template-source policy tests: no literal matrix-mapped callable names in `.j2` sources, no callable names selected inside harness conditionals, no `X`+`X.j2` collisions repo-wide
 - [x] 3.3 Write publication tests: every manifest entry points into its own `dist/` tree and resolves; catalogs may diverge (Codex-only `run-and-verify-app`)
 - [x] 3.4 Write the reproducibility test: two consecutive full builds are byte-identical
@@ -60,7 +60,7 @@ The whole change lands in one PR. Development is test-first (TDD): each behavior
 - [x] 8.2 Test the dev-file rule against the emitted name, not the source name, and fail the build on a dev-file template instead of skipping it
 - [x] 8.3 Skip every source path the root `.gitignore` matches, so `__pycache__/` and friends stay out of `dist/`
 - [x] 8.4 Give the staging directory the mode of `dist/` before the rename, and replace a plain file sitting at the output path instead of raising
-- [x] 8.5 Detect `{% raw %}` blocks with a regex covering every Jinja spelling, and exempt each block's own output instead of the whole file — in the renderer and in `tests/test_dist_invariants.py`
+- [x] 8.5 Use native Jinja validation with `StrictUndefined`; allow literal template syntax in rendered output without a marker scan
 - [x] 8.6 Fold 8.1–8.5 into the delta specs and design decisions, so the archived change records the shipped build contract
 
 ## 9. Frontmatter portability boundary

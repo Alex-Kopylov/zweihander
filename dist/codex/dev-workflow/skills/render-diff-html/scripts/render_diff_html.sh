@@ -39,6 +39,7 @@ Output:
 
 Environment:
   DIFF2HTML_CLI_VERSION                diff2html-cli npm version. Default: 5.2.15
+  ZWEIHANDER_TMP_DIR                   Scratch root. Default: ./.tmp/zweihander
 
 Examples:
   render_diff_html.sh --scope staged -- README.md
@@ -162,7 +163,9 @@ if [[ "$SOURCE" == "diff-file" || "$SOURCE" == "files" ]]; then
   ((${#GIT_ARGS[@]} == 0)) || die "pathspecs after -- only apply to git diff sources"
 fi
 
-tmp_dir="$(mktemp -d "${TMPDIR:-/tmp}/render-diff-html.XXXXXX")"
+scratch_parent="${ZWEIHANDER_TMP_DIR:-./.tmp/zweihander}/runs/render-diff-html"
+mkdir -p "$scratch_parent" || die "failed to create scratch directory"
+tmp_dir="$(mktemp -d "$scratch_parent/XXXXXX")" || die "failed to create run directory"
 trap 'rm -rf "$tmp_dir"' EXIT
 raw_diff="$tmp_dir/input.diff"
 

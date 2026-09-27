@@ -45,18 +45,6 @@ FRONTMATTER_MATRIX_NAME = "harness-frontmatter-matrix.json"
 IGNORE_FILE = Path(".gitignore")
 DEV_FILE_NAMES = {"AGENTS.md", "CLAUDE.md", "README.md"}
 TEMPLATE_SUFFIX = ".j2"
-JINJA_MARKERS = ("{{", "{%", "{#")
-# One raw block in any spelling Jinja accepts: `{% raw %}`, `{%raw%}`, and the
-# whitespace-control forms `{%- raw -%}` / `{%- endraw -%}`. The body is lazy
-# because Jinja closes a raw block at its first `endraw` tag and treats a
-# nested `raw` tag as literal text.
-RAW_BLOCK = re.compile(
-    r"\{%-?\s*raw\s*(?P<trim_head>-?)%\}"
-    r"(?P<literal>.*?)"
-    r"\{%(?P<trim_tail>-?)\s*endraw\s*-?%\}",
-    re.DOTALL,
-)
-
 FRONTMATTER = re.compile(r"\A---\n(?P<body>.*?\n)---\n", re.DOTALL)
 TOP_LEVEL_KEY = re.compile(r"\A(?P<key>[A-Za-z_][\w.-]*):")
 METADATA_KEY = "metadata:"
@@ -66,13 +54,16 @@ ARGUMENT_NAME = re.compile(r"\A[a-z][a-z0-9_]*\Z")
 # Characters that make YAML read a plain scalar as something other than text.
 YAML_INDICATORS = set("*&!|>%@`{}[],#\"'?")
 
-HARNESS_MANIFESTS = {
-    Harness.CLAUDE_CODE: Path(".claude-plugin/marketplace.json"),
-    Harness.CODEX: Path(".agents/plugins/marketplace.json"),
+CLAUDE_PLUGIN_DIR = ".claude-plugin"
+CODEX_PLUGIN_DIR = ".codex-plugin"
+HARNESS_METADATA_DIRS = {
+    Harness.CLAUDE_CODE: CLAUDE_PLUGIN_DIR,
+    Harness.CODEX: CODEX_PLUGIN_DIR,
 }
-FOREIGN_METADATA_DIRS = {
-    Harness.CLAUDE_CODE: ".codex-plugin",
-    Harness.CODEX: ".claude-plugin",
+PLUGIN_METADATA_DIRS = set(HARNESS_METADATA_DIRS.values())
+HARNESS_MANIFESTS = {
+    Harness.CLAUDE_CODE: Path(CLAUDE_PLUGIN_DIR) / "marketplace.json",
+    Harness.CODEX: Path(".agents/plugins/marketplace.json"),
 }
 DIST_DIRS = {
     Harness.CLAUDE_CODE: Path("dist/claude-code"),
@@ -206,38 +197,6 @@ def tree_snapshot(root: Path) -> dict[str, tuple[bytes, int]]:
         for path in root.rglob("*")
         if path.is_file()
     }
-
-
-def raw_literals(template_text: str) -> list[str]:
-    """Return each raw block's text exactly as it reaches the rendered output.
-
-    Jinja copies raw content verbatim, so the output holds the same characters
-    at a different offset. Only the block's own edges move: `-%}` on the `raw`
-    tag strips the leading whitespace of the content, and `{%-` on the
-    `endraw` tag strips its trailing whitespace.
-    """
-    literals = []
-    for block in RAW_BLOCK.finditer(template_text):
-        literal = block.group("literal")
-        if block.group("trim_head"):
-            literal = literal.lstrip()
-        if block.group("trim_tail"):
-            literal = literal.rstrip()
-        if literal:
-            literals.append(literal)
-    return literals
-
-
-def leftover_jinja_markers(template_text: str, rendered: str) -> list[str]:
-    """Return the Jinja markers left in `rendered` outside its raw blocks.
-
-    Raw blocks declare literal braces, so their text is removed by content
-    before the scan. Every other region of the file stays under the scan.
-    """
-    scanned = rendered
-    for literal in raw_literals(template_text):
-        scanned = scanned.replace(literal, "")
-    return [marker for marker in JINJA_MARKERS if marker in scanned]
 
 
 def _plain_scalar_problem(value: str) -> str | None:
@@ -466,13 +425,6 @@ def _render_template(
             f"failed to render {source} for harness '{harness}': {error}"
         ) from error
 
-    markers = leftover_jinja_markers(text, rendered)
-    if markers:
-        raise BuildError(
-            f"{source} rendered for harness '{harness}' still contains Jinja "
-            f"marker '{markers[0]}' outside any raw block"
-        )
-
     rendered = merge_metadata_blocks(rendered)
     duplicate = duplicate_frontmatter_key(rendered)
     if duplicate:
@@ -491,10 +443,10 @@ def _render_plugin(
     harness: Harness,
     is_ignored: Callable[[Path], bool],
 ) -> None:
-    foreign_metadata = FOREIGN_METADATA_DIRS[harness]
+    foreign_metadata = PLUGIN_METADATA_DIRS - {HARNESS_METADATA_DIRS[harness]}
     for source in sorted(source_dir.rglob("*")):
         relative = source.relative_to(source_dir)
-        if foreign_metadata in relative.parts or source.is_dir():
+        if foreign_metadata.intersection(relative.parts) or source.is_dir():
             continue
         if any(relative.match(pattern) for pattern in FOREIGN_SKILL_FILES[harness]):
             continue

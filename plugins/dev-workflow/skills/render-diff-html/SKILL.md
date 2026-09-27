@@ -41,6 +41,10 @@ Prefer these simple mappings:
 Use `--output <path>` when the user gives a destination. Otherwise leave the
 default `/tmp/codex-diff2html/...` output in place.
 
+Internal diff files use `${ZWEIHANDER_TMP_DIR:-./.tmp/zweihander}/runs/render-diff-html/<run-id>/`.
+The wrapper removes that run directory when it exits. This setting does not
+change the report destination.
+
 ## Options
 
 - Use `--style side` for side-by-side diffs and `--style line` for inline diffs.

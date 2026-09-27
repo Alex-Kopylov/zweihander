@@ -169,11 +169,10 @@ uv run pytest tests --harness Codex   # harness-independent tests plus Codex
 uv run pytest tests --llm             # include the `llm`-marked tests
 ```
 
-Do not assert template syntax outside the build layer. Three build-layer
-checks carry the harness-format guarantee between them: a published tree for
-one harness carries no other harness's callable names, a file rendered from a
-template carries no leftover Jinja marker outside its raw blocks, and
-consecutive builds are byte-identical.
+Do not assert template syntax outside the build layer. Build-layer checks
+reject foreign harness callable names and verify byte-identical consecutive
+builds. Jinja validates template syntax with `StrictUndefined`; literal Jinja
+markers in rendered content are allowed.
 
 ## Versioning
 
@@ -189,6 +188,17 @@ README-only or AGENTS-only edits do not require a plugin version bump unless
 they also change plugin behavior, manifests, or marketplace metadata.
 
 ## Plugin Runtime Context
+
+### Temporary files
+
+Internal scratch files belong under
+`${ZWEIHANDER_TMP_DIR:-./.tmp/zweihander}/runs/<skill>/<run-id>/`.
+Create a unique private run directory and pass its path to child agents.
+Each skill defines its own contents and cleanup. Keep established output paths;
+an existing report, decision log, or other result is not scratch data.
+Put these instructions in the shipped skill or script that creates the files.
+
+### Shared instructions
 
 Runtime context reaches a user only through a file the renderer emits into
 `dist/`. Under `plugins/`, the names `AGENTS.md`, `CLAUDE.md`, and `README.md`

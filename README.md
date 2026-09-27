@@ -24,6 +24,16 @@ tools.
 - [GH Babysitter](https://github.com/Alex-Kopylov/gh-babysitter) — GitHub workflow automation for keeping work moving.
 
 
+## Temporary files
+
+Skills use `${ZWEIHANDER_TMP_DIR:-./.tmp/zweihander}/runs/<skill>/<run-id>/`
+for internal temporary files. Set `ZWEIHANDER_TMP_DIR` to choose another root;
+relative paths start from the working directory where the skill runs.
+Each skill controls the contents and cleanup of its run directory.
+
+This convention does not move existing outputs: decision logs, audit reports,
+HTML diffs, screenshots, CVs, and other established results keep their paths.
+
 ## Plugin Catalog
 
 ### General User Productivity

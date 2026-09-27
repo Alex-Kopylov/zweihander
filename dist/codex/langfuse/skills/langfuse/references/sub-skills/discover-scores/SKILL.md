@@ -36,6 +36,21 @@ A `200` confirms authentication. For `401` or `403`, report the error and ask th
 
 ---
 
+## Temporary API data
+
+Create one private directory for this run. Reuse `LANGFUSE_RUN_DIR` in each
+step; these raw responses are discarded after the summary. If commands run
+in separate shells, pass the same path as `LANGFUSE_RUN_DIR` to each command.
+
+```bash
+umask 077
+scratch_parent="${ZWEIHANDER_TMP_DIR:-./.tmp/zweihander}/runs/discover-scores"
+mkdir -p "$scratch_parent"
+LANGFUSE_RUN_DIR="$(mktemp -d "$scratch_parent/XXXXXX")"
+export LANGFUSE_RUN_DIR
+: > "$LANGFUSE_RUN_DIR/langfuse_scores_raw.json"
+```
+
 ## Step 1 -- Fetch Scores via REST API (Primary Path)
 
 Call the Langfuse public scores endpoint from page 1 until all pages are consumed.
@@ -53,7 +68,7 @@ while true; do
     break
   fi
 
-  echo "$RESPONSE" >> /tmp/langfuse_scores_raw.json
+  echo "$RESPONSE" >> "$LANGFUSE_RUN_DIR/langfuse_scores_raw.json"
   PAGE=$((PAGE + 1))
 done
 ```
@@ -70,11 +85,11 @@ Extract unique combinations from the collected pages:
 
 ```bash
 python3 -c "
-import json, sys
+import json, os, sys
 from collections import Counter
 
 scores = []
-with open('/tmp/langfuse_scores_raw.json') as f:
+with open(os.path.join(os.environ['LANGFUSE_RUN_DIR'], 'langfuse_scores_raw.json')) as f:
     for line in f:
         try:
             page = json.loads(line)
@@ -202,5 +217,5 @@ After the table, provide a brief summary:
 Remove temporary files:
 
 ```bash
-rm -f /tmp/langfuse_scores_raw.json
+rm -rf -- "$LANGFUSE_RUN_DIR"
 ```

@@ -71,9 +71,9 @@ vocabulary; an explicit chain makes the build surface every passage that has
 to choose again. The repository policy test names any file that branches
 implicitly. A `{% else %}` under a non-harness `if` is unaffected.
 
-When rendered output needs literal `{{` or `{%` sequences, wrap that content
-in `{% raw %}` blocks. Plain (non-template) files never need this; they are
-copied byte-for-byte.
+Use native Jinja escaping for literal template syntax, such as `{% raw %}`
+blocks or string expressions. Plain files are copied byte-for-byte. The
+renderer uses `StrictUndefined` and accepts literal markers in the output.
 
 ## Frontmatter Portability Boundary
 
@@ -267,7 +267,7 @@ For each adapted target, check that:
   names, with the wrapper applied uniformly.
 - No template hardcodes a matrix-mapped callable name and no conditional
   selects a callable name.
-- Literal `{{` or `{%` output is produced only through `{% raw %}` blocks.
+- Literal template syntax uses native Jinja escaping.
 - Only the explicitly requested target skill changed.
 
 Run the repository's build, tests, JSON validation, and Markdown whitespace

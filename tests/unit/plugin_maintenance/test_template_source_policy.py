@@ -17,11 +17,12 @@ import json
 import re
 from pathlib import Path
 
+import pytest
+
 from plugin_maintenance import REPO_ROOT
 from plugin_maintenance.render import (
     FRONTMATTER_MATRIX_NAME,
     MATRIX_PATH,
-    RAW_BLOCK,
     TEMPLATE_SUFFIX,
     VERBATIM_FORM,
     frontmatter_lines,
@@ -31,6 +32,8 @@ from plugin_maintenance.render import (
 
 PLUGINS_ROOT = REPO_ROOT / "plugins"
 TESTS_ROOT = REPO_ROOT / "tests"
+# Raw text is not a branch when checking the harness-authoring policy.
+RAW_BLOCK = re.compile(r"\{%-?\s*raw\s*-?%\}.*?\{%-?\s*endraw\s*-?%\}", re.DOTALL)
 # This directory is the one carve-out from the boundary: the build layer's
 # subject matter is the authored tree and the template rules, so it reads both.
 BUILD_LAYER = Path(__file__).resolve().parent
@@ -343,14 +346,47 @@ def boundary_scanned_files() -> list[Path]:
     )
 
 
-def test_tests_outside_the_build_layer_never_name_the_authored_tree():
-    violations = [
+def boundary_violations() -> list[str]:
+    """Return policy violations without excluding non-text test fixtures."""
+    return [
         f"{path.relative_to(REPO_ROOT)}: {found.group()}"
         for path in boundary_scanned_files()
         for spelling in AUTHORED_TREE_SPELLINGS
-        for found in [re.search(spelling, path.read_text(encoding="utf-8"))]
+        for found in [
+            re.search(
+                spelling, path.read_text(encoding="utf-8", errors="surrogateescape")
+            )
+        ]
         if found
     ]
+
+
+@pytest.mark.parametrize(
+    ("contents", "expected"),
+    [
+        (b"\x00 binary fixture", []),
+        (b"\xff non-UTF-8 fixture", []),
+        (b"\x00\xff plugins/", ["tests/integration/fixture.bin: plugins/"]),
+    ],
+)
+def test_boundary_policy_handles_non_utf8_test_data(
+    monkeypatch, tmp_path: Path, contents: bytes, expected: list[str]
+):
+    repo = tmp_path / "repo"
+    test_file = repo / "tests" / "integration" / "fixture.bin"
+    test_file.parent.mkdir(parents=True)
+    test_file.write_bytes(contents)
+    monkeypatch.setitem(globals(), "REPO_ROOT", repo)
+    monkeypatch.setitem(globals(), "TESTS_ROOT", repo / "tests")
+    monkeypatch.setitem(
+        globals(), "BUILD_LAYER", repo / "tests" / "unit" / "plugin_maintenance"
+    )
+
+    assert boundary_violations() == expected
+
+
+def test_tests_outside_the_build_layer_never_name_the_authored_tree():
+    violations = boundary_violations()
 
     assert not violations, (
         "a test outside the build layer validates the artifact a user "

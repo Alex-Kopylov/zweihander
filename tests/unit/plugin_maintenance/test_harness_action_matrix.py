@@ -13,9 +13,9 @@ import pytest
 from plugin_maintenance import REPO_ROOT
 from plugin_maintenance.render import (
     DIST_DIRS,
-    FOREIGN_METADATA_DIRS,
     FOREIGN_SKILL_FILES,
     HARNESS_MANIFESTS,
+    HARNESS_METADATA_DIRS,
     MATRIX_PATH,
     Harness,
 )
@@ -38,8 +38,13 @@ def actions(matrix) -> dict:
 
 @pytest.mark.parametrize(
     "table",
-    [HARNESS_MANIFESTS, FOREIGN_METADATA_DIRS, FOREIGN_SKILL_FILES, DIST_DIRS],
-    ids=["HARNESS_MANIFESTS", "FOREIGN_METADATA_DIRS", "FOREIGN_SKILL_FILES", "DIST_DIRS"],
+    [HARNESS_MANIFESTS, HARNESS_METADATA_DIRS, FOREIGN_SKILL_FILES, DIST_DIRS],
+    ids=[
+        "HARNESS_MANIFESTS",
+        "HARNESS_METADATA_DIRS",
+        "FOREIGN_SKILL_FILES",
+        "DIST_DIRS",
+    ],
 )
 def test_every_per_harness_table_covers_exactly_the_harnesses(table):
     """`Harness` is the one list; a table keyed by it names every member."""

@@ -45,8 +45,8 @@ Validate Mermaid diagrams by running `mmdc` from `@mermaid-js/mermaid-cli`. The 
    Do not auto-update Mermaid CLI.
 
 4. If the input is a Markdown file, pass it directly to `mmdc`; Mermaid CLI treats `.md` input as Markdown and extracts fenced Mermaid charts itself.
-5. If the input is raw Mermaid code, write it to a temporary `.mmd` file.
-6. Render the input with `mmdc` into temporary output paths. For Markdown input, write a temporary rendered Markdown file and a temporary artefacts directory. Discard those files after collecting the result.
+5. Create a private run directory under `${ZWEIHANDER_TMP_DIR:-./.tmp/zweihander}/runs/mermaid-lint/`. If the input is raw Mermaid code, write its `.mmd` file there.
+6. Render the input with `mmdc` into that run directory. For Markdown input, keep the rendered Markdown and artefacts there too. Remove the run directory after collecting the result.
 7. Report results using the schema in `references/linter_output_schema.json`:
    - `status: "passed"` with `errors: null` when `mmdc` exits successfully.
    - `status: "failed"` with `errors` set to the non-empty list of `mmdc` parser/runtime messages when linting fails.
@@ -55,6 +55,11 @@ Validate Mermaid diagrams by running `mmdc` from `@mermaid-js/mermaid-cli`. The 
 ## Example Command
 
 ```bash
-mmdc -i diagram.mmd -o diagram.svg
-mmdc -i document.md -o rendered.md --artefacts mermaid-lint-artifacts
+umask 077
+scratch_parent="${ZWEIHANDER_TMP_DIR:-./.tmp/zweihander}/runs/mermaid-lint"
+mkdir -p "$scratch_parent"
+run_dir="$(mktemp -d "$scratch_parent/XXXXXX")"
+trap 'rm -rf "$run_dir"' EXIT
+mmdc -i diagram.mmd -o "$run_dir/diagram.svg"
+mmdc -i document.md -o "$run_dir/rendered.md" --artefacts "$run_dir/artefacts"
 ```

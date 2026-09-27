@@ -259,3 +259,15 @@ def test_script_fallback_matches_the_skill_declaration(script, skill_dir):
 
     assert declared, "SKILL.md must declare metadata.config.decision-log-dir"
     assert declared.group("dir") in script.read_text(encoding="utf-8")
+
+
+@pytest.mark.parametrize(
+    "option",
+    ["--log", "--decision", "--note", "--item", "--name", "--total", "--by"],
+)
+def test_missing_value_for_recognized_option_is_reported(script, option):
+    assert fails(script, "show", option) == f"error: {option} needs a value\n"
+
+
+def test_unknown_option_still_reports_unknown_argument(script):
+    assert fails(script, "show", "--unknown") == "error: unknown argument --unknown\n"

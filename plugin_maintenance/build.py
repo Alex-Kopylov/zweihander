@@ -3,7 +3,7 @@
 Usage: `uv run python -m plugin_maintenance.build [--check]`
 """
 
-import sys
+import argparse
 import tempfile
 from pathlib import Path
 
@@ -46,8 +46,18 @@ def stale_paths() -> list[str]:
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser(
+        description="Run generators and render marketplace distributions."
+    )
+    parser.add_argument(
+        "--check",
+        action="store_true",
+        help="check whether committed distributions match a fresh render",
+    )
+    args = parser.parse_args()
+
     try:
-        if "--check" in sys.argv[1:]:
+        if args.check:
             stale = stale_paths()
             if stale:
                 raise SystemExit(

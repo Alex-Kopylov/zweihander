@@ -69,7 +69,7 @@ Final placement:
 | `tests/test_harness_frontmatter_matrix.py` | `tests/unit/plugin_maintenance/test_harness_frontmatter_matrix.py` |
 | `tests/test_template_source_policy.py` | `tests/unit/plugin_maintenance/test_template_source_policy.py` plus the two new policy checks |
 | `tests/test_ci_gate.py` | `tests/integration/repo/test_ci_gate.py` |
-| `tests/test_dist_invariants.py`, freshness, byte-identical rebuild, foreign-name scan, leftover-marker scan | `tests/unit/plugin_maintenance/test_build.py` |
+| `tests/test_dist_invariants.py`, freshness, byte-identical rebuild, foreign-name scan | `tests/unit/plugin_maintenance/test_build.py` |
 | `tests/test_dist_invariants.py`, everything else | `tests/integration/rendered/test_invariants.py` |
 | `tests/test_mermaid_diagrams_plugin.py`, generator half | `tests/unit/plugin_maintenance/generators/test_mermaid_diagrams.py` |
 | `tests/test_mermaid_diagrams_plugin.py`, skill-content half | `tests/integration/rendered/mermaid_diagrams/test_skill_content.py` |
@@ -99,9 +99,9 @@ HARNESSES = tuple(HARNESS_MANIFESTS)
 
 Three harness-keyed structures already exist (`Harness`, `HARNESS_MANIFESTS`, `DIST_DIRS`); the test suite must not become a fourth. `HARNESS_MANIFESTS` is the right parent because manifest membership is what makes a harness real — a harness with no manifest renders nothing.
 
-`render.py` imports nothing from its own package, so the package importing it is not a cycle. The cost is that importing `plugin_maintenance` now pulls `jinja2` and `pathspec`; both are project dependencies rather than dev extras, so nothing that imports the package could have run without them anyway.
+The package exports this derived tuple through module-level `__getattr__` when a caller requests `HARNESSES`. Importing `plugin_maintenance` alone does not import the executable renderer. This lets `python -m plugin_maintenance.render` start without the `runpy` warning caused by importing its target during package initialization. Both `jinja2` and `pathspec` remain project dependencies.
 
-Alternative — move `HARNESS_MANIFESTS`, `DIST_DIRS` and `Harness` up into the package root and have `render.py` import down: a cleaner dependency direction, rejected as a wider diff for no behavioral gain.
+Alternative — move `HARNESS_MANIFESTS`, `DIST_DIRS` and `Harness` into a shared configuration module: valid, but unnecessary for the current import fix. The lazy export preserves one mapping without moving the renderer's configuration.
 
 A one-line assertion in the matrix schema test keeps `HARNESSES` and the `Harness` Literal from drifting apart.
 
@@ -115,30 +115,24 @@ def harness(request): ...
 def rendered(harness, tmp_path_factory): ...   # render_tree(REPO_ROOT, harness, tree)
 ```
 
-`rendered` must be session-scoped so the tree is rendered once per harness rather than once per test, and pytest forbids a session-scoped fixture depending on a narrower one — so `harness` is session-scoped too. Parametrizing a session-scoped fixture yields one cached instance per harness, which is exactly the shape wanted.
+The shared fixture uses `params=HARNESSES` for every dependent test. Pytest groups tests by that session-scoped parameter and reuses `rendered` within each group. Tests do not repeat the harness list or stack harness markers.
 
-Narrowing happens in `pytest_generate_tests`: when a test requests `harness`, the list starts as `HARNESSES`, is cut to one entry by `@pytest.mark.harness("<name>")`, is intersected with `--harness <name>`, and is applied with `metafunc.parametrize(..., indirect=True, scope="session")`. A test whose marker names a harness the option excludes ends up with an empty parameter set and is reported skipped, which is the honest outcome: the run was asked not to cover that harness.
+Narrowing happens in `pytest_collection_modifyitems`. The hook removes collected cases excluded by the single-harness marker or `--harness`, then reports them through `pytest_deselected`. Collection precedes fixture setup, so excluded cases create no rendered tree. Harness-independent tests remain selected. A marker naming an unknown harness raises `pytest.UsageError`.
 
-Alternative — `pytest_collection_modifyitems` deselecting by marker: rejected; it cannot narrow the parametrization itself, so the other harness's tree would still be rendered.
+Do not narrow the parameter list separately for each test in `pytest_generate_tests`: that shifts parameter indices and breaks pytest's grouping. Keeping the full shared parameter list removes the need for a custom harness-to-tree cache. `tests/unit/test_conftest.py` proves that mixed marked and unmarked modules render each harness once, and that `--harness` creates only the selected tree.
 
-Alternative — a subprocess call to `python -m plugin_maintenance.render`: rejected. `render_tree` is a plain function; calling it directly gives real exceptions and a real traceback, and the parent change already made one renderer the whole mechanism.
-
-Stage 1 (generators) is deliberately not run by the fixture: it writes into `plugins/`, which a test run must not do, and the CI gate runs the full build before `pytest`.
-
-**Amended during implementation.** A session-scoped parametrized fixture gives one instance per harness only as long as pytest never revisits a parameter, and it does: marker narrowing shifts parameter indices, so the reordering that groups items by parameter stops grouping them and the fixture is torn down and rebuilt. The suite rendered six trees instead of two. "Once per harness" therefore stops being a consequence of the scope and becomes explicit: `harness` is an ordinary indirect param fixture, and a session-scoped private fixture holds a harness-to-tree cache that `rendered` reads, filling it on first request. Nothing about the narrowing semantics changes, and `tests/unit/test_conftest.py` pins the behaviour with `pytester`.
-
-Also amended: a marker naming a harness that does not exist used to yield an empty parameter set, reported as a skip indistinguishable from a deliberate narrowing. It now raises `pytest.UsageError` naming the node, the unknown name and `HARNESSES`.
+The fixture calls `render_tree` directly for normal Python tracebacks. Stage 1 remains outside the test session because it writes into `plugins/`; the CI gate runs the full build before `pytest`.
 
 ### D5. Template-syntax assertions are deleted, not relocated
 
-Every assertion that names template syntax in a rendered-content test goes. The harness-format guarantee is already carried by three checks that survive: the matrix-derived foreign-name scan, the leftover-marker scan, and byte-identical consecutive builds. An assertion that a template contains `{{ actions.AskUser | call }}` adds nothing to those three and passes on a template that fails to render.
+Every assertion that names template syntax in a rendered-content test goes. The harness-format checks cover matrix-derived foreign callable names and byte-identical consecutive builds. Jinja validates template syntax with `StrictUndefined`; literal template markers in its output are allowed. An assertion that a template contains `{{ actions.AskUser | call }}` does not prove the rendered behavior.
 
 Two consequences worth naming:
 
 - `test_resume_tailoring.py`'s template-syntax assertion is really the claim "this skill asks the user before proceeding". That is prompt behavior; checking it needs a model, so it is deleted here and belongs to a future `llm`-marked evaluation. Recorded as a non-goal so it is not mistaken for an oversight.
 - `test_python_dev_workflow_plugin.py` currently resolves a metadata reference path by falling back to a template name when the plain file is missing. Against `rendered` the fallback disappears: the path either resolves in the tree the user installs or it does not, which is the claim worth making.
 
-**Amended during implementation.** The first two of the three surviving checks cannot be rendered-content tests, so the placement table above moves them into `test_build.py` with the other two. Both need the template a rendered file came from: the leftover-marker scan subtracts the template's raw blocks before scanning, and the foreign-name scan applies only to template-derived files — widening it to every file in a tree fails on nineteen plain files that say `Agent` as an ordinary English word. Reading the template is the whole reason they are build-layer tests; the tree they walk is the `rendered` fixture's, like every other test's. The committed trees stay the business of the freshness check and the byte-identical rebuild. The spec already calls all three "build-layer checks"; only that reading is implementable.
+The foreign-name scan belongs in `test_build.py`: it checks only template-derived files and needs the authored tree to identify them. Scanning plain files would reject ordinary English uses of `Agent`. The scan walks the fresh `rendered` tree; freshness and reproducibility remain separate build checks.
 
 **Amended during implementation.** Two mermaid checks were dropped in the move because they read `plugins/mermaid-diagrams/README.md`. That README is stage-1 output of the mermaid generator rather than authored prose, so both belong in the build layer and are restored in `tests/unit/plugin_maintenance/generators/test_mermaid_diagrams.py`: the README's provenance line names the commit the third-party notice records, and the generated README names neither `Claude` nor `.claude/skills`. The skill half of the second claim already runs against `rendered`, so only the README half is restored.
 
@@ -166,13 +160,14 @@ Such a path has two spellings in this repository: the slash-bearing literal, and
 
 A mirrored tree repeats basenames (`test_scripts.py`, `test_schemas.py`, and more as it grows). Under the default `prepend` import mode, two same-named test modules without packages collide at import. The two fixes are a chain of empty `__init__.py` files down every mirrored directory, or one line in `pytest.ini`. One line wins.
 
-The same edit registers both markers:
+The same edit registers both markers and rejects unknown names. The mechanism tests read this configuration instead of keeping a second marker registry:
 
 ```ini
 [pytest]
 norecursedirs = examples
 pythonpath = .
-addopts = --import-mode=importlib
+addopts = --import-mode=importlib -p pytester
+strict_markers = true
 markers =
     harness(name): run this test only for the named harness
     llm: calls an LLM; skipped unless --llm is given

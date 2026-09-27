@@ -18,7 +18,11 @@ works from the outside, not just from its internal tests:
 > ## Verify
 >
 > ```bash
-> tmp=$(mktemp -d)
+> umask 077
+> scratch_parent="${ZWEIHANDER_TMP_DIR:-./.tmp/zweihander}/runs/run-mylib"
+> mkdir -p "$scratch_parent"
+> tmp=$(mktemp -d "$scratch_parent/XXXXXX")
+> trap 'rm -rf "$tmp"' EXIT
 > cat > "$tmp/go.mod" <<'GO'
 > module smoke
 >
@@ -51,7 +55,11 @@ works from the outside, not just from its internal tests:
 > ## Verify
 >
 > ```bash
-> tmp=$(mktemp -d)
+> umask 077
+> scratch_parent="${ZWEIHANDER_TMP_DIR:-./.tmp/zweihander}/runs/run-mylib"
+> mkdir -p "$scratch_parent"
+> tmp=$(mktemp -d "$scratch_parent/XXXXXX")
+> trap 'rm -rf "$tmp"' EXIT
 > cat > "$tmp/go.mod" <<'GO'
 > module smoke
 >

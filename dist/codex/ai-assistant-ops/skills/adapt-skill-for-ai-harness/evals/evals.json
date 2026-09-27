@@ -4,7 +4,7 @@
     {
       "id": 0,
       "prompt": "Adapt the explicitly named skill plugins/example/skills/deploy-helper for AI Assistant Harness Adaptation so it renders correctly for Claude Code and Codex.",
-      "expected_output": "Resolves or asks for the explicitly named skill path, inspects only files that enter invocation context, replaces mapped-mechanism callable names with action-map lookups such as {{ actions.AskUser | call }} and skill invocations with {{ \"plugin-name:skill-name\" | call }}, uses harness conditionals only for genuinely divergent narrative, wraps literal brace output in raw blocks, renames the file with the .j2 suffix leaving no plain sibling, deletes baseline tool coaching instead of templating it, changes no unrelated skill, renders both harness trees, and reports the exact files changed with verification commands run.",
+      "expected_output": "Resolves or asks for the explicitly named skill path, inspects only files that enter invocation context, replaces mapped-mechanism callable names with action-map lookups such as {{ actions.AskUser | call }} and skill invocations with {{ \"plugin-name:skill-name\" | call }}, uses harness conditionals only for genuinely divergent narrative, uses native Jinja escaping for literal brace output, renames the file with the .j2 suffix leaving no plain sibling, deletes baseline tool coaching instead of templating it, changes no unrelated skill, renders both harness trees, and reports the exact files changed with verification commands run.",
       "files": [],
       "assertions": [
         {

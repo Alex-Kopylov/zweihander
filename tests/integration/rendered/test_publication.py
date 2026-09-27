@@ -9,32 +9,23 @@ import json
 from pathlib import Path
 
 from plugin_maintenance import REPO_ROOT
-from plugin_maintenance.render import HARNESS_MANIFESTS, manifest_plugin_names
+from plugin_maintenance.render import HARNESS_MANIFESTS, Harness, manifest_plugin_names
 
 
-def claude_entries() -> list[dict]:
+def marketplace_entries(harness: Harness) -> list[dict]:
     manifest = json.loads(
-        (REPO_ROOT / ".claude-plugin" / "marketplace.json").read_text(encoding="utf-8")
-    )
-    return manifest["plugins"]
-
-
-def codex_entries() -> list[dict]:
-    manifest = json.loads(
-        (REPO_ROOT / ".agents" / "plugins" / "marketplace.json").read_text(
-            encoding="utf-8"
-        )
+        (REPO_ROOT / HARNESS_MANIFESTS[harness]).read_text(encoding="utf-8")
     )
     return manifest["plugins"]
 
 
 def test_claude_manifest_sources_resolve_into_its_dist_tree():
-    for entry in claude_entries():
+    for entry in marketplace_entries(Harness.CLAUDE_CODE):
         assert entry["source"] == f"./dist/claude-code/{entry['name']}", entry["name"]
 
 
 def test_codex_manifest_sources_resolve_into_its_dist_tree():
-    for entry in codex_entries():
+    for entry in marketplace_entries(Harness.CODEX):
         assert (
             entry["source"]["path"] == f"./dist/codex/{entry['name']}"
         ), entry["name"]
@@ -50,8 +41,8 @@ def test_rendered_tree_carries_exactly_its_manifest_plugins(
 
 
 def test_codex_only_plugin_is_a_valid_catalog_divergence():
-    claude_names = {entry["name"] for entry in claude_entries()}
-    codex_names = {entry["name"] for entry in codex_entries()}
+    claude_names = {entry["name"] for entry in marketplace_entries(Harness.CLAUDE_CODE)}
+    codex_names = {entry["name"] for entry in marketplace_entries(Harness.CODEX)}
 
     assert "run-and-verify-app" in codex_names
     assert "run-and-verify-app" not in claude_names

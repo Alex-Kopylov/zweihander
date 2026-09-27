@@ -26,7 +26,7 @@ Zweihander authors plugins once but ships them to two harnesses (Claude Code and
 
 ### New Capabilities
 
-- `harness-dist-build`: the two-stage build pipeline — generated-plugin class, per-harness rendering, `X`/`X.j2` file rules, foreign-metadata stripping, failure policy, output invariants (no foreign vocabulary, no leftover Jinja markers, reproducible renders).
+- `harness-dist-build`: the two-stage build pipeline — generated-plugin class, per-harness rendering, `X`/`X.j2` file rules, foreign-metadata stripping, failure policy, output invariants (no foreign vocabulary, native Jinja validation, reproducible renders).
 - `harness-invocation-notation`: the uniform per-harness invocation notation, the two name shapes, the action→name matrix schema, and the template contract (`actions` lookups, wrapper filter, narrative conditionals only for divergent prose).
 - `dist-publication`: committed `dist/` trees, marketplace manifests pointing at them, CI freshness enforcement, and the mermaid sync workflow keeping `dist/` current.
 - `harness-adaptation-skill`: what the rewritten `adapt-skill-for-ai-harness` skill must instruct — authoring harness-parametric templates against the matrix — and what it must not contain (legacy reference-file pattern, dispatch sentences, migration notes).

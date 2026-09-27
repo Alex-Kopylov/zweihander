@@ -115,6 +115,18 @@ class TestFileRules:
 
         assert "{{COMPANY}}" in text
 
+    @pytest.mark.parametrize("literal", ["{{ x }}", "{% example %}", "{# note #}"])
+    def test_expression_can_emit_literal_jinja_syntax(
+        self, fixture_repo, fixture_matrix, literal
+    ):
+        demo_template(fixture_repo).write_text(
+            "{{ " + repr(literal) + " }}\n", encoding="utf-8"
+        )
+
+        text = demo_skill(render(fixture_repo, fixture_matrix, Harness.CLAUDE_CODE))
+
+        assert text == literal + "\n"
+
     @pytest.mark.parametrize(
         ("open_tag", "close_tag"),
         [
@@ -139,7 +151,7 @@ class TestFileRules:
         assert "Skill(AskUserQuestion)" in text
         assert "{{COMPANY}}" in text
 
-    def test_rendered_output_has_no_leftover_markers(
+    def test_template_evaluates_actions_and_control_flow(
         self, fixture_repo, fixture_matrix
     ):
         text = demo_skill(render(fixture_repo, fixture_matrix, Harness.CLAUDE_CODE))
@@ -450,22 +462,15 @@ class TestFailLoud:
         with pytest.raises(BuildError, match=r"NoSuchAction.*ClaudeCode"):
             render(fixture_repo, fixture_matrix, Harness.CLAUDE_CODE)
 
-    @pytest.mark.parametrize(
-        ("open_tag", "close_tag"),
-        [("{% raw %}", "{% endraw %}"), ("{%- raw -%}", "{%- endraw -%}")],
-    )
-    def test_marker_outside_a_raw_block_fails_the_build(
-        self, fixture_repo, fixture_matrix, open_tag, close_tag
+    @pytest.mark.parametrize("source", ["{{ unknown_variable }}", "{% if %}"])
+    def test_native_jinja_error_names_the_source(
+        self, fixture_repo, fixture_matrix, source
     ):
-        """A raw block exempts its own text only, never the whole file."""
-        template = demo_template(fixture_repo)
-        template.write_text(
-            f"{open_tag}\nKeep the literal {{{{COMPANY}}}} placeholder.\n{close_tag}\n"
-            "Ask via {{ '{{ actions.AskUser | call }}' }}.\n",
-            encoding="utf-8",
-        )
+        demo_template(fixture_repo).write_text(source, encoding="utf-8")
 
-        with pytest.raises(BuildError, match=re.escape("Jinja marker '{{'")):
+        with pytest.raises(
+            BuildError, match=r"failed to render .*SKILL.md.j2.*ClaudeCode"
+        ):
             render(fixture_repo, fixture_matrix, Harness.CLAUDE_CODE)
 
         assert not (fixture_repo / "dist-under-test" / Harness.CLAUDE_CODE).exists()

@@ -1,14 +1,9 @@
 """The build's own guarantees about the trees it publishes.
 
-Three checks carry the harness-format guarantee between them: a rendered tree
-for one harness carries no other harness's callable names, a file rendered
-from a template carries no leftover Jinja marker outside its raw blocks, and
-consecutive builds are byte-identical. The first two live here rather than
-among the rendered-content tests because each needs the template a file was
-rendered from, which only the build layer may open; the tree they scan is a
-fresh render like everyone else's. Only the freshness check and the
-byte-identical rebuild answer for the committed trees, which is what they are
-for.
+The foreign-callable-name scan needs the authored tree to identify template
+outputs, so it lives in the build layer. The other checks cover reproducible
+builds and freshness of committed distribution trees. Jinja handles template
+syntax; literal braces in rendered content are valid output.
 """
 
 import json
@@ -23,7 +18,6 @@ from plugin_maintenance.render import (
     MATRIX_PATH,
     TEMPLATE_SUFFIX,
     Harness,
-    leftover_jinja_markers,
     render_tree,
     tree_snapshot,
 )
@@ -89,21 +83,6 @@ def test_rendered_files_carry_no_foreign_callable_names(harness, rendered: Path)
         for name in sorted(foreign_names):
             if re.search(rf"(?<![\w-]){re.escape(name)}(?![\w-])", text):
                 violations.append(f"{relative}: contains {name}")
-
-    assert not violations, "\n".join(violations)
-
-
-def test_rendered_files_carry_no_leftover_jinja_markers(rendered: Path):
-    violations = []
-
-    for path in rendered_files(rendered):
-        source = template_source(rendered, path)
-        if not source.is_file():
-            continue
-        template_text = source.read_text(encoding="utf-8")
-        text = path.read_text(encoding="utf-8")
-        for marker in leftover_jinja_markers(template_text, text):
-            violations.append(f"{path}: contains {marker} outside any raw block")
 
     assert not violations, "\n".join(violations)
 

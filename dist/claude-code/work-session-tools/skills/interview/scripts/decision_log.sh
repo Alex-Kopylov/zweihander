@@ -20,6 +20,7 @@ EMPTY=▱
 die() { printf 'error: %s\n' "$1" >&2; exit 1; }
 
 need() { [ -n "$2" ] || die "$1 is required"; }
+need_value() { [ "$#" -gt 1 ] || die "$1 needs a value"; }
 
 # Fit one field into a table cell: single line, no column break.
 cell() {
@@ -93,13 +94,13 @@ log='' decision='' note='' name='' total='' by=''
 items=()
 while [ $# -gt 0 ]; do
     case $1 in
-        --log) log=$2 ;;
-        --decision) decision=$2 ;;
-        --note) note=$2 ;;
-        --item) items+=("$2") ;;
-        --name) name=$2 ;;
-        --total) total=$2 ;;
-        --by) by=$2 ;;
+        --log) need_value "$@"; log=$2 ;;
+        --decision) need_value "$@"; decision=$2 ;;
+        --note) need_value "$@"; note=$2 ;;
+        --item) need_value "$@"; items+=("$2") ;;
+        --name) need_value "$@"; name=$2 ;;
+        --total) need_value "$@"; total=$2 ;;
+        --by) need_value "$@"; by=$2 ;;
         *) die "unknown argument $1" ;;
     esac
     shift 2

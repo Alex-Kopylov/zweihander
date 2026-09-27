@@ -11,7 +11,7 @@ A test SHALL reach plugin content through a rendered harness tree and SHALL NOT 
 
 #### Scenario: Skill content is asserted against the rendered tree
 - **WHEN** a test asserts that a skill's instructions contain a passage
-- **THEN** it reads the skill file from a rendered harness tree, where the file carries no template suffix and no unresolved template syntax
+- **THEN** it reads the skill file from a rendered harness tree, where the file carries no template suffix and its evaluated template content
 
 #### Scenario: Build-layer test reads the authored tree
 - **WHEN** a test under `tests/unit/plugin_maintenance/` checks a template-authoring rule
@@ -97,17 +97,17 @@ The suite SHALL accept an option naming one harness. With it, the run SHALL exec
 
 #### Scenario: Narrowed run and a conflicting marker
 - **WHEN** the harness option names one harness and a test is marked for a different one
-- **THEN** that test does not execute
+- **THEN** its harness cases are deselected before fixture setup, and no tree is rendered for those cases
 
 ### Requirement: Markers are registered
-Every marker the suite defines SHALL be registered in the pytest configuration, so an unknown-marker warning identifies a typo rather than a convention.
+Every marker the suite defines SHALL be registered in the pytest configuration, so an unregistered marker fails collection as a typo.
 
 #### Scenario: A typo in a marker name surfaces
 - **WHEN** a test carries a marker name the configuration does not register
-- **THEN** the run reports the unknown marker
+- **THEN** collection fails and reports the unknown marker
 
 ### Requirement: Template syntax is never asserted outside the build layer
-A test of rendered content SHALL NOT assert the presence of template syntax. The one exception is a test whose subject is the template-authoring skill itself, `adapt-skill-for-ai-harness`: templates are that skill's subject matter, so a passage about them is the skill's content rather than an assertion about how the skill file was produced. The harness-format guarantee is carried entirely by three build-layer checks. Two walk a fresh render and compare each rendered file against the template it came from: one fails on another harness's callable names, the other on leftover template markers outside raw blocks. The third compares consecutive builds byte for byte.
+A test of rendered content SHALL NOT assert the presence of template syntax. The one exception is a test whose subject is the template-authoring skill itself, `adapt-skill-for-ai-harness`: templates are that skill's subject matter, so a passage about them is the skill's content rather than an assertion about how the skill file was produced. Build-layer checks SHALL reject foreign harness callable names in template-derived files and compare consecutive builds byte for byte. Jinja SHALL validate template syntax with `StrictUndefined`; literal Jinja markers in rendered output SHALL be allowed.
 
 #### Scenario: A rendered-content assertion names no template syntax
 - **WHEN** a test asserts that a rendered skill instructs the reader to ask the user

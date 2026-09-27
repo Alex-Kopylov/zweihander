@@ -11,16 +11,19 @@ from pathlib import Path
 
 import pytest
 
+from plugin_maintenance import REPO_ROOT
 from plugin_maintenance.render import (
     DEV_FILE_NAMES,
-    FOREIGN_METADATA_DIRS,
     FRONTMATTER_MATRIX_NAME,
+    HARNESS_METADATA_DIRS,
     MATRIX_PATH,
+    PLUGIN_METADATA_DIRS,
     TEMPLATE_SUFFIX,
     TOP_LEVEL_KEY,
     VERBATIM_FORM,
     Harness,
     frontmatter_lines,
+    render_tree,
 )
 
 
@@ -72,10 +75,10 @@ def test_tree_carries_no_legacy_dispatch_artifacts(rendered: Path) -> None:
 
 
 def test_tree_strips_foreign_runtime_metadata(rendered: Path, harness: str) -> None:
-    foreign_metadata = FOREIGN_METADATA_DIRS[harness]
+    foreign_metadata = PLUGIN_METADATA_DIRS - {HARNESS_METADATA_DIRS[harness]}
 
     assert not [
-        path for path in tree_files(rendered) if foreign_metadata in path.parts
+        path for path in tree_files(rendered) if foreign_metadata.intersection(path.parts)
     ]
 
 
@@ -158,7 +161,7 @@ def test_claude_code_tree_carries_no_codex_agent_file(rendered: Path) -> None:
     assert not [path.relative_to(rendered) for path in rendered.rglob("openai.yaml")]
 
 
-def test_user_only_skills_agree_across_harnesses(_rendered_trees) -> None:
+def test_user_only_skills_agree_across_harnesses(tmp_path: Path) -> None:
     """A skill the model may not start says so in each harness's own spelling:
     `disable-model-invocation: true` for Claude Code, and
     `policy.allow_implicit_invocation: false` in `agents/openai.yaml` for Codex.
@@ -166,8 +169,10 @@ def test_user_only_skills_agree_across_harnesses(_rendered_trees) -> None:
     Only a skill listed in `INVOCATION_DIVERGES` may differ, and a listed skill
     must actually differ, so the list cannot go stale.
     """
-    claude = _rendered_trees(Harness.CLAUDE_CODE)
-    codex = _rendered_trees(Harness.CODEX)
+    # Needs both trees at once, which the per-harness `rendered` cannot give.
+    claude, codex = tmp_path / "claude", tmp_path / "codex"
+    render_tree(REPO_ROOT, Harness.CLAUDE_CODE, claude)
+    render_tree(REPO_ROOT, Harness.CODEX, codex)
     claude_user_only = {
         path.parent.relative_to(claude).as_posix()
         for path in claude.glob("*/skills/*/SKILL.md")

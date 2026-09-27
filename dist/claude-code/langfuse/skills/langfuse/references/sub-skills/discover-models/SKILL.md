@@ -38,6 +38,22 @@ A `200` confirms valid authentication. A `401` or `403` means the keys are incor
 
 ---
 
+## Temporary API data
+
+Create one private directory for this run. Reuse `LANGFUSE_RUN_DIR` in each
+step; these raw responses are discarded after the summary. If commands run
+in separate shells, pass the same path as `LANGFUSE_RUN_DIR` to each command.
+
+```bash
+umask 077
+scratch_parent="${ZWEIHANDER_TMP_DIR:-./.tmp/zweihander}/runs/discover-models"
+mkdir -p "$scratch_parent"
+LANGFUSE_RUN_DIR="$(mktemp -d "$scratch_parent/XXXXXX")"
+export LANGFUSE_RUN_DIR
+: > "$LANGFUSE_RUN_DIR/langfuse_observations_raw.json"
+: > "$LANGFUSE_RUN_DIR/langfuse_models_raw.json"
+```
+
 ## Step 1 -- Fetch Registered Model Definitions via REST API
 
 Call the Langfuse public models endpoint to retrieve all model definitions with their pricing configuration. Paginate until all models are collected.
@@ -54,7 +70,7 @@ while true; do
     break
   fi
 
-  echo "$RESPONSE" >> /tmp/langfuse_models_raw.json
+  echo "$RESPONSE" >> "$LANGFUSE_RUN_DIR/langfuse_models_raw.json"
   PAGE=$((PAGE + 1))
 done
 ```
@@ -72,10 +88,10 @@ Parse the collected model definitions:
 
 ```bash
 python3 -c "
-import json
+import json, os
 
 models = []
-with open('/tmp/langfuse_models_raw.json') as f:
+with open(os.path.join(os.environ['LANGFUSE_RUN_DIR'], 'langfuse_models_raw.json')) as f:
     for line in f:
         try:
             page = json.loads(line)
@@ -117,7 +133,7 @@ while true; do
     break
   fi
 
-  echo "$RESPONSE" >> /tmp/langfuse_observations_raw.json
+  echo "$RESPONSE" >> "$LANGFUSE_RUN_DIR/langfuse_observations_raw.json"
   PAGE=$((PAGE + 1))
 
   # Limit to 20 pages for sampling
@@ -131,11 +147,11 @@ Extract unique model names from the observations:
 
 ```bash
 python3 -c "
-import json
+import json, os
 from collections import Counter
 
 observations = []
-with open('/tmp/langfuse_observations_raw.json') as f:
+with open(os.path.join(os.environ['LANGFUSE_RUN_DIR'], 'langfuse_observations_raw.json')) as f:
     for line in f:
         try:
             page = json.loads(line)
@@ -244,13 +260,13 @@ After collecting registered definitions and observed model names, merge them int
 
 ```bash
 python3 -c "
-import json
+import json, os
 from collections import Counter
 
 # Load registered models
 registered = {}
 try:
-    with open('/tmp/langfuse_models_raw.json') as f:
+    with open(os.path.join(os.environ['LANGFUSE_RUN_DIR'], 'langfuse_models_raw.json')) as f:
         for line in f:
             try:
                 page = json.loads(line)
@@ -268,7 +284,7 @@ except FileNotFoundError:
 # Load observed models
 observed = Counter()
 try:
-    with open('/tmp/langfuse_observations_raw.json') as f:
+    with open(os.path.join(os.environ['LANGFUSE_RUN_DIR'], 'langfuse_observations_raw.json')) as f:
         for line in f:
             try:
                 page = json.loads(line)
@@ -338,5 +354,5 @@ After the table, provide a brief summary:
 Remove any temporary files created during execution:
 
 ```bash
-rm -f /tmp/langfuse_models_raw.json /tmp/langfuse_observations_raw.json
+rm -rf -- "$LANGFUSE_RUN_DIR"
 ```

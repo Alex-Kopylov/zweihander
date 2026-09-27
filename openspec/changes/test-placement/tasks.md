@@ -4,12 +4,12 @@ Everything lands in one PR from `claude/test-placement` into `harness-dist-pipel
 
 ## 1. Mechanism
 
-- [x] 1.1 Add `HARNESSES = tuple(HARNESS_MANIFESTS)` to `plugin_maintenance/__init__.py`, importing `HARNESS_MANIFESTS` from `plugin_maintenance.render`; add no second list of harness names anywhere
+- [x] 1.1 Export `HARNESSES` from `plugin_maintenance/__init__.py` as `tuple(HARNESS_MANIFESTS)` on first access, without eagerly importing the executable renderer; add no second list of harness names anywhere
 - [x] 1.2 Assert in the action-matrix schema test that `HARNESSES` and the `Harness` Literal name the same harnesses, so the two cannot drift
 - [x] 1.3 Rewrite `tests/conftest.py` to hold only the shared mechanism: `pytest_addoption` for `--harness` and `--llm`, a session-scoped `harness` fixture parametrized over `HARNESSES`, a session-scoped `rendered` fixture calling `render_tree(REPO_ROOT, harness, <tmp tree>)`, and the `llm` skip in `pytest_collection_modifyitems`
-- [x] 1.4 Implement harness narrowing in `pytest_generate_tests`: start from `HARNESSES`, cut to one entry on `@pytest.mark.harness("<name>")`, intersect with `--harness`, apply with `indirect=True, scope="session"`
+- [x] 1.4 Implement harness narrowing in `pytest_collection_modifyitems`: deselect cases excluded by the single-harness marker or `--harness`, leaving the shared fixture parameter list intact
 - [x] 1.5 Move `fixture_repo` and `fixture_matrix` out of `tests/conftest.py` into a new `tests/unit/plugin_maintenance/conftest.py`
-- [x] 1.6 Update `pytest.ini`: keep `norecursedirs` and `pythonpath`, add `addopts = --import-mode=importlib`, register the `harness(name)` and `llm` markers
+- [x] 1.6 Update `pytest.ini`: keep `norecursedirs` and `pythonpath`, add `addopts = --import-mode=importlib -p pytester`, enable `strict_markers`, and register the `harness(name)` and `llm` markers
 - [x] 1.7 Prove the mechanism on one file: move `tests/test_improve_skill.py` to `tests/integration/rendered/ai_assistant_ops/test_improve_skill.py`, reading the skill through `rendered`; confirm it runs twice, once per harness
 
 ## 2. Policy checks (fail first)
@@ -24,7 +24,7 @@ Everything lands in one PR from `claude/test-placement` into `harness-dist-pipel
 - [x] 3.1 Move `tests/test_harness_renderer.py` to `tests/unit/plugin_maintenance/test_render.py`
 - [x] 3.2 Move `tests/test_harness_action_matrix.py` and `tests/test_harness_frontmatter_matrix.py` to `tests/unit/plugin_maintenance/`
 - [x] 3.3 Move `tests/test_ci_gate.py` to `tests/unit/plugin_maintenance/test_ci_gate.py`
-- [x] 3.4 Split `tests/test_dist_invariants.py`: the freshness check (`stale_paths`), the byte-identical-rebuild check, the foreign-callable-name scan and the leftover-marker scan all become `tests/unit/plugin_maintenance/test_build.py`; the first two answer for the committed trees, the two scans walk `rendered` and open only the template each file was rendered from
+- [x] 3.4 Split `tests/test_dist_invariants.py`: the freshness check (`stale_paths`), the byte-identical-rebuild check, and the foreign-callable-name scan all become `tests/unit/plugin_maintenance/test_build.py`; the first two answer for the committed trees, the vocabulary scan walks `rendered` and identifies template-derived files
 - [x] 3.5 Split `tests/test_mermaid_diagrams_plugin.py`: the generator-package assertions become `tests/unit/plugin_maintenance/generators/test_mermaid_diagrams.py`
 - [x] 3.6 Replace `from conftest import REPO_ROOT` with `from plugin_maintenance import REPO_ROOT` in every moved module
 
@@ -69,11 +69,11 @@ Everything lands in one PR from `claude/test-placement` into `harness-dist-pipel
 
 ## 8. Audit follow-ups
 
-- [x] 8.1 Render each harness tree exactly once per session: `harness` becomes an ordinary indirect param fixture and a session-scoped per-harness cache holds the trees, so collection order can no longer multiply renders
+- [x] 8.1 Render each harness tree once per session with `harness(scope="session", params=HARNESSES)` and a dependent session-scoped `rendered`; deselection preserves parameter indices and pytest handles reuse without a custom cache
 - [x] 8.2 Raise `pytest.UsageError` when `@pytest.mark.harness(...)` names a harness that does not exist, instead of producing an empty parameter set indistinguishable from a deliberate narrowing
 - [x] 8.3 Match `Path("plugins")` and `.joinpath("plugins")` in the boundary check, and drop the root `tests/conftest.py` exemption so it is scanned like every other file outside the build layer
-- [x] 8.4 Point the foreign-callable-name scan and the leftover-marker scan at the `rendered` tree, leaving committed `dist/` to the freshness check and the byte-identical rebuild
+- [x] 8.4 Point the foreign-callable-name scan at the `rendered` tree, leaving committed `dist/` to the freshness check and the byte-identical rebuild
 - [x] 8.5 Correct the `harness-dist-build` scenario that claimed a collector finds nothing in a published tree: a skill's shipped documentation examples do collect, and are not repository tests
 - [x] 8.6 Restore the two mermaid README checks in the generator tests, where that stage-1 output belongs: the provenance line names the commit the third-party notice records, and the generated README carries no Claude-specific packaging
 - [x] 8.7 Move `test_ci_gate.py` to `tests/integration/repo/`, where a test that reads only `.github/workflows/ci.yml` belongs by D2's own criterion
-- [x] 8.8 Cover the fixtures, markers and options with `tests/unit/test_conftest.py`: four `pytester` runs over probe files, the first of them the regression test for 8.1
+- [x] 8.8 Cover the fixtures, markers and options with `tests/unit/test_conftest.py`: `pytester` runs over probe files using the real `pytest.ini`; cover render reuse, option and marker intersection, LLM opt-in, unknown harnesses, and unregistered markers

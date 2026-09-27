@@ -5,7 +5,7 @@
 See `proposal.md` for motivation. Current state that shapes the design:
 
 - Plain files are copied byte-for-byte; only `.j2` files pass through Jinja, with the `harness` context and no `trim_blocks`.
-- The renderer already strips the other harness's plugin metadata directory (`FOREIGN_METADATA_DIRS`).
+- The renderer already strips the other harness's plugin metadata directory (`PLUGIN_METADATA_DIRS` minus its own `HARNESS_METADATA_DIRS` entry).
 - The frontmatter matrix places a key `top-level` or under `metadata`, and records the specification's six portable keys under `specification.portable_keys`.
 - Before this change, Codex `SKILL.md` files carried twelve top-level keys outside the specification across eight skills: `disable-model-invocation`, `model`, `context`, `agent`, `version`, `author`, and `platforms`.
 
@@ -28,7 +28,7 @@ See `proposal.md` for motivation. Current state that shapes the design:
 Alternative — compile one spelling into the other (shipped in #110, then removed): extra renderer code and tests, a rule where either file may or may not exist, and a tree that could only differ per harness in that one setting.
 Alternative — a per-skill `config.yaml` that feeds both: rejected; a third file for settings each harness already has a home for.
 
-**D2 — `agents/openai.yaml` is foreign skill metadata for Claude Code.** `FOREIGN_SKILL_FILES` sits beside `FOREIGN_METADATA_DIRS` and names, per harness, the skill files its tree never carries. Claude Code's entry is `skills/*/agents/openai.yaml`; Codex's is empty.
+**D2 — `agents/openai.yaml` is foreign skill metadata for Claude Code.** `FOREIGN_SKILL_FILES` sits beside `HARNESS_METADATA_DIRS` and names, per harness, the skill files its tree never carries. Claude Code's entry is `skills/*/agents/openai.yaml`; Codex's is empty.
 
 **D3 — Claude Code-only keys go in a harness branch, not the matrix.** The matrix places a key inside frontmatter; `metadata` placement would still leave an inert copy in the Codex tree. A branch at the end of the frontmatter emits nothing for Codex:
 

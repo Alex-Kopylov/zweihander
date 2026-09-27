@@ -25,7 +25,7 @@ Stage 1 SHALL execute the generator of every plugin that declares one, in-place 
 - **THEN** the `mermaid-diagrams` generator executes through the same class mechanism as any other generated plugin
 
 ### Requirement: Template and plain-file rules
-For every output path `X`, the renderer SHALL apply exactly one of: copy `X` byte-for-byte when only `X` exists in source; render `X.j2` with the harness context and emit it as `X` when only `X.j2` exists; fail the build when both `X` and `X.j2` exist. Emitted files SHALL preserve the source file's mode bits. A template whose output needs literal `{{` or `{%` SHALL wrap that content in `{% raw %}` blocks.
+For every output path `X`, the renderer SHALL apply exactly one of: copy `X` byte-for-byte when only `X` exists in source; render `X.j2` with the harness context and emit it as `X` when only `X.j2` exists; fail the build when both `X` and `X.j2` exist. Emitted files SHALL preserve the source file's mode bits. Templates SHALL use native Jinja rendering with `StrictUndefined`. Literal Jinja syntax in rendered output SHALL be allowed, whether produced by raw blocks or expressions.
 
 #### Scenario: Plain file copied byte-for-byte
 - **WHEN** a source file without a `.j2` suffix contains literal `{{` or `{%` sequences
@@ -33,7 +33,7 @@ For every output path `X`, the renderer SHALL apply exactly one of: copy `X` byt
 
 #### Scenario: Template rendered per harness
 - **WHEN** `SKILL.md.j2` exists and the build renders a harness tree
-- **THEN** the tree contains `SKILL.md` with all Jinja markers resolved and contains no `SKILL.md.j2`
+- **THEN** the tree contains `SKILL.md` with Jinja expressions and control flow evaluated and contains no `SKILL.md.j2`
 
 #### Scenario: Raw block emits literal braces
 - **WHEN** a `.j2` source wraps `{{COMPANY}}` in a `{% raw %}` block and the build renders it
@@ -96,7 +96,7 @@ The renderer SHALL skip every source path the repository's root `.gitignore` mat
 - **THEN** the file appears in every `dist/` tree whose manifest lists that plugin
 
 ### Requirement: Build fails loudly
-The build SHALL fail — without falling back to another harness's values — on: an unknown harness key, an action or name missing from the matrix, a malformed matrix, a template render error, leftover Jinja markers in a rendered file, a template whose emitted name is a development file, or a plain/template collision. The marker scan SHALL exempt the output of `{% raw %}` blocks per block rather than per file, and SHALL recognise every spelling Jinja accepts for the tag, including the whitespace-control forms.
+The build SHALL fail — without falling back to another harness's values — on: an unknown harness key, an action or name missing from the matrix, a malformed matrix, a template render error, a template whose emitted name is a development file, or a plain/template collision. Jinja SHALL report syntax errors and undefined variables; the renderer SHALL NOT scan rendered output for template markers.
 
 #### Scenario: Missing action aborts the build
 - **WHEN** a template references an action absent from the matrix for the target harness
@@ -110,9 +110,13 @@ The build SHALL fail — without falling back to another harness's values — on
 - **WHEN** a `.j2` source wraps literal braces in a `{%- raw -%}` block and the build renders it
 - **THEN** the emitted file keeps those braces and the build succeeds
 
-#### Scenario: Marker outside a raw block still fails
-- **WHEN** a `.j2` source holds one `{% raw %}` block and an unresolved Jinja marker elsewhere in the same file
-- **THEN** the build fails and names the file
+#### Scenario: An expression emits literal template syntax
+- **WHEN** a valid Jinja expression emits a literal `{{ x }}` string
+- **THEN** the build succeeds and preserves that string
+
+#### Scenario: Invalid Jinja source fails
+- **WHEN** a template has invalid syntax or references an undefined variable
+- **THEN** the build fails with the native Jinja error and names the source file and harness
 
 ### Requirement: Rendered output carries no foreign harness vocabulary
 Files rendered from `.j2` sources into `dist/claude-code/**` SHALL contain no Codex callable names, and files rendered from `.j2` sources into `dist/codex/**` SHALL contain no Claude Code callable names. The foreign-name lists SHALL be derived from the matrix's callable names. A spec-level exemption list — successor of the retired `AGNOSTIC_EXEMPT` — SHALL cover files whose subject matter is another harness (seeded with the version-bumper harness reference docs and the action matrix file); exempt files are skipped by the scan.

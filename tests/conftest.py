@@ -7,7 +7,6 @@ The single exception is `tests/unit/plugin_maintenance/`, whose subject matter
 is the authored tree and the template rules.
 """
 
-from collections.abc import Callable
 from pathlib import Path
 
 import pytest
@@ -31,78 +30,47 @@ def pytest_addoption(parser: pytest.Parser) -> None:
     )
 
 
-def pytest_generate_tests(metafunc: pytest.Metafunc) -> None:
-    """Parametrize the harness a test runs for, narrowed by marker and option.
-
-    A test whose marker names a harness the option excludes ends up with an
-    empty parameter set and is reported skipped: the run was asked not to
-    cover that harness. A marker naming a harness that does not exist is a
-    typo rather than a narrowing, so it fails the run instead.
-    """
-    if "harness" not in metafunc.fixturenames:
-        return
-
-    selected = tuple(Harness)
-    marker = metafunc.definition.get_closest_marker("harness")
-    if marker:
-        unknown = sorted(set(marker.args) - set(Harness))
-        if unknown:
-            raise pytest.UsageError(
-                f"{metafunc.definition.nodeid}: unknown harness "
-                f"{', '.join(unknown)} in @pytest.mark.harness; "
-                f"supported harnesses: {', '.join(Harness)}"
-            )
-        selected = tuple(name for name in selected if name in marker.args)
-    chosen = metafunc.config.getoption("--harness")
-    if chosen:
-        selected = tuple(name for name in selected if name == chosen)
-
-    metafunc.parametrize("harness", selected, indirect=True)
-
-
 def pytest_collection_modifyitems(
     config: pytest.Config, items: list[pytest.Item]
 ) -> None:
-    if config.getoption("--llm"):
-        return
-
-    skip = pytest.mark.skip(reason="needs --llm")
+    """Filter harness cases before fixtures run; keep their parameter indices."""
+    chosen = config.getoption("--harness")
+    skip_llm = pytest.mark.skip(reason="needs --llm")
+    selected, deselected = [], []
     for item in items:
-        if item.get_closest_marker("llm"):
-            item.add_marker(skip)
+        marker = item.get_closest_marker("harness")
+        if marker:
+            unknown = sorted(set(marker.args) - set(Harness))
+            if unknown:
+                raise pytest.UsageError(
+                    f"{item.nodeid}: unknown harness {', '.join(unknown)} "
+                    f"in @pytest.mark.harness; supported harnesses: {', '.join(Harness)}"
+                )
+        callspec = getattr(item, "callspec", None)
+        name = callspec.params.get("harness") if callspec else None
+        if name is not None and (
+            (chosen and name != chosen) or (marker and name not in marker.args)
+        ):
+            deselected.append(item)
+            continue
+        if not config.getoption("--llm") and item.get_closest_marker("llm"):
+            item.add_marker(skip_llm)
+        selected.append(item)
+
+    items[:] = selected
+    if deselected:
+        config.hook.pytest_deselected(items=deselected)
 
 
-@pytest.fixture
+@pytest.fixture(scope="session", params=tuple(Harness))
 def harness(request: pytest.FixtureRequest) -> str:
     """The harness under test, one parameter per supported harness."""
     return request.param
 
 
 @pytest.fixture(scope="session")
-def _rendered_trees(tmp_path_factory: pytest.TempPathFactory) -> Callable[[str], Path]:
-    """A per-harness cache of rendered trees, filled on first request.
-
-    The cache is what makes "once per harness" true. A session-scoped
-    parametrized fixture would render once per harness only as long as pytest
-    never revisits a parameter, and it does: narrowing shifts parameter
-    indices, so the reordering that groups them stops grouping them.
-
-    Stage 1 is deliberately not run: it writes into the authored tree, which a
-    test run must not do, and the CI gate runs the full build before the tests.
-    """
-    trees: dict[str, Path] = {}
-
-    def tree_for(name: str) -> Path:
-        if name not in trees:
-            tree = tmp_path_factory.mktemp(f"rendered-{name}")
-            render_tree(REPO_ROOT, name, tree)
-            trees[name] = tree
-        return trees[name]
-
-    return tree_for
-
-
-@pytest.fixture
-def rendered(harness: str, _rendered_trees: Callable[[str], Path]) -> Path:
-    """A fresh render of the current sources for `harness`, built once."""
-    return _rendered_trees(harness)
+def rendered(harness: str, tmp_path_factory: pytest.TempPathFactory) -> Path:
+    """Render once per harness; stage 1 belongs to the build, not the tests."""
+    tree = tmp_path_factory.mktemp(f"rendered-{harness}")
+    render_tree(REPO_ROOT, harness, tree)
+    return tree
