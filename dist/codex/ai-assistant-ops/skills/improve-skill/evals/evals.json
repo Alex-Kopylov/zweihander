@@ -1,0 +1,69 @@
+{
+  "skill_name": "improve-skill",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "Improve plugins/example/skills/report-builder after eval feedback says the output got worse on two cases. Preserve a baseline snapshot before changing it.",
+      "expected_output": "Identifies the target skill, requires or confirms test prompts before editing, creates a baseline snapshot, runs the old-skill baseline and candidate against the same prompts, captures outputs and feedback, then revises from the comparison.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "requires_baseline_snapshot",
+          "check": "creates or requires a baseline snapshot before editing the target skill"
+        },
+        {
+          "name": "same_prompt_comparison",
+          "check": "compares old and improved skill behavior using the same prompts"
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "prompt": "The first improve-skill iteration produced user feedback: case A is too verbose, case B lost a required JSON field, and case C is fine. Update the skill without overfitting.",
+      "expected_output": "Focuses on specific feedback, generalizes the lesson, preserves passing behavior, keeps the prompt lean, explains why new instructions matter, records iteration history, and avoids narrow per-case hacks.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "feedback_driven_iteration",
+          "check": "uses feedback to drive the next iteration while preserving successful cases"
+        },
+        {
+          "name": "generalize_not_overfit",
+          "check": "generalizes from feedback instead of hard-coding case-specific rules"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "After rewriting an existing skill, run the required cleanup step before evaluating iteration 2. The changed files are SKILL.md and agents/helper.md.",
+      "expected_output": "Invokes ai-assistant-ops:md-bloat-hunter as a post-rewrite, pre-evaluation step on the changed skill context, keeps tested behavior and trigger coverage intact, then reruns all test cases into the next iteration.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "bloat_hunter_before_rerun",
+          "check": "uses ai-assistant-ops:md-bloat-hunter post-rewrite and pre-evaluation"
+        },
+        {
+          "name": "rerun_all_cases",
+          "check": "reruns all test cases into the next iteration"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "The improved skill body is stable, but it sometimes misses casual requests and sometimes triggers for adjacent documentation cleanup. Optimize the description.",
+      "expected_output": "Builds should-trigger and should-not-trigger prompts, includes near misses, checks trigger misses and false positives, and updates only the trigger-only description based on those results.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "trigger_eval_set",
+          "check": "creates should-trigger and should-not-trigger checks"
+        },
+        {
+          "name": "description_stays_trigger_only",
+          "check": "keeps workflow details out of the description"
+        }
+      ]
+    }
+  ]
+}

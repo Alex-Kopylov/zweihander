@@ -1,0 +1,4 @@
+# `dist/` is build output: authored under `plugins/`, rendered by
+# `plugin_maintenance`. Marking it generated collapses it in review and states
+# in the tree itself that it is never hand-edited.
+dist/** linguist-generated=true

@@ -1,0 +1,23 @@
+{
+  "skill_name": "mega-cmd",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I have about 50 PDF invoices scattered across my Downloads folder from various vendors (Acme Corp, TechSupply Inc, etc.). I need to organize them in my MEGA encrypted vault by vendor name, then create a shareable link to the vendor folders so I can send them to my accountant. Walk me through the exact steps.",
+      "expected_output": "Step-by-step instructions to: (1) find/list the invoice PDFs, (2) create folder structure in MEGA by vendor, (3) organize/move files, (4) create and test share links. Should include actual MEGA CMD commands.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "I need to back up my entire ~/Documents folder (about 2GB with nested folders) to MEGA encrypted storage. What's the fastest and cleanest way to do this? I want to be able to verify the backup worked.",
+      "expected_output": "Instructions for: (1) organizing the folder locally if needed, (2) uploading with mega-put -c, (3) verifying with mega-ls, (4) explaining why this approach is best. Should address the size and complexity.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "I have a folder called /Contracts in MEGA with 200+ PDFs from the last 3 years. I need to find all contracts from the last 30 days, download them locally to audit them, and if everything looks good, I want to delete the older ones from MEGA to save space. How would I do this safely?",
+      "expected_output": "Instructions for: (1) finding files by date with mega-find, (2) downloading specific batch, (3) verifying before deletion, (4) using mega-rm safely. Should emphasize caution with destructive operations.",
+      "files": []
+    }
+  ]
+}

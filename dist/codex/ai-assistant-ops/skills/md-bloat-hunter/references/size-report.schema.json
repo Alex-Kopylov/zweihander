@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "md-bloat-hunter size budget report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "file_path",
+    "bytes",
+    "characters",
+    "words",
+    "lines",
+    "tokens",
+    "token_source",
+    "soft_budget_tokens",
+    "hard_budget_tokens",
+    "status",
+    "warning"
+  ],
+  "properties": {
+    "file_path": {
+      "type": "string",
+      "minLength": 1
+    },
+    "bytes": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "characters": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "words": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "lines": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "tokens": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "token_source": {
+      "type": "string",
+      "minLength": 1
+    },
+    "soft_budget_tokens": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "hard_budget_tokens": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "status": {
+      "type": "string",
+      "enum": ["ok", "warning", "over_budget"]
+    },
+    "warning": {
+      "type": ["string", "null"],
+      "minLength": 1
+    }
+  }
+}

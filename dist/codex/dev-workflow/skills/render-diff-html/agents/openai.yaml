@@ -1,0 +1,4 @@
+interface:
+  display_name: "Render Diff HTML"
+  short_description: "Render git diffs as HTML reports"
+  default_prompt: "Use $render-diff-html to render my git diff as an HTML report."

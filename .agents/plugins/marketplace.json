@@ -8,7 +8,7 @@
       "name": "langfuse",
       "source": {
         "source": "local",
-        "path": "./plugins/langfuse"
+        "path": "./dist/codex/langfuse"
       },
       "policy": {
         "installation": "AVAILABLE",
@@ -20,7 +20,7 @@
       "name": "openapi-tools",
       "source": {
         "source": "local",
-        "path": "./plugins/openapi-tools"
+        "path": "./dist/codex/openapi-tools"
       },
       "policy": {
         "installation": "AVAILABLE",
@@ -32,7 +32,7 @@
       "name": "llm-application-dev",
       "source": {
         "source": "local",
-        "path": "./plugins/llm-application-dev"
+        "path": "./dist/codex/llm-application-dev"
       },
       "policy": {
         "installation": "AVAILABLE",
@@ -44,7 +44,7 @@
       "name": "python-dev-workflow",
       "source": {
         "source": "local",
-        "path": "./plugins/python-dev-workflow"
+        "path": "./dist/codex/python-dev-workflow"
       },
       "policy": {
         "installation": "AVAILABLE",
@@ -56,7 +56,7 @@
       "name": "dev-workflow",
       "source": {
         "source": "local",
-        "path": "./plugins/dev-workflow"
+        "path": "./dist/codex/dev-workflow"
       },
       "policy": {
         "installation": "AVAILABLE",
@@ -68,7 +68,7 @@
       "name": "run-and-verify-app",
       "source": {
         "source": "local",
-        "path": "./plugins/run-and-verify-app"
+        "path": "./dist/codex/run-and-verify-app"
       },
       "policy": {
         "installation": "AVAILABLE",
@@ -80,7 +80,7 @@
       "name": "mermaid-diagrams",
       "source": {
         "source": "local",
-        "path": "./plugins/mermaid-diagrams"
+        "path": "./dist/codex/mermaid-diagrams"
       },
       "policy": {
         "installation": "AVAILABLE",
@@ -92,7 +92,7 @@
       "name": "work-session-tools",
       "source": {
         "source": "local",
-        "path": "./plugins/work-session-tools"
+        "path": "./dist/codex/work-session-tools"
       },
       "policy": {
         "installation": "AVAILABLE",
@@ -104,7 +104,7 @@
       "name": "research",
       "source": {
         "source": "local",
-        "path": "./plugins/research"
+        "path": "./dist/codex/research"
       },
       "policy": {
         "installation": "AVAILABLE",
@@ -116,7 +116,7 @@
       "name": "ai-assistant-ops",
       "source": {
         "source": "local",
-        "path": "./plugins/ai-assistant-ops"
+        "path": "./dist/codex/ai-assistant-ops"
       },
       "policy": {
         "installation": "AVAILABLE",
@@ -128,7 +128,7 @@
       "name": "os-tools",
       "source": {
         "source": "local",
-        "path": "./plugins/os-tools"
+        "path": "./dist/codex/os-tools"
       },
       "policy": {
         "installation": "AVAILABLE",
@@ -140,7 +140,7 @@
       "name": "cloud-storage-tools",
       "source": {
         "source": "local",
-        "path": "./plugins/cloud-storage-tools"
+        "path": "./dist/codex/cloud-storage-tools"
       },
       "policy": {
         "installation": "AVAILABLE",
@@ -152,7 +152,7 @@
       "name": "job-hunt-toolkit",
       "source": {
         "source": "local",
-        "path": "./plugins/job-hunt-toolkit"
+        "path": "./dist/codex/job-hunt-toolkit"
       },
       "policy": {
         "installation": "AVAILABLE",

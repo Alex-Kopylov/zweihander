@@ -1,0 +1,5 @@
+interface:
+  display_name: "YOLO Push"
+  short_description: "Ship changes from commit through merge, CD, and cleanup"
+policy:
+  allow_implicit_invocation: false

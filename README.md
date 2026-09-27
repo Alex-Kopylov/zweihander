@@ -24,6 +24,16 @@ tools.
 - [GH Babysitter](https://github.com/Alex-Kopylov/gh-babysitter) — GitHub workflow automation for keeping work moving.
 
 
+## Temporary files
+
+Skills use `${ZWEIHANDER_TMP_DIR:-./.tmp/zweihander}/runs/<skill>/<run-id>/`
+for internal temporary files. Set `ZWEIHANDER_TMP_DIR` to choose another root;
+relative paths start from the working directory where the skill runs.
+Each skill controls the contents and cleanup of its run directory.
+
+This convention does not move existing outputs: decision logs, audit reports,
+HTML diffs, screenshots, CVs, and other established results keep their paths.
+
 ## Plugin Catalog
 
 ### General User Productivity
@@ -370,7 +380,7 @@ session handoffs, or a designed multi-agent team.
 | `create-team` | Design a multi-agent team and handoff plan. |
 | `daily` | Generate a daily note from project activity. |
 | `handoff` | Compact the current conversation for another agent. |
-| `interview` | Walk through a list of items one by one. |
+| `interview` | Walk through a list of items one by one, logging every decision before anything runs. |
 | `task-management` | Track, split, and orchestrate session tasks. |
 | `wait-what` | Ask for a clearer re-pitch when the last message did not land. |
 
@@ -485,10 +495,14 @@ this marketplace:
 
 ## Runtime Support
 
-| Runtime | Marketplace metadata | Plugin metadata |
+| Runtime | Marketplace metadata | Installed plugin source |
 |---|---|---|
-| Codex | `.agents/plugins/marketplace.json` | `plugins/*/.codex-plugin/plugin.json` |
-| Claude Code | `.claude-plugin/marketplace.json` | `plugins/*/.claude-plugin/plugin.json` |
+| Codex | `.agents/plugins/marketplace.json` | `dist/codex/<plugin-name>` |
+| Claude Code | `.claude-plugin/marketplace.json` | `dist/claude-code/<plugin-name>` |
+
+Plugins are authored once under `plugins/` and rendered per runtime into the
+committed `dist/` trees; each marketplace manifest installs from its own tree,
+so every runtime receives content in its own vocabulary.
 
 ## Official References
 
