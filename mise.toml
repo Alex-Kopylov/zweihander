@@ -1,5 +1,5 @@
 [tools]
-python = "3.12.13"
+python = "3.14.6"
 # Pinned like every other tool; "latest" made task runs depend on whatever
 # uv happened to resolve (lint-audit needs uv >= 0.11.19 for `uv audit`).
 # aqua backend: mise's core uv plugin extracts current uv tarballs incorrectly

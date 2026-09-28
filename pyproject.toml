@@ -1,8 +1,9 @@
 [project]
-name = "ai-agents-marketplace"
+name = "zweihander"
 version = "0.1.0"
 description = "Personal plugin marketplace for AI agents."
-requires-python = ">=3.12"
+requires-python = ">=3.14"
+license = "Apache-2.0"
 dependencies = [
     "jinja2>=3.1",
     "pathspec>=0.12",
@@ -23,10 +24,11 @@ dev = [
     "prek",
     "yamllint",
     "check-jsonschema",
+    "mutmut",
 ]
 
 [tool.ty.environment]
-python-version = "3.12"
+python-version = "3.14"
 
 [tool.coverage.run]
 source = ["plugin_maintenance"]
@@ -35,3 +37,7 @@ branch = true
 [tool.coverage.report]
 show_missing = true
 skip_empty = true
+fail_under = 90
+
+[tool.mutmut]
+paths_to_mutate = ["plugin_maintenance/"]
