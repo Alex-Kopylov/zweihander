@@ -1,12 +1,14 @@
-"""The mermaid-diagrams plugin as a user receives it: neutral skills, bundled
-references, and a catalog entry that sources it from the published tree."""
+"""The mermaid-diagrams plugin as a user receives it.
+
+Neutral skills, bundled references, and a catalog entry that sources it from
+the published tree.
+"""
 
 import json
 import re
 from pathlib import Path
 
 import pytest
-
 from plugin_maintenance import REPO_ROOT
 from plugin_maintenance.render import Harness
 
@@ -23,31 +25,23 @@ def test_plugin_uses_neutral_skill_layout(plugin_root: Path) -> None:
 
 
 def test_skill_avoids_claude_specific_source_packaging(plugin_root: Path) -> None:
-    skill = (plugin_root / "skills" / "mermaid" / "SKILL.md").read_text(
-        encoding="utf-8"
-    )
+    skill = (plugin_root / "skills" / "mermaid" / "SKILL.md").read_text(encoding="utf-8")
 
     for phrase in ["Claude", ".claude/skills"]:
         assert phrase not in skill
 
 
 def test_mermaid_lint_skill_is_renamed(plugin_root: Path) -> None:
-    lint_skill = (plugin_root / "skills" / "mermaid-lint" / "SKILL.md").read_text(
-        encoding="utf-8"
-    )
+    lint_skill = (plugin_root / "skills" / "mermaid-lint" / "SKILL.md").read_text(encoding="utf-8")
 
     assert "name: mermaid-lint" in lint_skill
     assert "name: lint-mermaid" not in lint_skill
 
 
 def test_references_and_schema_are_preserved(plugin_root: Path) -> None:
-    references = sorted(
-        (plugin_root / "skills" / "mermaid" / "references").glob("*.md")
-    )
+    references = sorted((plugin_root / "skills" / "mermaid" / "references").glob("*.md"))
     syntax_references = [
-        path
-        for path in references
-        if not path.name.startswith("config-") and path.name != "examples.md"
+        path for path in references if not path.name.startswith("config-") and path.name != "examples.md"
     ]
 
     assert len(syntax_references) >= 30
@@ -58,13 +52,7 @@ def test_references_and_schema_are_preserved(plugin_root: Path) -> None:
         "entityRelationshipDiagram.md",
         "gantt.md",
     }.issubset({path.name for path in syntax_references})
-    assert (
-        plugin_root
-        / "skills"
-        / "mermaid-lint"
-        / "references"
-        / "linter_output_schema.json"
-    ).is_file()
+    assert (plugin_root / "skills" / "mermaid-lint" / "references" / "linter_output_schema.json").is_file()
 
     for reference in references:
         first_lines = "\n".join(reference.read_text(encoding="utf-8").splitlines()[:6])
@@ -74,13 +62,9 @@ def test_references_and_schema_are_preserved(plugin_root: Path) -> None:
 
 def test_linter_schema_reports_status_input_and_errors(plugin_root: Path) -> None:
     schema = json.loads(
-        (
-            plugin_root
-            / "skills"
-            / "mermaid-lint"
-            / "references"
-            / "linter_output_schema.json"
-        ).read_text(encoding="utf-8")
+        (plugin_root / "skills" / "mermaid-lint" / "references" / "linter_output_schema.json").read_text(
+            encoding="utf-8"
+        )
     )
 
     assert schema["type"] == "object"
@@ -89,9 +73,7 @@ def test_linter_schema_reports_status_input_and_errors(plugin_root: Path) -> Non
 
 
 def test_plugin_manifest_points_to_neutral_skills(plugin_root: Path) -> None:
-    manifest = json.loads(
-        next(plugin_root.glob("*/plugin.json")).read_text(encoding="utf-8")
-    )
+    manifest = json.loads(next(plugin_root.glob("*/plugin.json")).read_text(encoding="utf-8"))
 
     assert manifest["name"] == "mermaid-diagrams"
     assert manifest["skills"] == "./skills/"
@@ -99,9 +81,7 @@ def test_plugin_manifest_points_to_neutral_skills(plugin_root: Path) -> None:
 
 @pytest.mark.harness(Harness.CODEX)
 def test_codex_manifest_declares_the_upstream_license(plugin_root: Path) -> None:
-    manifest = json.loads(
-        (plugin_root / ".codex-plugin" / "plugin.json").read_text(encoding="utf-8")
-    )
+    manifest = json.loads((plugin_root / ".codex-plugin" / "plugin.json").read_text(encoding="utf-8"))
 
     assert manifest["license"] == "MIT"
 
@@ -116,25 +96,11 @@ def test_bundled_references_carry_a_provenance_notice(plugin_root: Path) -> None
 
 
 def test_marketplace_catalogs_source_mermaid_from_dist() -> None:
-    codex_marketplace = json.loads(
-        (REPO_ROOT / ".agents" / "plugins" / "marketplace.json").read_text(
-            encoding="utf-8"
-        )
-    )
-    claude_marketplace = json.loads(
-        (REPO_ROOT / ".claude-plugin" / "marketplace.json").read_text(encoding="utf-8")
-    )
+    codex_marketplace = json.loads((REPO_ROOT / ".agents" / "plugins" / "marketplace.json").read_text(encoding="utf-8"))
+    claude_marketplace = json.loads((REPO_ROOT / ".claude-plugin" / "marketplace.json").read_text(encoding="utf-8"))
 
-    codex_entry = next(
-        plugin
-        for plugin in codex_marketplace["plugins"]
-        if plugin["name"] == "mermaid-diagrams"
-    )
-    claude_entry = next(
-        plugin
-        for plugin in claude_marketplace["plugins"]
-        if plugin["name"] == "mermaid-diagrams"
-    )
+    codex_entry = next(plugin for plugin in codex_marketplace["plugins"] if plugin["name"] == "mermaid-diagrams")
+    claude_entry = next(plugin for plugin in claude_marketplace["plugins"] if plugin["name"] == "mermaid-diagrams")
 
     assert codex_entry["source"]["path"] == "./dist/codex/mermaid-diagrams"
     assert codex_entry["category"] == "Development"

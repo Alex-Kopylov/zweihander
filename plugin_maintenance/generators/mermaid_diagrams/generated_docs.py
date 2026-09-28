@@ -1,12 +1,14 @@
+"""Rebuild the mermaid skill, README and notices from the bundled references."""
+
 from __future__ import annotations
 
-from dataclasses import dataclass
-from datetime import UTC, datetime
 import json
 import os
-from pathlib import Path
 import re
-
+from dataclasses import dataclass
+from datetime import UTC, datetime
+from pathlib import Path
+from typing import Any
 
 from plugin_maintenance import REPO_ROOT
 from plugin_maintenance.generators.mermaid_diagrams import PLUGIN_NAME
@@ -20,9 +22,8 @@ TEMPLATES_DIR = Path(__file__).resolve().parent / "templates"
 MERMAID_SKILL_TEMPLATE_PATH = TEMPLATES_DIR / "mermaid_skill.md"
 README_TEMPLATE_PATH = TEMPLATES_DIR / "readme.md"
 BUNDLED_DOCS_NAVIGATION_PATH = Path(__file__).resolve().parent / "mermaid_navigation.json"
-DEFAULT_DOCS_NAVIGATION_PATH = (
-    PLUGIN_ROOT / "mermaid-source/packages/mermaid/src/docs/.vitepress/config.ts"
-)
+DEFAULT_DOCS_NAVIGATION_PATH = PLUGIN_ROOT / "mermaid-source/packages/mermaid/src/docs/.vitepress/config.ts"
+SUMMARY_LIMIT = 220
 MAX_SAFE_INTEGER = 9_007_199_254_740_991
 
 GENERATED_HEADER_PATTERN = re.compile(
@@ -39,6 +40,8 @@ SYNC_STATUS_PATTERN = re.compile(
 
 @dataclass(frozen=True)
 class DiagramMetadata:
+    """One syntax reference as listed in the skill's diagram table."""
+
     id: str
     file: str
     title: str
@@ -49,6 +52,8 @@ class DiagramMetadata:
 
 @dataclass(frozen=True)
 class NavigationMetadata:
+    """Sidebar category, order and title of one diagram in the Mermaid docs."""
+
     category: str
     order: int
     title: str
@@ -56,12 +61,15 @@ class NavigationMetadata:
 
 @dataclass(frozen=True)
 class SyncMetadata:
+    """Source, commit and date of the last upstream docs sync."""
+
     source: str
     commit: str
     date: str
 
 
 def plugin_relative_path(path: str | Path) -> Path:
+    """Resolve `path` against the plugin root unless it is already absolute."""
     candidate = Path(path)
     if candidate.is_absolute():
         return candidate
@@ -69,18 +77,21 @@ def plugin_relative_path(path: str | Path) -> Path:
 
 
 def js_iso_timestamp() -> str:
+    """Return the current UTC time as JavaScript's `toISOString()` writes it."""
     now = datetime.now(UTC)
     milliseconds = now.microsecond // 1000
     return f"{now:%Y-%m-%dT%H:%M:%S}.{milliseconds:03d}Z"
 
 
 def title_from_id(identifier: str) -> str:
+    """Turn a file identifier such as `sequenceDiagram` into a title."""
     title = re.sub(r"([a-z])([A-Z])", r"\1 \2", identifier)
     title = title.replace("-", " ").replace("_", " ")
     return re.sub(r"\b\w", lambda match: match.group(0).upper(), title)
 
 
 def normalize_markdown_text(text: str, *, escape_table_pipes: bool = False) -> str:
+    """Strip links, code spans and emphasis, collapse whitespace, and optionally escape `|`."""
     text = re.sub(r"\[([^\]]*)\]\([^)]*\)", r"\1", text)
     text = re.sub(r"`([^`]*)`", r"\1", text)
     text = re.sub(r"\*\*([^*]*)\*\*", r"\1", text)
@@ -93,12 +104,14 @@ def normalize_markdown_text(text: str, *, escape_table_pipes: bool = False) -> s
 
 
 def clean_sidebar_text(text: str) -> str:
+    """Normalize a sidebar label to plain printable ASCII."""
     text = normalize_markdown_text(text)
     text = re.sub(r"[^\x20-\x7E]", "", text)
     return re.sub(r"\s+", " ", text).strip()
 
 
 def clean_title(text: str) -> str:
+    """Normalize a heading and drop its version badge."""
     text = normalize_markdown_text(text, escape_table_pipes=True)
     text = re.sub(r"\s*\(v\\?<[^\)]*\)", "", text)
     text = re.sub(r"\s*\(v\\?\+\)", "", text)
@@ -106,6 +119,7 @@ def clean_title(text: str) -> str:
 
 
 def first_heading(text: str) -> str | None:
+    """Return the cleaned text of the first level-1 heading, or None."""
     match = re.search(r"^#\s+(.+)$", text, flags=re.MULTILINE)
     if not match:
         return None
@@ -113,6 +127,7 @@ def first_heading(text: str) -> str | None:
 
 
 def first_useful_paragraph(text: str) -> str:
+    """Summarize a reference by its first prose paragraph after the title."""
     lines = re.split(r"\r?\n", text)
     first_heading_index = next(
         (index for index, line in enumerate(lines) if re.match(r"^#\s+", line)),
@@ -144,27 +159,29 @@ def first_useful_paragraph(text: str) -> str:
         if skipping_admonition and trimmed.startswith(">"):
             continue
         if not paragraph and (
-            re.search(r"^\|", trimmed)
-            or re.search(r"^[-*]\s+", trimmed)
-            or re.search(r"^!\[", trimmed)
+            re.search(r"^\|", trimmed) or re.search(r"^[-*]\s+", trimmed) or re.search(r"^!\[", trimmed)
         ):
             continue
 
         paragraph.append(re.sub(r"^>\s?", "", trimmed, count=1))
 
-    summary = normalize_markdown_text(" ".join(paragraph), escape_table_pipes=True)
+    return shorten_summary(normalize_markdown_text(" ".join(paragraph), escape_table_pipes=True))
+
+
+def shorten_summary(summary: str) -> str:
+    """Cut a summary to its first sentence, or to `SUMMARY_LIMIT` characters."""
     if not summary:
         return "See reference documentation."
-
-    first_sentence = re.match(r"^.{1,220}?[.!?](?=\s|$)", summary)
+    first_sentence = re.match(rf"^.{{1,{SUMMARY_LIMIT}}}?[.!?](?=\s|$)", summary)
     if first_sentence:
         return first_sentence.group(0)
-    if len(summary) > 220:
-        return f"{summary[:217].strip()}..."
+    if len(summary) > SUMMARY_LIMIT:
+        return f"{summary[: SUMMARY_LIMIT - 3].strip()}..."
     return summary
 
 
 def function_block(text: str, function_name: str) -> str:
+    """Return the body of the JavaScript function `function_name`, or an empty string."""
     start = text.find(f"function {function_name}()")
     if start == -1:
         return ""
@@ -186,6 +203,7 @@ def function_block(text: str, function_name: str) -> str:
 
 
 def parse_navigation_config(config: str) -> dict[str, NavigationMetadata]:
+    """Read diagram navigation metadata from the Mermaid docs sidebar config."""
     syntax_block = function_block(config, "sidebarSyntax")
     metadata: dict[str, NavigationMetadata] = {}
     section_pattern = re.compile(
@@ -216,8 +234,9 @@ def parse_navigation_config(config: str) -> dict[str, NavigationMetadata]:
 
 
 def navigation_metadata_from_entries(
-    entries: list[dict[str, object]],
+    entries: list[dict[str, Any]],
 ) -> dict[str, NavigationMetadata]:
+    """Build navigation metadata from its bundled JSON entries."""
     metadata: dict[str, NavigationMetadata] = {}
 
     for entry in entries:
@@ -237,6 +256,7 @@ def navigation_metadata_from_entries(
 def navigation_metadata_entries(
     metadata: dict[str, NavigationMetadata],
 ) -> list[dict[str, object]]:
+    """Serialize navigation metadata into JSON-ready entries."""
     return [
         {
             "id": identifier,
@@ -252,10 +272,12 @@ def navigation_metadata_entries(
 
 
 def load_navigation_metadata_from_path(path: Path) -> dict[str, NavigationMetadata]:
+    """Parse navigation metadata from a sidebar config file."""
     return parse_navigation_config(path.read_text(encoding="utf-8"))
 
 
 def load_bundled_navigation_metadata() -> dict[str, NavigationMetadata]:
+    """Load the navigation metadata bundled with the generator."""
     entries = json.loads(BUNDLED_DOCS_NAVIGATION_PATH.read_text(encoding="utf-8"))
     return navigation_metadata_from_entries(entries)
 
@@ -263,6 +285,7 @@ def load_bundled_navigation_metadata() -> dict[str, NavigationMetadata]:
 def write_bundled_navigation_metadata(
     metadata: dict[str, NavigationMetadata],
 ) -> None:
+    """Store navigation metadata as the generator's bundled JSON."""
     BUNDLED_DOCS_NAVIGATION_PATH.write_text(
         f"{json.dumps(navigation_metadata_entries(metadata), indent=2)}\n",
         encoding="utf-8",
@@ -270,14 +293,13 @@ def write_bundled_navigation_metadata(
 
 
 def load_navigation_metadata() -> dict[str, NavigationMetadata]:
+    """Load navigation metadata from `MERMAID_DOCS_NAVIGATION`, else the bundled copy."""
     configured = os.environ.get("MERMAID_DOCS_NAVIGATION")
 
     if configured:
         configured_path = plugin_relative_path(configured)
         if not configured_path.exists():
-            raise FileNotFoundError(
-                f"Mermaid docs navigation file not found: {configured_path}"
-            )
+            raise FileNotFoundError(f"Mermaid docs navigation file not found: {configured_path}")
         return load_navigation_metadata_from_path(configured_path)
 
     if BUNDLED_DOCS_NAVIGATION_PATH.exists():
@@ -293,6 +315,7 @@ def extract_diagram_metadata(
     file: str,
     navigation_metadata: dict[str, NavigationMetadata] | None = None,
 ) -> DiagramMetadata:
+    """Describe one syntax reference file for the diagram table."""
     navigation_metadata = navigation_metadata or {}
     identifier = re.sub(r"\.md$", "", file)
     text = (REFERENCES_DIR / file).read_text(encoding="utf-8")
@@ -317,13 +340,12 @@ def extract_diagram_metadata(
 def syntax_reference_files(
     navigation_metadata: dict[str, NavigationMetadata] | None = None,
 ) -> list[str]:
+    """List the syntax reference files in sidebar order."""
     navigation_metadata = navigation_metadata or {}
     files = [
         path.name
         for path in REFERENCES_DIR.iterdir()
-        if path.suffix == ".md"
-        and not path.name.startswith("config-")
-        and path.name != "examples.md"
+        if path.suffix == ".md" and not path.name.startswith("config-") and path.name != "examples.md"
     ]
 
     return sorted(
@@ -340,6 +362,7 @@ def syntax_reference_files(
 
 
 def strip_generated_headers() -> None:
+    """Remove the generated-file header from every bundled reference."""
     for path in REFERENCES_DIR.iterdir():
         if path.suffix != ".md":
             continue
@@ -350,10 +373,12 @@ def strip_generated_headers() -> None:
 
 
 def read_template(path: Path) -> str:
+    """Read a generator template as text."""
     return path.read_text(encoding="utf-8")
 
 
 def render_skill(diagrams: list[DiagramMetadata]) -> str:
+    """Render the mermaid `SKILL.md` with its diagram table."""
     table = "\n".join(
         [
             "| Type | Documentation | Use Cases |",
@@ -376,6 +401,7 @@ def render_skill(diagrams: list[DiagramMetadata]) -> str:
 
 
 def existing_sync_status() -> str | None:
+    """Return the sync status line recorded in the plugin README, or None."""
     if not README_PATH.exists():
         return None
     match = SYNC_STATUS_PATTERN.search(README_PATH.read_text(encoding="utf-8"))
@@ -383,6 +409,7 @@ def existing_sync_status() -> str | None:
 
 
 def sync_status(fallback_status: str | None) -> str:
+    """Build the sync status line from the sync environment, else keep the recorded one."""
     if (
         os.environ.get("MERMAID_SYNC_SOURCE")
         or os.environ.get("MERMAID_SOURCE_COMMIT")
@@ -393,12 +420,11 @@ def sync_status(fallback_status: str | None) -> str:
         date = os.environ.get("MERMAID_SYNC_DATE", js_iso_timestamp())
         return f"Last synced from Mermaid: {source} @ {commit} on {date}"
 
-    return fallback_status or (
-        f"Last synced from Mermaid: local references @ unknown on {js_iso_timestamp()}"
-    )
+    return fallback_status or (f"Last synced from Mermaid: local references @ unknown on {js_iso_timestamp()}")
 
 
 def sync_metadata(sync_status_line: str) -> SyncMetadata:
+    """Parse a sync status line into its source, commit and date."""
     match = re.match(
         r"^Last synced from Mermaid: (.+) @ ([^\s]+) on (.+)$",
         sync_status_line,
@@ -411,6 +437,7 @@ def sync_metadata(sync_status_line: str) -> SyncMetadata:
 
 
 def render_third_party_notices(sync_status_line: str) -> str:
+    """Render the Mermaid third-party notices for the recorded sync."""
     metadata = sync_metadata(sync_status_line)
     return f"""# Third-Party Notices
 
@@ -430,15 +457,13 @@ from the bundled reference files so the skill can use the documentation directly
 
 
 def render_readme(diagrams: list[DiagramMetadata], sync_status_line: str) -> str:
+    """Render the plugin README with diagrams grouped by category."""
     by_category: dict[str, list[str]] = {}
     for diagram in diagrams:
-        by_category.setdefault(diagram.category, []).append(
-            f"{diagram.title} (`{diagram.file}`)"
-        )
+        by_category.setdefault(diagram.category, []).append(f"{diagram.title} (`{diagram.file}`)")
 
     supported_rows = "\n".join(
-        f"| {category} | {', '.join(diagrams_in_category)} |"
-        for category, diagrams_in_category in by_category.items()
+        f"| {category} | {', '.join(diagrams_in_category)} |" for category, diagrams_in_category in by_category.items()
     )
 
     return read_template(README_TEMPLATE_PATH).format(
@@ -449,6 +474,7 @@ def render_readme(diagrams: list[DiagramMetadata], sync_status_line: str) -> str
 
 
 def update_generated_docs() -> None:
+    """Regenerate the skill, README, notices and reference headers in place."""
     fallback_sync_status = existing_sync_status()
     strip_generated_headers()
     navigation_metadata = load_navigation_metadata()
@@ -464,6 +490,7 @@ def update_generated_docs() -> None:
 
 
 def main() -> int:
+    """Regenerate the docs; return the process exit code."""
     update_generated_docs()
     return 0
 

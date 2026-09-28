@@ -13,7 +13,19 @@
   // and wrapping would break their formatting
   "MD013": {
     "line_length": 80,
-    "code_blocks": false
+    "code_blocks": false,
+    // Table rows cannot wrap
+    "tables": false
+  },
+
+  // Every plugin section repeats "Skills" / "Agents" under its own heading
+  "MD024": {
+    "siblings_only": true
+  },
+
+  // AGENTS.md requires <details> spoilers for multi-skill plugins in README
+  "MD033": {
+    "allowed_elements": ["details", "summary"]
   }
 
   // Uncomment to disable specific rules:

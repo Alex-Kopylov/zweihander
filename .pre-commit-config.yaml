@@ -24,7 +24,8 @@ default_stages: [pre-commit, pre-push]
 
 # AI agent working files are not lint targets (gitleaks still covers them
 # via always_run below)
-exclude: ^(\.claude|\.codex|\.cursor|\.gemini)/|^(CLAUDE|AGENTS|GEMINI)\.md$
+# dist/ is build output rendered from plugins/; lint the source, not the copy
+exclude: ^(\.claude|\.codex|\.cursor|\.gemini|dist)/|^(CLAUDE|AGENTS|GEMINI)\.md$
 
 repos:
   - repo: local

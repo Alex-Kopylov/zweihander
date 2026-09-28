@@ -7,13 +7,10 @@ renderer against this tree instead of the real `plugins/`.
 """
 
 import json
-import os
 from pathlib import Path
 
 import pytest
-
 from plugin_maintenance.render import FRONTMATTER_MATRIX_NAME
-
 
 FIXTURE_MATRIX = {
     "schema_version": 2,
@@ -120,9 +117,7 @@ def _write(path: Path, content: str) -> Path:
 
 
 def _write_plugin_metadata(plugin_dir: Path, name: str, runtimes: tuple[str, ...]) -> None:
-    manifest = json.dumps(
-        {"name": name, "version": "0.1.0", "skills": "./skills/"}, indent=2
-    )
+    manifest = json.dumps({"name": name, "version": "0.1.0", "skills": "./skills/"}, indent=2)
     for runtime_dir in runtimes:
         _write(plugin_dir / runtime_dir / "plugin.json", manifest + "\n")
 
@@ -147,6 +142,7 @@ def _codex_entry(name: str) -> dict:
 
 @pytest.fixture
 def fixture_repo(tmp_path: Path) -> Path:
+    """Build a minimal marketplace repository for build-layer tests."""
     repo = tmp_path / "repo"
 
     _write(
@@ -186,7 +182,7 @@ def fixture_repo(tmp_path: Path) -> Path:
     _write(demo / "skills" / "demo" / "SKILL.md.j2", DEMO_SKILL_TEMPLATE)
     _write(demo / "skills" / "demo" / "references" / "plain.md", PLAIN_REFERENCE)
     hook = _write(demo / "scripts" / "hook.sh", "#!/bin/sh\necho demo\n")
-    os.chmod(hook, 0o755)
+    Path(hook).chmod(0o755)
 
     plain = repo / "plugins" / "plain-plugin"
     _write_plugin_metadata(plain, "plain-plugin", (".claude-plugin", ".codex-plugin"))
@@ -214,6 +210,4 @@ def fixture_matrix(fixture_repo: Path) -> Path:
         fixture_repo / FRONTMATTER_MATRIX_NAME,
         json.dumps(FIXTURE_FRONTMATTER_MATRIX, indent=2) + "\n",
     )
-    return _write(
-        fixture_repo / "matrix.json", json.dumps(FIXTURE_MATRIX, indent=2) + "\n"
-    )
+    return _write(fixture_repo / "matrix.json", json.dumps(FIXTURE_MATRIX, indent=2) + "\n")

@@ -10,7 +10,6 @@ import json
 from plugin_maintenance import REPO_ROOT
 from plugin_maintenance.render import PLUGIN_METADATA_DIRS
 
-
 PLUGINS_ROOT = REPO_ROOT / "plugins"
 
 
@@ -19,15 +18,11 @@ def test_both_runtime_manifests_agree_on_version() -> None:
 
     for plugin in sorted(path for path in PLUGINS_ROOT.iterdir() if path.is_dir()):
         versions = {
-            directory: json.loads(
-                (plugin / directory / "plugin.json").read_text(encoding="utf-8")
-            )["version"]
+            directory: json.loads((plugin / directory / "plugin.json").read_text(encoding="utf-8"))["version"]
             for directory in sorted(PLUGIN_METADATA_DIRS)
             if (plugin / directory / "plugin.json").is_file()
         }
         if len(set(versions.values())) > 1:
             disagreements.append(f"{plugin.name}: {versions}")
 
-    assert not disagreements, (
-        "a plugin ships one version to every runtime:\n" + "\n".join(disagreements)
-    )
+    assert not disagreements, "a plugin ships one version to every runtime:\n" + "\n".join(disagreements)

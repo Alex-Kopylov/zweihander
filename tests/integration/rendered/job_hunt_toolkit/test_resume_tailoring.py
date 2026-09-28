@@ -8,9 +8,7 @@ def test_resume_tailoring_produces_required_artifacts_without_checkpoints(
 ) -> None:
     skill_dir = rendered / "job-hunt-toolkit" / "skills" / "resume-tailoring"
     skill = (skill_dir / "SKILL.md").read_text(encoding="utf-8")
-    multi_job = (skill_dir / "references" / "multi-job-workflow.md").read_text(
-        encoding="utf-8"
-    )
+    multi_job = (skill_dir / "references" / "multi-job-workflow.md").read_text(encoding="utf-8")
 
     assert "## Autonomy" not in skill
     assert "autonomously" not in skill

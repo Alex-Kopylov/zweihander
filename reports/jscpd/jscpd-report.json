@@ -1,0 +1,108 @@
+{
+  "statistics": {
+    "detectionDate": "2026-09-28T16:22:14.089Z",
+    "formats": {
+      "python": {
+        "sources": {
+          "/home/debian/projects/zweihander/.claude/worktrees/copier-wizard-zweihander-d86a8d/plugin_maintenance/generators/mermaid_diagrams/sync.py": {
+            "lines": 141,
+            "tokens": 1048,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/home/debian/projects/zweihander/.claude/worktrees/copier-wizard-zweihander-d86a8d/plugin_maintenance/generators/mermaid_diagrams/generated_docs.py": {
+            "lines": 498,
+            "tokens": 3887,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/home/debian/projects/zweihander/.claude/worktrees/copier-wizard-zweihander-d86a8d/plugin_maintenance/generators/mermaid_diagrams/__init__.py": {
+            "lines": 16,
+            "tokens": 52,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/home/debian/projects/zweihander/.claude/worktrees/copier-wizard-zweihander-d86a8d/plugin_maintenance/render.py": {
+            "lines": 546,
+            "tokens": 4400,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/home/debian/projects/zweihander/.claude/worktrees/copier-wizard-zweihander-d86a8d/plugin_maintenance/generate.py": {
+            "lines": 25,
+            "tokens": 165,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/home/debian/projects/zweihander/.claude/worktrees/copier-wizard-zweihander-d86a8d/plugin_maintenance/build.py": {
+            "lines": 72,
+            "tokens": 521,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          }
+        },
+        "total": {
+          "lines": 1298,
+          "tokens": 10073,
+          "sources": 6,
+          "clones": 0,
+          "duplicatedLines": 0,
+          "duplicatedTokens": 0,
+          "percentage": 0,
+          "percentageTokens": 0,
+          "newDuplicatedLines": 0,
+          "newClones": 0
+        }
+      }
+    },
+    "total": {
+      "lines": 1298,
+      "tokens": 10073,
+      "sources": 6,
+      "clones": 0,
+      "duplicatedLines": 0,
+      "duplicatedTokens": 0,
+      "percentage": 0,
+      "percentageTokens": 0,
+      "newDuplicatedLines": 0,
+      "newClones": 0
+    }
+  },
+  "duplicates": []
+}

@@ -10,12 +10,12 @@ is the authored tree and the template rules.
 from pathlib import Path
 
 import pytest
-
 from plugin_maintenance import REPO_ROOT
 from plugin_maintenance.render import Harness, render_tree
 
 
 def pytest_addoption(parser: pytest.Parser) -> None:
+    """Register the --harness and --llm options."""
     parser.addoption(
         "--harness",
         choices=tuple(Harness),
@@ -30,9 +30,7 @@ def pytest_addoption(parser: pytest.Parser) -> None:
     )
 
 
-def pytest_collection_modifyitems(
-    config: pytest.Config, items: list[pytest.Item]
-) -> None:
+def pytest_collection_modifyitems(config: pytest.Config, items: list[pytest.Item]) -> None:
     """Filter harness cases before fixtures run; keep their parameter indices."""
     chosen = config.getoption("--harness")
     skip_llm = pytest.mark.skip(reason="needs --llm")
@@ -48,9 +46,7 @@ def pytest_collection_modifyitems(
                 )
         callspec = getattr(item, "callspec", None)
         name = callspec.params.get("harness") if callspec else None
-        if name is not None and (
-            (chosen and name != chosen) or (marker and name not in marker.args)
-        ):
+        if name is not None and ((chosen and name != chosen) or (marker and name not in marker.args)):
             deselected.append(item)
             continue
         if not config.getoption("--llm") and item.get_closest_marker("llm"):

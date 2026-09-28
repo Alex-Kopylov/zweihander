@@ -78,7 +78,7 @@ run = [
 
 [tasks.lint-shell]
 description = "Lint shell scripts with ShellCheck"
-run = "find . -name '*.sh' -not -path './.venv/*' -not -path './node_modules/*' -exec mise exec -- shellcheck {} +"
+run = "find . -name '*.sh' -not -path './.venv/*' -not -path './node_modules/*' -not -path './dist/*' -exec mise exec -- shellcheck {} +"
 
 [tasks.lint-md]
 description = "Lint Markdown files"

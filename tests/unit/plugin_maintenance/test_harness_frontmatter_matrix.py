@@ -9,7 +9,6 @@ import json
 from pathlib import Path
 
 import pytest
-
 from plugin_maintenance import REPO_ROOT
 from plugin_maintenance.render import (
     FRONTMATTER_MATRIX_NAME,
@@ -21,7 +20,6 @@ from plugin_maintenance.render import (
     Harness,
     load_frontmatter_matrix,
 )
-
 
 FRONTMATTER_MATRIX_PATH = (REPO_ROOT / MATRIX_PATH).with_name(FRONTMATTER_MATRIX_NAME)
 
@@ -99,9 +97,7 @@ def test_a_nested_key_is_metadata_placed_for_every_harness(keys):
 
 
 def test_specification_document_is_vendored_beside_the_matrix(matrix):
-    document = FRONTMATTER_MATRIX_PATH.with_name(
-        matrix["specification"]["document"].rsplit("/", 1)[-1]
-    )
+    document = FRONTMATTER_MATRIX_PATH.with_name(matrix["specification"]["document"].rsplit("/", 1)[-1])
 
     assert document.is_file()
     assert document.read_text(encoding="utf-8").startswith("# Specification")
@@ -117,7 +113,8 @@ def test_every_portable_key_appears_in_the_vendored_specification(matrix):
 
 def test_every_key_records_its_intent(keys):
     for key, entry in keys.items():
-        assert isinstance(entry.get("intent"), str) and entry["intent"], key
+        assert isinstance(entry.get("intent"), str), key
+        assert entry["intent"], key
 
 
 def test_a_metadata_placement_records_why(keys):

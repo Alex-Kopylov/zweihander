@@ -9,6 +9,7 @@ PLUGIN_NAME = "mermaid-diagrams"
 
 
 def generate() -> None:
+    """Rebuild the mermaid-diagrams generated docs from the bundled references."""
     from plugin_maintenance.generators.mermaid_diagrams.generated_docs import (
         update_generated_docs,
     )

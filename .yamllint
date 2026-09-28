@@ -8,6 +8,8 @@ yaml-files:
 ignore:
   - .venv/
   - node_modules/
+  # Build output rendered from plugins/
+  - dist/
   # AI agent working directories
   - .claude/
   - .codex/

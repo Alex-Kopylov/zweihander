@@ -14,7 +14,6 @@ from plugin_maintenance.generators.mermaid_diagrams.generated_docs import (
     load_navigation_metadata,
 )
 
-
 PLUGIN_ROOT = REPO_ROOT / "plugins" / "mermaid-diagrams"
 TOOLING_ROOT = REPO_ROOT / "plugin_maintenance" / "generators" / "mermaid_diagrams"
 
@@ -87,9 +86,7 @@ def test_python_sync_preserves_first_port_safety_gates() -> None:
 
 
 def test_sync_workflow_uses_root_project_and_full_build() -> None:
-    workflow = (REPO_ROOT / ".github" / "workflows" / "sync-mermaid-docs.yml").read_text(
-        encoding="utf-8"
-    )
+    workflow = (REPO_ROOT / ".github" / "workflows" / "sync-mermaid-docs.yml").read_text(encoding="utf-8")
 
     assert "workflow_dispatch:" in workflow
     assert "astral-sh/setup-uv" in workflow

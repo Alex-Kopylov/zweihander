@@ -60,6 +60,8 @@ ignore = [
   # - Circular import avoidance
   # - Pydantic validator optimization
   # - Lazy loading for optional dependencies
+  "TRY003", # raise-vanilla-args - BuildError carries its context in the message;
+  # one exception subclass per message would add classes, not clarity
 ]
 
 [lint.mccabe]
@@ -80,10 +82,15 @@ known-first-party = ["zweihander"]
 [lint.per-file-ignores]
 # PT (flake8-pytest-style) rules are pytest-specific - only apply to test files
 "!tests/**/*" = ["PT"]
-# Test files: D103 exempt (test function names ARE documentation)
-"tests/**/test_*.py" = ["D103", "E", "F", "B", "C901", "PLR", "S", "TC", "N", "ARG", "RUF029", "ERA001", "PLC", "SIM", "TRY", "RET", "RUF", "PLW", "UP", "PERF", "FURB"]
+# Test files: D101-D103 exempt (test class, method and function names ARE documentation)
+"tests/**/test_*.py" = ["D101", "D102", "D103", "E", "F", "B", "C901", "PLR", "S", "TC", "N", "ARG", "RUF029", "ERA001", "PLC", "SIM", "TRY", "RET", "RUF", "PLW", "UP", "PERF", "FURB"]
 "tests/**/conftest.py" = ["S", "N", "ARG", "PLC2701", "PLC0415", "SIM", "TRY", "RET", "RUF", "PLW", "TC", "UP", "PERF", "FURB", "E", "G"]
 "tests/constants.py" = ["D", "ERA001"]
+# pytest runs with --import-mode=importlib and test paths mirror plugin names
+# with hyphens, so test directories are not packages
+"tests/**" = ["INP001"]
+# A generator package exposes generate() from __init__.py by build contract
+"plugin_maintenance/**/__init__.py" = ["RUF067"]
 
 
 [lint.flake8-pytest-style]
