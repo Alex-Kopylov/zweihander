@@ -263,26 +263,24 @@ reasoning.
 ### `python-dev-workflow`
 
 **Use when:** you are doing TDD or test-first development in Python, deriving
-scenarios from requirements, writing or reviewing Python tests, deciding E2E
-vs integration vs unit coverage, testing Celery or Redis behavior, or
-configuring Celery for production behavior.
+scenarios from requirements, writing, reviewing, or auditing Python tests,
+deciding E2E vs integration vs unit coverage, testing Celery or Redis behavior,
+or configuring Celery for production behavior.
 
 **Skills**
 
 | Skill | Description |
 |---|---|
 | `celery-expert` | Configure Celery tasks, workers, retries, schedules, performance, and security. |
-| `tests-manager` | Own Python test-first development and test craft: red-green-refactor, plan scenarios, and write pytest E2E, integration, and unit tests with focused references. |
+| `tests-manager` | Write, review, or audit pytest tests: red-green-refactor, scenario planning, E2E, integration, and unit tests, independent review of new tests, and evidence-first pruning of low-value ones. |
 
 **Agents**
 
 | Agent | Description |
 |---|---|
-| `integration-test-writer` | Write endpoint and real-wiring integration tests. |
+| `test-assessor` | Judge one lane of tests in review, audit, or recheck mode and return a ledger; read-only. |
 | `test-scenario-planner` | Derive requirement-linked scenarios and corner cases before coverage routing. |
-| `test-runner` | Run focused pytest or `uv run pytest` commands. |
-| `test-unit-reviewer` | Review unit tests for quality, coverage, and patterns. |
-| `unit-test-writer` | Write focused unit tests with mocks, fixtures, and factories. |
+| `test-writer` | Write pytest tests at one assigned level: unit, integration, or E2E. |
 
 ### `dev-workflow`
 

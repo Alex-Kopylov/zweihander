@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "tests-manager ledger",
+  "description": "One assessor's judgment of one lane. In audit mode, every C, D, or F entry carries the full evidence set.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["lane", "mode", "entries", "gaps"],
+  "properties": {
+    "lane": {"$ref": "#/$defs/text"},
+    "mode": {"enum": ["review", "audit", "recheck"]},
+    "entries": {"type": "array", "items": {"$ref": "#/$defs/entry"}},
+    "gaps": {
+      "type": "array",
+      "description": "Review: requirements or scenarios without proof. Recheck: contracts without a keeper and unexplained surviving mutants.",
+      "items": {"$ref": "#/$defs/text"}
+    }
+  },
+  "if": {"properties": {"mode": {"const": "audit"}}},
+  "then": {"properties": {"entries": {"items": {"$ref": "#/$defs/audit_evidence"}}}},
+  "$defs": {
+    "text": {"type": "string", "minLength": 1},
+    "junk_pattern": {
+      "enum": [
+        "assertion-free",
+        "self-comparison",
+        "copied-inventory",
+        "source-grep",
+        "private-duplicate",
+        "duplicate-contract",
+        "shared-helper-replay",
+        "test-only-seam",
+        "test-only-production-code",
+        "oracle-from-subject",
+        "mock-implements-behavior",
+        "mock-only-pass",
+        "fixture-supplies-outcome",
+        "restated-flag",
+        "unrelated-negative-control",
+        "overpromising-name"
+      ]
+    },
+    "entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["test_id", "mark", "contract", "detects", "junk_patterns"],
+      "properties": {
+        "test_id": {"$ref": "#/$defs/text", "description": "pytest node id, with the parametrize id when rows are marked separately."},
+        "mark": {"enum": ["R", "F", "C", "D"]},
+        "contract": {"$ref": "#/$defs/text", "description": "The behavior or contract the test protects, or claims to."},
+        "detects": {"$ref": "#/$defs/text", "description": "The failure the test can actually detect."},
+        "junk_patterns": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/junk_pattern"}},
+        "non_test_callers": {"type": "array", "items": {"$ref": "#/$defs/text"}},
+        "remaining_proof": {"$ref": "#/$defs/text", "description": "The stronger proof that remains, or why no proof is needed."},
+        "absorbed_by": {"$ref": "#/$defs/text", "description": "The keeper that absorbs a consolidated assertion."},
+        "repair": {"$ref": "#/$defs/text"},
+        "history": {"$ref": "#/$defs/text"},
+        "unlocks": {"type": "array", "items": {"$ref": "#/$defs/text"}},
+        "risk": {"$ref": "#/$defs/text"},
+        "validation_command": {"$ref": "#/$defs/text"}
+      },
+      "allOf": [
+        {"if": {"properties": {"mark": {"const": "C"}}}, "then": {"required": ["absorbed_by"]}},
+        {"if": {"properties": {"mark": {"const": "F"}}}, "then": {"required": ["repair"]}}
+      ]
+    },
+    "audit_evidence": {
+      "if": {"properties": {"mark": {"enum": ["C", "D", "F"]}}},
+      "then": {
+        "required": ["non_test_callers", "remaining_proof", "history", "unlocks", "risk", "validation_command"]
+      }
+    }
+  }
+}
