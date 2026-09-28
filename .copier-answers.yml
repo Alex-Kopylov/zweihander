@@ -1,6 +1,6 @@
 # Changes here will be overwritten by Copier
 _commit: v1.1.0
-_src_path: gh:Alex-Kopylov/modern-python-template
+_src_path: gh:Alex-Kopylov/ai-ready-modern-python-template
 author_name: Alex
 coverage_fail_under: 90
 extra_linters:
