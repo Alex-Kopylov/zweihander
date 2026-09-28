@@ -1,0 +1,14 @@
+# Changes here will be overwritten by Copier
+_commit: v1.0.0
+_src_path: gh:Alex-Kopylov/modern-python-template
+author_name: Alex
+coverage_fail_under: 0
+extra_linters:
+- jscpd
+- typos
+- markdownlint
+license: Skip
+project_description: Personal plugin marketplace for AI agents.
+project_name: zweihander
+python_version: '3.12'
+use_github_actions: true

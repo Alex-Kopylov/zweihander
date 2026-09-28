@@ -1,0 +1,17 @@
+{
+  // Renovate dependency-update automation.
+  // Activate by installing the Mend Renovate GitHub App on this repo:
+  // https://github.com/apps/renovate
+  //
+  // Covers: mise.toml tool pins (aqua/npm backends), GitHub Actions,
+  // and Python deps in pyproject.toml.
+  $schema: 'https://docs.renovatebot.com/renovate-schema.json',
+  extends: [
+    'config:best-practices',
+  ],
+  // Refresh uv.lock transitive pins on a schedule.
+  lockFileMaintenance: {
+    enabled: true,
+    schedule: ['before 6am on monday'],
+  },
+}

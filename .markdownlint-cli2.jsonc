@@ -1,0 +1,39 @@
+{
+  // markdownlint-cli2 configuration
+  // Uses .markdownlint.jsonc for rules, this file for CLI options
+  // See: https://github.com/DavidAnson/markdownlint-cli2
+
+  // Suppress verbose discovery output
+  "noBanner": true,
+  "noProgress": true,
+
+  // Paths to lint
+  "globs": [
+    "*.md",
+    ".github/**/*.md",
+    "docs/**/*.md",
+    "README.md",
+    "CONTRIBUTING.md",
+    "LICENSE.md",
+    "CODE_OF_CONDUCT.md",
+    "CHANGELOG.md"
+  ],
+
+  // Exclusions (AI agent working files, working documents, build artifacts)
+  "ignores": [
+    "CLAUDE.md",
+    "AGENTS.md",
+    "GEMINI.md",
+    ".claude/**",
+    ".codex/**",
+    ".cursor/**",
+    ".gemini/**",
+    ".venv/**",
+    "goals/**",
+    "node_modules/**",
+    "build/**",
+    "dist/**",
+    "docs/specs/**",
+    "docs/internal/**"
+  ]
+}

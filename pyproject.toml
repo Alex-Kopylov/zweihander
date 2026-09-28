@@ -2,7 +2,7 @@
 name = "ai-agents-marketplace"
 version = "0.1.0"
 description = "Personal plugin marketplace for AI agents."
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 dependencies = [
     "jinja2>=3.1",
     "pathspec>=0.12",
@@ -12,4 +12,26 @@ dependencies = [
 dev = [
     "pytest>=9.0.3",
     "tiktoken>=0.14.0",
+    "ruff",
+    "ty",
+    "flake8",
+    "flake8-pydantic",
+    "flake8-async",
+    "vulture",
+    "deptry>=0.25.1",
+    "pytest-cov>=7.1.0",
+    "prek",
+    "yamllint",
+    "check-jsonschema",
 ]
+
+[tool.ty.environment]
+python-version = "3.12"
+
+[tool.coverage.run]
+source = ["plugin_maintenance"]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+skip_empty = true
