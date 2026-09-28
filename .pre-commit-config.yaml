@@ -6,7 +6,8 @@
 #
 # All tools are invoked through:
 #  - mise exec -- <tool>  (for system tools)
-#  - uv run <tool>       (for Python tools)
+#  - mise exec -- uv run <tool>  (for Python tools)
+#  - mise exec -- uv <command>   (for uv itself)
 #  - mise run <task>      (for multi-step tasks defined in mise.toml)
 #
 # This ensures:
@@ -37,7 +38,7 @@ repos:
 
       - id: uv-lock-check
         name: uv (lock check)
-        entry: uv lock --check
+        entry: mise exec -- uv lock --check
         language: system
         files: ^(pyproject.toml|uv.lock)$
         pass_filenames: false
@@ -45,26 +46,26 @@ repos:
 
       - id: ruff-format
         name: ruff (format)
-        entry: uv run ruff format --force-exclude
+        entry: mise exec -- uv run ruff format --force-exclude
         language: system
         types: [python]
 
       - id: ruff-check
         name: ruff (lint)
-        entry: uv run ruff check --fix --force-exclude
+        entry: mise exec -- uv run ruff check --fix --force-exclude
         language: system
         types: [python]
 
-      - id: flake8-async
-        name: flake8-async (async patterns)
-        entry: uv run flake8 --select=ASYNC
+      - id: flake8
+        name: flake8 (async + Pydantic patterns)
+        entry: mise exec -- uv run flake8
         language: system
         types: [python]
         exclude: ^(tests/|scripts/|docs/)
 
       - id: ty-check
         name: ty (types)
-        entry: uv run ty check
+        entry: mise exec -- uv run ty check
         language: system
         types: [python]
         exclude: ^(scripts/|docs/|tests/)
@@ -80,7 +81,7 @@ repos:
 
       - id: yamllint
         name: yamllint
-        entry: uv run yamllint -c .yamllint
+        entry: mise exec -- uv run yamllint -c .yamllint
         language: system
         types: [yaml]
 
@@ -90,6 +91,12 @@ repos:
         language: system
         types: [json]
 
+      - id: taplo-fmt
+        name: taplo (toml format)
+        entry: mise exec -- taplo fmt
+        language: system
+        types: [toml]
+
       - id: taplo-lint
         name: taplo (toml)
         entry: mise exec -- taplo lint
@@ -98,7 +105,7 @@ repos:
 
       - id: check-jsonschema-github-workflows
         name: check-jsonschema (GitHub Workflows)
-        entry: uv run check-jsonschema --builtin-schema github-workflows
+        entry: mise exec -- uv run check-jsonschema --builtin-schema github-workflows
         language: system
         files: ^\.github/workflows/.*\.ya?ml$
 
@@ -127,7 +134,7 @@ repos:
     hooks:
       - id: deptry
         name: deptry (dependency declarations)
-        entry: uv run deptry .
+        entry: mise exec -- uv run deptry .
         language: system
         files: ^(plugin_maintenance/.*\.py|pyproject\.toml|uv\.lock)$
         pass_filenames: false
@@ -135,7 +142,7 @@ repos:
 
       - id: uv-audit
         name: uv (audit)
-        entry: uv audit
+        entry: mise exec -- uv audit
         language: system
         files: ^(pyproject.toml|uv.lock)$
         pass_filenames: false
@@ -153,4 +160,3 @@ repos:
 # - markdownlint-cli2: pass_filenames=false causes it to scan gitignored docs/plans/
 #   (auto-generated reports that don't conform to style rules); removed to reduce noise
 # - vulture: High false positive rate, advisory-only (needs whitelist)
-# - flake8-pydantic: Niche Pydantic feedback, real-time via CC hooks

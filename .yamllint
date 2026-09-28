@@ -1,11 +1,3 @@
-# yamllint configuration
-# MAXIMUM STRICTNESS - All 23 rules explicitly configured
-#
-# Philosophy:
-# - Every rule explicitly set (no implicit defaults)
-# - Strictest practical settings
-# - No exclusions - all violations fixed in code
-
 extends: default
 
 yaml-files:
@@ -23,110 +15,39 @@ ignore:
   - .gemini/
 
 rules:
-  # === ANCHOR VALIDATION ===
+  # Reject duplicate and unused anchors in addition to undeclared aliases
   anchors:
-    forbid-undeclared-aliases: true
     forbid-duplicated-anchors: true
     forbid-unused-anchors: true
 
-  # === FLOW STYLE CONTROL ===
-  braces:
-    forbid: false  # Required for Docker health checks
-    min-spaces-inside: 0
-    max-spaces-inside: 0
-    min-spaces-inside-empty: -1
-    max-spaces-inside-empty: -1
-
-  brackets:
-    forbid: false  # Required for GHA matrix syntax
-    min-spaces-inside: 0
-    max-spaces-inside: 0
-    min-spaces-inside-empty: -1
-    max-spaces-inside-empty: -1
-
-  # === SPACING RULES ===
-  colons:
-    max-spaces-before: 0
-    max-spaces-after: 1
-
-  commas:
-    max-spaces-before: 0
-    min-spaces-after: 1
-    max-spaces-after: 1
-
-  hyphens:
-    max-spaces-after: 1
-
-  # === COMMENT FORMATTING ===
-  comments:
-    require-starting-space: true
-    ignore-shebangs: true
-    min-spaces-from-content: 2
-
-  comments-indentation: enable
-
-  # === DOCUMENT MARKERS ===
-  # DISABLED - Would require adding --- and ... to all files
-  # Not worth the ceremony for most projects
-  document-end: disable
+  # Avoid mandatory document markers in every YAML file
   document-start: disable
 
-  # === EMPTY CONTENT RULES ===
-  empty-lines:
-    max: 2
-    max-start: 0
-    max-end: 0
+  # Reject empty mapping and sequence values
+  empty-values: enable
 
-  empty-values:
-    forbid-in-block-mappings: true
-    forbid-in-flow-mappings: true
-    forbid-in-block-sequences: true
-
-  # === NUMERIC VALUE RULES ===
+  # Reject non-finite floats and require a numeral before the decimal point
   float-values:
     require-numeral-before-decimal: true
-    forbid-scientific-notation: false
     forbid-nan: true
     forbid-inf: true
 
-  octal-values:
-    forbid-implicit-octal: true
-    forbid-explicit-octal: true
+  # Reject both implicit and explicit octal values
+  octal-values: enable
 
-  # === INDENTATION ===
+  # Use two spaces while accepting internally consistent sequence styles
   indentation:
     spaces: 2
-    indent-sequences: consistent  # Allow both styles if internally consistent
-    check-multi-line-strings: false  # CRITICAL: LLM prompts use | blocks
+    indent-sequences: consistent
 
-  # === KEY RULES ===
+  # Reject duplicate merge keys as well as ordinary duplicate keys
   key-duplicates:
     forbid-duplicated-merge-keys: true
 
-  # DISABLED - Would break semantic ordering (base_prompt before target_prompt)
-  key-ordering: disable
-
-  # === LINE LENGTH ===
+  # Accommodate practical project configuration lines
   line-length:
     max: 120
-    level: error  # Upgraded from warning
-    allow-non-breakable-words: true
-    allow-non-breakable-inline-mappings: false
 
-  # === FILE FORMAT ===
-  new-line-at-end-of-file: enable
-
-  new-lines:
-    type: unix
-
-  # === STRING QUOTING ===
-  # DISABLED - Would require quoting all LLM prompt content
-  quoted-strings: disable
-
-  # === WHITESPACE ===
-  trailing-spaces: enable
-
-  # === BOOLEAN VALUES ===
+  # Accept GitHub Actions' on key without treating it as a boolean
   truthy:
-    allowed-values: ['true', 'false']
-    check-keys: false  # GitHub Actions uses 'on:' key which is valid
+    check-keys: false

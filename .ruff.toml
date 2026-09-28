@@ -21,28 +21,28 @@ select = [
   "FLY",  # flynt - f-string conversions (preventive, 0 current violations)
   "FURB", # refurb - modern Python idioms
   # Security and type-checking categories
-  "S",    # flake8-bandit - security vulnerability detection
-  "TC",   # flake8-type-checking - optimize type-only imports
+  "S",  # flake8-bandit - security vulnerability detection
+  "TC", # flake8-type-checking - optimize type-only imports
   # Style categories for code clarity
-  "RET",  # flake8-return - unnecessary assignments/else
-  "SIM",  # flake8-simplify - code simplification
-  "TID",  # flake8-tidy-imports - absolute imports
-  "TRY",  # tryceratops - exception handling
+  "RET", # flake8-return - unnecessary assignments/else
+  "SIM", # flake8-simplify - code simplification
+  "TID", # flake8-tidy-imports - absolute imports
+  "TRY", # tryceratops - exception handling
   # Naming conventions
-  "N",    # pep8-naming - PEP 8 naming convention enforcement
+  "N", # pep8-naming - PEP 8 naming convention enforcement
   # Logging, Performance, and Code Quality categories
-  "LOG",  # flake8-logging - proper logger usage
-  "G",    # flake8-logging-format - f-string and exc_info patterns
-  "ERA",  # eradicate - remove commented-out code
-  "PERF", # Perflint - performance anti-patterns
-  "ARG",  # flake8-unused-arguments
-  "PLC",  # Pylint Convention
-  "PLE",  # Pylint Error
-  "PGH003",  # pygrep-hooks - blanket type: ignore detection
-  "PGH004",  # pygrep-hooks - enforce specific rule codes in noqa
-  "PLW",  # Pylint Warning
+  "LOG",    # flake8-logging - proper logger usage
+  "G",      # flake8-logging-format - f-string and exc_info patterns
+  "ERA",    # eradicate - remove commented-out code
+  "PERF",   # Perflint - performance anti-patterns
+  "ARG",    # flake8-unused-arguments
+  "PLC",    # Pylint Convention
+  "PLE",    # Pylint Error
+  "PGH003", # pygrep-hooks - blanket type: ignore detection
+  "PGH004", # pygrep-hooks - enforce specific rule codes in noqa
+  "PLW",    # Pylint Warning
   # Testing category
-  "PT",   # flake8-pytest-style - pytest best practices
+  "PT", # flake8-pytest-style - pytest best practices
   # Additional low-false-positive categories
   "ASYNC", # flake8-async - asyncio best practices
   "C4",    # flake8-comprehensions - comprehension optimization
@@ -56,10 +56,10 @@ select = [
   "INP",   # flake8-no-pep420 - implicit namespace package detection
 ]
 ignore = [
-  "PLC0415",  # import-outside-top-level - intentional pattern for:
-              # - Circular import avoidance
-              # - Pydantic validator optimization
-              # - Lazy loading for optional dependencies
+  "PLC0415", # import-outside-top-level - intentional pattern for:
+  # - Circular import avoidance
+  # - Pydantic validator optimization
+  # - Lazy loading for optional dependencies
 ]
 
 [lint.mccabe]
@@ -90,12 +90,12 @@ known-first-party = ["zweihander"]
 # Extend PT011 (pytest-raises-too-broad) to require match= for additional exceptions
 # Default list: BaseException, Exception, ValueError, OSError, IOError, EnvironmentError, socket.error
 raises-extend-require-match-for = [
-    "pydantic.ValidationError",
-    "pydantic_core._pydantic_core.ValidationError",  # Pydantic v2 internal
-    "AttributeError",
-    "FileNotFoundError",
-    "asyncio.CancelledError",
+  "pydantic.ValidationError",
+  "pydantic_core._pydantic_core.ValidationError", # Pydantic v2 internal
+  "AttributeError",
+  "FileNotFoundError",
+  "asyncio.CancelledError",
 ]
 
 [lint.pydocstyle]
-convention = "google"  # Matches project docstring style
+convention = "google" # Matches project docstring style

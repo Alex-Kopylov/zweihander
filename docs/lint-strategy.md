@@ -36,6 +36,7 @@ Fast lint is the right place for:
 - Configuration syntax checks.
 - Markdown, YAML, JSON, TOML, Dockerfile, and configured automation validation.
 - Spelling checks when the project accepts that spelling lint may flag prose.
+- Comment-wall checks that cap runs of standalone comment lines.
 
 Use fast lint for editor integrations, agent inner loops, and quick local
 feedback before the change is complete.

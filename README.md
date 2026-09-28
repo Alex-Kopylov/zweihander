@@ -133,8 +133,8 @@ Use this README when you want to install the marketplace, install a plugin, or
 choose what each plugin is for. Developer and maintenance notes live in
 `AGENTS.md`.
 
-Third-party provenance and license notices live in
-`third_party/`.
+This repository is licensed under Apache-2.0; see `LICENSE`. Third-party
+provenance and license notices live in `third_party/`.
 
 ## Quick Install
 
