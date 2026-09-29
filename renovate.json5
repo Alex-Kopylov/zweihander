@@ -6,6 +6,9 @@
   // Covers: mise.toml tool pins (aqua/github/npm backends), GitHub Actions,
   // and Python deps in pyproject.toml.
   $schema: 'https://docs.renovatebot.com/renovate-schema.json',
+  // Off for now: Dependabot (.github/dependabot.yml) handles updates here.
+  // Delete this line to hand updates back to Renovate.
+  enabled: false,
   extends: [
     'config:best-practices',
   ],
