@@ -24,9 +24,6 @@ jobs:
           version: latest
           enable-cache: true
 
-      - name: Set up Python 3.14
-        run: uv python install 3.14
-
       - name: Run the full build
         run: uv run python -m plugin_maintenance.build
 
@@ -46,4 +43,4 @@ jobs:
         run: git diff --check ${{ github.event.pull_request.base.sha }} HEAD
 
       - name: Run tests
-        run: uv run --python 3.14 pytest tests
+        run: uv run pytest tests

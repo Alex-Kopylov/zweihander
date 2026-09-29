@@ -30,6 +30,7 @@
     ".gemini/**",
     // Legal text -- reformatting can break SPDX and license-scanner detection
     "LICENSE.md",
+    "THIRD_PARTY_NOTICES.md",
     // Vendored trees and build output
     ".venv/**",
     "goals/**",

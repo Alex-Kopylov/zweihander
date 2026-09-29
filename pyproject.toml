@@ -1,7 +1,7 @@
 [project]
 name = "zweihander"
 version = "0.1.0"
-description = "Personal plugin marketplace for AI agents."
+description = "Simple, robust, and versatile marketplace for agent plugins, forged for the chaos of the AI world."
 requires-python = ">=3.14"
 license = "Apache-2.0"
 dependencies = [

@@ -1,16 +1,16 @@
 # Changes here will be overwritten by Copier
 _commit: v1.1.0
 _src_path: gh:Alex-Kopylov/ai-ready-modern-python-template
-author_name: Alex
+author_name: Alex Kopylov
 coverage_fail_under: 90
 extra_linters:
 - jscpd
 - typos
 - markdownlint
-license: Skip
+license: Apache-2.0
 main_branch_name: main
 parallel_testing: false
-project_description: Personal plugin marketplace for AI agents.
+project_description: Simple, robust, and versatile marketplace for agent plugins, forged for the chaos of the AI world.
 project_name: zweihander
 python_version: '3.14'
 use_github_actions: true
