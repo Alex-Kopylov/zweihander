@@ -27,9 +27,6 @@ dev = [
     "mutmut",
 ]
 
-[tool.ty.environment]
-python-version = "3.14"
-
 [tool.coverage.run]
 source = ["plugin_maintenance"]
 branch = true
