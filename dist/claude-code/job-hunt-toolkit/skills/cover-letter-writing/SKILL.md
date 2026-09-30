@@ -21,6 +21,10 @@ If evidence is missing for a claim the JD wants, ask or mark it as a gap. If the
 
 ## Workflow
 
+Read [Tailoring Change Review](../../references/tailoring-review.md) before
+drafting. Capture the existing letter or golden letter as the baseline when
+adapting one; use an empty baseline only when writing from scratch.
+
 Progress:
 - [ ] Step 1: Read workspace rules (`README.md`, `AGENTS.md`, `CLAUDE.md`, and `NAMING.md` when present)
 - [ ] Step 2: Read source materials (`USER.md`, `company.md`, the JD, and the tailored CV Typst source)
@@ -29,6 +33,7 @@ Progress:
 - [ ] Step 5: Save the Typst source (`<First>_<Last>_<Role>_Cover_Letter.typ` in the company folder, with no company name)
 - [ ] Step 6: Export the PDF (invoke `job-hunt-toolkit:export-pdf`)
 - [ ] Step 7: Run pre-send checks (invoke `job-hunt-toolkit:prepare-to-send` before calling it ready)
+- [ ] Step 8: Present the complete text diff with a reason and evidence per change
 
 ## Content Rules
 
@@ -46,19 +51,10 @@ For unsupported JD requirements, choose exactly one: ask a focused question, fra
 
 ## Output Report
 
-After generation, report:
-
-```markdown
-Cover letter files:
-- Typst: <absolute path>
-- PDF: <absolute path>
-
-Evidence used:
-- <fit point> -> <CV/company/JD source>
-
-Gaps handled:
-- <gap> -> <wording strategy or left out>
-```
+Follow Tailoring Change Review after the final pre-send edits. Link the Typst
+and PDF files, identify the baseline, and show every change as a verbatim
+`diff` block with its reason and evidence directly below. Report gaps and
+pre-send results separately. A fit summary alone is not a change review.
 
 ## Common Mistakes
 
