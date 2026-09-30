@@ -6,7 +6,10 @@ import errno
 import os
 import re
 import shutil
-import subprocess  # ruff: ignore[suspicious-subprocess-import] - runs git with fixed arguments
+
+# Reading HEAD without git would mean reimplementing ref resolution (symbolic refs,
+# packed-refs, worktree gitdir files); running git itself is the robust way.
+import subprocess  # ruff: ignore[suspicious-subprocess-import]
 import sys
 from dataclasses import dataclass
 from pathlib import Path
@@ -31,6 +34,14 @@ CONFIG_FILES = [
 ]
 
 
+class GitNotFoundError(RuntimeError):
+    """The sync cannot record the checkout's commit because git is not installed."""
+
+    def __str__(self) -> str:
+        """Say what is missing and why the sync needs it."""
+        return "git is not on PATH; the Mermaid sync needs it to record the source checkout's commit"
+
+
 @dataclass(frozen=True)
 class ExistingSyncMetadata:
     """Commit and date recorded by the previous sync."""
@@ -48,15 +59,19 @@ def plugin_relative_path(path: str | Path) -> Path:
 
 
 def git_commit(directory: Path) -> str:
-    """Return the HEAD commit of `directory`, or `unknown` when git cannot tell."""
+    """Return the HEAD commit of `directory`, or `unknown` when it is not a git checkout."""
+    git = shutil.which("git")
+    if git is None:
+        raise GitNotFoundError
     try:
-        result = subprocess.run(  # ruff: ignore[subprocess-without-shell-equals-true] - fixed argv, no shell
-            ["git", "-C", str(directory), "rev-parse", "HEAD"],  # ruff: ignore[start-process-with-partial-path] - git from PATH
+        # The argv is fixed apart from the checkout path, and no shell parses it.
+        result = subprocess.run(  # ruff: ignore[subprocess-without-shell-equals-true]
+            [git, "-C", str(directory), "rev-parse", "HEAD"],
             check=True,
             capture_output=True,
             text=True,
         )
-    except OSError, subprocess.CalledProcessError:
+    except subprocess.CalledProcessError:
         return "unknown"
     return result.stdout.strip()
 
