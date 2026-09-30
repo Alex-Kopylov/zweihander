@@ -1,11 +1,13 @@
 line-length = 120
 src = ["plugin_maintenance", "tests"]
+# dist/ is a byte-identical render of plugins/ and would double every finding;
+# dist/ is linted once, in CI - see the lint-dist step in .github/workflows/ci.yml.
 exclude = [".venv", "build", "dist"]
 # Python under plugins/ ships to users and runs on their interpreter, not this
 # repo's 3.14 (requires-python): keep syntax and fixes valid on 3.11 (the oldest
 # CPython still supported once 3.10 reaches end of life in 2026-10), the floor
 # the scripts' PEP 723 metadata declares.
-per-file-target-version = { "plugins/**" = "py311" }
+per-file-target-version = { "{plugins,dist/*}/**" = "py311" }
 
 [format]
 # Python only. Code blocks inside Markdown are skill prose that markdownlint
@@ -90,7 +92,7 @@ known-first-party = ["zweihander", "app", "myapp"]
 [lint.per-file-ignores]
 # PT (flake8-pytest-style) rules are pytest-specific - only apply to test files
 # and the pytest examples skills ship
-"!{tests/**/*,plugins/**/examples/**/*}" = ["PT"]
+"!{tests/**/*,{plugins,dist/*}/**/examples/**/*}" = ["PT"]
 # Test files: D101-D103 exempt (test class, method and function names ARE documentation)
 "tests/**/test_*.py" = ["D101", "D102", "D103", "E", "F", "B", "C901", "PLR", "S", "TC", "N", "ARG", "RUF029", "ERA001", "PLC", "SIM", "TRY", "RET", "RUF", "PLW", "UP", "PERF", "FURB"]
 "tests/**/conftest.py" = ["S", "N", "ARG", "PLC2701", "PLC0415", "SIM", "TRY", "RET", "RUF", "PLW", "TC", "UP", "PERF", "FURB", "E", "G"]
@@ -100,12 +102,12 @@ known-first-party = ["zweihander", "app", "myapp"]
 "tests/**" = ["INP001"]
 # Skill scripts run by path and examples are copied into a user's project; none
 # is imported as a package, and an __init__.py would ship to users as dead weight
-"plugins/**" = ["INP001"]
+"{plugins,dist/*}/**" = ["INP001"]
 # Example pytest suites users copy follow the tests/ policy above: test names are
 # the documentation (D101-D103), assert is pytest's assertion (S101), expected
 # values are literals (PLR2004), and test methods grouped in a class do not use
 # self (PLR6301)
-"plugins/**/examples/**/test_*.py" = ["D101", "D102", "D103", "S101", "PLR2004", "PLR6301"]
+"{plugins,dist/*}/**/examples/**/test_*.py" = ["D101", "D102", "D103", "S101", "PLR2004", "PLR6301"]
 
 
 [lint.flake8-pytest-style]

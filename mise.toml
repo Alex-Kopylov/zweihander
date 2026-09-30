@@ -78,11 +78,26 @@ run = [
 
 [tasks.lint-shell]
 description = "Lint shell scripts with ShellCheck"
+# dist/ is linted once, in CI - see the lint-dist step in .github/workflows/ci.yml
 run = "find . -name '*.sh' -not -path './.venv/*' -not -path './node_modules/*' -not -path './dist/*' -exec mise exec -- shellcheck {} +"
 
 [tasks.lint-md]
 description = "Lint Markdown files"
 run = "mise exec -- markdownlint-cli2"
+
+[tasks.lint-dist]
+description = "Lint the rendered dist/ tree; CI's final check, not part of lint"
+# Local lint excludes dist/: it is a byte-identical render of plugins/ and would
+# double every finding. ruff, ty and typos check a path passed on the command
+# line despite their excludes; yamllint applies `ignore` even then, so it gets
+# the same config with an empty ignore list.
+run = [
+  "uv run ruff check dist",
+  "uv run ty check dist",
+  "find dist -name '*.sh' -exec mise exec -- shellcheck {} +",
+  "uv run yamllint -d '{extends: .yamllint, ignore: []}' dist",
+  "mise exec -- typos dist",
+]
 
 [tasks.lint-yml]
 description = "Lint YAML files"

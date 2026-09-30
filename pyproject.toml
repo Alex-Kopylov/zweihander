@@ -72,14 +72,16 @@ ignore = ["DEP004"]
 [[tool.ty.overrides]]
 # `app` and `myapp` are the user's own application package in the example code
 # skills tell users to copy; see known_first_party under [tool.deptry].
-include = ["plugins/**/examples/**"]
+include = ["plugins/**/examples/**", "dist/**/examples/**"]
 
 [tool.ty.overrides.analysis]
 allowed-unresolved-imports = ["app.**", "myapp.**"]
 
 [tool.typos.files]
-# dist/ is rendered from plugins/; the mermaid references are synced verbatim from upstream
-extend-exclude = ["dist/", "plugins/mermaid-diagrams/skills/mermaid/references/"]
+# dist/ is a byte-identical render of plugins/; dist/ is linted once, in CI -
+# see the lint-dist step in .github/workflows/ci.yml. The mermaid references are
+# synced verbatim from upstream, in plugins/ and in their dist/ copies.
+extend-exclude = ["dist/", "**/mermaid-diagrams/skills/mermaid/references/"]
 
 [tool.mutmut]
 paths_to_mutate = ["plugin_maintenance/"]
