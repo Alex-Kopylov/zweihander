@@ -104,7 +104,7 @@ Save batch state after each major milestone. Provide resume instructions with ba
 
 Generate `_batch_summary.md` with:
 - Per-job status, coverage, key strengths, remaining gaps, file listings
-- Per-resume change review using `Before | After | Why | Evidence`
+- Complete per-resume text diffs with reasons and evidence, following [Tailoring Change Review](../../../references/tailoring-review.md); include each review in chat
 - Discovery impact stats (experiences found, coverage improvement)
 - Coverage metrics (average JD coverage, average direct matches)
 - Gap resolution stats
