@@ -172,8 +172,11 @@ run = "uv run prek install --hook-type pre-commit --hook-type pre-push"
 
 [tasks.clean]
 description = "Remove local build and test cache directories"
+# Deviates from the template's `rm -rf dist build *.egg-info`: here dist/ is the
+# committed, rendered plugin tree the marketplaces install from, not build
+# output, so clean never touches it.
 run = [
   "find . -type d -name __pycache__ -exec rm -rf {} +",
   "find . -type d -name .pytest_cache -exec rm -rf {} +",
-  "rm -rf dist build *.egg-info",
+  "rm -rf build *.egg-info",
 ]
