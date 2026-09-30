@@ -100,7 +100,7 @@ run = "mise exec -- taplo lint"
 description = "Lint GitHub Actions workflow files"
 run = [
   "mise exec -- actionlint",
-  "uv run check-jsonschema --builtin-schema github-workflows .github/workflows/ci.yml",
+  "uv run check-jsonschema --builtin-schema github-workflows .github/workflows/*.yml",
 ]
 
 [tasks.lint-duplicates]
