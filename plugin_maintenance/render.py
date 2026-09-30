@@ -22,6 +22,7 @@ import re
 import shutil
 import tempfile
 from collections.abc import Callable, Mapping
+from dataclasses import dataclass
 from enum import StrEnum
 from pathlib import Path
 
@@ -378,88 +379,25 @@ def duplicate_frontmatter_key(text: str) -> str | None:
     return None
 
 
-def _render_template(source: Path, environment: Environment, context: dict, harness: Harness) -> str:
-    text = source.read_text(encoding="utf-8")
-    try:
-        rendered = environment.from_string(text).render(**context)
-    except BuildError:
-        raise
-    except TemplateError as error:
-        raise TemplateRenderError(source, harness, error) from error
+@dataclass(frozen=True)
+class RenderContext:
+    """What every plugin of one harness's render shares."""
 
-    rendered = merge_metadata_blocks(rendered)
-    duplicate = duplicate_frontmatter_key(rendered)
-    if duplicate:
-        raise DuplicateFrontmatterKeyError(source, harness, duplicate)
-    return rendered
+    harness: Harness
+    environment: Environment
+    variables: dict
+    is_ignored: Callable[[Path], bool]
 
 
-def _render_plugin(  # ruff: ignore[too-many-arguments, too-many-positional-arguments] - private per-plugin step of render_tree
-    source_dir: Path,
-    target_dir: Path,
-    environment: Environment,
-    context: dict,
-    harness: Harness,
-    is_ignored: Callable[[Path], bool],
-) -> None:
-    foreign_metadata = PLUGIN_METADATA_DIRS - {HARNESS_METADATA_DIRS[harness]}
-    for source in sorted(source_dir.rglob("*")):
-        relative = source.relative_to(source_dir)
-        if foreign_metadata.intersection(relative.parts) or source.is_dir():
-            continue
-        if any(relative.match(pattern) for pattern in FOREIGN_SKILL_FILES[harness]):
-            continue
-        if is_ignored(source):
-            continue
-        is_template = source.name.endswith(TEMPLATE_SUFFIX)
-        plain_name = source.name[: -len(TEMPLATE_SUFFIX)] if is_template else source.name
-        if plain_name in DEV_FILE_NAMES:
-            if is_template:
-                raise DevFileTemplateError(source, plain_name)
-            continue
-
-        if is_template:
-            if source.with_name(plain_name).exists():
-                raise TemplateConflictError(source.with_name(plain_name), source)
-            target = target_dir / relative.with_name(plain_name)
-            target.parent.mkdir(parents=True, exist_ok=True)
-            target.write_text(
-                _render_template(source, environment, context, harness),
-                encoding="utf-8",
-            )
-        else:
-            target = target_dir / relative
-            target.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copyfile(source, target)
-        shutil.copymode(source, target)
-
-
-def render_tree(  # ruff: ignore[too-many-locals] - one linear build step; splitting scatters its state
-    repo_root: Path,
-    harness: Harness,
-    output_dir: Path,
-    matrix_path: Path | None = None,
-    manifest_path: Path | None = None,
-) -> None:
-    """Render the plugins `harness`'s manifest lists into `output_dir`, replacing it atomically."""
-    repo_root = Path(repo_root)
-    matrix_file = Path(matrix_path) if matrix_path else repo_root / MATRIX_PATH
+def _render_context(repo_root: Path, harness: str, matrix_file: Path) -> RenderContext:
+    """Load both matrices, check `harness` against them, and build its Jinja environment."""
     matrix = load_matrix(matrix_file)
     frontmatter_matrix = load_frontmatter_matrix(matrix_file.with_name(FRONTMATTER_MATRIX_NAME))
 
     known_assistants = set(matrix["assistants"]) & set(frontmatter_matrix["assistants"])
     if harness not in known_assistants or harness not in HARNESS_MANIFESTS:
-        known = sorted(known_assistants & set(HARNESS_MANIFESTS))
-        raise UnknownHarnessError(harness, known)
+        raise UnknownHarnessError(harness, sorted(known_assistants & set(HARNESS_MANIFESTS)))
     harness = Harness(harness)
-
-    manifest = Path(manifest_path) if manifest_path else repo_root / HARNESS_MANIFESTS[harness]
-    plugin_names = manifest_plugin_names(manifest)
-    for plugin_name in plugin_names:
-        source_dir = repo_root / "plugins" / plugin_name
-        if not source_dir.is_dir():
-            raise MissingPluginError(manifest, plugin_name, source_dir)
-    is_ignored = ignored_path(repo_root)
 
     # Templates render Markdown, YAML and scripts, never HTML: escaping would corrupt them.
     environment = Environment(undefined=StrictUndefined, keep_trailing_newline=True, autoescape=False)  # ruff: ignore[jinja2-autoescape-false]
@@ -474,7 +412,7 @@ def render_tree(  # ruff: ignore[too-many-locals] - one linear build step; split
         environment.globals[key.replace("-", "_")] = functools.partial(  # ty: ignore[invalid-assignment]
             frontmatter_key, entry[harness]["placement"], key, entry["form"]
         )
-    context = {
+    variables = {
         "harness": harness,
         "actions": ActionMap(
             {
@@ -485,6 +423,72 @@ def render_tree(  # ruff: ignore[too-many-locals] - one linear build step; split
             harness,
         ),
     }
+    return RenderContext(harness, environment, variables, ignored_path(repo_root))
+
+
+def _render_template(render: RenderContext, source: Path) -> str:
+    text = source.read_text(encoding="utf-8")
+    try:
+        rendered = render.environment.from_string(text).render(**render.variables)
+    except BuildError:
+        raise
+    except TemplateError as error:
+        raise TemplateRenderError(source, render.harness, error) from error
+
+    rendered = merge_metadata_blocks(rendered)
+    duplicate = duplicate_frontmatter_key(rendered)
+    if duplicate:
+        raise DuplicateFrontmatterKeyError(source, render.harness, duplicate)
+    return rendered
+
+
+def _render_plugin(render: RenderContext, source_dir: Path, target_dir: Path) -> None:
+    foreign_metadata = PLUGIN_METADATA_DIRS - {HARNESS_METADATA_DIRS[render.harness]}
+    for source in sorted(source_dir.rglob("*")):
+        relative = source.relative_to(source_dir)
+        if foreign_metadata.intersection(relative.parts) or source.is_dir():
+            continue
+        if any(relative.match(pattern) for pattern in FOREIGN_SKILL_FILES[render.harness]):
+            continue
+        if render.is_ignored(source):
+            continue
+        is_template = source.name.endswith(TEMPLATE_SUFFIX)
+        plain_name = source.name[: -len(TEMPLATE_SUFFIX)] if is_template else source.name
+        if plain_name in DEV_FILE_NAMES:
+            if is_template:
+                raise DevFileTemplateError(source, plain_name)
+            continue
+
+        if is_template:
+            if source.with_name(plain_name).exists():
+                raise TemplateConflictError(source.with_name(plain_name), source)
+            target = target_dir / relative.with_name(plain_name)
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_text(_render_template(render, source), encoding="utf-8")
+        else:
+            target = target_dir / relative
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(source, target)
+        shutil.copymode(source, target)
+
+
+def render_tree(
+    repo_root: Path,
+    harness: Harness,
+    output_dir: Path,
+    matrix_path: Path | None = None,
+    manifest_path: Path | None = None,
+) -> None:
+    """Render the plugins `harness`'s manifest lists into `output_dir`, replacing it atomically."""
+    repo_root = Path(repo_root)
+    render = _render_context(repo_root, harness, Path(matrix_path) if matrix_path else repo_root / MATRIX_PATH)
+
+    manifest = Path(manifest_path) if manifest_path else repo_root / HARNESS_MANIFESTS[render.harness]
+    plugin_names = manifest_plugin_names(manifest)
+    for plugin_name in plugin_names:
+        source_dir = repo_root / "plugins" / plugin_name
+        if not source_dir.is_dir():
+            raise MissingPluginError(manifest, plugin_name, source_dir)
 
     output_dir = Path(output_dir)
     output_dir.parent.mkdir(parents=True, exist_ok=True)
@@ -496,14 +500,7 @@ def render_tree(  # ruff: ignore[too-many-locals] - one linear build step; split
     staging.chmod(output_dir.parent.stat().st_mode & 0o777)
     try:
         for plugin_name in plugin_names:
-            _render_plugin(
-                repo_root / "plugins" / plugin_name,
-                staging / plugin_name,
-                environment,
-                context,
-                harness,
-                is_ignored,
-            )
+            _render_plugin(render, repo_root / "plugins" / plugin_name, staging / plugin_name)
     except BaseException:
         shutil.rmtree(staging, ignore_errors=True)
         raise
