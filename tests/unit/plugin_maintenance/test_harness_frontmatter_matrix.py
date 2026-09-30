@@ -10,13 +10,19 @@ from pathlib import Path
 
 import pytest
 from plugin_maintenance import REPO_ROOT
+from plugin_maintenance.errors import (
+    FrontmatterMatrixShapeError,
+    PlacementError,
+    UndocumentedFormError,
+    UnreadableDocumentError,
+    UnwritableFormError,
+)
 from plugin_maintenance.render import (
     FRONTMATTER_MATRIX_NAME,
     MATRIX_PATH,
     PLACEMENTS,
     VALUE_FORMS,
     VERBATIM_FORM,
-    BuildError,
     Harness,
     load_frontmatter_matrix,
 )
@@ -146,20 +152,20 @@ class TestLoaderRejects:
         return path
 
     def test_missing_file_names_the_path(self, tmp_path):
-        with pytest.raises(BuildError, match=FRONTMATTER_MATRIX_NAME):
+        with pytest.raises(UnreadableDocumentError, match=FRONTMATTER_MATRIX_NAME):
             load_frontmatter_matrix(tmp_path / FRONTMATTER_MATRIX_NAME)
 
     def test_empty_keys_section_fails(self, tmp_path, matrix):
         broken = {**matrix, "keys": {}}
 
-        with pytest.raises(BuildError, match="non-empty"):
+        with pytest.raises(FrontmatterMatrixShapeError, match="non-empty"):
             load_frontmatter_matrix(self.write(tmp_path, broken))
 
     def test_form_the_matrix_does_not_document_fails(self, tmp_path, matrix):
         broken = json.loads(json.dumps(matrix))
         broken["keys"]["arguments"]["form"] = "prose"
 
-        with pytest.raises(BuildError, match="undocumented form"):
+        with pytest.raises(UndocumentedFormError, match="undocumented form"):
             load_frontmatter_matrix(self.write(tmp_path, broken))
 
     def test_form_the_renderer_cannot_write_fails(self, tmp_path, matrix):
@@ -167,19 +173,19 @@ class TestLoaderRejects:
         broken["forms"]["prose"] = "Documented but unimplemented."
         broken["keys"]["arguments"]["form"] = "prose"
 
-        with pytest.raises(BuildError, match="cannot write"):
+        with pytest.raises(UnwritableFormError, match="cannot write"):
             load_frontmatter_matrix(self.write(tmp_path, broken))
 
     def test_unknown_placement_fails(self, tmp_path, matrix):
         broken = json.loads(json.dumps(matrix))
         broken["keys"]["arguments"][Harness.CODEX]["placement"] = "footer"
 
-        with pytest.raises(BuildError, match="footer"):
+        with pytest.raises(PlacementError, match="footer"):
             load_frontmatter_matrix(self.write(tmp_path, broken))
 
     def test_missing_placement_for_one_assistant_fails(self, tmp_path, matrix):
         broken = json.loads(json.dumps(matrix))
         del broken["keys"]["arguments"][Harness.CODEX]
 
-        with pytest.raises(BuildError, match="arguments"):
+        with pytest.raises(PlacementError, match="arguments"):
             load_frontmatter_matrix(self.write(tmp_path, broken))

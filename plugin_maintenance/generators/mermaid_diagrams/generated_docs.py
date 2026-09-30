@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import errno
 import json
 import os
 import re
@@ -299,7 +300,7 @@ def load_navigation_metadata() -> dict[str, NavigationMetadata]:
     if configured:
         configured_path = plugin_relative_path(configured)
         if not configured_path.exists():
-            raise FileNotFoundError(f"Mermaid docs navigation file not found: {configured_path}")
+            raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), str(configured_path))
         return load_navigation_metadata_from_path(configured_path)
 
     if BUNDLED_DOCS_NAVIGATION_PATH.exists():

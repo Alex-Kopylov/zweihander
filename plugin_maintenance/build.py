@@ -8,10 +8,10 @@ import tempfile
 from pathlib import Path
 
 from plugin_maintenance import REPO_ROOT
+from plugin_maintenance.errors import BuildError
 from plugin_maintenance.generate import run_generators
 from plugin_maintenance.render import (
     DIST_DIRS,
-    BuildError,
     render_tree,
     tree_snapshot,
 )
@@ -57,7 +57,8 @@ def main() -> None:
     try:
         stale = stale_paths() if args.check else build()
     except BuildError as error:
-        raise SystemExit(f"error: {error}") from error
+        # SystemExit prints its argument as the process's last word; that is the CLI's contract, not a reusable message.
+        raise SystemExit(f"error: {error}") from error  # ruff: ignore[raise-vanilla-args]
     if args.check:
         if stale:
             raise SystemExit(

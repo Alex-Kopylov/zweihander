@@ -28,6 +28,31 @@ from pathlib import Path
 import pathspec
 from jinja2 import Environment, StrictUndefined, TemplateError
 
+from plugin_maintenance.errors import (
+    ActionMatrixShapeError,
+    BuildError,
+    CallableFlagError,
+    CallableNameError,
+    DevFileTemplateError,
+    Document,
+    DuplicateFrontmatterKeyError,
+    FrontmatterMatrixShapeError,
+    InvocationWrapperError,
+    LineBreakError,
+    ManifestShapeError,
+    MissingPluginError,
+    PlaceholderNameError,
+    PlacementError,
+    PlainScalarError,
+    TemplateConflictError,
+    TemplateRenderError,
+    UndocumentedFormError,
+    UnknownHarnessError,
+    UnmappedActionError,
+    UnreadableDocumentError,
+    UnwritableFormError,
+)
+
 
 class Harness(StrEnum):
     """The one list of harnesses; each value is its key in both matrices."""
@@ -75,10 +100,6 @@ FOREIGN_SKILL_FILES = {
 }
 
 
-class BuildError(Exception):
-    """Raised when the build must stop instead of emitting a partial tree."""
-
-
 class ActionMap(Mapping):
     """Action key -> callable name; a missing key names the action and harness."""
 
@@ -88,13 +109,11 @@ class ActionMap(Mapping):
         self._harness = harness
 
     def __getitem__(self, key: str) -> str:
-        """Return the callable name, or raise BuildError naming the action and harness."""
+        """Return the callable name, or raise UnmappedActionError."""
         try:
             return self._names[key]
         except KeyError:
-            raise BuildError(
-                f"action '{key}' is not mapped for harness '{self._harness}' in the action matrix"
-            ) from None
+            raise UnmappedActionError(key, self._harness) from None
 
     def __iter__(self):
         """Iterate over the mapped action keys."""
@@ -110,34 +129,25 @@ def load_matrix(matrix_path: Path) -> dict:
     try:
         matrix = json.loads(matrix_path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as error:
-        raise BuildError(f"cannot load action matrix {matrix_path}: {error}") from error
+        raise UnreadableDocumentError(Document.ACTION_MATRIX, matrix_path, error) from error
 
     assistants = matrix.get("assistants")
     actions = matrix.get("actions")
     if not isinstance(assistants, dict) or not assistants or not isinstance(actions, dict):
-        raise BuildError(f"malformed action matrix {matrix_path}: 'assistants' and 'actions' must be non-empty objects")
+        raise ActionMatrixShapeError(matrix_path)
     for assistant_key, assistant in assistants.items():
         wrapper = assistant.get("invocation_wrapper")
         if not isinstance(wrapper, str) or wrapper.count("{name}") != 1:
-            raise BuildError(
-                f"malformed action matrix {matrix_path}: assistant "
-                f"'{assistant_key}' needs one invocation_wrapper with one "
-                "{name} slot"
-            )
+            raise InvocationWrapperError(matrix_path, assistant_key)
     for action_key, action in actions.items():
         if not isinstance(action.get("callable"), bool):
-            raise BuildError(
-                f"malformed action matrix {matrix_path}: action '{action_key}' is missing the boolean 'callable' flag"
-            )
+            raise CallableFlagError(matrix_path, action_key)
         if not action["callable"]:
             continue
         for assistant_key in assistants:
             name = action.get(assistant_key, {}).get("name")
             if not isinstance(name, str) or not name:
-                raise BuildError(
-                    f"malformed action matrix {matrix_path}: callable action "
-                    f"'{action_key}' has no name for assistant '{assistant_key}'"
-                )
+                raise CallableNameError(matrix_path, action_key, assistant_key)
     return matrix
 
 
@@ -146,13 +156,13 @@ def manifest_plugin_names(manifest_path: Path) -> list[str]:
     try:
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as error:
-        raise BuildError(f"cannot load marketplace manifest {manifest_path}: {error}") from error
+        raise UnreadableDocumentError(Document.MANIFEST, manifest_path, error) from error
 
     plugins = manifest.get("plugins")
     if not isinstance(plugins, list) or not all(
         isinstance(entry, dict) and isinstance(entry.get("name"), str) for entry in plugins
     ):
-        raise BuildError(f"marketplace manifest {manifest_path} needs a 'plugins' list of objects with 'name'")
+        raise ManifestShapeError(manifest_path)
     return [entry["name"] for entry in plugins]
 
 
@@ -218,7 +228,7 @@ def _plain_scalar(key: str, value: str | list[str]) -> str:
 
     problem = _plain_scalar_problem(written)
     if problem:
-        raise BuildError(f"{key} value {written!r} cannot be written as a plain YAML scalar: it carries {problem}")
+        raise PlainScalarError(key, written, problem)
     return written
 
 
@@ -234,7 +244,7 @@ def _quoted_scalar(key: str, value: str | list[str]) -> str:
         return ""
 
     if "\n" in written or "\r" in written:
-        raise BuildError(f"{key} value {written!r} cannot be written as one YAML line: it carries a line break")
+        raise LineBreakError(key, written)
     escaped = written.replace("\\", "\\\\").replace('"', '\\"')
     return f'"{escaped}"'
 
@@ -247,11 +257,7 @@ def _placeholder_names(key: str, value: str | list[str]) -> str:
 
     for name in names:
         if not ARGUMENT_NAME.match(name):
-            raise BuildError(
-                f"{key} name {name!r} cannot spell a `$name` placeholder: use "
-                "lowercase letters, digits and underscores, starting with a "
-                "letter"
-            )
+            raise PlaceholderNameError(key, name)
     return " ".join(names)
 
 
@@ -288,39 +294,30 @@ def load_frontmatter_matrix(matrix_path: Path) -> dict:
     try:
         matrix = json.loads(matrix_path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as error:
-        raise BuildError(f"cannot load frontmatter matrix {matrix_path}: {error}") from error
+        raise UnreadableDocumentError(Document.FRONTMATTER_MATRIX, matrix_path, error) from error
 
     keys = matrix.get("keys")
     assistants = matrix.get("assistants")
     forms = matrix.get("forms")
-    if not isinstance(keys, dict) or not keys or not isinstance(assistants, dict):
-        raise BuildError(
-            f"malformed frontmatter matrix {matrix_path}: 'keys' and 'assistants' must be non-empty objects"
-        )
-    if not isinstance(matrix.get("metadata_namespaces"), dict) or not isinstance(forms, dict):
-        raise BuildError(
-            f"malformed frontmatter matrix {matrix_path}: 'metadata_namespaces' and 'forms' must be objects"
-        )
+    if (
+        not isinstance(keys, dict)
+        or not keys
+        or not isinstance(assistants, dict)
+        or not isinstance(matrix.get("metadata_namespaces"), dict)
+        or not isinstance(forms, dict)
+    ):
+        raise FrontmatterMatrixShapeError(matrix_path)
 
     for key, entry in keys.items():
         form = entry.get("form")
         if form not in forms:
-            raise BuildError(
-                f"malformed frontmatter matrix {matrix_path}: key '{key}' declares the undocumented form '{form}'"
-            )
+            raise UndocumentedFormError(matrix_path, key, form)
         if form != VERBATIM_FORM and form not in VALUE_FORMS:
-            raise BuildError(
-                f"malformed frontmatter matrix {matrix_path}: key '{key}' "
-                f"declares the form '{form}', which the renderer cannot write"
-            )
+            raise UnwritableFormError(matrix_path, key, form)
         for assistant_key in assistants:
             placement = entry.get(assistant_key, {}).get("placement")
             if placement not in PLACEMENTS:
-                raise BuildError(
-                    f"malformed frontmatter matrix {matrix_path}: key '{key}' "
-                    f"gives assistant '{assistant_key}' the placement "
-                    f"{placement!r}; use one of {', '.join(sorted(PLACEMENTS))}"
-                )
+                raise PlacementError(matrix_path, key, assistant_key, placement, PLACEMENTS)
     return matrix
 
 
@@ -393,14 +390,12 @@ def _render_template(source: Path, environment: Environment, context: dict, harn
     except BuildError:
         raise
     except TemplateError as error:
-        raise BuildError(f"failed to render {source} for harness '{harness}': {error}") from error
+        raise TemplateRenderError(source, harness, error) from error
 
     rendered = merge_metadata_blocks(rendered)
     duplicate = duplicate_frontmatter_key(rendered)
     if duplicate:
-        raise BuildError(
-            f"{source} rendered for harness '{harness}' carries two '{duplicate}:' keys in its frontmatter"
-        )
+        raise DuplicateFrontmatterKeyError(source, harness, duplicate)
     return rendered
 
 
@@ -425,15 +420,12 @@ def _render_plugin(  # ruff: ignore[too-many-arguments, too-many-positional-argu
         plain_name = source.name[: -len(TEMPLATE_SUFFIX)] if is_template else source.name
         if plain_name in DEV_FILE_NAMES:
             if is_template:
-                raise BuildError(
-                    f"{source} would emit the development file {plain_name}, "
-                    "which is never shipped; author it as a plain file"
-                )
+                raise DevFileTemplateError(source, plain_name)
             continue
 
         if is_template:
             if source.with_name(plain_name).exists():
-                raise BuildError(f"both {source.with_name(plain_name)} and {source} exist; keep exactly one")
+                raise TemplateConflictError(source.with_name(plain_name), source)
             target = target_dir / relative.with_name(plain_name)
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_text(
@@ -463,7 +455,7 @@ def render_tree(  # ruff: ignore[too-many-locals] - one linear build step; split
     known_assistants = set(matrix["assistants"]) & set(frontmatter_matrix["assistants"])
     if harness not in known_assistants or harness not in HARNESS_MANIFESTS:
         known = sorted(known_assistants & set(HARNESS_MANIFESTS))
-        raise BuildError(f"unknown harness '{harness}'; supported harnesses: {', '.join(known)}")
+        raise UnknownHarnessError(harness, known)
     harness = Harness(harness)
 
     manifest = Path(manifest_path) if manifest_path else repo_root / HARNESS_MANIFESTS[harness]
@@ -471,7 +463,7 @@ def render_tree(  # ruff: ignore[too-many-locals] - one linear build step; split
     for plugin_name in plugin_names:
         source_dir = repo_root / "plugins" / plugin_name
         if not source_dir.is_dir():
-            raise BuildError(f"manifest {manifest} lists plugin '{plugin_name}' but {source_dir} does not exist")
+            raise MissingPluginError(manifest, plugin_name, source_dir)
     is_ignored = ignored_path(repo_root)
 
     # Templates render Markdown, YAML and scripts, never HTML: escaping would corrupt them.
@@ -539,7 +531,8 @@ def main(argv: list[str] | None = None) -> None:
     try:
         render_tree(args.repo_root, args.harness, args.output)
     except BuildError as error:
-        raise SystemExit(f"error: {error}") from error
+        # SystemExit prints its argument as the process's last word; that is the CLI's contract, not a reusable message.
+        raise SystemExit(f"error: {error}") from error  # ruff: ignore[raise-vanilla-args]
     print(f"rendered {args.harness} -> {args.output}")
 
 

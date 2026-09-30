@@ -12,10 +12,20 @@ import re
 from pathlib import Path
 
 import pytest
+from plugin_maintenance.errors import (
+    DevFileTemplateError,
+    DuplicateFrontmatterKeyError,
+    LineBreakError,
+    PlaceholderNameError,
+    PlainScalarError,
+    TemplateConflictError,
+    TemplateRenderError,
+    UnknownHarnessError,
+    UnmappedActionError,
+)
 from plugin_maintenance.render import (
     DEV_FILE_NAMES,
     FRONTMATTER_MATRIX_NAME,
-    BuildError,
     Harness,
     render_tree,
 )
@@ -138,7 +148,7 @@ class TestFileRules:
         colliding = fixture_repo / "plugins" / "demo-plugin" / "skills" / "demo" / "SKILL.md"
         colliding.write_text("collides\n", encoding="utf-8")
 
-        with pytest.raises(BuildError, match="SKILL.md"):
+        with pytest.raises(TemplateConflictError, match="SKILL.md"):
             render(fixture_repo, fixture_matrix, Harness.CLAUDE_CODE)
 
     def test_executable_bit_survives(self, fixture_repo, fixture_matrix):
@@ -197,7 +207,7 @@ class TestFrontmatterPortability:
     def test_unquotable_value_fails_the_build(self, fixture_repo, fixture_matrix, harness, value):
         self.write_skill(fixture_repo, f"{{{{ allowed_tools({value!r}) }}}}\n")
 
-        with pytest.raises(BuildError, match="allowed-tools"):
+        with pytest.raises(PlainScalarError, match="allowed-tools"):
             render(fixture_repo, fixture_matrix, harness)
 
 
@@ -274,14 +284,14 @@ class TestArgumentFrontmatter:
     def test_multi_line_hint_fails_the_build(self, fixture_repo, fixture_matrix, harness):
         self.write_skill(fixture_repo, "{{ argument_hint('one\\ntwo') }}\n")
 
-        with pytest.raises(BuildError, match="argument-hint"):
+        with pytest.raises(LineBreakError, match="argument-hint"):
             render(fixture_repo, fixture_matrix, harness)
 
     @pytest.mark.parametrize("name", ["Items", "two words", "1st", "items!"])
     def test_name_that_cannot_spell_a_placeholder_fails_the_build(self, fixture_repo, fixture_matrix, harness, name):
         self.write_skill(fixture_repo, f"{{{{ arguments([{name!r}]) }}}}\n")
 
-        with pytest.raises(BuildError, match="placeholder"):
+        with pytest.raises(PlaceholderNameError, match="placeholder"):
             render(fixture_repo, fixture_matrix, harness)
 
 
@@ -308,14 +318,14 @@ class TestPlacementComesFromTheMatrix:
     def test_a_key_outside_the_matrix_has_no_global(self, fixture_repo, fixture_matrix):
         self.write_skill(fixture_repo, '{{ model("opus") }}\n')
 
-        with pytest.raises(BuildError, match="model"):
+        with pytest.raises(TemplateRenderError, match="model"):
             render(fixture_repo, fixture_matrix, Harness.CLAUDE_CODE)
 
     def test_a_verbatim_key_has_no_global(self, fixture_repo, fixture_matrix):
         """`name` is written literally, so nothing places it."""
         self.write_skill(fixture_repo, '{{ name("demo") }}\n')
 
-        with pytest.raises(BuildError, match="name"):
+        with pytest.raises(TemplateRenderError, match="name"):
             render(fixture_repo, fixture_matrix, Harness.CLAUDE_CODE)
 
 
@@ -366,7 +376,7 @@ class TestFrontmatterMetadataMerge:
             encoding="utf-8",
         )
 
-        with pytest.raises(BuildError, match="description"):
+        with pytest.raises(DuplicateFrontmatterKeyError, match="description"):
             render(fixture_repo, fixture_matrix, harness)
 
 
@@ -375,20 +385,20 @@ class TestFailLoud:
         template = fixture_repo / "plugins" / "demo-plugin" / "skills" / "demo" / "SKILL.md.j2"
         template.write_text("{{ actions.NoSuchAction | call }}\n", encoding="utf-8")
 
-        with pytest.raises(BuildError, match=r"NoSuchAction.*ClaudeCode"):
+        with pytest.raises(UnmappedActionError, match=r"NoSuchAction.*ClaudeCode"):
             render(fixture_repo, fixture_matrix, Harness.CLAUDE_CODE)
 
     @pytest.mark.parametrize("source", ["{{ unknown_variable }}", "{% if %}"])
     def test_native_jinja_error_names_the_source(self, fixture_repo, fixture_matrix, source):
         demo_template(fixture_repo).write_text(source, encoding="utf-8")
 
-        with pytest.raises(BuildError, match=r"failed to render .*SKILL.md.j2.*ClaudeCode"):
+        with pytest.raises(TemplateRenderError, match=r"failed to render .*SKILL.md.j2.*ClaudeCode"):
             render(fixture_repo, fixture_matrix, Harness.CLAUDE_CODE)
 
         assert not (fixture_repo / "dist-under-test" / Harness.CLAUDE_CODE).exists()
 
     def test_unknown_harness_fails_before_rendering(self, fixture_repo, fixture_matrix):
-        with pytest.raises(BuildError, match="Gemini"):
+        with pytest.raises(UnknownHarnessError, match="Gemini"):
             render(fixture_repo, fixture_matrix, "Gemini")
 
         assert not (fixture_repo / "dist-under-test" / "Gemini").exists()
@@ -397,7 +407,7 @@ class TestFailLoud:
         template = fixture_repo / "plugins" / "demo-plugin" / "skills" / "demo" / "SKILL.md.j2"
         template.write_text("{{ actions.NoSuchAction | call }}\n", encoding="utf-8")
 
-        with pytest.raises(BuildError):
+        with pytest.raises(UnmappedActionError):
             render(fixture_repo, fixture_matrix, Harness.CLAUDE_CODE)
 
         assert not (fixture_repo / "dist-under-test" / Harness.CLAUDE_CODE).exists()
@@ -416,7 +426,7 @@ class TestTreeMembership:
         template = fixture_repo / "plugins" / "plain-plugin" / f"{dev_name}.j2"
         template.write_text("Rendered for {{ harness }}.\n", encoding="utf-8")
 
-        with pytest.raises(BuildError, match=re.escape(f"{dev_name}.j2")):
+        with pytest.raises(DevFileTemplateError, match=re.escape(f"{dev_name}.j2")):
             render(fixture_repo, fixture_matrix, harness)
 
         assert not (fixture_repo / "dist-under-test" / harness).exists()

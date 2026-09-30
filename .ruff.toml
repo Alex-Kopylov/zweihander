@@ -60,8 +60,6 @@ ignore = [
   # - Circular import avoidance
   # - Pydantic validator optimization
   # - Lazy loading for optional dependencies
-  "TRY003", # raise-vanilla-args - BuildError carries its context in the message;
-  # one exception subclass per message would add classes, not clarity
 ]
 
 [lint.mccabe]

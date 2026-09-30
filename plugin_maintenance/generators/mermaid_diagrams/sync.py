@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import errno
 import os
 import re
 import shutil
@@ -60,10 +61,10 @@ def git_commit(directory: Path) -> str:
     return result.stdout.strip()
 
 
-def require_path(path: Path, description: str) -> None:
-    """Raise FileNotFoundError naming `description` when `path` is missing."""
+def require_path(path: Path) -> None:
+    """Raise FileNotFoundError naming `path` when it is missing."""
     if not path.exists():
-        raise FileNotFoundError(f"Missing Mermaid {description}: {path}")
+        raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), str(path))
 
 
 def preflight_sync_source(source_dir: Path) -> None:
@@ -71,11 +72,11 @@ def preflight_sync_source(source_dir: Path) -> None:
     syntax_dir = source_dir / "docs/syntax"
     config_dir = source_dir / "docs/config"
     docs_navigation_path = source_dir / "packages/mermaid/src/docs/.vitepress/config.ts"
-    require_path(syntax_dir, "syntax directory")
-    require_path(config_dir, "config directory")
-    require_path(docs_navigation_path, "docs navigation file")
+    require_path(syntax_dir)
+    require_path(config_dir)
+    require_path(docs_navigation_path)
     for file in CONFIG_FILES:
-        require_path(config_dir / file, f"config doc {file}")
+        require_path(config_dir / file)
 
 
 def read_existing_sync_metadata() -> ExistingSyncMetadata | None:

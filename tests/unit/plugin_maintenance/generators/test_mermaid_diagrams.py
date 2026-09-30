@@ -76,7 +76,7 @@ def test_python_sync_preserves_first_port_safety_gates() -> None:
     assert "existing_sync_status" in generated_docs
     assert "MERMAID_DOCS_NAVIGATION" in generated_docs
     assert "mermaid_navigation.json" in generated_docs
-    assert "Mermaid docs navigation file not found" in generated_docs
+    assert "if not configured_path.exists():" in generated_docs
     assert "THIRD_PARTY_NOTICES.md" in generated_docs
     assert "render_third_party_notices" in generated_docs
     assert "preflight_sync_source" in sync
