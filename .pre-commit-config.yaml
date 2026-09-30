@@ -24,7 +24,8 @@ default_stages: [pre-commit, pre-push]
 
 # AI agent working files are not lint targets (gitleaks still covers them
 # via always_run below)
-# dist/ is build output rendered from plugins/; lint the source, not the copy
+# dist/ is build output rendered from plugins/; lint the source, not the copy.
+# dist/ is linted once, in CI - see the lint-dist step in .github/workflows/ci.yml.
 exclude: ^(\.claude|\.codex|\.cursor|\.gemini|dist)/|^(CLAUDE|AGENTS|GEMINI)\.md$
 
 repos:
@@ -69,7 +70,7 @@ repos:
         entry: mise exec -- uv run ty check
         language: system
         types: [python]
-        exclude: ^(scripts/|docs/|tests/)
+        exclude: ^(scripts/|docs/)
         require_serial: true
 
   - repo: local
@@ -137,7 +138,7 @@ repos:
         name: deptry (dependency declarations)
         entry: mise exec -- uv run deptry .
         language: system
-        files: ^(plugin_maintenance/.*\.py|pyproject\.toml|uv\.lock)$
+        files: ^((plugin_maintenance|plugins)/.*\.py|pyproject\.toml|uv\.lock)$
         pass_filenames: false
         stages: [pre-commit]
 

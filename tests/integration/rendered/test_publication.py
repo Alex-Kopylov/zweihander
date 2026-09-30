@@ -27,7 +27,7 @@ def test_codex_manifest_sources_resolve_into_its_dist_tree():
         assert entry["source"]["path"] == f"./dist/codex/{entry['name']}", entry["name"]
 
 
-def test_rendered_tree_carries_exactly_its_manifest_plugins(rendered: Path, harness: str) -> None:
+def test_rendered_tree_carries_exactly_its_manifest_plugins(rendered: Path, harness: Harness) -> None:
     """Membership is the manifest's call, so a tree holds that list and no more."""
     listed = manifest_plugin_names(REPO_ROOT / HARNESS_MANIFESTS[harness])
 

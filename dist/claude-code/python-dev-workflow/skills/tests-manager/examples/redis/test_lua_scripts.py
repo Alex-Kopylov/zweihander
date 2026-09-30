@@ -1,5 +1,6 @@
 """Example: Redis Lua script tests -- rate limiter, atomic transfer."""
 
+
 class TestLuaScripts:
     def test_rate_limit_script(self, redis_client):
         script = """

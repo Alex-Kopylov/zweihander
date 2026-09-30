@@ -3,6 +3,7 @@
 import threading
 import time
 
+
 class TestPubSub:
     def test_publish_subscribe(self, redis_client):
         received_messages: list[str] = []
@@ -37,10 +38,12 @@ class TestPubSub:
             count = 0
             for message in pubsub.listen():
                 if message["type"] == "pmessage":
-                    received.append({
-                        "channel": message["channel"],
-                        "data": message["data"],
-                    })
+                    received.append(
+                        {
+                            "channel": message["channel"],
+                            "data": message["data"],
+                        }
+                    )
                     count += 1
                     if count >= 2:
                         break

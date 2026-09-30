@@ -8,7 +8,7 @@ yaml-files:
 ignore:
   - .venv/
   - node_modules/
-  # Build output rendered from plugins/
+  # Build output rendered from plugins/; dist/ is linted once, in CI - see the lint-dist step in .github/workflows/ci.yml
   - dist/
   # AI agent working directories
   - .claude/
