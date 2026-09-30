@@ -1,4 +1,14 @@
 #!/usr/bin/env python3
+# /// script
+# requires-python = ">=3.11"
+# dependencies = ["tiktoken"]
+# ///
+"""Measure a Markdown file's size and token budget status for md-bloat-hunter.
+
+`uv run` installs tiktoken from the metadata above for exact counts; under a
+plain interpreter without tiktoken the script falls back to an estimate.
+"""
+
 import argparse
 import json
 import math

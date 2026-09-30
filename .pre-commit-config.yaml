@@ -137,7 +137,7 @@ repos:
         name: deptry (dependency declarations)
         entry: mise exec -- uv run deptry .
         language: system
-        files: ^(plugin_maintenance/.*\.py|pyproject\.toml|uv\.lock)$
+        files: ^((plugin_maintenance|plugins)/.*\.py|pyproject\.toml|uv\.lock)$
         pass_filenames: false
         stages: [pre-commit]
 

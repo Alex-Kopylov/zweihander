@@ -13,7 +13,6 @@ dependencies = [
 dev = [
   # pytest.ini sets strict_markers, an ini key pytest 8 ignores.
   "pytest>=9",
-  "tiktoken",
   "ruff",
   "ty",
   "flake8",
@@ -27,11 +26,24 @@ dev = [
   "check-jsonschema",
   "mutmut",
 ]
+# Third-party imports of the Python that ships inside plugins/: skill scripts
+# and the example code skills tell users to copy. The plugins are developed
+# here, so linting (deptry, ty) and running them needs these installed.
+plugins = [
+  "celery",
+  "fakeredis",
+  "redis",
+  "requests",
+  "testcontainers[redis]",
+  "tiktoken",
+]
 
 [tool.uv]
 # Never fall back to a system interpreter; see
 # Alex-Kopylov/ai-ready-modern-python-template#34.
 python-preference = "only-managed"
+# `uv sync` installs the plugin dependencies too, so deptry and ty resolve them.
+default-groups = ["dev", "plugins"]
 
 [tool.coverage.run]
 source = ["plugin_maintenance"]
@@ -43,8 +55,19 @@ skip_empty = true
 fail_under = 90
 
 [tool.deptry]
-# plugins/ and dist/ ship example code for users; only the build tooling is this project's code
-extend_exclude = ["plugins", "dist"]
+# dist/ is build output rendered from plugins/
+extend_exclude = ["dist"]
+# `app` and `myapp` are the user's own application package in the example code
+# skills tell users to copy (`from app.cache import CacheService`). They are
+# first-party from the example's point of view, not packages to declare here.
+known_first_party = ["app", "myapp"]
+# DEP004 assumes scanned code ships as a package whose runtime needs only
+# [project].dependencies. This repository builds no distribution (there is no
+# [build-system]): plugin_maintenance runs from this checkout and plugin code
+# runs in a user's own environment, so every declared group is equally real and
+# `uv sync` installs them all by default. Missing (DEP001), unused (DEP002) and
+# transitive (DEP003) imports stay checked.
+ignore = ["DEP004"]
 
 [tool.typos.files]
 # dist/ is rendered from plugins/; the mermaid references are synced verbatim from upstream
