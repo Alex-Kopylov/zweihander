@@ -1,34 +1,37 @@
 [project]
 name = "zweihander"
 version = "0.1.0"
-description = "Personal plugin marketplace for AI agents."
+description = "Simple, robust, and versatile marketplace for agent plugins, forged for the chaos of the AI world."
 requires-python = ">=3.14"
 license = "Apache-2.0"
 dependencies = [
-    "jinja2>=3.1",
-    "pathspec>=0.12",
+  "jinja2>=3.1",
+  "pathspec>=0.12",
 ]
 
 [dependency-groups]
 dev = [
-    "pytest>=9.0.3",
-    "tiktoken>=0.14.0",
-    "ruff",
-    "ty",
-    "flake8",
-    "flake8-pydantic",
-    "flake8-async",
-    "vulture",
-    "deptry>=0.25.1",
-    "pytest-cov>=7.1.0",
-    "prek",
-    "yamllint",
-    "check-jsonschema",
-    "mutmut",
+  # pytest.ini sets strict_markers, an ini key pytest 8 ignores.
+  "pytest>=9",
+  "tiktoken",
+  "ruff",
+  "ty",
+  "flake8",
+  "flake8-pydantic",
+  "flake8-async",
+  "vulture",
+  "deptry",
+  "pytest-cov",
+  "prek",
+  "yamllint",
+  "check-jsonschema",
+  "mutmut",
 ]
 
-[tool.ty.environment]
-python-version = "3.14"
+[tool.uv]
+# Never fall back to a system interpreter; see
+# Alex-Kopylov/ai-ready-modern-python-template#34.
+python-preference = "only-managed"
 
 [tool.coverage.run]
 source = ["plugin_maintenance"]
