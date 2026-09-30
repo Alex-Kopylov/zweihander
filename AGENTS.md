@@ -111,10 +111,13 @@ jq empty .agents/plugins/marketplace.json .claude-plugin/marketplace.json
 find plugins dist -path '*/plugin.json' -print0 | xargs -0 jq empty
 ```
 
-8. Run Markdown whitespace checks before finishing:
+8. Run Markdown whitespace checks and the lint suite before finishing. CI's
+   `gate` job runs the same `mise run lint`; `mise.toml` pins every linter and
+   `mise run install-hooks` installs the prek commit hooks.
 
 ```shell
 git diff --check
+mise run lint
 ```
 
 ## Tests

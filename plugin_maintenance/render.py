@@ -22,11 +22,38 @@ import re
 import shutil
 import tempfile
 from collections.abc import Callable, Mapping
+from dataclasses import dataclass
 from enum import StrEnum
 from pathlib import Path
 
 import pathspec
 from jinja2 import Environment, StrictUndefined, TemplateError
+
+from plugin_maintenance.errors import (
+    ActionMatrixShapeError,
+    BuildError,
+    CallableFlagError,
+    CallableNameError,
+    DevFileTemplateError,
+    Document,
+    DuplicateFrontmatterKeyError,
+    FrontmatterMatrixShapeError,
+    InvocationWrapperError,
+    LineBreakError,
+    ManifestShapeError,
+    MissingPluginError,
+    PlaceholderNameError,
+    PlacementError,
+    PlainScalarError,
+    TemplateConflictError,
+    TemplateRenderError,
+    UndocumentedFormError,
+    UnknownHarnessError,
+    UnmappedActionError,
+    UnreadableDocumentError,
+    UnwritableFormError,
+)
+
 
 class Harness(StrEnum):
     """The one list of harnesses; each value is its key in both matrices."""
@@ -35,10 +62,7 @@ class Harness(StrEnum):
     CODEX = "Codex"
 
 
-MATRIX_PATH = Path(
-    "plugins/ai-assistant-ops/skills/adapt-skill-for-ai-harness"
-    "/references/harness-action-matrix.json"
-)
+MATRIX_PATH = Path("plugins/ai-assistant-ops/skills/adapt-skill-for-ai-harness/references/harness-action-matrix.json")
 # The frontmatter matrix sits beside the action matrix, so overriding one path
 # in a test moves both.
 FRONTMATTER_MATRIX_NAME = "harness-frontmatter-matrix.json"
@@ -77,89 +101,69 @@ FOREIGN_SKILL_FILES = {
 }
 
 
-class BuildError(Exception):
-    """Raised when the build must stop instead of emitting a partial tree."""
-
-
 class ActionMap(Mapping):
     """Action key -> callable name; a missing key names the action and harness."""
 
     def __init__(self, names: dict[str, str], harness: str) -> None:
+        """Map action keys to callable names for `harness`."""
         self._names = names
         self._harness = harness
 
     def __getitem__(self, key: str) -> str:
+        """Return the callable name, or raise UnmappedActionError."""
         try:
             return self._names[key]
         except KeyError:
-            raise BuildError(
-                f"action '{key}' is not mapped for harness '{self._harness}' "
-                "in the action matrix"
-            ) from None
+            raise UnmappedActionError(key, self._harness) from None
 
     def __iter__(self):
+        """Iterate over the mapped action keys."""
         return iter(self._names)
 
     def __len__(self) -> int:
+        """Return the number of mapped actions."""
         return len(self._names)
 
 
 def load_matrix(matrix_path: Path) -> dict:
+    """Load the harness action matrix and validate its shape."""
     try:
         matrix = json.loads(matrix_path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as error:
-        raise BuildError(f"cannot load action matrix {matrix_path}: {error}") from error
+        raise UnreadableDocumentError(Document.ACTION_MATRIX, matrix_path, error) from error
 
     assistants = matrix.get("assistants")
     actions = matrix.get("actions")
     if not isinstance(assistants, dict) or not assistants or not isinstance(actions, dict):
-        raise BuildError(
-            f"malformed action matrix {matrix_path}: "
-            "'assistants' and 'actions' must be non-empty objects"
-        )
+        raise ActionMatrixShapeError(matrix_path)
     for assistant_key, assistant in assistants.items():
         wrapper = assistant.get("invocation_wrapper")
         if not isinstance(wrapper, str) or wrapper.count("{name}") != 1:
-            raise BuildError(
-                f"malformed action matrix {matrix_path}: assistant "
-                f"'{assistant_key}' needs one invocation_wrapper with one "
-                "{name} slot"
-            )
+            raise InvocationWrapperError(matrix_path, assistant_key)
     for action_key, action in actions.items():
         if not isinstance(action.get("callable"), bool):
-            raise BuildError(
-                f"malformed action matrix {matrix_path}: action '{action_key}' "
-                "is missing the boolean 'callable' flag"
-            )
+            raise CallableFlagError(matrix_path, action_key)
         if not action["callable"]:
             continue
         for assistant_key in assistants:
             name = action.get(assistant_key, {}).get("name")
             if not isinstance(name, str) or not name:
-                raise BuildError(
-                    f"malformed action matrix {matrix_path}: callable action "
-                    f"'{action_key}' has no name for assistant '{assistant_key}'"
-                )
+                raise CallableNameError(matrix_path, action_key, assistant_key)
     return matrix
 
 
 def manifest_plugin_names(manifest_path: Path) -> list[str]:
+    """Return the plugin names a marketplace manifest lists."""
     try:
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as error:
-        raise BuildError(
-            f"cannot load marketplace manifest {manifest_path}: {error}"
-        ) from error
+        raise UnreadableDocumentError(Document.MANIFEST, manifest_path, error) from error
 
     plugins = manifest.get("plugins")
     if not isinstance(plugins, list) or not all(
-        isinstance(entry, dict) and isinstance(entry.get("name"), str)
-        for entry in plugins
+        isinstance(entry, dict) and isinstance(entry.get("name"), str) for entry in plugins
     ):
-        raise BuildError(
-            f"marketplace manifest {manifest_path} needs a 'plugins' list "
-            "of objects with 'name'"
-        )
+        raise ManifestShapeError(manifest_path)
     return [entry["name"] for entry in plugins]
 
 
@@ -178,11 +182,7 @@ def ignored_path(repo_root: Path) -> Callable[[Path], bool]:
     `.gitignore` ignores nothing.
     """
     ignore_file = repo_root / IGNORE_FILE
-    patterns = (
-        ignore_file.read_text(encoding="utf-8").splitlines()
-        if ignore_file.is_file()
-        else []
-    )
+    patterns = ignore_file.read_text(encoding="utf-8").splitlines() if ignore_file.is_file() else []
     spec = pathspec.GitIgnoreSpec.from_lines(patterns)
     return lambda path: spec.match_file(path.relative_to(repo_root))
 
@@ -199,40 +199,32 @@ def tree_snapshot(root: Path) -> dict[str, tuple[bytes, int]]:
     }
 
 
-def _plain_scalar_problem(value: str) -> str | None:
-    """Name what stops `value` from being a plain YAML scalar, or return None.
-
-    The Agent Skills specification writes `allowed-tools` unquoted, so the
-    renderer writes it unquoted too and refuses a value that would change
-    meaning in that position instead of quoting it into a different shape.
-    """
-    if value != value.strip():
-        return "leading or trailing whitespace"
-    if "\n" in value or "\r" in value:
-        return "a line break"
-    if ": " in value or value.endswith(":"):
-        return "a key separator"
-    if " #" in value:
-        return "a comment marker"
-    if value[0] in YAML_INDICATORS:
-        return f"the leading YAML indicator {value[0]!r}"
-    if value.startswith("- "):
-        return "a leading sequence marker"
-    return None
+# What stops a value from being a plain YAML scalar, checked in order; the
+# first hit names the problem. `{first}` is the value's first character.
+PLAIN_SCALAR_HAZARDS: tuple[tuple[str, Callable[[str], bool]], ...] = (
+    ("leading or trailing whitespace", lambda value: value != value.strip()),
+    ("a line break", lambda value: "\n" in value or "\r" in value),
+    ("a key separator", lambda value: ": " in value or value.endswith(":")),
+    ("a comment marker", lambda value: " #" in value),
+    ("the leading YAML indicator {first!r}", lambda value: value[0] in YAML_INDICATORS),
+    ("a leading sequence marker", lambda value: value.startswith("- ")),
+)
 
 
 def _plain_scalar(key: str, value: str | list[str]) -> str:
-    """Write the value unquoted, the form the Agent Skills specification shows."""
+    """Write the value unquoted, the form the Agent Skills specification shows.
+
+    The specification writes `allowed-tools` unquoted, so the renderer writes
+    it unquoted too and refuses a value that would change meaning in that
+    position instead of quoting it into a different shape.
+    """
     written = value if isinstance(value, str) else " ".join(value)
     if not written:
         return ""
 
-    problem = _plain_scalar_problem(written)
-    if problem:
-        raise BuildError(
-            f"{key} value {written!r} cannot be written as a plain YAML "
-            f"scalar: it carries {problem}"
-        )
+    for hazard, applies in PLAIN_SCALAR_HAZARDS:
+        if applies(written):
+            raise PlainScalarError(key, written, hazard.format(first=written[0]))
     return written
 
 
@@ -248,10 +240,7 @@ def _quoted_scalar(key: str, value: str | list[str]) -> str:
         return ""
 
     if "\n" in written or "\r" in written:
-        raise BuildError(
-            f"{key} value {written!r} cannot be written as one YAML line: "
-            "it carries a line break"
-        )
+        raise LineBreakError(key, written)
     escaped = written.replace("\\", "\\\\").replace('"', '\\"')
     return f'"{escaped}"'
 
@@ -264,11 +253,7 @@ def _placeholder_names(key: str, value: str | list[str]) -> str:
 
     for name in names:
         if not ARGUMENT_NAME.match(name):
-            raise BuildError(
-                f"{key} name {name!r} cannot spell a `$name` placeholder: use "
-                "lowercase letters, digits and underscores, starting with a "
-                "letter"
-            )
+            raise PlaceholderNameError(key, name)
     return " ".join(names)
 
 
@@ -281,9 +266,7 @@ VALUE_FORMS: dict[str, Callable[[str, str | list[str]], str]] = {
 PLACEMENTS = {"top-level", "metadata"}
 
 
-def frontmatter_key(
-    placement: str, key: str, form: str, value: str | list[str]
-) -> str:
+def frontmatter_key(placement: str, key: str, form: str, value: str | list[str]) -> str:
     """Write one frontmatter key where the target harness reads it.
 
     `top-level` is for a harness that reads the key itself. `metadata` is for
@@ -307,46 +290,30 @@ def load_frontmatter_matrix(matrix_path: Path) -> dict:
     try:
         matrix = json.loads(matrix_path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as error:
-        raise BuildError(
-            f"cannot load frontmatter matrix {matrix_path}: {error}"
-        ) from error
+        raise UnreadableDocumentError(Document.FRONTMATTER_MATRIX, matrix_path, error) from error
 
     keys = matrix.get("keys")
     assistants = matrix.get("assistants")
     forms = matrix.get("forms")
-    if not isinstance(keys, dict) or not keys or not isinstance(assistants, dict):
-        raise BuildError(
-            f"malformed frontmatter matrix {matrix_path}: "
-            "'keys' and 'assistants' must be non-empty objects"
-        )
-    if not isinstance(matrix.get("metadata_namespaces"), dict) or not isinstance(
-        forms, dict
+    if (
+        not isinstance(keys, dict)
+        or not keys
+        or not isinstance(assistants, dict)
+        or not isinstance(matrix.get("metadata_namespaces"), dict)
+        or not isinstance(forms, dict)
     ):
-        raise BuildError(
-            f"malformed frontmatter matrix {matrix_path}: "
-            "'metadata_namespaces' and 'forms' must be objects"
-        )
+        raise FrontmatterMatrixShapeError(matrix_path)
 
     for key, entry in keys.items():
         form = entry.get("form")
         if form not in forms:
-            raise BuildError(
-                f"malformed frontmatter matrix {matrix_path}: key '{key}' "
-                f"declares the undocumented form '{form}'"
-            )
+            raise UndocumentedFormError(matrix_path, key, form)
         if form != VERBATIM_FORM and form not in VALUE_FORMS:
-            raise BuildError(
-                f"malformed frontmatter matrix {matrix_path}: key '{key}' "
-                f"declares the form '{form}', which the renderer cannot write"
-            )
+            raise UnwritableFormError(matrix_path, key, form)
         for assistant_key in assistants:
             placement = entry.get(assistant_key, {}).get("placement")
             if placement not in PLACEMENTS:
-                raise BuildError(
-                    f"malformed frontmatter matrix {matrix_path}: key '{key}' "
-                    f"gives assistant '{assistant_key}' the placement "
-                    f"{placement!r}; use one of {', '.join(sorted(PLACEMENTS))}"
-                )
+                raise PlacementError(matrix_path, key, assistant_key, placement, PLACEMENTS)
     return matrix
 
 
@@ -370,7 +337,7 @@ def merge_metadata_blocks(text: str) -> str:
 
     lines = match.group("body").splitlines()
     heads = [index for index, line in enumerate(lines) if line == METADATA_KEY]
-    if len(heads) < 2:
+    if len(heads) <= 1:
         return text
 
     bodies: dict[int, list[str]] = {}
@@ -412,68 +379,92 @@ def duplicate_frontmatter_key(text: str) -> str | None:
     return None
 
 
-def _render_template(
-    source: Path, environment: Environment, context: dict, harness: Harness
-) -> str:
+@dataclass(frozen=True)
+class RenderContext:
+    """What every plugin of one harness's render shares."""
+
+    harness: Harness
+    environment: Environment
+    variables: dict
+    is_ignored: Callable[[Path], bool]
+
+
+def _render_context(repo_root: Path, harness: str, matrix_file: Path) -> RenderContext:
+    """Load both matrices, check `harness` against them, and build its Jinja environment."""
+    matrix = load_matrix(matrix_file)
+    frontmatter_matrix = load_frontmatter_matrix(matrix_file.with_name(FRONTMATTER_MATRIX_NAME))
+
+    known_assistants = set(matrix["assistants"]) & set(frontmatter_matrix["assistants"])
+    if harness not in known_assistants or harness not in HARNESS_MANIFESTS:
+        raise UnknownHarnessError(harness, sorted(known_assistants & set(HARNESS_MANIFESTS)))
+    harness = Harness(harness)
+
+    # Templates render Markdown, YAML and scripts, never HTML: escaping would corrupt them.
+    environment = Environment(undefined=StrictUndefined, keep_trailing_newline=True, autoescape=False)  # ruff: ignore[jinja2-autoescape-false]
+    wrapper = matrix["assistants"][harness]["invocation_wrapper"]
+    environment.filters["call"] = lambda name: wrapper.format(name=name)
+    # One global per placed key, named after the key. The matrix decides which
+    # keys exist and where each lands, so adding a key is a data change.
+    for key, entry in frontmatter_matrix["keys"].items():
+        if entry["form"] == VERBATIM_FORM:
+            continue
+        # ty infers `globals` from jinja's default namespace; any callable is a valid global.
+        environment.globals[key.replace("-", "_")] = functools.partial(  # ty: ignore[invalid-assignment]
+            frontmatter_key, entry[harness]["placement"], key, entry["form"]
+        )
+    variables = {
+        "harness": harness,
+        "actions": ActionMap(
+            {
+                action_key: action[harness]["name"]
+                for action_key, action in matrix["actions"].items()
+                if action["callable"]
+            },
+            harness,
+        ),
+    }
+    return RenderContext(harness, environment, variables, ignored_path(repo_root))
+
+
+def _render_template(render: RenderContext, source: Path) -> str:
     text = source.read_text(encoding="utf-8")
     try:
-        rendered = environment.from_string(text).render(**context)
+        rendered = render.environment.from_string(text).render(**render.variables)
     except BuildError:
         raise
     except TemplateError as error:
-        raise BuildError(
-            f"failed to render {source} for harness '{harness}': {error}"
-        ) from error
+        raise TemplateRenderError(source, render.harness, error) from error
 
     rendered = merge_metadata_blocks(rendered)
     duplicate = duplicate_frontmatter_key(rendered)
     if duplicate:
-        raise BuildError(
-            f"{source} rendered for harness '{harness}' carries two "
-            f"'{duplicate}:' keys in its frontmatter"
-        )
+        raise DuplicateFrontmatterKeyError(source, render.harness, duplicate)
     return rendered
 
 
-def _render_plugin(
-    source_dir: Path,
-    target_dir: Path,
-    environment: Environment,
-    context: dict,
-    harness: Harness,
-    is_ignored: Callable[[Path], bool],
-) -> None:
-    foreign_metadata = PLUGIN_METADATA_DIRS - {HARNESS_METADATA_DIRS[harness]}
+def _render_plugin(render: RenderContext, source_dir: Path, target_dir: Path) -> None:
+    foreign_metadata = PLUGIN_METADATA_DIRS - {HARNESS_METADATA_DIRS[render.harness]}
     for source in sorted(source_dir.rglob("*")):
         relative = source.relative_to(source_dir)
         if foreign_metadata.intersection(relative.parts) or source.is_dir():
             continue
-        if any(relative.match(pattern) for pattern in FOREIGN_SKILL_FILES[harness]):
+        if any(relative.match(pattern) for pattern in FOREIGN_SKILL_FILES[render.harness]):
             continue
-        if is_ignored(source):
+        if render.is_ignored(source):
             continue
         is_template = source.name.endswith(TEMPLATE_SUFFIX)
         plain_name = source.name[: -len(TEMPLATE_SUFFIX)] if is_template else source.name
         if plain_name in DEV_FILE_NAMES:
             if is_template:
-                raise BuildError(
-                    f"{source} would emit the development file {plain_name}, "
-                    "which is never shipped; author it as a plain file"
-                )
+                raise DevFileTemplateError(source, plain_name)
             continue
 
         if is_template:
             if source.with_name(plain_name).exists():
-                raise BuildError(
-                    f"both {source.with_name(plain_name)} and {source} exist; "
-                    "keep exactly one"
-                )
+                raise TemplateConflictError(source.with_name(plain_name), source)
             target = target_dir / relative.with_name(plain_name)
             target.parent.mkdir(parents=True, exist_ok=True)
-            target.write_text(
-                _render_template(source, environment, context, harness),
-                encoding="utf-8",
-            )
+            target.write_text(_render_template(render, source), encoding="utf-8")
         else:
             target = target_dir / relative
             target.parent.mkdir(parents=True, exist_ok=True)
@@ -488,47 +479,16 @@ def render_tree(
     matrix_path: Path | None = None,
     manifest_path: Path | None = None,
 ) -> None:
+    """Render the plugins `harness`'s manifest lists into `output_dir`, replacing it atomically."""
     repo_root = Path(repo_root)
-    matrix_file = Path(matrix_path) if matrix_path else repo_root / MATRIX_PATH
-    matrix = load_matrix(matrix_file)
-    frontmatter_matrix = load_frontmatter_matrix(
-        matrix_file.with_name(FRONTMATTER_MATRIX_NAME)
-    )
+    render = _render_context(repo_root, harness, Path(matrix_path) if matrix_path else repo_root / MATRIX_PATH)
 
-    known_assistants = set(matrix["assistants"]) & set(frontmatter_matrix["assistants"])
-    if harness not in known_assistants or harness not in HARNESS_MANIFESTS:
-        known = sorted(known_assistants & set(HARNESS_MANIFESTS))
-        raise BuildError(
-            f"unknown harness '{harness}'; supported harnesses: {', '.join(known)}"
-        )
-    harness = Harness(harness)
-
-    manifest = Path(manifest_path) if manifest_path else repo_root / HARNESS_MANIFESTS[harness]
+    manifest = Path(manifest_path) if manifest_path else repo_root / HARNESS_MANIFESTS[render.harness]
     plugin_names = manifest_plugin_names(manifest)
-    is_ignored = ignored_path(repo_root)
-
-    environment = Environment(undefined=StrictUndefined, keep_trailing_newline=True)
-    wrapper = matrix["assistants"][harness]["invocation_wrapper"]
-    environment.filters["call"] = lambda name: wrapper.format(name=name)
-    # One global per placed key, named after the key. The matrix decides which
-    # keys exist and where each lands, so adding a key is a data change.
-    for key, entry in frontmatter_matrix["keys"].items():
-        if entry["form"] == VERBATIM_FORM:
-            continue
-        environment.globals[key.replace("-", "_")] = functools.partial(
-            frontmatter_key, entry[harness]["placement"], key, entry["form"]
-        )
-    context = {
-        "harness": harness,
-        "actions": ActionMap(
-            {
-                action_key: action[harness]["name"]
-                for action_key, action in matrix["actions"].items()
-                if action["callable"]
-            },
-            harness,
-        ),
-    }
+    for plugin_name in plugin_names:
+        source_dir = repo_root / "plugins" / plugin_name
+        if not source_dir.is_dir():
+            raise MissingPluginError(manifest, plugin_name, source_dir)
 
     output_dir = Path(output_dir)
     output_dir.parent.mkdir(parents=True, exist_ok=True)
@@ -536,26 +496,11 @@ def render_tree(
     # which would publish a tree that other users cannot traverse. Take the mode
     # of `dist/` itself, so a fresh checkout and a post-build tree agree and the
     # published mode stays a function of the source tree, not of what was there.
-    staging = Path(
-        tempfile.mkdtemp(prefix=f".{output_dir.name}-staging-", dir=output_dir.parent)
-    )
+    staging = Path(tempfile.mkdtemp(prefix=f".{output_dir.name}-staging-", dir=output_dir.parent))
     staging.chmod(output_dir.parent.stat().st_mode & 0o777)
     try:
         for plugin_name in plugin_names:
-            source_dir = repo_root / "plugins" / plugin_name
-            if not source_dir.is_dir():
-                raise BuildError(
-                    f"manifest {manifest} lists plugin '{plugin_name}' but "
-                    f"{source_dir} does not exist"
-                )
-            _render_plugin(
-                source_dir,
-                staging / plugin_name,
-                environment,
-                context,
-                harness,
-                is_ignored,
-            )
+            _render_plugin(render, repo_root / "plugins" / plugin_name, staging / plugin_name)
     except BaseException:
         shutil.rmtree(staging, ignore_errors=True)
         raise
@@ -568,9 +513,8 @@ def render_tree(
 
 
 def main(argv: list[str] | None = None) -> None:
-    parser = argparse.ArgumentParser(
-        description="Render plugins/ into one harness-specific dist tree."
-    )
+    """Render one harness tree from the command line."""
+    parser = argparse.ArgumentParser(description="Render plugins/ into one harness-specific dist tree.")
     parser.add_argument("--harness", required=True, choices=list(Harness))
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--repo-root", type=Path, default=Path.cwd())
@@ -579,7 +523,8 @@ def main(argv: list[str] | None = None) -> None:
     try:
         render_tree(args.repo_root, args.harness, args.output)
     except BuildError as error:
-        raise SystemExit(f"error: {error}") from error
+        # SystemExit prints its argument as the process's last word; that is the CLI's contract, not a reusable message.
+        raise SystemExit(f"error: {error}") from error  # ruff: ignore[raise-vanilla-args]
     print(f"rendered {args.harness} -> {args.output}")
 
 

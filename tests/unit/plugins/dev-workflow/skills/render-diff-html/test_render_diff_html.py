@@ -22,12 +22,12 @@ def test_scratch_root_and_cleanup_preserve_report_location(
     bin_dir.mkdir()
     npx = bin_dir / "npx"
     npx.write_text(
-        '#!/usr/bin/env bash\n'
+        "#!/usr/bin/env bash\n"
         'while [ "$#" -gt 0 ]; do\n'
         '  case "$1" in --file) output=$2; shift ;; esac\n'
-        '  input=$1\n'
-        '  shift\n'
-        'done\n'
+        "  input=$1\n"
+        "  shift\n"
+        "done\n"
         'test -s "$input" || exit 1\n'
         'printf "%s\\n" "$input" > "$SCRATCH_TRACE"\n'
         'printf "report\\n" > "$output"\n'
@@ -46,7 +46,10 @@ def test_scratch_root_and_cleanup_preserve_report_location(
 
     result = subprocess.run(
         ["bash", str(script), "--files", str(old), str(new)],
-        cwd=tmp_path, env=env, capture_output=True, text=True,
+        cwd=tmp_path,
+        env=env,
+        capture_output=True,
+        text=True,
     )
 
     assert result.returncode == 0, result.stderr

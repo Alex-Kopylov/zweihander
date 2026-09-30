@@ -8,7 +8,6 @@ from pathlib import Path
 
 import pytest
 
-
 FAKE_GH = """#!/usr/bin/env bash
 case "$1 $2" in
   "pr view") printf '7\\tfeat\\t%s\\tMERGED\\n' "$PR_HEAD" ;;
@@ -142,9 +141,7 @@ class TestLossChecks:
 
         assert finding in merged_pr.run(cleanup[0])
 
-    def test_clean_merge_reports_only_headings(
-        self, merged_pr: MergedPr, cleanup: tuple[str, str]
-    ) -> None:
+    def test_clean_merge_reports_only_headings(self, merged_pr: MergedPr, cleanup: tuple[str, str]) -> None:
         output = merged_pr.run(cleanup[0])
 
         assert output

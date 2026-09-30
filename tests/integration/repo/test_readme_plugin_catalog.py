@@ -2,9 +2,8 @@
 
 import re
 
-from plugin_maintenance import REPO_ROOT
+from plugin_maintenance.paths import REPO_ROOT
 from plugin_maintenance.render import HARNESS_MANIFESTS, manifest_plugin_names
-
 
 README = REPO_ROOT / "README.md"
 EXPECTED_CATALOG_HEADINGS = [
@@ -26,9 +25,7 @@ def top_level_kanban_sections(block: str) -> list[str]:
         return []
 
     return [
-        line.strip()
-        for line in lines[1:]
-        if line.startswith("  ") and not line.startswith("    ") and line.strip()
+        line.strip() for line in lines[1:] if line.startswith("  ") and not line.startswith("    ") and line.strip()
     ]
 
 
@@ -43,9 +40,7 @@ def catalog_kanban_blocks() -> list[str]:
 
 
 def test_readme_kanban_blocks_stay_within_mermaid_styled_sections() -> None:
-    kanban_sections = [
-        top_level_kanban_sections(block) for block in catalog_kanban_blocks()
-    ]
+    kanban_sections = [top_level_kanban_sections(block) for block in catalog_kanban_blocks()]
 
     assert kanban_sections
     assert all(len(sections) <= 10 for sections in kanban_sections)
@@ -63,16 +58,10 @@ def test_readme_catalog_uses_requested_kanban_categories() -> None:
 def test_readme_catalog_kanban_lists_every_plugin_once() -> None:
     """The catalog answers "what can I install?", so the manifests define it."""
     expected_plugins = sorted(
-        {
-            name
-            for manifest in HARNESS_MANIFESTS.values()
-            for name in manifest_plugin_names(REPO_ROOT / manifest)
-        }
+        {name for manifest in HARNESS_MANIFESTS.values() for name in manifest_plugin_names(REPO_ROOT / manifest)}
     )
     actual_plugins = sorted(
-        section_label(section)
-        for block in catalog_kanban_blocks()
-        for section in top_level_kanban_sections(block)
+        section_label(section) for block in catalog_kanban_blocks() for section in top_level_kanban_sections(block)
     )
 
     assert actual_plugins == expected_plugins

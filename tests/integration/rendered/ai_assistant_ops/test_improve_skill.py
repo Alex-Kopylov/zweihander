@@ -5,8 +5,7 @@ import re
 from pathlib import Path
 
 import pytest
-
-from plugin_maintenance import REPO_ROOT
+from plugin_maintenance.paths import REPO_ROOT
 from plugin_maintenance.render import Harness
 
 
@@ -117,9 +116,7 @@ def test_bloat_hunter_is_post_rewrite_pre_evaluation_step(skill_file: Path) -> N
     )
 
 
-def test_skill_avoids_anthropic_specific_commands_and_viewers(
-    skill_root: Path, skill_file: Path
-) -> None:
+def test_skill_avoids_anthropic_specific_commands_and_viewers(skill_root: Path, skill_file: Path) -> None:
     # `agents/openai.yaml` ships in the Codex tree only.
     combined = "\n".join(
         path.read_text(encoding="utf-8")
@@ -180,11 +177,7 @@ def test_openai_agent_prompt_exists(skill_root: Path) -> None:
 
 
 def test_plugin_manifest_advertises_skill_improvement(rendered: Path) -> None:
-    manifest = json.loads(
-        next((rendered / "ai-assistant-ops").glob("*/plugin.json")).read_text(
-            encoding="utf-8"
-        )
-    )
+    manifest = json.loads(next((rendered / "ai-assistant-ops").glob("*/plugin.json")).read_text(encoding="utf-8"))
 
     assert "skill improvement" in json.dumps(manifest).lower()
     assert manifest["version"].count(".") == 2

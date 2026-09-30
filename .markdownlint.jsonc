@@ -13,9 +13,16 @@
   // and wrapping would break their formatting
   "MD013": {
     "line_length": 80,
-    "code_blocks": false
-  }
+    "code_blocks": false,
+    // Table rows cannot wrap
+    "tables": false
+  },
 
-  // Uncomment to disable specific rules:
-  // "MD033": false   // Inline HTML
+  // Every plugin section repeats "Skills" / "Agents" under its own heading
+  "MD024": {
+    "siblings_only": true
+  },
+
+  // MD033: Inline HTML is allowed
+  "MD033": false
 }

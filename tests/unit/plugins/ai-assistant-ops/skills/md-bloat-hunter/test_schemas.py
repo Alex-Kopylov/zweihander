@@ -163,7 +163,9 @@ def test_file_reduction_schema_accepts_valid_reduction(file_reduction_schema: Pa
     assert result.returncode == 0, result.stderr
 
 
-def test_file_reduction_schema_accepts_directory_redundancy_reduction(file_reduction_schema: Path, tmp_path: Path) -> None:
+def test_file_reduction_schema_accepts_directory_redundancy_reduction(
+    file_reduction_schema: Path, tmp_path: Path
+) -> None:
     payload = file_reduction(
         source_specialists=["directory-redundancy-detector"],
         type="redundancy",

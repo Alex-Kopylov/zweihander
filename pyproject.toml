@@ -42,5 +42,13 @@ show_missing = true
 skip_empty = true
 fail_under = 90
 
+[tool.deptry]
+# plugins/ and dist/ ship example code for users; only the build tooling is this project's code
+extend_exclude = ["plugins", "dist"]
+
+[tool.typos.files]
+# dist/ is rendered from plugins/; the mermaid references are synced verbatim from upstream
+extend-exclude = ["dist/", "plugins/mermaid-diagrams/skills/mermaid/references/"]
+
 [tool.mutmut]
 paths_to_mutate = ["plugin_maintenance/"]
