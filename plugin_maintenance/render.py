@@ -198,37 +198,32 @@ def tree_snapshot(root: Path) -> dict[str, tuple[bytes, int]]:
     }
 
 
-def _plain_scalar_problem(value: str) -> str | None:  # ruff: ignore[too-many-return-statements] - one return per YAML hazard
-    """Name what stops `value` from being a plain YAML scalar, or return None.
-
-    The Agent Skills specification writes `allowed-tools` unquoted, so the
-    renderer writes it unquoted too and refuses a value that would change
-    meaning in that position instead of quoting it into a different shape.
-    """
-    if value != value.strip():
-        return "leading or trailing whitespace"
-    if "\n" in value or "\r" in value:
-        return "a line break"
-    if ": " in value or value.endswith(":"):
-        return "a key separator"
-    if " #" in value:
-        return "a comment marker"
-    if value[0] in YAML_INDICATORS:
-        return f"the leading YAML indicator {value[0]!r}"
-    if value.startswith("- "):
-        return "a leading sequence marker"
-    return None
+# What stops a value from being a plain YAML scalar, checked in order; the
+# first hit names the problem. `{first}` is the value's first character.
+PLAIN_SCALAR_HAZARDS: tuple[tuple[str, Callable[[str], bool]], ...] = (
+    ("leading or trailing whitespace", lambda value: value != value.strip()),
+    ("a line break", lambda value: "\n" in value or "\r" in value),
+    ("a key separator", lambda value: ": " in value or value.endswith(":")),
+    ("a comment marker", lambda value: " #" in value),
+    ("the leading YAML indicator {first!r}", lambda value: value[0] in YAML_INDICATORS),
+    ("a leading sequence marker", lambda value: value.startswith("- ")),
+)
 
 
 def _plain_scalar(key: str, value: str | list[str]) -> str:
-    """Write the value unquoted, the form the Agent Skills specification shows."""
+    """Write the value unquoted, the form the Agent Skills specification shows.
+
+    The specification writes `allowed-tools` unquoted, so the renderer writes
+    it unquoted too and refuses a value that would change meaning in that
+    position instead of quoting it into a different shape.
+    """
     written = value if isinstance(value, str) else " ".join(value)
     if not written:
         return ""
 
-    problem = _plain_scalar_problem(written)
-    if problem:
-        raise PlainScalarError(key, written, problem)
+    for hazard, applies in PLAIN_SCALAR_HAZARDS:
+        if applies(written):
+            raise PlainScalarError(key, written, hazard.format(first=written[0]))
     return written
 
 

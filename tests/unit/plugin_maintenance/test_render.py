@@ -203,12 +203,25 @@ class TestFrontmatterPortability:
         assert "allowed-tools" not in text
         assert text == f"{self.HEAD}---\n\n# Demo\n"
 
-    @pytest.mark.parametrize("value", ["Bash(git: *)", "*Read", "Read # comment", "Read\nWrite"])
-    def test_unquotable_value_fails_the_build(self, fixture_repo, fixture_matrix, harness, value):
+    @pytest.mark.parametrize(
+        ("value", "hazard"),
+        [
+            (" Read", "leading or trailing whitespace"),
+            ("Read\nWrite", "a line break"),
+            ("Bash(git: *)", "a key separator"),
+            ("Read:", "a key separator"),
+            ("Read # comment", "a comment marker"),
+            ("*Read", "the leading YAML indicator '*'"),
+            ("- Read", "a leading sequence marker"),
+        ],
+    )
+    def test_unquotable_value_fails_naming_its_hazard(self, fixture_repo, fixture_matrix, harness, value, hazard):
         self.write_skill(fixture_repo, f"{{{{ allowed_tools({value!r}) }}}}\n")
 
-        with pytest.raises(PlainScalarError, match="allowed-tools"):
+        with pytest.raises(PlainScalarError, match=r"allowed-tools") as raised:
             render(fixture_repo, fixture_matrix, harness)
+
+        assert raised.value.hazard == hazard
 
 
 class TestArgumentFrontmatter:
