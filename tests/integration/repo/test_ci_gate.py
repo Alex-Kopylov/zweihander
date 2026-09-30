@@ -9,7 +9,7 @@ import re
 import subprocess
 from pathlib import Path
 
-from plugin_maintenance import REPO_ROOT
+from plugin_maintenance.paths import REPO_ROOT
 
 
 def gate_script() -> str:

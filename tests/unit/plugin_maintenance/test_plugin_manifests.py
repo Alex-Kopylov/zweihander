@@ -7,7 +7,7 @@ build layer is the one reader of.
 
 import json
 
-from plugin_maintenance import REPO_ROOT
+from plugin_maintenance.paths import REPO_ROOT
 from plugin_maintenance.render import PLUGIN_METADATA_DIRS
 
 PLUGINS_ROOT = REPO_ROOT / "plugins"

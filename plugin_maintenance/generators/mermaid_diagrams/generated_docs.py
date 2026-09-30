@@ -11,9 +11,9 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
-from plugin_maintenance import REPO_ROOT
-from plugin_maintenance.generators.mermaid_diagrams import PLUGIN_NAME
+from plugin_maintenance.paths import REPO_ROOT
 
+PLUGIN_NAME = "mermaid-diagrams"
 PLUGIN_ROOT = REPO_ROOT / "plugins" / PLUGIN_NAME
 REFERENCES_DIR = PLUGIN_ROOT / "skills/mermaid/references"
 MERMAID_SKILL_PATH = PLUGIN_ROOT / "skills/mermaid/SKILL.md"

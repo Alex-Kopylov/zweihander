@@ -8,11 +8,12 @@ among the rendered-content tests.
 import inspect
 import re
 
-from plugin_maintenance import REPO_ROOT
 from plugin_maintenance.generators import mermaid_diagrams
 from plugin_maintenance.generators.mermaid_diagrams.generated_docs import (
+    PLUGIN_NAME,
     load_navigation_metadata,
 )
+from plugin_maintenance.paths import REPO_ROOT
 
 PLUGIN_ROOT = REPO_ROOT / "plugins" / "mermaid-diagrams"
 TOOLING_ROOT = REPO_ROOT / "plugin_maintenance" / "generators" / "mermaid_diagrams"
@@ -30,7 +31,7 @@ def test_generator_package_follows_stage_one_convention() -> None:
     signature = inspect.signature(mermaid_diagrams.generate)
 
     assert not signature.parameters
-    assert mermaid_diagrams.PLUGIN_NAME == "mermaid-diagrams"
+    assert PLUGIN_NAME == "mermaid-diagrams"
 
 
 def test_bundled_navigation_metadata_is_used_without_source_checkout(monkeypatch) -> None:

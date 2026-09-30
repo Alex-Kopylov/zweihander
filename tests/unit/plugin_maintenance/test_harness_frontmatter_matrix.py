@@ -9,7 +9,6 @@ import json
 from pathlib import Path
 
 import pytest
-from plugin_maintenance import REPO_ROOT
 from plugin_maintenance.errors import (
     FrontmatterMatrixShapeError,
     PlacementError,
@@ -17,6 +16,7 @@ from plugin_maintenance.errors import (
     UnreadableDocumentError,
     UnwritableFormError,
 )
+from plugin_maintenance.paths import REPO_ROOT
 from plugin_maintenance.render import (
     FRONTMATTER_MATRIX_NAME,
     MATRIX_PATH,

@@ -10,7 +10,7 @@ is the authored tree and the template rules.
 from pathlib import Path
 
 import pytest
-from plugin_maintenance import REPO_ROOT
+from plugin_maintenance.paths import REPO_ROOT
 from plugin_maintenance.render import Harness, render_tree
 
 

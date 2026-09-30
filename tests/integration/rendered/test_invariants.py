@@ -10,7 +10,7 @@ import re
 from pathlib import Path
 
 import pytest
-from plugin_maintenance import REPO_ROOT
+from plugin_maintenance.paths import REPO_ROOT
 from plugin_maintenance.render import (
     DEV_FILE_NAMES,
     FRONTMATTER_MATRIX_NAME,

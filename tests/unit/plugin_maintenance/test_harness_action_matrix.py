@@ -9,7 +9,7 @@ import json
 from pathlib import Path
 
 import pytest
-from plugin_maintenance import REPO_ROOT
+from plugin_maintenance.paths import REPO_ROOT
 from plugin_maintenance.render import (
     DIST_DIRS,
     FOREIGN_SKILL_FILES,

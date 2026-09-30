@@ -2,7 +2,7 @@
 
 import re
 
-from plugin_maintenance import REPO_ROOT
+from plugin_maintenance.paths import REPO_ROOT
 from plugin_maintenance.render import HARNESS_MANIFESTS, manifest_plugin_names
 
 README = REPO_ROOT / "README.md"

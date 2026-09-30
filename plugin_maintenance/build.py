@@ -7,9 +7,9 @@ import argparse
 import tempfile
 from pathlib import Path
 
-from plugin_maintenance import REPO_ROOT
 from plugin_maintenance.errors import BuildError
 from plugin_maintenance.generate import run_generators
+from plugin_maintenance.paths import REPO_ROOT
 from plugin_maintenance.render import (
     DIST_DIRS,
     render_tree,

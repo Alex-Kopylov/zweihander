@@ -8,7 +8,7 @@ Whether the committed trees are current is the build layer's question.
 import json
 from pathlib import Path
 
-from plugin_maintenance import REPO_ROOT
+from plugin_maintenance.paths import REPO_ROOT
 from plugin_maintenance.render import HARNESS_MANIFESTS, Harness, manifest_plugin_names
 
 

@@ -87,8 +87,6 @@ known-first-party = ["zweihander"]
 # pytest runs with --import-mode=importlib and test paths mirror plugin names
 # with hyphens, so test directories are not packages
 "tests/**" = ["INP001"]
-# A generator package exposes generate() from __init__.py by build contract
-"plugin_maintenance/**/__init__.py" = ["RUF067"]
 
 
 [lint.flake8-pytest-style]

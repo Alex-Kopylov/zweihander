@@ -10,9 +10,9 @@ import json
 import re
 from pathlib import Path
 
-from plugin_maintenance import REPO_ROOT
 from plugin_maintenance.build import stale_paths
 from plugin_maintenance.generate import run_generators
+from plugin_maintenance.paths import REPO_ROOT
 from plugin_maintenance.render import (
     DIST_DIRS,
     MATRIX_PATH,
