@@ -52,7 +52,7 @@
     {
       "id": 3,
       "prompt": "The improved skill body is stable, but it sometimes misses casual requests and sometimes triggers for adjacent documentation cleanup. Optimize the description.",
-      "expected_output": "Builds should-trigger and should-not-trigger prompts, includes near misses, checks trigger misses and false positives, and updates only the trigger-only description based on those results.",
+      "expected_output": "Builds should-trigger and should-not-trigger prompts, includes near misses, checks trigger misses and false positives, and revises the description by the skill-description rule based on those results.",
       "files": [],
       "assertions": [
         {
@@ -60,7 +60,7 @@
           "check": "creates should-trigger and should-not-trigger checks"
         },
         {
-          "name": "description_stays_trigger_only",
+          "name": "description_omits_workflow",
           "check": "keeps workflow details out of the description"
         }
       ]

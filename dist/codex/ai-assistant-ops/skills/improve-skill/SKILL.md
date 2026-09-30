@@ -59,8 +59,8 @@ After the body stabilizes, test the description with should-trigger
 and should-not-trigger prompts, including near misses. Revise it only for missed
 triggers or false positives.
 
-Keep the description trigger-only: symptoms and situations, not workflow. The
-body owns the process.
+Write the description by
+[skill-description.md](../../references/skill-description.md).
 
 ## Common Mistakes
 
