@@ -1,0 +1,164 @@
+[tools]
+# Pinned like every other tool; "latest" made task runs depend on whatever
+# uv happened to resolve (lint-audit needs uv >= 0.11.19 for `uv audit`).
+# aqua backend: mise's core uv plugin extracts current uv tarballs incorrectly
+# (binary stays under uv-<target>/ with no bin/), silently falling back to
+# any system uv.
+"aqua:astral-sh/uv" = "0.11.27"
+node = "22.22.0"
+"npm:jscpd" = "4.2.4"
+"npm:markdownlint-cli2" = "0.22.1"
+"aqua:01mf02/jaq" = "2.3.0"
+"aqua:gitleaks/gitleaks" = "8.30.1"
+"aqua:koalaman/shellcheck" = "0.11.0"
+"aqua:rhysd/actionlint" = "1.7.11"
+"aqua:tamasfe/taplo" = "0.10.0"
+"aqua:zizmorcore/zizmor" = "1.25.2"
+"aqua:crate-ci/typos" = "1.20.7"
+
+# Python tools managed via uv (installed in venv)
+# Accessible via `uv run <tool>` after `uv sync`
+[tasks.flake8]
+description = "Run flake8 async checks"
+run = "uv run flake8"
+
+[tasks.install]
+description = "Install the project and its dependencies"
+run = "uv sync --all-extras"
+
+[tasks.lint]
+description = "Run the full lint suite"
+run = [
+  { tasks = ["lint-full"] },
+]
+
+[tasks.lint-fast]
+description = "Run fast, edit-safe linters"
+run = [
+  { tasks = [
+    "lint-python-fast",
+    "lint-shell",
+    "lint-md",
+    "lint-yml",
+    "lint-json",
+    "lint-toml",
+    "lint-github-actions",
+    "lint-typos",
+  ] },
+]
+
+[tasks.lint-full]
+description = "Run fast linters plus whole-project gate checks"
+run = [
+  { tasks = [
+    "lint-fast",
+    "lint-python-deep",
+    "lint-deps",
+    "lint-duplicates",
+    "lint-secrets",
+    "lint-audit",
+    "lint-gha-security",
+  ] },
+]
+
+[tasks.lint-python-fast]
+description = "Run fast Python checks"
+run = [
+  "uv run ruff check plugin_maintenance tests",
+  "uv run ruff format --check plugin_maintenance tests",
+  "uv run flake8 plugin_maintenance",
+]
+
+[tasks.lint-python-deep]
+description = "Run whole-project Python analysis"
+run = [
+  "uv run ty check plugin_maintenance",
+  "uv run vulture --config .vulture.toml",
+]
+
+[tasks.lint-shell]
+description = "Lint shell scripts with ShellCheck"
+run = "find . -name '*.sh' -not -path './.venv/*' -not -path './node_modules/*' -exec mise exec -- shellcheck {} +"
+
+[tasks.lint-md]
+description = "Lint Markdown files"
+run = "mise exec -- markdownlint-cli2"
+
+[tasks.lint-yml]
+description = "Lint YAML files"
+run = "uv run yamllint -c .yamllint ."
+
+[tasks.lint-json]
+description = "Validate JSON syntax with jaq"
+run = "mise exec -- jaq empty .jscpd.json"
+
+[tasks.lint-toml]
+description = "Lint TOML files with Taplo"
+run = "mise exec -- taplo lint"
+
+[tasks.lint-github-actions]
+description = "Lint GitHub Actions workflow files"
+run = [
+  "mise exec -- actionlint",
+  "uv run check-jsonschema --builtin-schema github-workflows .github/workflows/*.yml",
+]
+
+[tasks.lint-duplicates]
+description = "Detect duplicated code"
+run = "mise exec -- jscpd --config .jscpd.json --threshold 5"
+
+[tasks.lint-deps]
+description = "Check Python dependency declarations"
+run = "uv run deptry ."
+
+[tasks.lint-secrets]
+description = "Scan git history for leaked secrets"
+run = "mise exec -- gitleaks git --redact --no-banner"
+
+[tasks.lint-gha-security]
+description = "Scan GitHub Actions workflows for security issues"
+run = "mise exec -- zizmor --collect=workflows .github/workflows"
+
+[tasks.lint-audit]
+description = "Scan Python dependencies for known CVEs"
+run = "uv audit"
+
+[tasks.lint-typos]
+description = "Scan for spelling mistakes"
+run = "mise exec -- typos"
+
+[tasks.test]
+description = "Run the pytest suite"
+run = "uv run pytest tests/"
+
+[tasks.test-cov]
+description = "Run the pytest suite with a coverage report"
+run = "uv run pytest tests/ --cov --cov-report=term-missing"
+
+[tasks.verify]
+description = "Build, lint, and run the coverage test suite"
+run = [
+  "uv build",
+  { tasks = ["lint"] },
+  { tasks = ["test-cov"] },
+]
+
+[tasks.format]
+description = "Format and autofix Python and TOML files"
+run = [
+  "uv run ruff format plugin_maintenance tests",
+  "uv run ruff check --fix plugin_maintenance tests",
+  "mise exec -- taplo fmt",
+]
+
+[tasks.install-hooks]
+description = "Install prek-managed pre-commit and pre-push hooks"
+run = "uv run prek install --hook-type pre-commit --hook-type pre-push"
+
+[tasks.clean]
+description = "Remove local build and test cache directories"
+run = [
+  "find . -type d -name __pycache__ -exec rm -rf {} +",
+  "find . -type d -name .pytest_cache -exec rm -rf {} +",
+  "rm -rf dist build *.egg-info",
+]

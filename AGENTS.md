@@ -226,12 +226,16 @@ convention stays as it is.
 
 When adding a plugin:
 
-- Add `plugins/<plugin-name>/.codex-plugin/plugin.json`.
-- Add `plugins/<plugin-name>/.claude-plugin/plugin.json`.
-- Add the plugin to `.agents/plugins/marketplace.json`.
-- Add the plugin to `.claude-plugin/marketplace.json`.
+- For each harness the plugin targets, add its plugin metadata
+  (`plugins/<plugin-name>/.codex-plugin/plugin.json`,
+  `plugins/<plugin-name>/.claude-plugin/plugin.json`) and list it in that
+  harness's marketplace (`.agents/plugins/marketplace.json`,
+  `.claude-plugin/marketplace.json`).
 - Each manifest is the inclusion list for its own `dist/` tree; a plugin
-  listed in only one manifest ships to only that harness.
+  listed in only one manifest ships to only that harness. Single-harness
+  plugins are intentional: `run-and-verify-app` ports a Claude Code built-in
+  to Codex, so it has no `.claude-plugin/`. Scripts that walk plugin metadata
+  must not assume both directories exist.
 - Run the full build so both `dist/` trees include the plugin.
 - Add a user-facing section to `README.md`.
 - If the plugin has more than one skill, put the README plugin details inside a
