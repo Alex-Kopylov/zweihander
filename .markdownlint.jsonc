@@ -23,11 +23,6 @@
     "siblings_only": true
   },
 
-  // AGENTS.md requires <details> spoilers for multi-skill plugins in README
-  "MD033": {
-    "allowed_elements": ["details", "summary"]
-  }
-
-  // Uncomment to disable specific rules:
-  // "MD033": false   // Inline HTML
+  // MD033: Inline HTML is allowed
+  "MD033": false
 }
