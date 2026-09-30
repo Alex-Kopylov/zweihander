@@ -7,7 +7,7 @@ extra_linters:
 - jscpd
 - typos
 - markdownlint
-license: Apache-2.0
+license: Skip
 main_branch_name: main
 parallel_testing: false
 project_description: Simple, robust, and versatile marketplace for agent plugins, forged for the chaos of the AI world.
