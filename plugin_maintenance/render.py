@@ -337,7 +337,7 @@ def merge_metadata_blocks(text: str) -> str:
 
     lines = match.group("body").splitlines()
     heads = [index for index, line in enumerate(lines) if line == METADATA_KEY]
-    if len(heads) < 2:  # ruff: ignore[magic-value-comparison] - a single block needs no merge
+    if len(heads) <= 1:
         return text
 
     bodies: dict[int, list[str]] = {}
