@@ -69,7 +69,7 @@ repos:
         entry: mise exec -- uv run ty check
         language: system
         types: [python]
-        exclude: ^(scripts/|docs/|tests/)
+        exclude: ^(scripts/|docs/)
         require_serial: true
 
   - repo: local

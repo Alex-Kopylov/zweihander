@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+"""Apply approved md-bloat-hunter findings to Markdown files by exact string matching."""
+
 import argparse
 import json
 import sys
@@ -7,11 +9,43 @@ from pathlib import Path
 from typing import Any
 
 
+class InputError(ValueError):
+    """The approved-findings file does not hold the expected JSON."""
+
+    NOT_ARRAY = "findings must be an array"
+
+    @classmethod
+    def invalid_json(cls, path: Path, exc: json.JSONDecodeError) -> "InputError":
+        """Name the file and the parser error."""
+        return cls(f"{path}: invalid JSON: {exc}")
+
+
+class FindingError(ValueError):
+    """A finding that cannot be applied; the message is the reported reason."""
+
+    EMPTY_EXCERPT = "excerpt must be non-empty"
+    NOT_FOUND = "excerpt not found verbatim"
+    SHIFTED = "excerpt changed by an earlier applied finding; re-run to pick up shifted findings"
+    AMBIGUOUS = "excerpt is ambiguous; add context_before / context_after and re-run"
+    DELETE_WITH_TEXT = "delete findings must use new_text: null"
+
+    @classmethod
+    def text_not_string(cls, action: str) -> "FindingError":
+        """Name the action whose new_text must be a string."""
+        return cls(f"{action} findings must use string new_text")
+
+    @classmethod
+    def unsupported_action(cls, action: object) -> "FindingError":
+        """Name the action this script does not apply."""
+        return cls(f"unsupported action: {action!r}")
+
+
 def load_json(path: Path) -> Any:
+    """Parse a JSON file, naming the file on failure."""
     try:
         return json.loads(path.read_text(encoding="utf-8"))
     except json.JSONDecodeError as exc:
-        raise ValueError(f"{path}: invalid JSON: {exc}") from exc
+        raise InputError.invalid_json(path, exc) from exc
 
 
 def accepted_occurrences(
@@ -20,8 +54,9 @@ def accepted_occurrences(
     context_before: str | None,
     context_after: str | None,
 ) -> list[tuple[int, int]]:
+    """Return the (start, end) spans of `excerpt` whose surroundings match the given context."""
     if not excerpt:
-        raise ValueError("excerpt must be non-empty")
+        raise FindingError(FindingError.EMPTY_EXCERPT)
 
     occurrences: list[tuple[int, int]] = []
     start = 0
@@ -39,21 +74,34 @@ def accepted_occurrences(
 
 
 def replacement_for(finding: dict[str, Any]) -> str:
+    """Return the text that replaces the finding's excerpt."""
     action = finding.get("action")
     new_text = finding.get("new_text")
 
     if action == "delete":
         if new_text is not None:
-            raise ValueError("delete findings must use new_text: null")
+            raise FindingError(FindingError.DELETE_WITH_TEXT)
         return ""
     if action in {"replace", "restructure"}:
         if not isinstance(new_text, str):
-            raise ValueError(f"{action} findings must use string new_text")
+            raise FindingError.text_not_string(action)
         return new_text
-    raise ValueError(f"unsupported action: {action!r}")
+    raise FindingError.unsupported_action(action)
+
+
+def locate(content: str, original: str, finding: dict[str, Any]) -> tuple[int, int]:
+    """Return the one span the finding applies to in the current content."""
+    excerpt = finding["excerpt"]
+    matches = accepted_occurrences(content, excerpt, finding.get("context_before"), finding.get("context_after"))
+    if not matches:
+        raise FindingError(FindingError.SHIFTED if excerpt in original else FindingError.NOT_FOUND)
+    if len(matches) > 1:
+        raise FindingError(FindingError.AMBIGUOUS)
+    return matches[0]
 
 
 def apply_file_findings(file_path: Path, findings: list[dict[str, Any]]) -> tuple[int, list[dict[str, Any]]]:
+    """Apply one file's findings in source order, stopping at the first failure."""
     content = file_path.read_text(encoding="utf-8")
     original = content
     applied = 0
@@ -61,28 +109,10 @@ def apply_file_findings(file_path: Path, findings: list[dict[str, Any]]) -> tupl
 
     for finding in sorted(findings, key=lambda item: int(item.get("source_order", 0))):
         try:
-            excerpt = finding["excerpt"]
-            matches = accepted_occurrences(
-                content,
-                excerpt,
-                finding.get("context_before"),
-                finding.get("context_after"),
-            )
-            if not matches:
-                reason = (
-                    "excerpt changed by an earlier applied finding; re-run to pick up shifted findings"
-                    if excerpt in original
-                    else "excerpt not found verbatim"
-                )
-                raise ValueError(reason)
-            if len(matches) > 1:
-                raise ValueError("excerpt is ambiguous; add context_before / context_after and re-run")
-
-            start, end = matches[0]
+            start, end = locate(content, original, finding)
             content = content[:start] + replacement_for(finding) + content[end:]
             file_path.write_text(content, encoding="utf-8")
-            applied += 1
-        except Exception as exc:
+        except (FindingError, KeyError, TypeError, OSError) as exc:
             failures.append(
                 {
                     "file_path": str(file_path),
@@ -92,14 +122,22 @@ def apply_file_findings(file_path: Path, findings: list[dict[str, Any]]) -> tupl
                 }
             )
             break
+        applied += 1
 
     return applied, failures
 
 
+def load_findings(path: Path) -> list[Any]:
+    """Return the `findings` array of an approved-findings file."""
+    findings = load_json(path)["findings"]
+    if not isinstance(findings, list):
+        raise InputError(InputError.NOT_ARRAY)
+    return findings
+
+
 def main() -> int:
-    parser = argparse.ArgumentParser(
-        description="Apply approved md-bloat-hunter findings with exact string matching."
-    )
+    """Apply every approved finding and print a JSON summary."""
+    parser = argparse.ArgumentParser(description="Apply approved md-bloat-hunter findings with exact string matching.")
     parser.add_argument(
         "approved_findings",
         type=Path,
@@ -108,11 +146,8 @@ def main() -> int:
     args = parser.parse_args()
 
     try:
-        payload = load_json(args.approved_findings)
-        findings = payload["findings"]
-        if not isinstance(findings, list):
-            raise ValueError("findings must be an array")
-    except Exception as exc:
+        findings = load_findings(args.approved_findings)
+    except (ValueError, KeyError, TypeError, OSError) as exc:
         print(str(exc), file=sys.stderr)
         return 1
 

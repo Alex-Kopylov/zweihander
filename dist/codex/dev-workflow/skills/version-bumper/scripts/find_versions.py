@@ -30,7 +30,7 @@ PATTERNS: list[tuple[str, str, str, re.Pattern[str]]] = [
         "setup.cfg",
         "metadata",
         "references/python-project-files.md",
-        re.compile(r'^version\s*=\s*(\d+\.\d+\.\d+)', re.MULTILINE),
+        re.compile(r"^version\s*=\s*(\d+\.\d+\.\d+)", re.MULTILINE),
     ),
     (
         "package.json",
@@ -101,6 +101,7 @@ GLOB_PATTERNS: list[tuple[str, str, str, re.Pattern[str]]] = [
 
 
 def find_versions(root: Path) -> list[dict[str, str | int]]:
+    """Return every version string found under `root` by the known file patterns."""
     results: list[dict[str, str | int]] = []
 
     for filename, pattern_name, reference, regex in PATTERNS:
@@ -126,19 +127,21 @@ def _search_file(
     results: list[dict[str, str | int]],
 ) -> None:
     try:
-        content = path.read_text()
+        content = path.read_text(encoding="utf-8")
     except (OSError, UnicodeDecodeError):
         return
     match = regex.search(content)
     if match:
         line_num = content[: match.start()].count("\n") + 1
-        results.append({
-            "file": str(path),
-            "version": match.group(1),
-            "line": line_num,
-            "pattern": pattern_name,
-            "reference": reference,
-        })
+        results.append(
+            {
+                "file": str(path),
+                "version": match.group(1),
+                "line": line_num,
+                "pattern": pattern_name,
+                "reference": reference,
+            }
+        )
 
 
 if __name__ == "__main__":

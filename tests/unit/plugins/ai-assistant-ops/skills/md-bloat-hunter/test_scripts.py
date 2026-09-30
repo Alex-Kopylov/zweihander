@@ -188,10 +188,7 @@ def test_validate_output_invariants_reject_invalid_recommended_indexes(scripts_d
 def test_validate_output_reports_missing_jsonschema(scripts_dir: Path, monkeypatch) -> None:
     validate_output = load_script(scripts_dir, "validate_output")
 
-    def fake_run(*_args, **_kwargs):
-        raise FileNotFoundError
-
-    monkeypatch.setattr(validate_output.subprocess, "run", fake_run)
+    monkeypatch.setattr(validate_output.shutil, "which", lambda _name: None)
 
     status = validate_output.run_jsonschema(Path("instance.json"), Path("schema.json"))
 

@@ -17,25 +17,27 @@ import sys
 from pathlib import Path
 from typing import Any
 
-
 DEFAULT_SOFT_BUDGET_TOKENS = 4096
 DEFAULT_HARD_BUDGET_TOKENS = 8192
 DEFAULT_MODEL = "gpt-4o"
-FALLBACK_TOKEN_SOURCE = "estimate:max(chars/4,words/0.75)"
+ESTIMATE_SOURCE = "estimate:max(chars/4,words/0.75)"
 WORD_RE = re.compile(r"\S+")
 
 
 def count_words(text: str) -> int:
+    """Count whitespace-separated words."""
     return len(WORD_RE.findall(text))
 
 
 def estimate_tokens(characters: int, words: int) -> int:
+    """Estimate tokens without a tokenizer, taking the larger of two heuristics."""
     by_chars = math.ceil(characters / 4)
     by_words = math.ceil(words / 0.75)
     return max(by_chars, by_words)
 
 
 def budget_status(tokens: int, soft_budget_tokens: int, hard_budget_tokens: int) -> str:
+    """Classify a token count against the soft and hard budgets."""
     if tokens > hard_budget_tokens:
         return "over_budget"
     if tokens > soft_budget_tokens:
@@ -44,6 +46,7 @@ def budget_status(tokens: int, soft_budget_tokens: int, hard_budget_tokens: int)
 
 
 def warning_for_status(tokens: int, soft_budget_tokens: int, hard_budget_tokens: int, status: str) -> str | None:
+    """Return the warning text for a budget status, or None when within budget."""
     if status == "over_budget":
         return f"File is {tokens} tokens, above hard budget {hard_budget_tokens}."
     if status == "warning":
@@ -52,22 +55,25 @@ def warning_for_status(tokens: int, soft_budget_tokens: int, hard_budget_tokens:
 
 
 def load_tiktoken_encoder(model: str) -> tuple[Any | None, str | None]:
+    """Return a tiktoken encoder and its label, or (None, None) when tiktoken cannot count.
+
+    tiktoken is optional, and it downloads encodings on first use, so an
+    unknown model (KeyError), a bad download (ValueError) or no network
+    (OSError) falls through to the next choice rather than failing the run.
+    """
     try:
-        import tiktoken  # type: ignore[import-not-found]
-    except Exception:
+        import tiktoken
+    except ImportError:
         return None, None
 
     try:
         return tiktoken.encoding_for_model(model), f"tiktoken:{model}"
-    except Exception:
-        pass
-
-    for encoding_name in ("o200k_base", "cl100k_base"):
-        try:
-            return tiktoken.get_encoding(encoding_name), f"tiktoken:{encoding_name}"
-        except Exception:
-            continue
-
+    except (KeyError, ValueError, OSError):
+        for encoding_name in ("o200k_base", "cl100k_base"):
+            try:
+                return tiktoken.get_encoding(encoding_name), f"tiktoken:{encoding_name}"
+            except (ValueError, OSError):
+                continue
     return None, None
 
 
@@ -79,6 +85,7 @@ def measure_file(
     encoder: Any | None = None,
     tokenizer_name: str | None = None,
 ) -> dict[str, Any]:
+    """Return the size report for one file, counting tokens with `encoder` when given."""
     text = path.read_text(encoding="utf-8")
     encoded_bytes = text.encode("utf-8")
     characters = len(text)
@@ -89,7 +96,7 @@ def measure_file(
         token_source = tokenizer_name or "tiktoken"
     else:
         tokens = estimate_tokens(characters, words)
-        token_source = FALLBACK_TOKEN_SOURCE
+        token_source = ESTIMATE_SOURCE
 
     status = budget_status(tokens, soft_budget_tokens, hard_budget_tokens)
 
@@ -109,6 +116,7 @@ def measure_file(
 
 
 def parse_args() -> argparse.Namespace:
+    """Parse the command line."""
     parser = argparse.ArgumentParser(description="Measure Markdown size for md-bloat-hunter.")
     parser.add_argument("path", type=Path, help="Markdown file to measure")
     parser.add_argument("--model", default=DEFAULT_MODEL, help="tiktoken model name")
@@ -133,6 +141,7 @@ def parse_args() -> argparse.Namespace:
 
 
 def main() -> int:
+    """Print the size report for the requested file as JSON."""
     args = parse_args()
     if args.soft_budget_tokens <= 0 or args.hard_budget_tokens <= 0:
         print("token budgets must be positive integers", file=sys.stderr)

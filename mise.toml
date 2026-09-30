@@ -64,15 +64,15 @@ run = [
 [tasks.lint-python-fast]
 description = "Run fast Python checks"
 run = [
-  "uv run ruff check plugin_maintenance tests",
-  "uv run ruff format --check plugin_maintenance tests",
+  "uv run ruff check plugin_maintenance tests plugins",
+  "uv run ruff format --check plugin_maintenance tests plugins",
   "uv run flake8 plugin_maintenance",
 ]
 
 [tasks.lint-python-deep]
 description = "Run whole-project Python analysis"
 run = [
-  "uv run ty check plugin_maintenance",
+  "uv run ty check plugin_maintenance tests plugins",
   "uv run vulture --config .vulture.toml",
 ]
 
@@ -146,8 +146,8 @@ run = [
 [tasks.format]
 description = "Format and autofix Python and TOML files"
 run = [
-  "uv run ruff format plugin_maintenance tests",
-  "uv run ruff check --fix plugin_maintenance tests",
+  "uv run ruff format plugin_maintenance tests plugins",
+  "uv run ruff check --fix plugin_maintenance tests plugins",
   "mise exec -- taplo fmt",
 ]
 
