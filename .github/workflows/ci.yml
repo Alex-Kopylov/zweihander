@@ -20,7 +20,7 @@ jobs:
           persist-credentials: false
           fetch-depth: 0
 
-      # mise.toml pins Python, uv and every linter binary
+      # mise.toml pins uv and every linter binary; uv reads Python from .python-version
       - name: Install toolchain
         uses: jdx/mise-action@v4.2.0
         with:
