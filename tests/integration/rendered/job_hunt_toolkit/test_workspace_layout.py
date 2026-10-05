@@ -22,9 +22,7 @@ def export_pdf_skill(plugin: Path) -> Path:
 
 
 @pytest.mark.parametrize("skill_name", ["resume-tailoring", "cover-letter-writing"])
-def test_tailoring_review_reference_ships_with_each_skill(
-    plugin: Path, skill_name: str
-) -> None:
+def test_tailoring_review_reference_ships_with_each_skill(plugin: Path, skill_name: str) -> None:
     skill_dir = plugin / "skills" / skill_name
     review_link = "../../references/tailoring-review.md"
 
