@@ -137,8 +137,10 @@ run = "uv run pytest tests/ --cov --cov-report=term-missing"
 
 [tasks.verify]
 description = "Build, lint, and run the coverage test suite"
+# Deviates from the template's `uv build`: this repository builds no Python
+# distribution (no [build-system]); its build renders the dist/ trees.
 run = [
-  "uv build",
+  "uv run python -m plugin_maintenance.build",
   { tasks = ["lint"] },
   { tasks = ["test-cov"] },
 ]
