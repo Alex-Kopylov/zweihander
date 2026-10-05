@@ -98,7 +98,6 @@ kanban
     dw_systematic_debugging[systematic-debugging]
     dw_ticket_branch[ticket-branch]
     dw_ticket_comment_status[ticket-comment-status]
-    dw_using_git_worktrees[using-git-worktrees]
     dw_verification_before_completion[verification-before-completion]
     dw_version_bumper[version-bumper]
     dw_yolo_push[yolo-push]
@@ -313,7 +312,6 @@ provenance.
 | `systematic-debugging` | Investigate bugs through evidence, patterns, hypotheses, and fixes. |
 | `ticket-branch` | Create a git branch from a ticket ID or URL. |
 | `ticket-comment-status` | Post status updates to tickets or work items. |
-| `using-git-worktrees` | Set up isolated workspace branches for feature work. |
 | `verification-before-completion` | Verify claims before reporting work as complete or fixed. |
 | `version-bumper` | Bump versions in plugin and package metadata. |
 | `yolo-push` | Slash-command gated commit, PR, CI, merge, CD, and post-merge cleanup workflow. |
