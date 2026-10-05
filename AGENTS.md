@@ -88,6 +88,23 @@ harness fact from a matrix under
 `adapt-skill-for-ai-harness` skill when converting a skill's harness-specific
 wording into template form.
 
+## Skill Design
+
+- **Tiny skills, fat references.** Keep routing `SKILL.md` files small; put depth in references and examples.
+- **Skill content progressive disclosure.** Load only the reference branch the current task needs.
+
+### Gateway Skills vs Fine-Grained Skills
+
+Both forms follow the same design principles; the developer decides whether
+their workflows stay in `SKILL.md` or are split into references.
+
+Fine-grained skills may exist to preserve explicit user control over
+distinct processes, not because their content cannot be combined. When
+fine-grained control is needed, do not bury those operations under the
+`references/` or `examples/` folders of a gateway skill. Before
+consolidating them, kindly push back and ask whether the user actually wants to
+trade those explicit control points for a single gateway.
+
 ## Development Workflow
 
 1. Update plugin files under `plugins/<plugin-name>/`.
