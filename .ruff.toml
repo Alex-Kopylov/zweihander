@@ -1,5 +1,4 @@
 line-length = 120
-src = ["plugin_maintenance", "tests"]
 exclude = [".venv", "build", "dist"]
 
 [lint]
@@ -71,10 +70,6 @@ max-statements = 50     # PLR0915: too-many-statements (~1-2 screens)
 max-branches = 12       # PLR0912: too-many-branches
 max-returns = 6         # PLR0911: too-many-return-statements
 max-nested-blocks = 5   # PLR1702: too-many-nested-blocks (preview)
-
-[lint.isort]
-known-first-party = ["zweihander"]
-
 
 [lint.per-file-ignores]
 # PT (flake8-pytest-style) rules are pytest-specific - only apply to test files
