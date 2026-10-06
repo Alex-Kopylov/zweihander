@@ -19,7 +19,7 @@ jobs:
     env:
       GITHUB_TOKEN: ${{ github.token }}
     steps:
-      - uses: actions/checkout@v7.0.0
+      - uses: actions/checkout@v7
         with:
           persist-credentials: false
       - uses: jdx/mise-action@v4.2.0
