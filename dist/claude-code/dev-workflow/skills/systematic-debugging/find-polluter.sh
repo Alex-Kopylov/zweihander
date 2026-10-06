@@ -18,8 +18,9 @@ echo "🔍 Searching for test that creates: ${POLLUTION_CHECK}"
 echo "Test pattern: ${TEST_PATTERN}"
 echo ""
 
-# Get list of test files
-FOUND=$(find . -path "${TEST_PATTERN}")
+# Get list of test files. find exits 1 when it meets an unreadable directory;
+# it reports that on stderr, and the tests it did find are still worth bisecting.
+FOUND=$(find . -path "${TEST_PATTERN}" || true)
 TEST_FILES=$(sort <<<"${FOUND}")
 TOTAL=$(wc -l <<<"${TEST_FILES}")
 TOTAL=${TOTAL//[[:space:]]/}
