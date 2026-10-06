@@ -110,6 +110,12 @@ repos:
         language: system
         files: ^\.github/workflows/.*\.ya?ml$
 
+      - id: check-jsonschema-dependabot
+        name: check-jsonschema (Dependabot)
+        entry: mise exec -- uv run check-jsonschema --builtin-schema vendor.dependabot
+        language: system
+        files: ^\.github/dependabot\.ya?ml$
+
       - id: actionlint
         name: actionlint
         entry: mise exec -- actionlint

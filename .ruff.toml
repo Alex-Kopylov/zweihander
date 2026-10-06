@@ -7,6 +7,7 @@ select = [
   "A",    # flake8-builtins - prevent shadowing builtins
   "D",    # pydocstyle - docstring quality enforcement
   "E",
+  "W",    # pycodestyle warnings, e.g. W605 invalid escape sequence
   "F",
   "I",
   "B",
