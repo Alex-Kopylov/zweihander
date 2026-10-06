@@ -9,6 +9,7 @@ import json
 from pathlib import Path
 
 import pytest
+
 from plugin_maintenance.errors import (
     FrontmatterMatrixShapeError,
     PlacementError,

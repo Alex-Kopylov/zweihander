@@ -23,6 +23,8 @@
     "siblings_only": true
   },
 
-  // MD033: Inline HTML is allowed
-  "MD033": false
+  // AGENTS.md puts multi-skill plugin details in <details> spoilers
+  "MD033": {
+    "allowed_elements": ["details", "summary"]
+  }
 }

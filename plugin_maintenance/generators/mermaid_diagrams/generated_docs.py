@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import errno
 import json
 import os
 import re
@@ -37,6 +36,14 @@ SYNC_STATUS_PATTERN = re.compile(
     r"(?P<status>[\s\S]*?)\n"
     r"<!-- END GENERATED SYNC STATUS -->"
 )
+
+
+class MissingNavigationFileError(FileNotFoundError):
+    """`MERMAID_DOCS_NAVIGATION` names a file that does not exist."""
+
+    def __init__(self, path: Path) -> None:
+        """Name the missing file."""
+        super().__init__(f"Mermaid docs navigation file not found: {path}")
 
 
 @dataclass(frozen=True)
@@ -300,7 +307,7 @@ def load_navigation_metadata() -> dict[str, NavigationMetadata]:
     if configured:
         configured_path = plugin_relative_path(configured)
         if not configured_path.exists():
-            raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), str(configured_path))
+            raise MissingNavigationFileError(configured_path)
         return load_navigation_metadata_from_path(configured_path)
 
     if BUNDLED_DOCS_NAVIGATION_PATH.exists():

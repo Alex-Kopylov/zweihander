@@ -105,7 +105,8 @@ run = "uv run yamllint -c .yamllint ."
 
 [tasks.lint-json]
 description = "Validate JSON syntax with jaq"
-run = "mise exec -- jaq empty .jscpd.json"
+# Every tracked JSON file; dist/ copies plugins/ byte for byte.
+run = "git ls-files -z -- '*.json' ':!:dist' | xargs -0 mise exec -- jaq empty"
 
 [tasks.lint-toml]
 description = "Lint TOML files with Taplo"

@@ -1,5 +1,4 @@
 line-length = 120
-src = ["plugin_maintenance", "tests"]
 # dist/ is a byte-identical render of plugins/ and would double every finding;
 # dist/ is linted once, in CI - see the lint-dist step in .github/workflows/ci.yml.
 exclude = [".venv", "build", "dist"]
@@ -86,7 +85,7 @@ max-nested-blocks = 5   # PLR1702: too-many-nested-blocks (preview)
 
 [lint.isort]
 # app/myapp: the user's own package in the example code skills ship
-known-first-party = ["zweihander", "app", "myapp"]
+known-first-party = ["app", "myapp"]
 
 
 [lint.per-file-ignores]
