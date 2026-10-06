@@ -28,7 +28,6 @@ def redis_client(redis_container):
 def clean_redis(redis_client):
     """Flush all data before each test for a clean slate."""
     redis_client.flushall()
-    yield
 
 
 @pytest.fixture

@@ -12,3 +12,9 @@ logs/
 **/workspaces/
 goals/
 plugins/mermaid-diagrams/mermaid-source/
+node_modules/
+.ruff_cache/
+*.egg-info/
+.coverage
+coverage.xml
+htmlcov/

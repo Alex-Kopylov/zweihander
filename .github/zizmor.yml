@@ -1,0 +1,5 @@
+rules:
+  # Intentional template default: allow version-pinned action tags instead of
+  # requiring every workflow action to be pinned by commit SHA.
+  unpinned-uses:
+    disable: true

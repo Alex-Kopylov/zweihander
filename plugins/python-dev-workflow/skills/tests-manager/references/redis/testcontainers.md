@@ -48,7 +48,6 @@ def redis_client(redis_container):
 @pytest.fixture(autouse=True)
 def clean_redis(redis_client):
     redis_client.flushall()
-    yield
 ```
 
 Flush before each test, not only after, so a crashed test cannot leak state.
