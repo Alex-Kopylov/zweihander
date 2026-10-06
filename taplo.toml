@@ -5,7 +5,19 @@
 include = ["**/*.toml"]
 
 # Exclude common directories
-exclude = ["**/node_modules/**", "**/target/**", "**/.venv/**"]
+# Taplo walks the filesystem and ignores .gitignore; keep it out of agent
+# checkouts (other branches' worktrees) and scratch space, as prek does.
+exclude = [
+  "**/node_modules/**",
+  "**/target/**",
+  "**/.venv/**",
+  "**/.claude/**",
+  "**/.codex/**",
+  "**/.cursor/**",
+  "**/.gemini/**",
+  "**/.worktrees/**",
+  "**/.tmp/**",
+]
 
 [formatting]
 # The two array options below are load-bearing: removing either makes a fresh
