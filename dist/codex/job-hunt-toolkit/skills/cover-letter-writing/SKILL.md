@@ -71,6 +71,9 @@ Pre-send checks:
 
 Changes:
 <Tailoring Change Review: one verbatim `diff` block per change, with Why and evidence directly below>
+
+(Optional) Highlights:
+- <only big things worth the user's attention>
 ```
 
 A fit summary alone is not a change review.
