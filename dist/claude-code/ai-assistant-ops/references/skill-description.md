@@ -16,16 +16,17 @@ Leave out:
 
 - Implementation detail: which files it writes, which tools it runs, which
   skill it chains into. The body owns the process.
-- `/skill-name` as a trigger; the slash command already invokes the skill.
+- `Skill(skill-name)` as a trigger; the harness already invokes the
+  skill by that name. This bans it only in `description`: a skill's body and
+  references may name other skills it deliberately invokes.
 - XML tags and angle brackets.
 
 Length: 1–1024 characters.
 
-**User-only skills** (Claude Code `disable-model-invocation: true`, Codex
-`policy.allow_implicit_invocation: false`) are never model-selected. Only a
-person reads their description, so it says what the skill does; drop the
-`Use when …` and `Not for …` parts.
+**User-only skills** (`disable-model-invocation: true`) are never
+model-selected. Only a person reads their description, so it says what the
+skill does; drop the `Use when …` and `Not for …` parts.
 
 Sources: [Anthropic skill authoring best practices](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices),
-[Agent Skills specification](https://agentskills.io/specification),
+[agentskills.io specification](https://agentskills.io/specification),
 [OpenAI: build skills](https://learn.chatgpt.com/docs/build-skills).

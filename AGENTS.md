@@ -174,11 +174,6 @@ reject foreign harness callable names and verify byte-identical consecutive
 builds. Jinja validates template syntax with `StrictUndefined`; literal Jinja
 markers in rendered content are allowed.
 
-## Skill Descriptions
-
-Write every skill's `description` frontmatter by
-`plugins/ai-assistant-ops/references/skill-description.md`.
-
 ## Versioning
 
 When changing plugin or marketplace content, bump the relevant versions according
