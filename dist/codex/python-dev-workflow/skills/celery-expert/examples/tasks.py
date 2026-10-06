@@ -87,8 +87,8 @@ def call_external_api(url: str):
 def process_batch(item_ids: list[int]):
     """Process items in chunks for efficiency.
 
-    One failing item is recorded and does not fail the batch; an unexpected
-    error still fails the task. Dispatch with:
+    A failing item is logged with its traceback and recorded; it never fails
+    the rest of the batch. Dispatch with:
 
         for chunk in chunks(all_item_ids, size=100):
             process_batch.delay(chunk)
@@ -98,7 +98,7 @@ def process_batch(item_ids: list[int]):
         try:
             result = process_single_item(item_id)
             results.append({"item_id": item_id, "status": "success", "result": result})
-        except (TemporaryError, PermanentError) as exc:
-            logger.warning("Failed to process item", extra={"item_id": item_id, "error": str(exc)})
+        except Exception as exc:
+            logger.warning("Failed to process item", extra={"item_id": item_id, "error": str(exc)}, exc_info=True)
             results.append({"item_id": item_id, "status": "failed", "error": str(exc)})
     return results
