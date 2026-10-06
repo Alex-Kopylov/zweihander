@@ -78,7 +78,9 @@ run = [
 
 [tasks.lint-shell]
 description = "Lint shell scripts with ShellCheck"
-run = "find . -name '*.sh' -not -path './.venv/*' -not -path './node_modules/*' -exec mise exec -- shellcheck {} +"
+# Tracked files only, as CI sees them: a find over . would also walk untracked
+# checkouts such as .claude/worktrees/ and lint other branches.
+run = "git ls-files -z -- '*.sh' ':!:dist' | xargs -0 mise exec -- shellcheck"
 
 [tasks.lint-md]
 description = "Lint Markdown files"
@@ -95,13 +97,18 @@ run = "git ls-files -z -- '*.json' ':!:dist' | xargs -0 mise exec -- jaq empty"
 
 [tasks.lint-toml]
 description = "Lint TOML files with Taplo"
-run = "mise exec -- taplo lint"
+# fmt --check: the prek hook formats TOML on commit; CI has to check it too.
+run = [
+  "mise exec -- taplo lint",
+  "mise exec -- taplo fmt --check",
+]
 
 [tasks.lint-github-actions]
 description = "Lint GitHub Actions workflow files"
 run = [
   "mise exec -- actionlint",
   "uv run check-jsonschema --builtin-schema github-workflows .github/workflows/*.yml",
+  "uv run check-jsonschema --builtin-schema vendor.dependabot .github/dependabot.yml",
 ]
 
 [tasks.lint-duplicates]

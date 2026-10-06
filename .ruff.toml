@@ -7,6 +7,7 @@ select = [
   "A",    # flake8-builtins - prevent shadowing builtins
   "D",    # pydocstyle - docstring quality enforcement
   "E",
+  "W",    # pycodestyle warnings, e.g. W605 invalid escape sequence
   "F",
   "I",
   "B",
@@ -74,10 +75,13 @@ max-nested-blocks = 5   # PLR1702: too-many-nested-blocks (preview)
 [lint.per-file-ignores]
 # PT (flake8-pytest-style) rules are pytest-specific - only apply to test files
 "!tests/**/*" = ["PT"]
-# Test files: D103 exempt (test function names ARE documentation)
-"tests/**/test_*.py" = ["D103", "E", "F", "B", "C901", "PLR", "S", "TC", "N", "ARG", "RUF029", "ERA001", "PLC", "SIM", "TRY", "RET", "RUF", "PLW", "UP", "PERF", "FURB"]
+# Test files: D101-D103 exempt (test class, method and function names ARE documentation)
+"tests/**/test_*.py" = ["D101", "D102", "D103", "E", "F", "B", "C901", "PLR", "S", "TC", "N", "ARG", "RUF029", "ERA001", "PLC", "SIM", "TRY", "RET", "RUF", "PLW", "UP", "PERF", "FURB"]
 "tests/**/conftest.py" = ["S", "N", "ARG", "PLC2701", "PLC0415", "SIM", "TRY", "RET", "RUF", "PLW", "TC", "UP", "PERF", "FURB", "E", "G"]
 "tests/constants.py" = ["D", "ERA001"]
+# pytest runs with --import-mode=importlib and test paths mirror plugin names
+# with hyphens, so test directories are not packages
+"tests/**" = ["INP001"]
 
 
 [lint.flake8-pytest-style]

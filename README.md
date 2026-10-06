@@ -19,10 +19,13 @@ tools.
 
 ## Selected Projects
 
-- [Zweihander](https://github.com/Alex-Kopylov/zweihander) — an agent-plugin marketplace for Codex and Claude Code.
-- [AI-Ready Modern Python Template](https://github.com/Alex-Kopylov/ai-ready-modern-python-template) — a practical starting point for AI-ready Python projects.
-- [GH Babysitter](https://github.com/Alex-Kopylov/gh-babysitter) — GitHub workflow automation for keeping work moving.
-
+- [Zweihander](https://github.com/Alex-Kopylov/zweihander) — an agent-plugin
+  marketplace for Codex and Claude Code.
+- [AI-Ready Modern Python
+  Template](https://github.com/Alex-Kopylov/ai-ready-modern-python-template) — a
+  practical starting point for AI-ready Python projects.
+- [GH Babysitter](https://github.com/Alex-Kopylov/gh-babysitter) — GitHub
+  workflow automation for keeping work moving.
 
 ## Temporary files
 
@@ -207,16 +210,16 @@ claude plugin marketplace update zweihander
 **Use when:** you need to inspect Langfuse data, create or update evaluation
 assets, compare experiment runs, or manage dashboard widgets.
 
-**Skills**
+#### Skills
 
 | Skill | Description |
-|---|---|
+| --- | --- |
 | `langfuse` | Unified Langfuse skill for data discovery, metrics, datasets, experiment runs, evaluators, dashboard widgets, and dashboard management. Former task-specific workflows are bundled as internal references. |
 
-**Agents**
+#### Agents
 
 | Agent | Description |
-|---|---|
+| --- | --- |
 | `langfuse-data-explorer` | Read-only discovery for scores, traces, models, and metrics. |
 | `langfuse-dataset-expert` | Dataset creation, item management, and schema design. |
 | `langfuse-eval-manager` | Evaluator CRUD, filters, and status management. |
@@ -228,33 +231,36 @@ assets, compare experiment runs, or manage dashboard widgets.
 **Use when:** you have a running API service and want the assistant to discover
 available endpoints or inspect operation details.
 
-**Skills**
+#### Skills
 
 | Skill | Description |
-|---|---|
+| --- | --- |
 | `openapi-list` | List available OpenAPI routes. |
 | `openapi-inspect` | Inspect endpoint inputs, outputs, and schema details. |
 
 ### `llm-application-dev`
 
 <details>
-<summary>LLM application design, agent pattern selection, and schema-guided reasoning patterns.</summary>
+<summary>
+LLM application design, agent pattern selection, and schema-guided reasoning
+patterns.
+</summary>
 
 **Use when:** you need to choose LLM workflow patterns, compare agent
 architecture trade-offs, or design structured schemas that guide model
 reasoning.
 
-**Skills**
+#### Skills
 
 | Skill | Description |
-|---|---|
+| --- | --- |
 | `select-agent-patterns` | Choose LLM workflow and agent design patterns by decomposing a problem into stages and comparing candidates. Based on [A Two-Dimensional Framework for AI Agent Design Patterns](https://arxiv.org/pdf/2605.13850). |
 | `schema-guided-reasoning` | Design structured Pydantic schemas that guide LLM reasoning. |
 
-**Skill Agents**
+#### Skill Agents
 
 | Skill | Agent | Description |
-|---|---|---|
+| --- | --- | --- |
 | `select-agent-patterns` | `pattern-fit-reviewer` | Independently review one candidate pattern for one workflow stage. |
 
 </details>
@@ -266,17 +272,17 @@ scenarios from requirements, writing or reviewing Python tests, deciding E2E
 vs integration vs unit coverage, testing Celery or Redis behavior, or
 configuring Celery for production behavior.
 
-**Skills**
+#### Skills
 
 | Skill | Description |
-|---|---|
+| --- | --- |
 | `celery-expert` | Configure Celery tasks, workers, retries, schedules, performance, and security. |
 | `tests-manager` | Own Python test-first development and test craft: red-green-refactor, plan scenarios, and write pytest E2E, integration, and unit tests with focused references. |
 
-**Agents**
+#### Agents
 
 | Agent | Description |
-|---|---|
+| --- | --- |
 | `integration-test-writer` | Write endpoint and real-wiring integration tests. |
 | `test-scenario-planner` | Derive requirement-linked scenarios and corner cases before coverage routing. |
 | `test-runner` | Run focused pytest or `uv run pytest` commands. |
@@ -294,10 +300,10 @@ MIT-licensed [Superpowers](https://github.com/obra/superpowers) project by
 Jesse Vincent. See `third_party/THIRD_PARTY_NOTICES.md` for skill-by-skill
 provenance.
 
-**Skills**
+#### Skills
 
 | Skill | Description |
-|---|---|
+| --- | --- |
 | `approve-pr` | Approve and merge PRs with current checks and policy gates. |
 | `commit` | Create single-line Conventional Commits. |
 | `create-pr` | Open pull requests from the current branch. |
@@ -316,10 +322,10 @@ provenance.
 | `version-bumper` | Bump versions in plugin and package metadata. |
 | `yolo-push` | Slash-command gated commit, PR, CI, merge, CD, and post-merge cleanup workflow. |
 
-**Agents**
+#### Agents
 
 | Agent | Description |
-|---|---|
+| --- | --- |
 | `ambiguity-contradiction-hunter` | Finds hidden contradictions from vague language. |
 | `release-manager` | Coordinates version bump and commit workflows. |
 | `structural-contradiction-hunter` | Finds deeper logical and scope conflicts. |
@@ -328,7 +334,10 @@ provenance.
 ### `run-and-verify-app`
 
 <details>
-<summary>Runtime app launch, verification, and run-skill generation inspired by Claude Code.</summary>
+<summary>
+Runtime app launch, verification, and run-skill generation inspired by Claude
+Code.
+</summary>
 
 **Use when:** you want to launch an app, verify a change against the
 running app instead of just tests, or record a reusable build and launch
@@ -342,7 +351,7 @@ This is an opinionated adaptation, not a 1-to-1 port. It reflects this
 marketplace's preferences for runtime evidence and reusable project run skills.
 
 | Skill | Purpose |
-|---|---|
+| --- | --- |
 | `run` | Launch and drive your app to see a change working. |
 | `verify` | Build and run your app to confirm a code change does what it should, without falling back to tests or type checks. |
 | `run-skill-generator` | Teach `run` and `verify` how to build and launch your project by recording a verified project-specific recipe. |
@@ -356,25 +365,27 @@ Generate and validate Mermaid diagrams with synced syntax references.
 **Use when:** you want to create Mermaid diagrams from requirements or validate
 Mermaid code blocks with the Mermaid CLI.
 
-**Skills**
+#### Skills
 
 | Skill | Description |
-|---|---|
+| --- | --- |
 | `mermaid` | Generate Mermaid diagrams from user requirements with local syntax references. |
 | `mermaid-lint` | Validate Mermaid code blocks with `mmdc` and report lint status and errors. |
 
 ### `work-session-tools`
 
 <details>
-<summary>Productivity, orchestration, and handoffs within an assistant session.</summary>
+<summary>
+Productivity, orchestration, and handoffs within an assistant session.
+</summary>
 
 **Use when:** you want daily notes, task tracking, structured interviews,
 session handoffs, or a designed multi-agent team.
 
-**Skills**
+#### Skills
 
 | Skill | Description |
-|---|---|
+| --- | --- |
 | `create-team` | Design a multi-agent team and handoff plan. |
 | `daily` | Generate a daily note from project activity. |
 | `handoff` | Compact the current conversation for another agent. |
@@ -387,7 +398,9 @@ session handoffs, or a designed multi-agent team.
 ### `research`
 
 <details>
-<summary>Research wiki and Obsidian vault workflows for agent-maintained notes.</summary>
+<summary>
+Research wiki and Obsidian vault workflows for agent-maintained notes.
+</summary>
 
 **Use when:** you want to create or query an interlinked research wiki, ingest
 sources into a knowledge base, lint wiki health, or work with Obsidian notes.
@@ -398,10 +411,10 @@ sources into a knowledge base, lint wiki health, or work with Obsidian notes.
 and
 [`obsidian`](https://raw.githubusercontent.com/NousResearch/hermes-agent/refs/heads/main/skills/note-taking/obsidian/SKILL.md).
 
-**Skills**
+#### Skills
 
 | Skill | Description |
-|---|---|
+| --- | --- |
 | `llm-wiki` | Build, query, ingest into, and lint an interlinked Markdown research wiki inspired by Andrej Karpathy's LLM Wiki pattern. |
 | `obsidian` | Read, search, create, append to, and edit notes in a filesystem-first Obsidian vault. |
 
@@ -413,10 +426,10 @@ and
 improve existing skills, adapt skills for assistant harnesses, capture useful
 session insights, review documentation language, or reduce Markdown bloat.
 
-**Skills**
+#### Skills
 
 | Skill | Description |
-|---|---|
+| --- | --- |
 | `adapt-skill-for-ai-harness` | Adapt explicitly named skills using a JSON assistant action matrix and target-specific harness references. |
 | `agents-md-improver` | Audit and improve repository AGENTS.md files. |
 | `ai-insights-hunter` | Extract reusable decisions, patterns, and preferences from a session. |
@@ -425,10 +438,10 @@ session insights, review documentation language, or reduce Markdown bloat.
 | `improve-skill` | Improve existing skills through eval feedback, baseline comparison, iteration, and trigger checks. |
 | `md-bloat-hunter` | Trim redundancy, verbosity, and filler in Markdown. |
 
-**Skill Agents**
+#### Skill Agents
 
 | Skill | Agent | Description |
-|---|---|---|
+| --- | --- | --- |
 | `ai-insights-hunter` | `decisions-hunter` | Extracts durable decisions from a conversation. |
 | `ai-insights-hunter` | `patterns-hunter` | Finds recurring workflow and implementation patterns. |
 | `ai-insights-hunter` | `preferences-hunter` | Identifies user preferences worth preserving. |
@@ -445,20 +458,20 @@ session insights, review documentation language, or reduce Markdown bloat.
 
 Operating-system utilities for local machine automation.
 
-**Skills**
+#### Skills
 
 | Skill | Description |
-|---|---|
+| --- | --- |
 | `loop_macos` | Schedule persistent macOS launchd commands or prompts. |
 
 ### `cloud-storage-tools`
 
 Cloud storage workflows for MEGA-style user-file storage tools.
 
-**Skills**
+#### Skills
 
 | Skill | Description |
-|---|---|
+| --- | --- |
 | `mega-cmd` | Manage encrypted MEGA storage, links, sync, search, and backups. |
 
 ### `job-hunt-toolkit`
@@ -466,10 +479,10 @@ Cloud storage workflows for MEGA-style user-file storage tools.
 **Use when:** you want a structured job application workspace, tailored resumes,
 Typst-to-PDF export, or a final pre-send checklist.
 
-**Skills**
+#### Skills
 
 | Skill | Description |
-|---|---|
+| --- | --- |
 | `cover-letter-writing` | Write an evidence-backed cover letter as Typst and PDF. |
 | `export-pdf` | Compile Typst CVs to PDF with `typst compile`. |
 | `init-workspace` | Scaffold the job application workspace. |
@@ -483,18 +496,26 @@ Typst-to-PDF export, or a final pre-send checklist.
 These are useful companion plugin and skill collections to consider alongside
 this marketplace:
 
-- [browser-harness](https://github.com/browser-use/browser-harness) - direct browser control through CDP.
-- [plannotator](https://github.com/backnotprop/plannotator) - browser-based plan review, annotation, and visual explanation workflows.
-- [destructive_command_guard](https://github.com/Dicklesworthstone/destructive_command_guard) - guardrails for destructive shell commands.
-- [ponytail](https://github.com/DietrichGebert/ponytail/) - lazy senior developer mode that favors the simplest solution that works.
-- [worktrunk](https://github.com/max-sixty/worktrunk) - worktree and branch workflow support.
-- [ralphex](https://github.com/umputun/ralphex) - AI-assisted development planning and project workflow tools.
-- [wshobson/agents](https://github.com/wshobson/agents) - Claude Code workflow skills for Python, LLM applications, debugging, testing, and PR work.
+- [browser-harness](https://github.com/browser-use/browser-harness) - direct
+  browser control through CDP.
+- [plannotator](https://github.com/backnotprop/plannotator) - browser-based plan
+  review, annotation, and visual explanation workflows.
+-
+  [destructive_command_guard](https://github.com/Dicklesworthstone/destructive_command_guard)
+  - guardrails for destructive shell commands.
+- [ponytail](https://github.com/DietrichGebert/ponytail/) - lazy senior
+  developer mode that favors the simplest solution that works.
+- [worktrunk](https://github.com/max-sixty/worktrunk) - worktree and branch
+  workflow support.
+- [ralphex](https://github.com/umputun/ralphex) - AI-assisted development
+  planning and project workflow tools.
+- [wshobson/agents](https://github.com/wshobson/agents) - Claude Code workflow
+  skills for Python, LLM applications, debugging, testing, and PR work.
 
 ## Runtime Support
 
 | Runtime | Marketplace metadata | Installed plugin source |
-|---|---|---|
+| --- | --- | --- |
 | Codex | `.agents/plugins/marketplace.json` | `dist/codex/<plugin-name>` |
 | Claude Code | `.claude-plugin/marketplace.json` | `dist/claude-code/<plugin-name>` |
 
@@ -504,5 +525,7 @@ so every runtime receives content in its own vocabulary.
 
 ## Official References
 
-- [Codex plugin marketplace CLI](https://developers.openai.com/codex/cli/reference#codex-plugin-marketplace)
-- [Claude Code plugin marketplaces](https://code.claude.com/docs/en/plugin-marketplaces)
+- [Codex plugin marketplace
+  CLI](https://developers.openai.com/codex/cli/reference#codex-plugin-marketplace)
+- [Claude Code plugin
+  marketplaces](https://code.claude.com/docs/en/plugin-marketplaces)

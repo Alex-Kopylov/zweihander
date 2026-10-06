@@ -9,10 +9,7 @@ import pytest
 
 @pytest.fixture
 def find_versions(rendered: Path) -> Callable:
-    script = (
-        rendered / "dev-workflow" / "skills" / "version-bumper" / "scripts"
-        / "find_versions.py"
-    )
+    script = rendered / "dev-workflow" / "skills" / "version-bumper" / "scripts" / "find_versions.py"
     spec = importlib.util.spec_from_file_location("find_versions", script)
     assert spec is not None
     module = importlib.util.module_from_spec(spec)

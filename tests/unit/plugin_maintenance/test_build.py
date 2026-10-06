@@ -10,9 +10,9 @@ import json
 import re
 from pathlib import Path
 
-from plugin_maintenance import REPO_ROOT
 from plugin_maintenance.build import stale_paths
 from plugin_maintenance.generate import run_generators
+from plugin_maintenance.paths import REPO_ROOT
 from plugin_maintenance.render import (
     DIST_DIRS,
     MATRIX_PATH,
@@ -21,7 +21,6 @@ from plugin_maintenance.render import (
     render_tree,
     tree_snapshot,
 )
-
 
 # Successor of the retired AGNOSTIC_EXEMPT: dist-tree-relative paths whose
 # subject matter is another harness, skipped by the foreign-name scan.
@@ -39,18 +38,12 @@ def matrix() -> dict:
 
 
 def callable_names(harness: str) -> set[str]:
-    return {
-        action[harness]["name"]
-        for action in matrix()["actions"].values()
-        if action["callable"]
-    }
+    return {action[harness]["name"] for action in matrix()["actions"].values() if action["callable"]}
 
 
 def foreign_callable_names(harness: str) -> set[str]:
     """Names that belong to some other harness and not to this one."""
-    return set().union(
-        *(callable_names(other) for other in Harness if other != harness)
-    ) - callable_names(harness)
+    return set().union(*(callable_names(other) for other in Harness if other != harness)) - callable_names(harness)
 
 
 def rendered_files(tree: Path) -> list[Path]:
@@ -59,9 +52,7 @@ def rendered_files(tree: Path) -> list[Path]:
 
 def template_source(tree: Path, rendered_path: Path) -> Path:
     relative = rendered_path.relative_to(tree)
-    return (
-        REPO_ROOT / "plugins" / relative.parent / f"{relative.name}{TEMPLATE_SUFFIX}"
-    )
+    return REPO_ROOT / "plugins" / relative.parent / f"{relative.name}{TEMPLATE_SUFFIX}"
 
 
 def test_rendered_files_carry_no_foreign_callable_names(harness, rendered: Path):

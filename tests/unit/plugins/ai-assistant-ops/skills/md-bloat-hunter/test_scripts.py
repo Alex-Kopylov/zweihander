@@ -305,12 +305,8 @@ def test_preflight_rejects_dirty_target(scripts_dir: Path, tmp_path: Path) -> No
     _repo, target = clean_git_repo(tmp_path)
     target.write_text("# Title\n\nChanged.\n", encoding="utf-8")
 
-    try:
+    with pytest.raises(ValueError, match="^target has staged or unstaged changes$"):
         preflight.validate_target(target)
-    except ValueError as exc:
-        assert str(exc) == "target has staged or unstaged changes"
-    else:
-        raise AssertionError("dirty target was accepted")
 
 
 def test_preflight_rejects_untracked_target(scripts_dir: Path, tmp_path: Path) -> None:
@@ -319,12 +315,8 @@ def test_preflight_rejects_untracked_target(scripts_dir: Path, tmp_path: Path) -
     untracked = repo / "untracked.md"
     untracked.write_text("draft\n", encoding="utf-8")
 
-    try:
+    with pytest.raises(ValueError, match="^target is not tracked by git$"):
         preflight.validate_target(untracked)
-    except ValueError as exc:
-        assert str(exc) == "target is not tracked by git"
-    else:
-        raise AssertionError("untracked target was accepted")
 
 
 def test_preflight_main_rejects_changed_hash_from_expect_map(scripts_dir: Path, tmp_path: Path) -> None:

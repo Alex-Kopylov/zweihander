@@ -11,7 +11,7 @@ from pathlib import Path
 
 import pytest
 
-from plugin_maintenance import REPO_ROOT
+from plugin_maintenance.paths import REPO_ROOT
 from plugin_maintenance.render import (
     DEV_FILE_NAMES,
     FRONTMATTER_MATRIX_NAME,
@@ -26,7 +26,6 @@ from plugin_maintenance.render import (
     render_tree,
 )
 
-
 DISPATCH_SENTENCE = "Depending on who you are as an AI agent"
 LEGACY_METADATA_LINKS = (
     "ai-assistant-harness-adaptation.claude-code",
@@ -35,9 +34,7 @@ LEGACY_METADATA_LINKS = (
 # The matrices ship with the adaptation skill, so their location inside a tree
 # is the renderer's own path with the authored root dropped.
 MATRIX_IN_TREE = Path(*MATRIX_PATH.parts[1:])
-TASK_MANAGEMENT_PATTERNS = Path(
-    "work-session-tools/skills/task-management/references/orchestration-patterns.md"
-)
+TASK_MANAGEMENT_PATTERNS = Path("work-session-tools/skills/task-management/references/orchestration-patterns.md")
 # Skills whose invocation policy differs per harness on purpose, as
 # `<plugin>/skills/<skill>`. Empty today: every user-only skill is user-only in
 # both harnesses. Add a skill with the reason to let its trees disagree.
@@ -49,9 +46,7 @@ def tree_files(rendered: Path) -> list[Path]:
 
 
 def test_tree_carries_no_templates(rendered: Path) -> None:
-    assert not [
-        path for path in tree_files(rendered) if path.name.endswith(TEMPLATE_SUFFIX)
-    ]
+    assert not [path for path in tree_files(rendered) if path.name.endswith(TEMPLATE_SUFFIX)]
 
 
 def test_tree_carries_no_legacy_dispatch_artifacts(rendered: Path) -> None:
@@ -77,9 +72,7 @@ def test_tree_carries_no_legacy_dispatch_artifacts(rendered: Path) -> None:
 def test_tree_strips_foreign_runtime_metadata(rendered: Path, harness: str) -> None:
     foreign_metadata = PLUGIN_METADATA_DIRS - {HARNESS_METADATA_DIRS[harness]}
 
-    assert not [
-        path for path in tree_files(rendered) if foreign_metadata.intersection(path.parts)
-    ]
+    assert not [path for path in tree_files(rendered) if foreign_metadata.intersection(path.parts)]
 
 
 def test_tree_carries_no_dev_files(rendered: Path) -> None:
@@ -99,11 +92,7 @@ def tree_frontmatter_files(rendered: Path) -> list[tuple[str, list[str]]]:
 
 
 def frontmatter_matrix(rendered: Path) -> dict:
-    return json.loads(
-        (rendered / MATRIX_IN_TREE)
-        .with_name(FRONTMATTER_MATRIX_NAME)
-        .read_text(encoding="utf-8")
-    )
+    return json.loads((rendered / MATRIX_IN_TREE).with_name(FRONTMATTER_MATRIX_NAME).read_text(encoding="utf-8"))
 
 
 def metadata_placed_keys(rendered: Path, harness: str) -> set[str]:
@@ -115,9 +104,7 @@ def metadata_placed_keys(rendered: Path, harness: str) -> set[str]:
     }
 
 
-def test_tree_carries_no_top_level_key_the_harness_does_not_read(
-    rendered: Path, harness: str
-) -> None:
+def test_tree_carries_no_top_level_key_the_harness_does_not_read(rendered: Path, harness: str) -> None:
     """A key placed under `metadata` never reaches the top level.
 
     `metadata` is the free-form map every harness accepts, so a key a harness
@@ -162,7 +149,8 @@ def test_claude_code_tree_carries_no_codex_agent_file(rendered: Path) -> None:
 
 
 def test_user_only_skills_agree_across_harnesses(tmp_path: Path) -> None:
-    """A skill the model may not start says so in each harness's own spelling:
+    """A skill the model may not start says so in each harness's own spelling.
+
     `disable-model-invocation: true` for Claude Code, and
     `policy.allow_implicit_invocation: false` in `agents/openai.yaml` for Codex.
 
@@ -176,8 +164,7 @@ def test_user_only_skills_agree_across_harnesses(tmp_path: Path) -> None:
     claude_user_only = {
         path.parent.relative_to(claude).as_posix()
         for path in claude.glob("*/skills/*/SKILL.md")
-        if "disable-model-invocation: true"
-        in (frontmatter_lines(path.read_text(encoding="utf-8")) or [])
+        if "disable-model-invocation: true" in (frontmatter_lines(path.read_text(encoding="utf-8")) or [])
     }
     codex_user_only = {
         path.parents[1].relative_to(codex).as_posix()
@@ -212,9 +199,7 @@ def test_codex_orchestration_patterns_use_plan_arrays(
     object literals, so their keys carry quotes — the same convention the
     Claude Code branch uses for a nested `metadata` object.
     """
-    plan_examples = re.findall(
-        r"update_plan\(plan: \[(.*?)\]\)", orchestration_patterns, re.DOTALL
-    )
+    plan_examples = re.findall(r"update_plan\(plan: \[(.*?)\]\)", orchestration_patterns, re.DOTALL)
 
     assert plan_examples
     for example in plan_examples:

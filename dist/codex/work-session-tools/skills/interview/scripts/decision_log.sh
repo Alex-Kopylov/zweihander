@@ -25,8 +25,8 @@ EMPTY=▱
 
 die() { printf 'error: %s\n' "$1" >&2; exit 1; }
 
-need() { [ -n "$2" ] || die "$1 is required"; }
-need_value() { [ "$#" -gt 1 ] || die "$1 needs a value"; }
+need() { [[ -n "$2" ]] || die "$1 is required"; }
+need_value() { [[ "$#" -gt 1 ]] || die "$1 needs a value"; }
 
 # Fit one field into a table cell: single line, no column break.
 cell() {
@@ -37,10 +37,10 @@ cell() {
 slug() {
     local out
     out=$(printf '%s' "$1" | tr '[:upper:]' '[:lower:]' |
-        sed 's/[^a-z0-9]\{1,\}/-/g' | cut -c1-"$SLUG_LIMIT" |
+        sed 's/[^a-z0-9]\{1,\}/-/g' | cut -c1-"${SLUG_LIMIT}" |
         sed -e 's/^-*//' -e 's/-*$//')
-    [ -n "$out" ] || die "name '$1' has no letters or digits to build a file name"
-    printf '%s' "$out"
+    [[ -n "${out}" ]] || die "name '$1' has no letters or digits to build a file name"
+    printf '%s' "${out}"
 }
 
 # Render the queue as one cell per item, scaled past BAR_WIDTH items. Both ends
@@ -48,17 +48,17 @@ slug() {
 # an item left keeps a cell empty however close it rounds.
 bar() {
     local taken=$1 total=$2 cells=$2 filled index out=''
-    if (( cells > BAR_WIDTH )); then cells=$BAR_WIDTH; fi
+    if (( cells > BAR_WIDTH )); then cells=${BAR_WIDTH}; fi
     if (( taken >= total )); then
-        filled=$cells
+        filled=${cells}
     else
         filled=$(( (taken * cells + total - 1) / total ))
         if (( filled > cells - 1 )); then filled=$(( cells - 1 )); fi
     fi
     for (( index = 0; index < cells; index++ )); do
-        if (( index < filled )); then out+=$FILLED; else out+=$EMPTY; fi
+        if (( index < filled )); then out+=${FILLED}; else out+=${EMPTY}; fi
     done
-    printf '%s  %s/%s\n' "$out" "$taken" "$total"
+    printf '%s  %s/%s\n' "${out}" "${taken}" "${total}"
 }
 
 # Count distinct recorded items. Rows accumulate on every `record` call,
@@ -74,31 +74,31 @@ recorded() {
 declared_total() {
     local total
     total=$(sed -n 's/^total: \([0-9]\{1,\}\)$/\1/p' "$1" | head -1)
-    [ -n "$total" ] || die "decision log $1 declares no total"
-    printf '%s' "$total"
+    [[ -n "${total}" ]] || die "decision log $1 declares no total"
+    printf '%s' "${total}"
 }
 
 readable() {
-    [ -r "$1" ] || die "cannot read decision log $1; \`start\` creates the log and prints the path to pass back as --log"
+    [[ -r "$1" ]] || die "cannot read decision log $1; \`start\` creates the log and prints the path to pass back as --log"
 }
 
 whole() {
-    case $2 in '' | *[!0-9]*) die "$1" ;; esac
-    [ "$2" -ge "$3" ] || die "$1"
+    case $2 in '' | *[!0-9]*) die "$1" ;; *) ;; esac
+    [[ "$2" -ge "$3" ]] || die "$1"
 }
 
 # Sourcing exposes the helpers to tests; only a direct run dispatches.
-[ "${BASH_SOURCE[0]}" = "$0" ] || return 0
+[[ "${BASH_SOURCE[0]}" = "$0" ]] || return 0
 
 command=${1-}
-case $command in
+case ${command} in
     start | record | extend | show) shift ;;
     *) die "usage: decision_log.sh {start|record|extend|show} ..." ;;
 esac
 
 log='' decision='' note='' name='' total='' by=''
 items=()
-while [ $# -gt 0 ]; do
+while [[ $# -gt 0 ]]; do
     case $1 in
         --log) need_value "$@"; log=$2 ;;
         --decision) need_value "$@"; decision=$2 ;;
@@ -112,72 +112,78 @@ while [ $# -gt 0 ]; do
     shift 2
 done
 
-case $command in
+case ${command} in
 start)
-    need --name "$name"
-    need --total "$total"
-    whole "total $total is not a number of items to walk through" "$total" 1
+    need --name "${name}"
+    need --total "${total}"
+    whole "total ${total} is not a number of items to walk through" "${total}" 1
 
     directory=${INTERVIEW_DECISION_LOG_DIR:-${TMPDIR:-/tmp}/interview-decision-logs}
-    mkdir -p "$directory"
-    [ -O "$directory" ] || die "decision log directory $directory is not owned by you"
-    read -r stamp started <<<"$(date +'%Y%m%d-%H%M%S %Y-%m-%dT%H:%M:%S')"
-    named=$(slug "$name")
-    log=$directory/$stamp-$named.md
-    if [ -e "$log" ]; then die "decision log $log already exists"; fi
+    mkdir -p "${directory}"
+    [[ -O "${directory}" ]] || die "decision log directory ${directory} is not owned by you"
+    now=$(date +'%Y%m%d-%H%M%S %Y-%m-%dT%H:%M:%S')
+    read -r stamp started <<<"${now}"
+    named=$(slug "${name}")
+    log=${directory}/${stamp}-${named}.md
+    if [[ -e "${log}" ]]; then die "decision log ${log} already exists"; fi
 
     {
         printf -- '---\nname: %s\nstarted: %s\ntotal: %s\n---\n\n' \
-            "$named" "$started" "$total"
-        printf '# Interview decision log: %s\n\n' "$name"
+            "${named}" "${started}" "${total}"
+        printf '# Interview decision log: %s\n\n' "${name}"
         printf '| Item | Decision | Note |\n|------|----------|------|\n'
-    } >"$log"
+    } >"${log}"
 
-    printf '%s\n' "$log"
-    bar 0 "$total"
+    printf '%s\n' "${log}"
+    bar 0 "${total}"
     ;;
 
 record)
-    need --log "$log"
-    need --decision "$decision"
-    [ ${#items[@]} -gt 0 ] || die "--item is required"
-    readable "$log"
-    total=$(declared_total "$log")
+    need --log "${log}"
+    need --decision "${decision}"
+    [[ ${#items[@]} -gt 0 ]] || die "--item is required"
+    readable "${log}"
+    total=$(declared_total "${log}")
 
-    chosen=$(cell "$decision")
-    aside=$(cell "$note")
+    chosen=$(cell "${decision}")
+    aside=$(cell "${note}")
     for item in "${items[@]}"; do
-        subject=$(cell "$item")
-        printf '| %s | %s | %s |\n' "$subject" "$chosen" "$aside" >>"$log"
-        if [ -n "$aside" ]; then
-            printf '%s: **%s** (%s)\n' "$subject" "$chosen" "$aside"
+        subject=$(cell "${item}")
+        printf '| %s | %s | %s |\n' "${subject}" "${chosen}" "${aside}" >>"${log}"
+        if [[ -n "${aside}" ]]; then
+            printf '%s: **%s** (%s)\n' "${subject}" "${chosen}" "${aside}"
         else
-            printf '%s: **%s**\n' "$subject" "$chosen"
+            printf '%s: **%s**\n' "${subject}" "${chosen}"
         fi
     done
-    bar "$(recorded "$log")" "$total"
+    done_count=$(recorded "${log}")
+    bar "${done_count}" "${total}"
     ;;
 
 extend)
-    need --log "$log"
-    need --by "$by"
-    whole "--by $by adds no items to the queue" "$by" 1
-    readable "$log"
-    total=$(declared_total "$log")
+    need --log "${log}"
+    need --by "${by}"
+    whole "--by ${by} adds no items to the queue" "${by}" 1
+    readable "${log}"
+    total=$(declared_total "${log}")
     raised=$(( total + by ))
 
-    rewritten=$(mktemp "$log.XXXXXX")
+    rewritten=$(mktemp "${log}.XXXXXX")
     trap 'rm -f "$rewritten"' EXIT
-    sed "s/^total: $total\$/total: $raised/" "$log" >"$rewritten"
-    mv "$rewritten" "$log"
-    bar "$(recorded "$log")" "$raised"
+    sed "s/^total: ${total}\$/total: ${raised}/" "${log}" >"${rewritten}"
+    mv "${rewritten}" "${log}"
+    done_count=$(recorded "${log}")
+    bar "${done_count}" "${raised}"
     ;;
 
 show)
-    need --log "$log"
-    readable "$log"
-    cat "$log"
+    need --log "${log}"
+    readable "${log}"
+    cat "${log}"
     printf '\n'
-    bar "$(recorded "$log")" "$(declared_total "$log")"
+    done_count=$(recorded "${log}")
+    total=$(declared_total "${log}")
+    bar "${done_count}" "${total}"
     ;;
+*) die "unknown command ${command}" ;;
 esac

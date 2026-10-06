@@ -1,7 +1,7 @@
 name: CI
 
 on:
-  pull_request:
+  pull_request: {}
   push:
     branches:
       - main
@@ -17,13 +17,17 @@ jobs:
       - name: Checkout current repository
         uses: actions/checkout@v6
         with:
+          persist-credentials: false
           fetch-depth: 0
 
-      - name: Install uv
-        uses: astral-sh/setup-uv@v8.1.0
+      # mise.toml pins uv and every linter binary; uv reads Python from .python-version
+      - name: Install toolchain
+        uses: jdx/mise-action@v4.2.0
         with:
-          version: latest
-          enable-cache: true
+          github_token: ${{ github.token }}
+
+      - name: Install dependencies
+        run: uv sync --locked
 
       - name: Run the full build
         run: uv run python -m plugin_maintenance.build
@@ -42,6 +46,9 @@ jobs:
       - name: Check whitespace errors
         if: github.event_name == 'pull_request'
         run: git diff --check ${{ github.event.pull_request.base.sha }} HEAD
+
+      - name: Lint
+        run: mise run lint
 
       - name: Run tests
         run: uv run pytest tests
