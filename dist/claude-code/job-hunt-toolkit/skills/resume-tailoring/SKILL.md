@@ -34,6 +34,9 @@ Before starting, check if the user provides 2+ JDs, mentions "multiple jobs", "b
 
 ### Phase 0: Library Initialization
 
+Read [Tailoring Change Review](../../references/tailoring-review.md) and capture
+the comparison baseline before editing. Use its review format for every output.
+
 1. Locate resume library directory (user-provided or `${JOB_HUNT_WORKSPACE:-$HOME/Documents/job_seeking}/library/`)
 2. Scan for Typst and markdown files
 3. Parse each resume: extract roles, bullets, skills, education
@@ -76,7 +79,7 @@ Follow scoring from `references/matching-strategies.md`.
    - Overall = (Direct x 0.4) + (Transferable x 0.3) + (Adjacent x 0.2) + (Impact x 0.1)
 2. Rank by score and assign confidence bands: DIRECT (90-100%), TRANSFERABLE (75-89%), ADJACENT (60-74%), WEAK/GAP (<60%)
 3. Select the highest-scoring truthful match per slot and record its source
-4. Apply reframing where needed (keyword alignment, emphasis shift, abstraction level, scale emphasis) - show before/after transparently
+4. Apply reframing where needed (keyword alignment, emphasis shift, abstraction level, scale emphasis); retain the reason and evidence for each change
 5. Handle gaps (<60%) with the safest available option: reframe supported evidence, flag for cover letter, omit the slot, or use the best available evidence with disclosure
 
 ### Phase 5: Generation
@@ -88,7 +91,7 @@ Filename format: `<First>_<Last>_<Role>_CV.<ext>` — NO company name in the fil
 
 1. **Typst:** Using the master CV template, compile mapped content and save it as `<First>_<Last>_<Role>_CV.typ` in the company subfolder.
 2. **PDF:** Invoke Skill(job-hunt-toolkit:export-pdf) for the generated Typst source. Always use absolute paths.
-3. **Review:** Present the completed files, remaining gaps, and every substantive rewrite using `Before | After | Why`.
+3. **Review:** Follow Tailoring Change Review: present the completed files, the full verbatim text diff with a reason and evidence per change, and remaining gaps.
 
 ### Phase 6: Library Update
 
@@ -109,7 +112,7 @@ Keep tailored files in the company directory. Update the master library only whe
 
 - NEVER fabricate experience or inflate seniority beyond defensible
 - Company names and dates MUST be exact
-- Show every substantive reframe transparently with before/after, justification, and evidence
+- Show every text change in the final review with its exact wording, reason, and evidence
 - Help articulate genuine experience; never create false experience
 
 ## Completion Check
@@ -117,4 +120,4 @@ Keep tailored files in the company directory. Update the master library only whe
 - [ ] Company output directory exists
 - [ ] A Typst source tailored to the target vacancy and role is saved in that directory
 - [ ] PDF was generated from that Typst source by Skill(job-hunt-toolkit:export-pdf); never create or edit PDF content directly
-- [ ] Final response shows `Before | After | Why` for substantive changes
+- [ ] Final response includes the complete text diff against the captured baseline, with a reason and evidence per change
