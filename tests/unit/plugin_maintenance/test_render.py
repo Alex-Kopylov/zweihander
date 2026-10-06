@@ -12,6 +12,7 @@ import re
 from pathlib import Path
 
 import pytest
+
 from plugin_maintenance.errors import (
     DevFileTemplateError,
     DuplicateFrontmatterKeyError,

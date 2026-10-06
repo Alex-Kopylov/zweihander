@@ -10,6 +10,7 @@ import json
 from pathlib import Path
 
 import pytest
+
 from plugin_maintenance.render import FRONTMATTER_MATRIX_NAME
 
 FIXTURE_MATRIX = {

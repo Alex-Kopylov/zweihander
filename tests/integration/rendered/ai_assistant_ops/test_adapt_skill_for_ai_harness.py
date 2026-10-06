@@ -17,6 +17,7 @@ import sys
 from pathlib import Path
 
 import pytest
+
 from plugin_maintenance.render import TEMPLATE_SUFFIX
 
 
