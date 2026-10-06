@@ -27,6 +27,6 @@ Length: 1–1024 characters.
 model-selected. Only a person reads their description, so it says what the
 skill does; drop the `Use when …` and `Not for …` parts.
 
-Sources: [Anthropic skill authoring best practices](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices),
-[agentskills.io specification](https://agentskills.io/specification),
-[OpenAI: build skills](https://learn.chatgpt.com/docs/build-skills).
+Sources:
+[Anthropic skill authoring best practices](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices),
+[agentskills.io specification](https://agentskills.io/specification).
