@@ -51,10 +51,28 @@ For unsupported JD requirements, choose exactly one: ask a focused question, fra
 
 ## Output Report
 
-Follow Tailoring Change Review after the final pre-send edits. Link the Typst
-and PDF files, identify the baseline, and show every change as a verbatim
-`diff` block with its reason and evidence directly below. Report gaps and
-pre-send results separately. A fit summary alone is not a change review.
+After the final pre-send edits, report:
+
+```markdown
+Cover letter files:
+- Typst: <absolute path>
+- PDF: <absolute path>
+- Baseline: <golden letter or draft path, or "none (written from scratch)">
+
+Evidence used:
+- <fit point> -> <CV/company/JD source>
+
+Gaps handled:
+- <gap> -> <wording strategy or left out>
+
+Pre-send checks:
+- <check> -> <result>
+
+Changes:
+<Tailoring Change Review: one verbatim `diff` block per change, with Why and evidence directly below>
+```
+
+A fit summary alone is not a change review.
 
 ## Common Mistakes
 

@@ -478,10 +478,6 @@ Typst-to-PDF export, or a final pre-send checklist.
 | `resume-tailoring` | Tailor a CV to a job description without fabrication. |
 | `submit-job-application` | Fill employer portals and require approval before final submission. |
 
-CV and cover-letter adaptations show the exact text changes in `diff` blocks,
-with a reason and supporting evidence for each change. Reviews omit Typst
-formatting and compare against the document used as the starting point.
-
 ## Recommended Third-Party Plugins
 
 These are useful companion plugin and skill collections to consider alongside
