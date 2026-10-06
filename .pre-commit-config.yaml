@@ -70,7 +70,15 @@ repos:
         entry: mise exec -- uv run ty check
         language: system
         types: [python]
-        exclude: ^(scripts/|docs/)
+        exclude: ^(scripts/|docs/|plugins/)
+        require_serial: true
+
+      - id: ty-check-plugins
+        name: ty (plugin code, Python 3.11)
+        entry: mise exec -- uv run ty check --python-version 3.11
+        language: system
+        types: [python]
+        files: ^plugins/
         require_serial: true
 
   - repo: local

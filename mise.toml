@@ -72,7 +72,10 @@ run = [
 [tasks.lint-python-deep]
 description = "Run whole-project Python analysis"
 run = [
-  "uv run ty check plugin_maintenance tests plugins",
+  "uv run ty check plugin_maintenance tests",
+  # Plugin code runs on the user's interpreter; check it against the 3.11
+  # stdlib, not this repo's 3.14 (see per-file-target-version in .ruff.toml).
+  "uv run ty check --python-version 3.11 plugins",
   "uv run vulture --config .vulture.toml",
 ]
 
@@ -93,7 +96,7 @@ description = "Lint the rendered dist/ tree; CI's final check, not part of lint"
 # the same config with an empty ignore list.
 run = [
   "uv run ruff check dist",
-  "uv run ty check dist",
+  "uv run ty check --python-version 3.11 dist",
   "find dist -name '*.sh' -exec mise exec -- shellcheck {} +",
   "uv run yamllint -d '{extends: .yamllint, ignore: []}' dist",
   "mise exec -- typos dist",
