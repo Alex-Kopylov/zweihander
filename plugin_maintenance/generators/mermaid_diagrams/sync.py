@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import errno
 import os
 import re
 import shutil
@@ -76,10 +75,18 @@ def git_commit(directory: Path) -> str:
     return result.stdout.strip()
 
 
-def require_path(path: Path) -> None:
-    """Raise FileNotFoundError naming `path` when it is missing."""
+class MissingSyncSourceError(FileNotFoundError):
+    """The Mermaid checkout lacks a directory or file the sync copies."""
+
+    def __init__(self, description: str, path: Path) -> None:
+        """Name what is missing and where it was expected."""
+        super().__init__(f"Missing Mermaid {description}: {path}")
+
+
+def require_path(path: Path, description: str) -> None:
+    """Raise MissingSyncSourceError naming `description` when `path` is missing."""
     if not path.exists():
-        raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), str(path))
+        raise MissingSyncSourceError(description, path)
 
 
 def preflight_sync_source(source_dir: Path) -> None:
@@ -87,11 +94,11 @@ def preflight_sync_source(source_dir: Path) -> None:
     syntax_dir = source_dir / "docs/syntax"
     config_dir = source_dir / "docs/config"
     docs_navigation_path = source_dir / "packages/mermaid/src/docs/.vitepress/config.ts"
-    require_path(syntax_dir)
-    require_path(config_dir)
-    require_path(docs_navigation_path)
+    require_path(syntax_dir, "syntax directory")
+    require_path(config_dir, "config directory")
+    require_path(docs_navigation_path, "docs navigation file")
     for file in CONFIG_FILES:
-        require_path(config_dir / file)
+        require_path(config_dir / file, f"config doc {file}")
 
 
 def read_existing_sync_metadata() -> ExistingSyncMetadata | None:
