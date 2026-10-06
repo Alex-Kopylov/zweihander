@@ -111,8 +111,11 @@ def apply_file_findings(file_path: Path, findings: list[dict[str, Any]]) -> tupl
         try:
             start, end = locate(content, original, finding)
             content = content[:start] + replacement_for(finding) + content[end:]
+            # write_text truncates before it encodes; fail first, or an
+            # unencodable replacement leaves the file empty.
+            content.encode("utf-8")
             file_path.write_text(content, encoding="utf-8")
-        except (FindingError, KeyError, TypeError, OSError) as exc:
+        except (ValueError, KeyError, TypeError, OSError) as exc:
             failures.append(
                 {
                     "file_path": str(file_path),

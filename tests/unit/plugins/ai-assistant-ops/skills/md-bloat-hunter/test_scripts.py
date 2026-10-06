@@ -100,6 +100,30 @@ def test_apply_findings_rejects_ambiguous_excerpt_without_writing(scripts_dir: P
     assert target.read_text(encoding="utf-8") == original
 
 
+def test_apply_findings_reports_unencodable_text_without_emptying_the_file(scripts_dir: Path, tmp_path: Path) -> None:
+    apply_findings = load_script(scripts_dir, "apply_findings")
+    target = tmp_path / "doc.md"
+    target.write_text("old words\n", encoding="utf-8")
+
+    applied, failures = apply_findings.apply_file_findings(
+        target,
+        [
+            {
+                "source_order": 0,
+                "excerpt": "old",
+                "context_before": None,
+                "context_after": None,
+                "action": "replace",
+                "new_text": "lone \ud800 surrogate",
+            }
+        ],
+    )
+
+    assert applied == 0
+    assert "surrogates not allowed" in failures[0]["reason"]
+    assert target.read_text(encoding="utf-8") == "old words\n"
+
+
 def test_apply_findings_stops_file_after_first_failure(scripts_dir: Path, tmp_path: Path) -> None:
     apply_findings = load_script(scripts_dir, "apply_findings")
     target = tmp_path / "doc.md"
