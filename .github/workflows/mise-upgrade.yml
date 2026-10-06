@@ -1,0 +1,39 @@
+name: mise upgrade
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch: {}
+
+permissions: {}
+
+jobs:
+  upgrade:
+    runs-on: ubuntu-latest
+    permissions:
+      # PRs opened with GITHUB_TOKEN do not trigger pull_request workflows,
+      # so CI is dispatched on the bump branch explicitly (actions: write).
+      actions: write
+      contents: write
+      pull-requests: write
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v7.0.0
+        with:
+          persist-credentials: false
+      - uses: jdx/mise-action@v4.2.0
+        with:
+          github_token: ${{ github.token }}
+      - run: mise upgrade --bump --local
+      - id: pr
+        uses: peter-evans/create-pull-request@v8.1.1
+        with:
+          branch: mise-upgrade
+          commit-message: "chore(deps): bump mise tool pins"
+          title: "chore(deps): bump mise tool pins"
+          body: Automated `mise upgrade --bump`.
+      - if: >-
+          steps.pr.outputs.pull-request-operation == 'created' ||
+          steps.pr.outputs.pull-request-operation == 'updated'
+        run: gh workflow run ci.yml --ref mise-upgrade

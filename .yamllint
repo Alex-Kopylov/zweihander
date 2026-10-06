@@ -1,0 +1,53 @@
+extends: default
+
+yaml-files:
+  - '*.yaml'
+  - '*.yml'
+
+# Ignored paths
+ignore:
+  - .venv/
+  - node_modules/
+  # AI agent working directories
+  - .claude/
+  - .codex/
+  - .cursor/
+  - .gemini/
+
+rules:
+  # Reject duplicate and unused anchors in addition to undeclared aliases
+  anchors:
+    forbid-duplicated-anchors: true
+    forbid-unused-anchors: true
+
+  # Avoid mandatory document markers in every YAML file
+  document-start: disable
+
+  # Reject empty mapping and sequence values
+  empty-values: enable
+
+  # Reject non-finite floats and require a numeral before the decimal point
+  float-values:
+    require-numeral-before-decimal: true
+    forbid-nan: true
+    forbid-inf: true
+
+  # Reject both implicit and explicit octal values
+  octal-values: enable
+
+  # Use two spaces while accepting internally consistent sequence styles
+  indentation:
+    spaces: 2
+    indent-sequences: consistent
+
+  # Reject duplicate merge keys as well as ordinary duplicate keys
+  key-duplicates:
+    forbid-duplicated-merge-keys: true
+
+  # Accommodate practical project configuration lines
+  line-length:
+    max: 120
+
+  # Accept GitHub Actions' on key without treating it as a boolean
+  truthy:
+    check-keys: false

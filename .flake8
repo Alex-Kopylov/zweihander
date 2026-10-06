@@ -1,0 +1,6 @@
+[flake8]
+# Pydantic-specific linting via flake8-pydantic
+# Async anti-pattern detection via flake8-async
+
+# Only enable Pydantic and Async rules (other linting via ruff)
+select = PYD,ASYNC
