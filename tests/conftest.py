@@ -60,13 +60,13 @@ def pytest_collection_modifyitems(config: pytest.Config, items: list[pytest.Item
 
 
 @pytest.fixture(scope="session", params=tuple(Harness))
-def harness(request: pytest.FixtureRequest) -> str:
+def harness(request: pytest.FixtureRequest) -> Harness:
     """The harness under test, one parameter per supported harness."""
     return request.param
 
 
 @pytest.fixture(scope="session")
-def rendered(harness: str, tmp_path_factory: pytest.TempPathFactory) -> Path:
+def rendered(harness: Harness, tmp_path_factory: pytest.TempPathFactory) -> Path:
     """Render once per harness; stage 1 belongs to the build, not the tests."""
     tree = tmp_path_factory.mktemp(f"rendered-{harness}")
     render_tree(REPO_ROOT, harness, tree)

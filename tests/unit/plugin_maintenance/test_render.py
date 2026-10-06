@@ -32,7 +32,7 @@ from plugin_maintenance.render import (
 )
 
 
-def render(repo: Path, matrix: Path, harness: str) -> Path:
+def render(repo: Path, matrix: Path, harness: Harness) -> Path:
     output = repo / "dist-under-test" / harness
     render_tree(repo, harness, output, matrix_path=matrix)
     return output
@@ -312,7 +312,7 @@ class TestArgumentFrontmatter:
 class TestPlacementComesFromTheMatrix:
     """Placement is data the renderer reads, not a branch it carries."""
 
-    def repoint(self, matrix_path: Path, key: str, harness: str, placement: str) -> None:
+    def repoint(self, matrix_path: Path, key: str, harness: Harness, placement: str) -> None:
         path = matrix_path.with_name(FRONTMATTER_MATRIX_NAME)
         matrix = json.loads(path.read_text(encoding="utf-8"))
         matrix["keys"][key][harness]["placement"] = placement
@@ -413,7 +413,8 @@ class TestFailLoud:
 
     def test_unknown_harness_fails_before_rendering(self, fixture_repo, fixture_matrix):
         with pytest.raises(UnknownHarnessError, match="Gemini"):
-            render(fixture_repo, fixture_matrix, "Gemini")
+            # A name outside the enum is the input under test; the runtime check must reject it.
+            render(fixture_repo, fixture_matrix, "Gemini")  # ty: ignore[invalid-argument-type]
 
         assert not (fixture_repo / "dist-under-test" / "Gemini").exists()
 

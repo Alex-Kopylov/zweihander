@@ -20,9 +20,7 @@ class TestProcessOrder:
 
     @patch("myapp.tasks.process_order.retry")
     @patch("myapp.tasks.perform_order_processing")
-    def test_retryable_failure_raises_retry(
-        self, perform_order_processing_mock, retry_mock
-    ):
+    def test_retryable_failure_raises_retry(self, perform_order_processing_mock, retry_mock):
         perform_order_processing_mock.side_effect = ConnectionError("timeout")
         retry_mock.side_effect = Retry()
 

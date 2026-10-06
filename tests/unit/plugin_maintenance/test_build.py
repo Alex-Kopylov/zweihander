@@ -37,11 +37,11 @@ def matrix() -> dict:
     return json.loads((REPO_ROOT / MATRIX_PATH).read_text(encoding="utf-8"))
 
 
-def callable_names(harness: str) -> set[str]:
+def callable_names(harness: Harness) -> set[str]:
     return {action[harness]["name"] for action in matrix()["actions"].values() if action["callable"]}
 
 
-def foreign_callable_names(harness: str) -> set[str]:
+def foreign_callable_names(harness: Harness) -> set[str]:
     """Names that belong to some other harness and not to this one."""
     return set().union(*(callable_names(other) for other in Harness if other != harness)) - callable_names(harness)
 

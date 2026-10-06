@@ -69,7 +69,7 @@ def test_tree_carries_no_legacy_dispatch_artifacts(rendered: Path) -> None:
     assert not violations, "\n".join(violations)
 
 
-def test_tree_strips_foreign_runtime_metadata(rendered: Path, harness: str) -> None:
+def test_tree_strips_foreign_runtime_metadata(rendered: Path, harness: Harness) -> None:
     foreign_metadata = PLUGIN_METADATA_DIRS - {HARNESS_METADATA_DIRS[harness]}
 
     assert not [path for path in tree_files(rendered) if foreign_metadata.intersection(path.parts)]
@@ -95,7 +95,7 @@ def frontmatter_matrix(rendered: Path) -> dict:
     return json.loads((rendered / MATRIX_IN_TREE).with_name(FRONTMATTER_MATRIX_NAME).read_text(encoding="utf-8"))
 
 
-def metadata_placed_keys(rendered: Path, harness: str) -> set[str]:
+def metadata_placed_keys(rendered: Path, harness: Harness) -> set[str]:
     """Keys the matrix keeps out of this harness's top-level frontmatter."""
     return {
         key
@@ -104,7 +104,7 @@ def metadata_placed_keys(rendered: Path, harness: str) -> set[str]:
     }
 
 
-def test_tree_carries_no_top_level_key_the_harness_does_not_read(rendered: Path, harness: str) -> None:
+def test_tree_carries_no_top_level_key_the_harness_does_not_read(rendered: Path, harness: Harness) -> None:
     """A key placed under `metadata` never reaches the top level.
 
     `metadata` is the free-form map every harness accepts, so a key a harness

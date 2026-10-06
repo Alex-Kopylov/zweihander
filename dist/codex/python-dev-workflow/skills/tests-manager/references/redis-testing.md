@@ -52,7 +52,6 @@ def redis_client():
 @pytest.fixture(autouse=True)
 def clean_redis(redis_client):
     redis_client.flushdb()
-    yield
 ```
 
 Flush **before** each test, not only after, so crashes do not leave stale state.
