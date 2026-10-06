@@ -25,6 +25,7 @@ from plugin_maintenance.render import TEMPLATE_SUFFIX
 def skill_root(rendered: Path) -> Path:
     return rendered / "ai-assistant-ops" / "skills" / "adapt-skill-for-ai-harness"
 
+
 LEGACY_MARKERS = (
     "Depending on who you are as an AI agent",
     "ai-assistant-harnesses",
@@ -90,9 +91,7 @@ def test_skill_documents_frontmatter_portability_boundary(skill_body: str) -> No
         assert f"`{namespace}`" in body
 
 
-def test_skill_documents_every_value_form(
-    skill_body: str, frontmatter_matrix_file: Path
-) -> None:
+def test_skill_documents_every_value_form(skill_body: str, frontmatter_matrix_file: Path) -> None:
     body = skill_body
     forms = json.loads(frontmatter_matrix_file.read_text(encoding="utf-8"))["forms"]
 
@@ -111,9 +110,7 @@ def test_skill_documents_the_frontmatter_matrix_contract(skill_body: str) -> Non
     assert "specification" in body
 
 
-def test_skill_names_every_portable_specification_field(
-    skill_body: str, frontmatter_matrix_file: Path
-) -> None:
+def test_skill_names_every_portable_specification_field(skill_body: str, frontmatter_matrix_file: Path) -> None:
     body = skill_body
     matrix = json.loads(frontmatter_matrix_file.read_text(encoding="utf-8"))
 
@@ -121,9 +118,7 @@ def test_skill_names_every_portable_specification_field(
         assert f"`{key}`" in body, key
 
 
-def test_skill_links_the_vendored_specification(
-    skill_body: str, skill_root: Path
-) -> None:
+def test_skill_links_the_vendored_specification(skill_body: str, skill_root: Path) -> None:
     body = skill_body
     document = skill_root / "references" / "agent-skills-specification.md"
 
@@ -151,7 +146,8 @@ def test_skill_documents_matrix_contract(skill_body: str) -> None:
     assert "one callable name per" in body
     assert "`callable`" in body
     assert '`lookup_order: ["action", "assistant"]`' in body
-    assert "`ClaudeCode`" in body and "`Codex`" in body
+    assert "`ClaudeCode`" in body
+    assert "`Codex`" in body
 
 
 def test_skill_directory_carries_no_legacy_pattern(skill_root: Path) -> None:

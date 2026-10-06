@@ -4,7 +4,6 @@ from pathlib import Path
 
 import pytest
 
-
 SLUG_RE = "^[a-z0-9]+(?:_[a-z0-9]+)*$"
 # The reference docs express the same rule as a bash `[[ =~ ]]` test, and bash
 # ERE has no non-capturing group.
@@ -91,7 +90,5 @@ def test_no_browser_pipeline_remains(plugin: Path, export_pdf_skill: Path) -> No
         if not path.is_file() or path in allowed:
             continue
         text = path.read_text(encoding="utf-8", errors="ignore").lower()
-        offenders += [
-            f"{path.relative_to(plugin)}: {term}" for term in banned if term in text
-        ]
+        offenders += [f"{path.relative_to(plugin)}: {term}" for term in banned if term in text]
     assert not offenders, offenders

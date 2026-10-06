@@ -8,9 +8,8 @@ than assumed. The harness names come from `Harness`, as everywhere else.
 
 import pytest
 
-from plugin_maintenance import REPO_ROOT
+from plugin_maintenance.paths import REPO_ROOT
 from plugin_maintenance.render import Harness
-
 
 FIRST, SECOND, *_ = Harness
 
@@ -19,9 +18,7 @@ FIRST, SECOND, *_ = Harness
 def probe(pytester: pytest.Pytester) -> pytest.Pytester:
     """A sub-session running the real shared conftest."""
     pytester.makeini((REPO_ROOT / "pytest.ini").read_text(encoding="utf-8"))
-    pytester.makeconftest(
-        (REPO_ROOT / "tests" / "conftest.py").read_text(encoding="utf-8")
-    )
+    pytester.makeconftest((REPO_ROOT / "tests" / "conftest.py").read_text(encoding="utf-8"))
     pytester.syspathinsert(REPO_ROOT)
     return pytester
 
@@ -56,9 +53,7 @@ def test_each_harness_tree_is_rendered_once(probe: pytest.Pytester) -> None:
 
     result = probe.runpytest_inprocess(f"--basetemp={basetemp}")
 
-    result.assert_outcomes(
-        passed=2 * len(Harness) + 2, deselected=2 * (len(Harness) - 1)
-    )
+    result.assert_outcomes(passed=2 * len(Harness) + 2, deselected=2 * (len(Harness) - 1))
     trees = [
         path.name
         for path in basetemp.iterdir()
@@ -127,9 +122,7 @@ def test_unknown_harness_name_fails_the_run(probe: pytest.Pytester) -> None:
 
 
 @pytest.mark.parametrize("chosen", tuple(Harness))
-def test_marker_and_option_select_only_their_intersection(
-    probe: pytest.Pytester, chosen: str
-) -> None:
+def test_marker_and_option_select_only_their_intersection(probe: pytest.Pytester, chosen: str) -> None:
     probe.makepyfile(
         test_probe=f"""
         import pytest

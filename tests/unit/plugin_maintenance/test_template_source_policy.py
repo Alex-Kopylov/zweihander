@@ -19,7 +19,7 @@ from pathlib import Path
 
 import pytest
 
-from plugin_maintenance import REPO_ROOT
+from plugin_maintenance.paths import REPO_ROOT
 from plugin_maintenance.render import (
     FRONTMATTER_MATRIX_NAME,
     MATRIX_PATH,
@@ -28,7 +28,6 @@ from plugin_maintenance.render import (
     frontmatter_lines,
     ignored_path,
 )
-
 
 PLUGINS_ROOT = REPO_ROOT / "plugins"
 TESTS_ROOT = REPO_ROOT / "tests"
@@ -52,33 +51,18 @@ AUTHORED_TREE_SPELLINGS = (
     rf"""\.joinpath\(\s*["']{PLUGINS_ROOT.name}["']""",
 )
 FRONTMATTER_MATRIX = json.loads(
-    (REPO_ROOT / MATRIX_PATH)
-    .with_name(FRONTMATTER_MATRIX_NAME)
-    .read_text(encoding="utf-8")
+    (REPO_ROOT / MATRIX_PATH).with_name(FRONTMATTER_MATRIX_NAME).read_text(encoding="utf-8")
 )
-PLACED_KEYS = {
-    key
-    for key, entry in FRONTMATTER_MATRIX["keys"].items()
-    if entry["form"] != VERBATIM_FORM
-}
+PLACED_KEYS = {key for key, entry in FRONTMATTER_MATRIX["keys"].items() if entry["form"] != VERBATIM_FORM}
 # A placed key reaches Codex under `metadata`, so it names a namespace there
 # just as much as the content namespaces the matrix declares for authors.
 METADATA_NAMESPACES = set(FRONTMATTER_MATRIX["metadata_namespaces"]) | PLACED_KEYS
 TASK_MANAGEMENT_PATTERNS_TEMPLATE = (
-    PLUGINS_ROOT
-    / "work-session-tools"
-    / "skills"
-    / "task-management"
-    / "references"
-    / "orchestration-patterns.md.j2"
+    PLUGINS_ROOT / "work-session-tools" / "skills" / "task-management" / "references" / "orchestration-patterns.md.j2"
 )
 
-HARNESS_CONDITIONAL_BLOCK = re.compile(
-    r"\{%-?\s*if\s+harness[\s\S]*?\{%-?\s*endif\s*-?%\}"
-)
-BRANCH_TAG = re.compile(
-    r"\{%-?\s*(?P<tag>if|elif|else|endif)\b(?P<test>.*?)-?%\}", re.DOTALL
-)
+HARNESS_CONDITIONAL_BLOCK = re.compile(r"\{%-?\s*if\s+harness[\s\S]*?\{%-?\s*endif\s*-?%\}")
+BRANCH_TAG = re.compile(r"\{%-?\s*(?P<tag>if|elif|else|endif)\b(?P<test>.*?)-?%\}", re.DOTALL)
 DOLLAR_INVOCATION = re.compile(r"\$[a-z0-9][a-z0-9-]*(:[a-z0-9_-]+)?")
 DECLARED_ARGUMENTS = re.compile(r"""arguments\(\s*["']([^"']+)["']\s*\)""")
 MARKDOWN_HEADING = re.compile(r"^#{1,6}\s", re.MULTILINE)
@@ -107,10 +91,7 @@ def test_templates_never_hardcode_matrix_mapped_callable_names():
             if re.search(rf"(?<![\w-]){re.escape(name)}(?![\w-])", text):
                 violations.append(f"{path.relative_to(REPO_ROOT)}: literal {name}")
 
-    assert not violations, (
-        "templates must resolve callable names through the action map:\n"
-        + "\n".join(violations)
-    )
+    assert not violations, "templates must resolve callable names through the action map:\n" + "\n".join(violations)
 
 
 def selects_a_callable_inside_a_conditional(text: str) -> bool:
@@ -121,15 +102,9 @@ def selects_a_callable_inside_a_conditional(text: str) -> bool:
     argument placeholder, and spelling it belongs inside a conditional
     because Codex documents no substitution to spell it for.
     """
-    placeholders = {
-        name
-        for declaration in DECLARED_ARGUMENTS.findall(text)
-        for name in declaration.split()
-    }
+    placeholders = {name for declaration in DECLARED_ARGUMENTS.findall(text) for name in declaration.split()}
     for block in HARNESS_CONDITIONAL_BLOCK.findall(text):
-        invoked = {
-            match.group().lstrip("$") for match in DOLLAR_INVOCATION.finditer(block)
-        }
+        invoked = {match.group().lstrip("$") for match in DOLLAR_INVOCATION.finditer(block)}
         if "Skill(" in block or "| call" in block or invoked - placeholders:
             return True
     return False
@@ -149,10 +124,7 @@ def test_templates_never_select_callable_names_inside_harness_conditionals():
 
 
 def test_declared_argument_placeholder_may_be_spelled_per_harness():
-    text = (
-        '{{ arguments("items") }}\n'
-        '{% if harness == "ClaudeCode" %}Scope: `$items`.{% endif %}\n'
-    )
+    text = '{{ arguments("items") }}\n{% if harness == "ClaudeCode" %}Scope: `$items`.{% endif %}\n'
 
     assert not selects_a_callable_inside_a_conditional(text)
 
@@ -164,10 +136,7 @@ def test_undeclared_dollar_name_inside_a_conditional_still_fails():
 
 
 def test_declaring_one_argument_exempts_only_that_name():
-    text = (
-        '{{ arguments("items") }}\n'
-        '{% if harness == "Codex" %}Run $commit first.{% endif %}\n'
-    )
+    text = '{{ arguments("items") }}\n{% if harness == "Codex" %}Run $commit first.{% endif %}\n'
 
     assert selects_a_callable_inside_a_conditional(text)
 
@@ -215,18 +184,13 @@ def test_harness_conditionals_name_the_harness_in_every_branch():
 
     assert not violations, (
         "every harness branch must name its harness, so adding a harness "
-        'surfaces each passage instead of inheriting another\'s wording; use '
-        '`{% elif harness == "..." %}` instead of `{% else %}`:\n'
-        + "\n".join(violations)
+        "surfaces each passage instead of inheriting another's wording; use "
+        '`{% elif harness == "..." %}` instead of `{% else %}`:\n' + "\n".join(violations)
     )
 
 
 def test_implicit_branch_scan_accepts_an_explicit_chain():
-    text = (
-        '{% if harness == "ClaudeCode" %}A.\n'
-        '{% elif harness == "Codex" %}B.\n'
-        "{% endif %}\n"
-    )
+    text = '{% if harness == "ClaudeCode" %}A.\n{% elif harness == "Codex" %}B.\n{% endif %}\n'
 
     assert not implicit_harness_branches(text)
 
@@ -262,11 +226,8 @@ def test_task_management_pattern_sections_stay_outside_harness_conditionals():
     conditional_blocks = HARNESS_CONDITIONAL_BLOCK.findall(text)
 
     assert conditional_blocks
-    assert not [
-        block for block in conditional_blocks if MARKDOWN_HEADING.search(block)
-    ], (
-        "keep shared document sections outside harness conditionals; branch only "
-        "the local syntax or behavior"
+    assert not [block for block in conditional_blocks if MARKDOWN_HEADING.search(block)], (
+        "keep shared document sections outside harness conditionals; branch only the local syntax or behavior"
     )
 
 
@@ -340,9 +301,7 @@ def boundary_scanned_files() -> list[Path]:
     return sorted(
         path
         for path in TESTS_ROOT.rglob("*")
-        if path.is_file()
-        and not is_ignored(path)
-        and BUILD_LAYER not in path.parents
+        if path.is_file() and not is_ignored(path) and BUILD_LAYER not in path.parents
     )
 
 
@@ -352,11 +311,7 @@ def boundary_violations() -> list[str]:
         f"{path.relative_to(REPO_ROOT)}: {found.group()}"
         for path in boundary_scanned_files()
         for spelling in AUTHORED_TREE_SPELLINGS
-        for found in [
-            re.search(
-                spelling, path.read_text(encoding="utf-8", errors="surrogateescape")
-            )
-        ]
+        for found in [re.search(spelling, path.read_text(encoding="utf-8", errors="surrogateescape"))]
         if found
     ]
 
@@ -369,18 +324,14 @@ def boundary_violations() -> list[str]:
         (b"\x00\xff plugins/", ["tests/integration/fixture.bin: plugins/"]),
     ],
 )
-def test_boundary_policy_handles_non_utf8_test_data(
-    monkeypatch, tmp_path: Path, contents: bytes, expected: list[str]
-):
+def test_boundary_policy_handles_non_utf8_test_data(monkeypatch, tmp_path: Path, contents: bytes, expected: list[str]):
     repo = tmp_path / "repo"
     test_file = repo / "tests" / "integration" / "fixture.bin"
     test_file.parent.mkdir(parents=True)
     test_file.write_bytes(contents)
     monkeypatch.setitem(globals(), "REPO_ROOT", repo)
     monkeypatch.setitem(globals(), "TESTS_ROOT", repo / "tests")
-    monkeypatch.setitem(
-        globals(), "BUILD_LAYER", repo / "tests" / "unit" / "plugin_maintenance"
-    )
+    monkeypatch.setitem(globals(), "BUILD_LAYER", repo / "tests" / "unit" / "plugin_maintenance")
 
     assert boundary_violations() == expected
 
@@ -391,18 +342,13 @@ def test_tests_outside_the_build_layer_never_name_the_authored_tree():
     assert not violations, (
         "a test outside the build layer validates the artifact a user "
         "installs, so it reaches plugin content through the `rendered` "
-        "fixture and names neither a template nor the authored tree:\n"
-        + "\n".join(violations)
+        "fixture and names neither a template nor the authored tree:\n" + "\n".join(violations)
     )
 
 
 def test_no_test_directory_under_the_authored_tree():
     """Every test lives in the root tree, so CI runs it and no user gets it."""
-    directories = [
-        str(path.relative_to(REPO_ROOT))
-        for path in sorted(PLUGINS_ROOT.rglob("tests"))
-        if path.is_dir()
-    ]
+    directories = [str(path.relative_to(REPO_ROOT)) for path in sorted(PLUGINS_ROOT.rglob("tests")) if path.is_dir()]
 
     assert not directories, (
         "move these into the root `tests/` tree: a test here is never run by "

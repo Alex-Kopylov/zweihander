@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-from plugin_maintenance import REPO_ROOT
+from plugin_maintenance.paths import REPO_ROOT
 from plugin_maintenance.render import tree_snapshot
 
 
@@ -42,18 +42,16 @@ def run_module(repo: Path, module: str, *args: str) -> subprocess.CompletedProce
     )
 
 
-@pytest.mark.parametrize("argument", ["--chekc", "--help"])
-def test_build_rejects_or_describes_arguments_without_writing(
-    tmp_path: Path, argument: str
-) -> None:
+@pytest.mark.parametrize("argument", ["--no-such-flag", "--help"])
+def test_build_rejects_or_describes_arguments_without_writing(tmp_path: Path, argument: str) -> None:
     repo = command_repo(tmp_path)
     before = tree_snapshot(repo)
 
     result = run_module(repo, "plugin_maintenance.build", argument)
 
-    assert result.returncode == (2 if argument == "--chekc" else 0)
-    if argument == "--chekc":
-        assert "unrecognized arguments: --chekc" in result.stderr
+    assert result.returncode == (2 if argument == "--no-such-flag" else 0)
+    if argument == "--no-such-flag":
+        assert "unrecognized arguments: --no-such-flag" in result.stderr
     else:
         assert "usage:" in result.stdout
     assert tree_snapshot(repo) == before

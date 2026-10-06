@@ -1,0 +1,21 @@
+{
+  "_comment": "Duplicate code detection configuration",
+  "threshold": 5,
+  "minLines": 10,
+  "minTokens": 50,
+  "reporters": ["console"],
+  "mode": "mild",
+  "format": ["python", "bash", "yaml", "typescript", "javascript", "tsx", "jsx", "css"],
+  "absolute": false,
+  "gitignore": true,
+  "ignore": [
+    "**/node_modules/**",
+    "**/.venv/**",
+    "**/__pycache__/**",
+    "**/build/**",
+    "**/dist/**",
+    "**/tests/**",
+    "**/docs/**"
+  ],
+  "path": ["plugin_maintenance/"]
+}

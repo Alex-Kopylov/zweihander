@@ -100,6 +100,30 @@ def test_apply_findings_rejects_ambiguous_excerpt_without_writing(scripts_dir: P
     assert target.read_text(encoding="utf-8") == original
 
 
+def test_apply_findings_reports_unencodable_text_without_emptying_the_file(scripts_dir: Path, tmp_path: Path) -> None:
+    apply_findings = load_script(scripts_dir, "apply_findings")
+    target = tmp_path / "doc.md"
+    target.write_text("old words\n", encoding="utf-8")
+
+    applied, failures = apply_findings.apply_file_findings(
+        target,
+        [
+            {
+                "source_order": 0,
+                "excerpt": "old",
+                "context_before": None,
+                "context_after": None,
+                "action": "replace",
+                "new_text": "lone \ud800 surrogate",
+            }
+        ],
+    )
+
+    assert applied == 0
+    assert "surrogates not allowed" in failures[0]["reason"]
+    assert target.read_text(encoding="utf-8") == "old words\n"
+
+
 def test_apply_findings_stops_file_after_first_failure(scripts_dir: Path, tmp_path: Path) -> None:
     apply_findings = load_script(scripts_dir, "apply_findings")
     target = tmp_path / "doc.md"
@@ -188,10 +212,7 @@ def test_validate_output_invariants_reject_invalid_recommended_indexes(scripts_d
 def test_validate_output_reports_missing_jsonschema(scripts_dir: Path, monkeypatch) -> None:
     validate_output = load_script(scripts_dir, "validate_output")
 
-    def fake_run(*_args, **_kwargs):
-        raise FileNotFoundError
-
-    monkeypatch.setattr(validate_output.subprocess, "run", fake_run)
+    monkeypatch.setattr(validate_output.shutil, "which", lambda _name: None)
 
     status = validate_output.run_jsonschema(Path("instance.json"), Path("schema.json"))
 
@@ -305,12 +326,8 @@ def test_preflight_rejects_dirty_target(scripts_dir: Path, tmp_path: Path) -> No
     _repo, target = clean_git_repo(tmp_path)
     target.write_text("# Title\n\nChanged.\n", encoding="utf-8")
 
-    try:
+    with pytest.raises(ValueError, match="^target has staged or unstaged changes$"):
         preflight.validate_target(target)
-    except ValueError as exc:
-        assert str(exc) == "target has staged or unstaged changes"
-    else:
-        raise AssertionError("dirty target was accepted")
 
 
 def test_preflight_rejects_untracked_target(scripts_dir: Path, tmp_path: Path) -> None:
@@ -319,12 +336,8 @@ def test_preflight_rejects_untracked_target(scripts_dir: Path, tmp_path: Path) -
     untracked = repo / "untracked.md"
     untracked.write_text("draft\n", encoding="utf-8")
 
-    try:
+    with pytest.raises(ValueError, match="^target is not tracked by git$"):
         preflight.validate_target(untracked)
-    except ValueError as exc:
-        assert str(exc) == "target is not tracked by git"
-    else:
-        raise AssertionError("untracked target was accepted")
 
 
 def test_preflight_main_rejects_changed_hash_from_expect_map(scripts_dir: Path, tmp_path: Path) -> None:

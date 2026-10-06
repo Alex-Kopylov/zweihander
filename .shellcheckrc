@@ -1,0 +1,18 @@
+# ShellCheck configuration
+# MAXIMUM ENFORCEMENT: All optional checks enabled
+
+# Enforce Bash dialect
+shell=bash
+
+# Enable ALL optional checks
+enable=all
+
+# Follow source statements
+source-path=SCRIPTDIR
+external-sources=true
+
+# Extended dataflow analysis
+extended-analysis=true
+
+# No rules disabled - full enforcement
+# SC2310/SC2312 are info-level intentional patterns

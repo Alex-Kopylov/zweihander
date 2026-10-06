@@ -1,10 +1,11 @@
 name: CI
 
 on:
-  pull_request:
+  pull_request: {}
   push:
     branches:
       - main
+  workflow_dispatch: {}
 
 jobs:
   gate:
@@ -16,16 +17,17 @@ jobs:
       - name: Checkout current repository
         uses: actions/checkout@v6
         with:
+          persist-credentials: false
           fetch-depth: 0
 
-      - name: Install uv
-        uses: astral-sh/setup-uv@v8.1.0
+      # mise.toml pins uv and every linter binary; uv reads Python from .python-version
+      - name: Install toolchain
+        uses: jdx/mise-action@v4.2.0
         with:
-          version: latest
-          enable-cache: true
+          github_token: ${{ github.token }}
 
-      - name: Set up Python 3.12
-        run: uv python install 3.12
+      - name: Install dependencies
+        run: uv sync --locked
 
       - name: Run the full build
         run: uv run python -m plugin_maintenance.build
@@ -45,5 +47,15 @@ jobs:
         if: github.event_name == 'pull_request'
         run: git diff --check ${{ github.event.pull_request.base.sha }} HEAD
 
+      - name: Lint
+        run: mise run lint
+
       - name: Run tests
-        run: uv run --python 3.12 pytest tests
+        run: uv run pytest tests
+
+      # Final check on the rendered artifact users install. Local lint
+      # (mise lint, prek) excludes dist/ because it is a byte-identical render
+      # of plugins/ and would double every finding; the steps above prove dist/
+      # is current, so it is linted once, here.
+      - name: Lint the rendered dist/ tree
+        run: mise run lint-dist
