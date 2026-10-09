@@ -131,10 +131,11 @@ with every claim attributed to the platform it came from:
 | Blogs / releases / changelogs | {{ "web:rss-feeds" | call }} (`read`, `discover`) | dated primary posts, version history |
 | Video | {{ "web:youtube-content" | call }} | walkthroughs, demos, talks |
 | Code | shell with `gh search repos` / `gh search issues` | implementations, open bugs |
-| X/Twitter | {{ "web:xurl" | call }} (needs API access) | announcements, developer chatter |
+| X/Twitter | the `web:xurl` skill, only when the user has X API access | announcements, developer chatter |
 
 The Reddit, feed, video, and X routes come from the `web` plugin. If a route
-is not installed, report it as a coverage gap rather than dropping it silently.
+is not installed, or the user has no X API access, report it as a coverage gap
+rather than dropping it silently.
 
 Register every URL from every route in the ledger as it arrives (step ②). Keep
 opinion and measurement apart: a Reddit thread is evidence that users *report*

@@ -15,9 +15,10 @@ This plugin ports four MIT-licensed skills from
 | `llm-wiki` | `skills/research/llm-wiki` |
 | `obsidian` | `skills/note-taking/obsidian` |
 
-The port drops Hermes-only frontmatter, replaces Hermes tool names with
-harness-neutral wording, and wires skill-to-skill references through the
-harness `call` filter. `grounded-citations` routes its multi-platform sweeps
+The port drops Hermes-only frontmatter and replaces Hermes tool names with
+harness-neutral wording. A skill reference that the procedure requires goes
+through the harness `call` filter; an optional or situational one is written as
+the plain skill name. `grounded-citations` routes its multi-platform sweeps
 through the `web` plugin's skills.
 
 <details>

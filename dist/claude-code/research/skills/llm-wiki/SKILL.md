@@ -321,7 +321,7 @@ The wiki directory works as an Obsidian vault:
 - `raw/assets/` holds images referenced via `![[image.png]]`.
 
 For best results, set Obsidian's attachment folder to `raw/assets/`, keep
-Wikilinks enabled, and install Dataview. If using Skill(research:obsidian) alongside
+Wikilinks enabled, and install Dataview. If using the `research:obsidian` skill alongside
 this one, set `OBSIDIAN_VAULT_PATH` to the same directory as `WIKI_PATH`.
 
 On headless machines, `obsidian-headless` can sync a wiki via Obsidian Sync

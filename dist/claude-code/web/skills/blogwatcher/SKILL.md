@@ -14,7 +14,7 @@ Track blog and RSS/Atom feed updates with the `blogwatcher-cli` tool. Supports a
 - **Recurring watch**: schedule `blogwatcher-cli scan >/dev/null 2>&1 && blogwatcher-cli articles`. The output is deterministic, so new articles show up as changed output and unchanged runs need no follow-up.
 - **Reading an article the user asks about**: fetch the article URL from `blogwatcher-cli articles` — do not re-scrape by hand.
 - **One-off "watch this page for changes" without feed semantics**: skip this skill; it tracks feeds, not arbitrary pages.
-- **One-off read of a feed or a site's latest posts, nothing to install**: use Skill(web:rss-feeds); blogwatcher earns its install when you track many feeds with read/unread state.
+- **One-off read of a feed or a site's latest posts, nothing to install**: use the `web:rss-feeds` skill; blogwatcher earns its install when you track many feeds with read/unread state.
 
 ## Installation
 

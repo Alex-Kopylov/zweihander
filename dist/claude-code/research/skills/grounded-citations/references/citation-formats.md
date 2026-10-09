@@ -45,7 +45,7 @@ can't be clicked in a projected deck.
 Add a `source` column holding the id, plus a `Sources` sheet built from
 `render --style plain`. Do not paste URLs into data cells.
 
-## Wiki / multi-page output (Skill(research:llm-wiki), Obsidian)
+## Wiki / multi-page output (`research:llm-wiki`, Obsidian)
 
 Per-page Sources block, ids shared across pages from one ledger. Because ids
 are ledger identities, `[7]` means the same page everywhere in the wiki — that

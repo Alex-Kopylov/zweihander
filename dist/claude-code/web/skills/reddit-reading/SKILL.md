@@ -88,7 +88,7 @@ listings, and read one thread rather than the whole listing.
 than stopping at titles; the listing only carries the first ~300 characters of each post.
 
 ④ Cite the permalink (`url` field), not the listing page, when the result feeds a report.
-When that report uses Skill(research:grounded-citations), register these URLs in
+When that report uses the `research:grounded-citations` skill, register these URLs in
 its ledger like any other source.
 
 ⑤ If the user needs sustained Reddit access (monitoring, more than ~10 calls), stop and
@@ -103,7 +103,7 @@ account. Never ask for a Reddit password or browser cookies.
   spoof a browser User-Agent (also 403).
 - `r.jina.ai` and browser tools hit the same block ("blocked by network
   security" / humanity check). For an **old** thread that was archived, the Wayback route
-  of Skill(web:blocked-page-recovery) can still recover it; it cannot fetch fresh ones.
+  of the `web:blocked-page-recovery` skill can still recover it; it cannot fetch fresh ones.
 - Anonymous thread feeds only contain the post plus top-level comments (Reddit caps the
   feed at a handful of entries); scores and reply nesting are OAuth-only.
 - Reddit's `limit` on feeds is advisory — expect 5–25 entries regardless of what you ask.

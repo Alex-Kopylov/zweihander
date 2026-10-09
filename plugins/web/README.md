@@ -16,6 +16,7 @@ This plugin ports six MIT-licensed skills from
 | `xurl` | `skills/social-media/xurl` |
 | `blocked-page-recovery` | `skills/web/blocked-page-recovery` |
 
-The port drops Hermes-only frontmatter, replaces Hermes tool names with
-harness-neutral wording, and wires skill-to-skill references through the
+The port drops Hermes-only frontmatter and replaces Hermes tool names with
+harness-neutral wording. References to other skills are optional or
+situational, so they are written as plain skill names rather than through the
 harness `call` filter. Script tests live under `tests/unit/plugins/web/`.
