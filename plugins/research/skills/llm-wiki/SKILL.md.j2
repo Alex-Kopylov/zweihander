@@ -2,13 +2,6 @@
 name: llm-wiki
 description: Use when creating, maintaining, querying, ingesting into, or auditing an interlinked Markdown research wiki or knowledge base
 license: MIT
-metadata:
-  origin:
-    url: https://raw.githubusercontent.com/NousResearch/hermes-agent/refs/heads/main/skills/research/llm-wiki/SKILL.md
-    repository: NousResearch/hermes-agent
-    version: 2.1.0
-    author: Hermes Agent
-    platforms: [linux, macos, windows]
 ---
 
 # Karpathy's LLM Wiki
@@ -329,7 +322,7 @@ The wiki directory works as an Obsidian vault:
 - `raw/assets/` holds images referenced via `![[image.png]]`.
 
 For best results, set Obsidian's attachment folder to `raw/assets/`, keep
-Wikilinks enabled, and install Dataview. If using the `obsidian` skill alongside
+Wikilinks enabled, and install Dataview. If using {{ "research:obsidian" | call }} alongside
 this one, set `OBSIDIAN_VAULT_PATH` to the same directory as `WIKI_PATH`.
 
 On headless machines, `obsidian-headless` can sync a wiki via Obsidian Sync

@@ -1,7 +1,7 @@
 {
   "name": "research",
-  "version": "0.2.1",
-  "description": "Research knowledge-base and Obsidian vault workflows for agent-maintained notes.",
+  "version": "0.3.0",
+  "description": "Research workflows: arXiv paper search, grounded citations with a verifiable source ledger, an LLM-maintained Markdown wiki, and Obsidian vault notes.",
   "author": {
     "name": "Alex Kopylov"
   },
@@ -9,8 +9,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "Research",
-    "shortDescription": "Research notes and wiki workflows",
-    "longDescription": "Research knowledge-base and Obsidian vault workflows for building, querying, linting, and maintaining agent-curated Markdown notes.",
+    "shortDescription": "arXiv, citations, wiki, and Obsidian",
+    "longDescription": "Search arXiv and Semantic Scholar, ground answers and documents in a verifiable citation ledger, and build, query, lint, and maintain an agent-curated Markdown wiki or Obsidian vault.",
     "developerName": "Alex Kopylov",
     "category": "Productivity",
     "capabilities": [
@@ -19,9 +19,9 @@
       "Write"
     ],
     "defaultPrompt": [
-      "Create a research wiki.",
-      "Ingest this source into my wiki.",
-      "Search my Obsidian vault."
+      "Find recent arXiv papers on this topic.",
+      "Answer this with grounded citations.",
+      "Ingest this source into my wiki."
     ]
   }
 }
