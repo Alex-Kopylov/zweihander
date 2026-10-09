@@ -32,6 +32,24 @@ The marketplace install identifier is `zweihander`; the display name is
 - `dist/claude-code/` and `dist/codex/` are the committed rendered trees the
   marketplace manifests install from.
 
+## Developer Setup
+
+Install [mise](https://mise.en.dev/getting-started.html) before setting up a clone.
+Run the commands below from the repository root.
+Review `mise.toml` before trusting it because it defines executable tasks.
+
+```shell
+mise trust ./mise.toml
+mise install
+mise run install
+mise run install-hooks
+```
+
+`mise install` installs the pinned tools; `mise run install` installs the Python
+dependencies. Trust is stored locally on each contributor's machine.
+If mise reports `Config files ... are not trusted`, complete the trust step before
+retrying the command. See [mise trust](https://mise.en.dev/cli/trust.html).
+
 ## Build Pipeline
 
 Plugins are authored once under `plugins/` and rendered per harness into
