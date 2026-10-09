@@ -1,7 +1,6 @@
 ---
 name: rss-feeds
 description: Use when reading an RSS, Atom, or JSON feed, checking what is new on a blog, site, or GitHub repo, or discovering the feed behind a page URL
-license: MIT
 ---
 
 # RSS Feeds Skill

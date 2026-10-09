@@ -1,7 +1,6 @@
 ---
 name: arxiv
 description: Use when searching arXiv papers by keyword, author, category, or ID, generating BibTeX for an arXiv paper, or looking up citations, references, and related papers via Semantic Scholar
-license: MIT
 ---
 
 # arXiv Research

@@ -1,7 +1,6 @@
 ---
 name: blocked-page-recovery
 description: "Use when a fetch fails: 403/429, paywall, WAF, bot wall."
-license: MIT
 ---
 
 # Blocked-Page Recovery

@@ -1,7 +1,6 @@
 ---
 name: xurl
 description: Use when posting, replying, searching posts, reading timelines or mentions, sending DMs, uploading media, or calling any X (Twitter) API v2 endpoint through the official xurl CLI
-license: MIT
 ---
 
 # xurl — X (Twitter) API via the Official CLI

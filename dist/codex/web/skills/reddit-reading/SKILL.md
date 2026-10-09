@@ -1,7 +1,6 @@
 ---
 name: reddit-reading
 description: Use when reading Reddit subreddits, searching Reddit, summarizing a Reddit thread, checking a user's activity, or handling any reddit.com URL from a server or headless machine
-license: MIT
 ---
 
 # Reddit Reading Skill

@@ -1,7 +1,6 @@
 ---
 name: obsidian
 description: Use when reading, searching, creating, appending to, or editing notes in a filesystem-first Obsidian vault
-license: MIT
 ---
 
 # Obsidian Vault

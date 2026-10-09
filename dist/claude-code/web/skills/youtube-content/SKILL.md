@@ -1,7 +1,6 @@
 ---
 name: youtube-content
 description: Use when the user shares a YouTube URL or asks to summarize a video, get its transcript, or turn it into chapters, a thread, or a blog post
-license: MIT
 ---
 
 # YouTube Content Tool

@@ -1,7 +1,6 @@
 ---
 name: grounded-citations
 description: Use when an answer, report, document, or deck rests on fetched outside sources and needs inline numbered citations, a Sources list, or fact-checked verbatim evidence
-license: MIT
 ---
 
 # Grounded Citations
@@ -19,7 +18,7 @@ and `verify --evidence` fails any draft whose cited sources carry no evidence.
 This skill covers answers in chat, written documents (markdown, PDF, docx,
 slides), and research reports. It does not cover academic BibTeX pipelines;
 when a deliverable cites arXiv papers, take their metadata and BibTeX entries
-from Skill(research:arxiv).
+from the `research:arxiv` skill.
 
 ## When to Use
 

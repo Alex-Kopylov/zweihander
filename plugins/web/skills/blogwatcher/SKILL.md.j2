@@ -1,7 +1,6 @@
 ---
 name: blogwatcher
 description: Use when tracking many blogs or RSS/Atom feeds over time with read/unread state, OPML import, or HTML scraping through the blogwatcher-cli tool
-license: MIT
 ---
 
 # Blogwatcher

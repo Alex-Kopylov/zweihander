@@ -1,7 +1,6 @@
 ---
 name: llm-wiki
 description: Use when creating, maintaining, querying, ingesting into, or auditing an interlinked Markdown research wiki or knowledge base
-license: MIT
 ---
 
 # Karpathy's LLM Wiki
