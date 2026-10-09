@@ -1,0 +1,27 @@
+{
+  "name": "web",
+  "version": "0.1.0",
+  "description": "Web, social, and feed reading workflows: Reddit, RSS/Atom feeds, blog tracking, YouTube transcripts, X via xurl, and blocked-page recovery.",
+  "author": {
+    "name": "Alex Kopylov"
+  },
+  "license": "MIT",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Web",
+    "shortDescription": "Reddit, feeds, YouTube, X, and blocked pages",
+    "longDescription": "Read Reddit without a browser, read and discover RSS/Atom/JSON feeds, track many blogs with blogwatcher-cli, turn YouTube transcripts into summaries, work with the X API through xurl, and recover pages that fail to fetch from archives.",
+    "developerName": "Alex Kopylov",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "What is Reddit saying about this?",
+      "What's new in this feed?",
+      "Summarize this YouTube video."
+    ]
+  }
+}

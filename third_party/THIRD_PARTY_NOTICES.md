@@ -68,17 +68,32 @@ repository and adapted for this marketplace.
 
 See [mattpocock-skills-LICENSE.txt](mattpocock-skills-LICENSE.txt).
 
-## Hermes Agent-Derived Research Skills
+## Hermes Agent-Derived Skills
 
-The following `research` skills were ported from Nous Research's Hermes Agent
-and adapted for Codex and Claude Code:
+The following skills were ported from Nous Research's Hermes Agent and adapted
+for Codex and Claude Code. Upstream authors are recorded here because the
+ported skills no longer carry them in frontmatter.
 
-| Local skill | Upstream source |
-|---|---|
-| `research:llm-wiki` | https://github.com/NousResearch/hermes-agent/blob/main/skills/research/llm-wiki/SKILL.md |
-| `research:obsidian` | https://github.com/NousResearch/hermes-agent/blob/main/skills/note-taking/obsidian/SKILL.md |
+| Local skill | Upstream source | Upstream author |
+|---|---|---|
+| `research:arxiv` | https://github.com/NousResearch/hermes-agent/tree/main/skills/research/arxiv | Hermes Agent |
+| `research:grounded-citations` | https://github.com/NousResearch/hermes-agent/tree/main/skills/research/grounded-citations | Hermes Agent, Teknium |
+| `research:llm-wiki` | https://github.com/NousResearch/hermes-agent/tree/main/skills/research/llm-wiki | Hermes Agent |
+| `research:obsidian` | https://github.com/NousResearch/hermes-agent/tree/main/skills/note-taking/obsidian | Teknium (teknium1), Hermes Agent |
+| `web:reddit-reading` | https://github.com/NousResearch/hermes-agent/tree/main/optional-skills/social-media/reddit-reading | Teknium (teknium1), Hermes Agent |
+| `web:rss-feeds` | https://github.com/NousResearch/hermes-agent/tree/main/optional-skills/research/rss-feeds | Teknium (teknium1), Hermes Agent |
+| `web:blogwatcher` | https://github.com/NousResearch/hermes-agent/tree/main/optional-skills/research/blogwatcher | JulienTant (fork of Hyaxia/blogwatcher) |
+| `web:youtube-content` | https://github.com/NousResearch/hermes-agent/tree/main/skills/media/youtube-content | Teknium (teknium1), Hermes Agent |
+| `web:xurl` | https://github.com/NousResearch/hermes-agent/tree/main/skills/social-media/xurl | xdevplatform, openclaw, Hermes Agent |
+| `web:blocked-page-recovery` | https://github.com/NousResearch/hermes-agent/tree/main/skills/web/blocked-page-recovery | Hermes Agent |
+
+The script tests under `tests/unit/plugins/research/skills/grounded-citations/`
+and `tests/unit/plugins/web/skills/` are adapted from Hermes Agent's
+`tests/skills/` suite. Hermes Agent adapted `xurl` from
+https://github.com/openclaw/openclaw/blob/main/skills/xurl/SKILL.md (MIT).
 
 - Upstream: https://github.com/NousResearch/hermes-agent
+- Synced commit: `5f045f842a60184748dda30acb9fecbd961cc18b`
 - License: MIT
 
 ### MIT License Notice
