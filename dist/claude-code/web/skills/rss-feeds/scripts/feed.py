@@ -175,7 +175,8 @@ def parse_xml(data: bytes) -> dict:
         raise ValueError(msg)
     items = channel.iter("item") if tag == "rss" else root.iter(f"{RSS1}item")
     entries = [_rss_entry(item) for item in items]
-    return {"format": "rss", "title": strip_html(_text(channel, "title", f"{RSS1}title")), "entries": entries}
+    title = _text(channel, "title", f"{RSS1}channel/{RSS1}title")
+    return {"format": "rss", "title": strip_html(title), "entries": entries}
 
 
 def _json_entry(item: dict) -> dict:

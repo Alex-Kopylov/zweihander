@@ -108,6 +108,11 @@ def test_rdf_feed_with_items_beside_channel_parses_every_item(feed):
     assert (second["title"], second["published"]) == ("Second", None)
 
 
+def test_rdf_feed_title_comes_from_its_channel(feed):
+    """RSS 1.0 nests the feed title in <channel>, not directly under <rdf:RDF>."""
+    assert feed.parse_feed(RDF)["title"] == "RDF Site"
+
+
 @pytest.mark.parametrize(
     ("since", "expected_titles"),
     [
