@@ -1,0 +1,9 @@
+{
+  "name": "web",
+  "description": "Web, social, and feed reading workflows: Reddit, RSS/Atom feeds, blog tracking, YouTube transcripts, X via xurl, and blocked-page recovery.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Alex Kopylov"
+  },
+  "skills": "./skills/"
+}
