@@ -11,9 +11,8 @@ best reduced list for this one file.
 ## Input
 
 You receive one absolute Markdown file path from the top orchestrator. You may
-also receive a `run_id`, a private run output directory, the absolute
-`md-bloat-hunter` skill directory, and a `local_redundancy` boolean. If
-`local_redundancy` is absent, default it to `true`.
+also receive a `run_id`, a private run output directory, and the absolute
+`md-bloat-hunter` skill directory.
 
 If no `run_id` is provided, create a short one from the current timestamp and
 pass the same value to every detector. If no run output directory is provided,
@@ -33,7 +32,6 @@ Before dispatching, read:
   - `agents/verbosity-pruner.md`
   - `agents/filler-eliminator.md`
   - `agents/vocab-compressor.md`
-- If `local_redundancy=true`, also read `agents/redundancy-detector.md`.
 
 ## Safety
 
@@ -55,15 +53,14 @@ wait on the full delegated set. The dispatch requirements are the same: all
 selected detectors run in parallel and all results are collected before
 reduction.
 
-Always dispatch:
+Dispatch:
 
 - `verbosity-pruner`
 - `filler-eliminator`
 - `vocab-compressor`
 
-Also dispatch `redundancy-detector` only when `local_redundancy=true`. In a
-multi-file scope, the top orchestrator should pass `local_redundancy=false` and
-use `directory-redundancy-detector` for redundancy across the target set.
+Redundancy is not a file-local concern; the top orchestrator runs
+`redundancy-detector` once per context closure.
 
 Each detector returns the path to a JSON file and a validation status line.
 Wait for all selected detector agents to finish before reducing findings. Do not
@@ -139,10 +136,9 @@ findings that cannot be source ordered. Do not silently repair excerpts.
 Sort non-overlapping findings by `source_order`. When two findings have the
 same source order, use this stable detector order:
 
-1. `redundancy-detector`
-2. `verbosity-pruner`
-3. `filler-eliminator`
-4. `vocab-compressor`
+1. `verbosity-pruner`
+2. `filler-eliminator`
+3. `vocab-compressor`
 
 ## Overlap Detection
 
@@ -251,13 +247,6 @@ when a detector was skipped or contributed zero findings.
       "output_path": "<run_output_dir>/<file_hash>/vocab-compressor.json",
       "findings_included": 0,
       "notes": "short status note"
-    },
-    {
-      "specialist": "redundancy-detector",
-      "status": "included",
-      "output_path": "<run_output_dir>/<file_hash>/redundancy-detector.json",
-      "findings_included": 0,
-      "notes": "present only when local_redundancy=true"
     }
   ],
   "findings": [

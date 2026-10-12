@@ -376,3 +376,52 @@ def test_preflight_main_rejects_changed_hash_from_expect_map(scripts_dir: Path, 
     assert second.returncode == 1
     payload = json.loads(second.stdout)
     assert payload["errors"][0]["error"] == "target content hash changed since preflight"
+
+
+def touch_markdown(directory: Path, *names: str) -> list[str]:
+    paths = []
+    for name in names:
+        path = directory / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(f"# {name}\n", encoding="utf-8")
+        paths.append(str(path))
+    return paths
+
+
+def test_build_closures_follows_reads_and_stops_at_dispatch_targets(scripts_dir: Path, tmp_path: Path) -> None:
+    build_closures = load_script(scripts_dir, "build_closures")
+    skill, ref, shared, agent, agent_ref = touch_markdown(
+        tmp_path, "SKILL.md", "references/ref.md", "references/shared.md", "agents/agent.md", "references/agent-only.md"
+    )
+    edges = [
+        {"from": skill, "to": ref, "kind": "reads"},
+        {"from": ref, "to": shared, "kind": "reads"},
+        {"from": skill, "to": agent, "kind": "reads"},
+        {"from": skill, "to": agent, "kind": "dispatches"},
+        {"from": agent, "to": agent_ref, "kind": "reads"},
+    ]
+
+    closures = build_closures.build_closures({skill, ref, shared, agent}, edges)
+
+    assert closures == [
+        {"root": skill, "editable": sorted([skill, ref, shared, agent]), "read_only": []},
+        {"root": agent, "editable": [agent], "read_only": [agent_ref]},
+    ]
+
+
+def test_build_closures_cli_rejects_missing_files(scripts_dir: Path, tmp_path: Path) -> None:
+    (skill,) = touch_markdown(tmp_path, "SKILL.md")
+    graph = write_json(
+        tmp_path / "graph.json",
+        {"editable": [skill], "edges": [{"from": skill, "to": str(tmp_path / "missing.md"), "kind": "reads"}]},
+    )
+
+    result = subprocess.run(
+        [sys.executable, str(scripts_dir / "build_closures.py"), str(graph)],
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+
+    assert result.returncode == 1
+    assert json.loads(result.stdout)["errors"] == [f"not a file: {tmp_path / 'missing.md'}"]
