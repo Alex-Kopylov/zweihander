@@ -8,4 +8,4 @@
 | 🟡 `recent` | two years ago | check for newer work by the same authors |
 | ⚪️ `historical` | older | history only: "this is how it used to be done" |
 
-`published` is the last arXiv version or the journal's online publication date. Recompute every label at lint time and correct the field where it drifted.
+`published` is the date of the newest source the page rests on; for a paper, the last arXiv version or the journal's online publication date. Recompute every label at lint time and correct the field where it drifted.

@@ -42,5 +42,5 @@ pages by theme.
 
 ## [YYYY-MM-DD] create | Wiki initialized
 - Domain: [domain]
-- Structure created with SCHEMA.md, tags.json, index.md, log.md, raw/AGENTS.md, _meta/
+- Structure created with SCHEMA.md, tags.json, index.md, log.md, raw/AGENTS.md
 ```

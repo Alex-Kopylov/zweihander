@@ -47,35 +47,35 @@ wiki/
 |-- tags.json           # Tag taxonomy, grouped by key
 |-- index.md            # Sectioned content catalog with a "Start here" table
 |-- log.md              # Chronological action log, append-only and rotated yearly
-|-- _meta/
-|   |-- frontmatter.md  # Page frontmatter fields and allowed values
-|   `-- freshness.md    # How `freshness` follows from `published`
-|-- raw/                # Layer 1: immutable originals in native format
+|-- raw/                # Layer 1: immutable source material
 |   |-- AGENTS.md       # Rules for anyone writing into raw/
-|   |-- converted/      # Markdown copies of the originals for the assistant
+|   |-- articles/       # Web articles and clippings
+|   |-- papers/         # PDFs and arXiv papers
+|   |-- transcripts/    # Meeting notes and interviews
+|   |-- converted/      # Markdown copies of originals that are not Markdown
 |   `-- assets/         # Images and diagrams referenced by pages
-|-- entities/           # Layer 2: one source, one page
-|-- concepts/           # Layer 2: topic syntheses, base articles, glossary
+|-- entities/           # Layer 2: people, orgs, products, models
+|-- concepts/           # Layer 2: topics and concepts, base articles, glossary
 |-- comparisons/        # Layer 2: side-by-side analyses
 `-- queries/            # Layer 2: filed query results worth keeping
 ```
 
-- **Raw sources:** Immutable. The original stays in its native format; a
-  converted Markdown copy with frontmatter and a body hash serves the
-  assistant. Read them, never modify them. The rules live in `raw/AGENTS.md`.
+- **Raw sources:** Immutable. Originals sit by type under `raw/`; an original
+  that is not Markdown gets a Markdown copy under `raw/converted/`. Every raw
+  Markdown file carries frontmatter and a body hash. Read them, never modify
+  them. The rules live in `raw/AGENTS.md`.
 - **Wiki pages:** Assistant-owned Markdown files created, updated, and
   cross-referenced by the assistant.
 - **Schema:** `SCHEMA.md` is the contract. Part 1 holds the domain and the
   project parameters; part 2 holds the general rules: layout, page style,
-  reader frame, thresholds, update policy. It links to `_meta/` for the
-  frontmatter fields and the freshness labels.
+  reader frame, frontmatter, freshness, thresholds, update policy.
 - **Tags:** `tags.json` is the taxonomy. Every `tags` value on a page comes
   from it.
 
 ## Helper Scripts
 
 - [scripts/body_sha256.sh](scripts/body_sha256.sh) `<file.md>` prints the sha256 of the body below the
-  frontmatter. It fills the `sha256` field of a converted raw file and
+  frontmatter. It fills the `sha256` field of a raw Markdown file and
   recomputes it at lint to detect source drift.
 - [scripts/freshness.sh](scripts/freshness.sh) `<YYYY-MM-DD>` prints `fresh`, `recent`, or
   `historical` for a `published` date by today's year. Never pick the label
@@ -107,14 +107,15 @@ When the user asks to create or start a wiki:
 3. Ask the user for the domain and for the project or goal the wiki serves;
    the latter becomes `<project>` in headings and TL;DRs.
 4. Write `SCHEMA.md` from [references/schema-template.md](references/schema-template.md).
-   Fill part 1 with the answers; keep part 2 as it is.
+   Fill part 1 with the answers. Paste the bodies of
+   [references/frontmatter.md](references/frontmatter.md) and
+   [references/freshness.md](references/freshness.md) into their part 2
+   sections; keep the rest of part 2 as it is.
 5. Write `tags.json` with 10-20 tags in 3-6 groups, as a JSON object mapping
    each group key to a list of tags.
-6. Copy [references/frontmatter.md](references/frontmatter.md) and
-   [references/freshness.md](references/freshness.md) into `_meta/`.
-7. Write `raw/AGENTS.md` from [references/raw-agents-template.md](references/raw-agents-template.md).
-8. Write `index.md` and `log.md` from [references/index-and-log-templates.md](references/index-and-log-templates.md).
-9. Confirm the wiki is ready and suggest first sources to ingest.
+6. Write `raw/AGENTS.md` from [references/raw-agents-template.md](references/raw-agents-template.md).
+7. Write `index.md` and `log.md` from [references/index-and-log-templates.md](references/index-and-log-templates.md).
+8. Confirm the wiki is ready and suggest first sources to ingest.
 
 ## Core Operations
 
@@ -122,12 +123,15 @@ When the user asks to create or start a wiki:
 
 When the user provides a URL, file, or paste:
 
-1. Capture the source under `raw/` by the rules in `raw/AGENTS.md`: the
-   original in its native format, named `<author>-<topic>-<year>.<ext>`, and
-   a converted Markdown copy under `raw/converted/` with frontmatter and the
-   body `sha256` from `scripts/body_sha256.sh`. Conversion changes formatting
-   only. A paywalled source gets no raw file; its page is built from the
-   abstract with `confidence: low`.
+1. Capture the source under `raw/` by the rules in `raw/AGENTS.md`.
+   - URL: fetch clean Markdown and save under `raw/articles/`.
+   - PDF: save the original under `raw/papers/` and a Markdown copy under
+     `raw/converted/`. Conversion changes formatting only.
+   - Pasted text: save under the matching `raw/` subdirectory.
+   - Name files `<author>-<topic>-<year>.<ext>`. Every raw Markdown file gets
+     frontmatter and the body `sha256` from `scripts/body_sha256.sh`.
+   - A paywalled source gets no raw file; its page is built from the abstract
+     with `confidence: low`.
 2. Discuss takeaways with the user: what is interesting and what matters for
    the domain. Skip this only in automated or cron contexts.
 3. Check what already exists by searching `index.md` and wiki pages for
@@ -138,11 +142,11 @@ When the user provides a URL, file, or paste:
      right after the H1. Sections are connected prose.
    - Explain every term at its first mention, then link it to the base
      article, the glossary, or a Wikipedia article whose existence you checked.
-   - Take every figure from `raw/converted/` and confirm it there before
-     saving. Footnote claims with `^[raw/converted/<file>.md]`.
+   - Take every figure from the raw Markdown and confirm it there before
+     saving. Footnote claims with `^[raw/<path>.md]`.
    - Check every external link before inserting it: HTTP 200 and the page
      title.
-   - Fill the frontmatter by `_meta/frontmatter.md`. Set `freshness` with
+   - Fill the frontmatter by the Frontmatter section of `SCHEMA.md`. Set `freshness` with
      `scripts/freshness.sh <published>`. Use only tags from `tags.json`.
    - Add at least 2 outbound `[[wikilinks]]` and check whether relevant pages
      should link back.
@@ -180,21 +184,21 @@ When the user asks to lint, health-check, or audit the wiki, check:
 1. Orphan pages with no inbound `[[wikilinks]]`.
 2. Broken `[[links]]` pointing to pages that do not exist.
 3. Index completeness by comparing wiki files against `index.md`.
-4. Frontmatter completeness by `_meta/frontmatter.md`, and tags that are
-   missing from `tags.json`.
+4. Frontmatter completeness by the Frontmatter section of `SCHEMA.md`, and
+   tags that are missing from `tags.json`.
 5. Stale pages whose `updated` date is more than 90 days older than the most
    recent relevant source.
 6. Contradictions, including pages with `contested: true` or `contradictions:`.
 7. Quality signals: `confidence: low`, single-source pages without confidence,
    and unsupported high-confidence claims.
-8. Source drift: `scripts/body_sha256.sh` on every converted raw file against
+8. Source drift: `scripts/body_sha256.sh` on every raw Markdown file against
    its `sha256` field.
 9. Pages over 200 lines.
 10. Whether `log.md` exceeds 500 entries and should be rotated.
 11. The TL;DR callout right after the H1, 3 or 4 lines.
 12. The `<project>` section ending with a "What to do" list of at most 3 items.
 13. "See also" with at most 5 links, each with a reason.
-14. Source pages whose figures carry no footnote to a raw file.
+14. Figures without a footnote to a raw file.
 15. `freshness` that disagrees with `scripts/freshness.sh <published>`.
 16. External links that no longer return HTTP 200.
 17. Vague quantities ("many", "recently", "significantly") where a number, a

@@ -36,14 +36,15 @@ Tags live in [tags.json](tags.json), grouped by key. A new tag is added there fi
 
 | Folder | Holds | File name |
 |---|---|---|
-| `raw/` | originals in native format (PDF, HTML, Markdown); rules in [raw/AGENTS.md](raw/AGENTS.md) | `<author>-<topic>-<year>.<ext>` |
-| `raw/converted/` | Markdown copies of originals for the assistant; conversion changes formatting only, never text | `<author>-<topic>-<year>.md` |
+| `raw/articles/`, `raw/papers/`, `raw/transcripts/` | originals by type, in native format; rules in [raw/AGENTS.md](raw/AGENTS.md) | `<author>-<topic>-<year>.<ext>` |
+| `raw/converted/` | Markdown copies of originals that are not Markdown; conversion changes formatting only, never text | `<author>-<topic>-<year>.md` |
 | `raw/assets/` | images and diagrams referenced by pages | |
-| `entities/` | one source, one page | `<author>-<topic>.md`, no year |
-| `concepts/` | topic synthesis from 3+ sources; base articles; glossary | `<topic>.md` |
-| `comparisons/` | tables and side-by-side analyses | `<topic>.md` |
+| `entities/` | people, organizations, products, models | `<name>.md` |
+| `concepts/` | topics and concepts; base articles; glossary | `<topic>.md` |
+| `comparisons/` | side-by-side analyses | `<topic>.md` |
 | `queries/` | filed query answers worth keeping | `<question>.md` |
-| `_meta/` | [frontmatter.md](_meta/frontmatter.md), [freshness.md](_meta/freshness.md), topic map for large indexes | |
+
+File names are lowercase with hyphens, no spaces.
 
 ## Conventions
 
@@ -52,7 +53,7 @@ Tags live in [tags.json](tags.json), grouped by key. A new tag is added there fi
 - Updating a page bumps `updated`.
 - A new page joins the catalogs from part 1.
 - Every action is appended to [log.md](log.md).
-- Figures and claims on a source page come from `raw/`. Verify each by grep over the converted file before saving.
+- Figures and claims come from `raw/`. Verify each by grep over the raw Markdown before saving.
 - Markdown tables and mermaid diagrams where they fit, in moderation.
 - Reader-friendly text: rules in "Reader frame" below.
 
@@ -61,16 +62,16 @@ Tags live in [tags.json](tags.json), grouped by key. A new tag is added there fi
 The reader is entering the domain. Pages are connected prose, not compressed bullets.
 
 - **TL;DR.** Callout `[!tldr]` right after the H1; format in "Reader frame".
-- **Lead paragraph.** The first sentence defines the subject: "**Term** is…". For a source page: "**"Title"** is a paper by X, published in Y in Z. It…".
+- **Lead paragraph.** The first sentence defines the subject: "**Term** is…". For an entity: "**Name** is a [what it is], [where and since when]. It…".
 - **Prose.** Sections are paragraphs of 3–6 full sentences. Lists only for enumerations, tables only for numbers and comparisons.
 - **Terms.** Every term and abbreviation is explained at its first mention on the page, then linked to its base article or to `<glossary>`.
 - **Wikipedia links.** The first mention of a term on a page links to its English Wikipedia article. Link only to an article whose existence was checked through the Wikipedia API: `https://en.wikipedia.org/api/rest_v1/page/summary/<Title>` returns 200. A term with a base article links there instead; its Wikipedia link lives only in the base article and the glossary. "See also" and "Sources" get no term links.
-- **No Wikipedia article.** A method with a source page links to it (`[[slug|name]]`). A dataset, library, or product links to its official source: the publisher's site, the repository, the documentation. A method without a source page links to arXiv or DOI. Check the address before inserting: HTTP 200 and the page title. Inside tables, write the link label separator as `\|`, or the table breaks.
+- **No Wikipedia article.** An entity or concept with a wiki page links to it (`[[slug|name]]`). A dataset, library, or product links to its official source: the publisher's site, the repository, the documentation. A paper links to arXiv or DOI. Check the address before inserting: HTTP 200 and the page title. Inside tables, write the link label separator as `\|`, or the table breaks.
 - **Numbers with meaning.** Next to every metric, say what it measures and whether the value is good.
-- **Source page structure:** TL;DR → lead → Background → Method → Data → Results → Relevance to `<project>` → Limitations and critique → See also → Sources.
-- **Base article structure:** TL;DR → lead → History → How it works → Examples and tools → Problems and debates → Relevance to `<project>` → See also → Sources.
+- **Entity page structure:** TL;DR → lead → Overview → Key facts and dates → Relationships → Relevance to `<project>` → See also → Sources.
+- **Concept page structure:** TL;DR → lead → History → How it works → Current state of knowledge → Open questions and debates → Relevance to `<project>` → See also → Sources.
 - **Comparison structure:** TL;DR → lead with the snapshot date → What is compared and how → Comparison table → Verdict → Relevance to `<project>` → See also → Sources.
-- **Footnotes.** A claim from a specific source gets `^[raw/converted/<file>.md]`. Textbook knowledge without a footnote marks the page `confidence: medium`.
+- **Footnotes.** A claim from a specific source gets `^[raw/<path>.md]`. Textbook knowledge without a footnote marks the page `confidence: medium`.
 
 ## Reader frame
 
@@ -109,22 +110,23 @@ TL;DR sample:
 
 ## Raw layer
 
-All rules for `raw/` and `raw/converted/` are in [raw/AGENTS.md](raw/AGENTS.md). Read it before writing into `raw/` and before writing a source page.
+All rules for `raw/` are in [raw/AGENTS.md](raw/AGENTS.md). Read it before writing into `raw/` and before writing a page from a source.
 
 ## Frontmatter
 
-Fields and allowed values: [_meta/frontmatter.md](_meta/frontmatter.md).
+[Paste the body of [frontmatter.md](frontmatter.md) here, without its H1.]
 
-## Freshness
+## Freshness: the main value signal
 
-Labels and how `freshness` follows from `published` and today's date: [_meta/freshness.md](_meta/freshness.md).
+[Paste the body of [freshness.md](freshness.md) here, without its H1.]
 
 ## Page thresholds
 
-- One source, one page in `entities/`.
-- A `concepts/` synthesis is created when a pattern appears in 3+ sources.
-- A page over about 200 lines is split.
-- A superseded page moves to `_archive/` and leaves the index.
+- Create a page when an entity or concept appears in 2+ sources or is central to one source.
+- Add to an existing page when a source mentions something already covered.
+- Do not create pages for passing mentions, minor details, or out-of-domain items.
+- Split a page when it exceeds about 200 lines.
+- Archive a fully superseded page under `_archive/` and remove it from the index.
 
 ## Update policy
 
