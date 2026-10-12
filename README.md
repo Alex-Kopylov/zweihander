@@ -56,6 +56,15 @@ kanban
   research[research]
     research_obsidian[obsidian]
     research_llm_wiki[llm-wiki]
+    research_arxiv[arxiv]
+    research_grounded_citations[grounded-citations]
+  web[web]
+    web_reddit_reading[reddit-reading]
+    web_rss_feeds[rss-feeds]
+    web_blogwatcher[blogwatcher]
+    web_youtube_content[youtube-content]
+    web_xurl[xurl]
+    web_blocked_page_recovery[blocked-page-recovery]
   os_tools[os-tools]
     os_loop_macos[loop_macos]
 ```
@@ -399,24 +408,57 @@ session handoffs, or a designed multi-agent team.
 
 <details>
 <summary>
-Research wiki and Obsidian vault workflows for agent-maintained notes.
+arXiv papers, grounded citations, an LLM-maintained wiki, and Obsidian notes.
 </summary>
 
-**Use when:** you want to create or query an interlinked research wiki, ingest
-sources into a knowledge base, lint wiki health, or work with Obsidian notes.
+**Use when:** you want to find arXiv papers, cite fetched sources with
+verifiable inline citations, create or query an interlinked research wiki,
+ingest sources into a knowledge base, lint wiki health, or work with Obsidian
+notes.
 
 **Origin:** ports MIT-licensed skills from
 [NousResearch/hermes-agent](https://github.com/NousResearch/hermes-agent):
-[`llm-wiki`](https://raw.githubusercontent.com/NousResearch/hermes-agent/refs/heads/main/skills/research/llm-wiki/SKILL.md)
+[`arxiv`](https://github.com/NousResearch/hermes-agent/tree/main/skills/research/arxiv),
+[`grounded-citations`](https://github.com/NousResearch/hermes-agent/tree/main/skills/research/grounded-citations),
+[`llm-wiki`](https://github.com/NousResearch/hermes-agent/tree/main/skills/research/llm-wiki),
 and
-[`obsidian`](https://raw.githubusercontent.com/NousResearch/hermes-agent/refs/heads/main/skills/note-taking/obsidian/SKILL.md).
+[`obsidian`](https://github.com/NousResearch/hermes-agent/tree/main/skills/note-taking/obsidian).
 
 #### Skills
 
 | Skill | Description |
 | --- | --- |
+| `arxiv` | Search arXiv by keyword, author, category, or ID; generate BibTeX; look up citations and related papers via Semantic Scholar. |
+| `grounded-citations` | Cite fetched sources inline with a ledger that assigns stable ids, renders Sources blocks, and verifies drafts and verbatim evidence. |
 | `llm-wiki` | Build, query, ingest into, and lint an interlinked Markdown research wiki inspired by Andrej Karpathy's LLM Wiki pattern. |
 | `obsidian` | Read, search, create, append to, and edit notes in a filesystem-first Obsidian vault. |
+
+</details>
+
+### `web`
+
+<details>
+<summary>
+Reddit, RSS/Atom feeds, blogs, YouTube, X, and blocked-page recovery.
+</summary>
+
+**Use when:** you want to read Reddit from a server, read or discover feeds,
+track many blogs, summarize a YouTube video, work with the X API, or recover a
+page that fails to fetch.
+
+**Origin:** ports MIT-licensed skills from
+[NousResearch/hermes-agent](https://github.com/NousResearch/hermes-agent).
+
+#### Skills
+
+| Skill | Description |
+| --- | --- |
+| `reddit-reading` | Read subreddits, search, threads, and user activity without a browser or login. |
+| `rss-feeds` | Read RSS, Atom, and JSON feeds and discover the feed behind a page URL. |
+| `blogwatcher` | Track many blogs and feeds with read/unread state through `blogwatcher-cli`. |
+| `youtube-content` | Turn YouTube transcripts into summaries, chapters, threads, or blog posts. |
+| `xurl` | Post, search, read timelines, send DMs, and call any X API v2 endpoint through the official `xurl` CLI. |
+| `blocked-page-recovery` | Recover pages that fail with 403/429, paywalls, or bot walls from archives and alternate routes. |
 
 </details>
 

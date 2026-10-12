@@ -1,7 +1,7 @@
 {
   "name": "research",
-  "description": "Research knowledge-base and Obsidian vault workflows for agent-maintained notes.",
-  "version": "0.2.1",
+  "description": "Research workflows: arXiv paper search, grounded citations with a verifiable source ledger, an LLM-maintained Markdown wiki, and Obsidian vault notes.",
+  "version": "0.3.0",
   "author": {
     "name": "Alex Kopylov"
   },

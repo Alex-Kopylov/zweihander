@@ -36,6 +36,7 @@ plugins = [
   "requests",
   "testcontainers[redis]",
   "tiktoken",
+  "youtube-transcript-api",
 ]
 
 [tool.uv]
