@@ -11,8 +11,8 @@ extended with Wikipedia-style pages and a reader frame for readers with a
 small working memory.
 
 Unlike traditional RAG, which rediscovers knowledge from scratch per query, the
-wiki compiles knowledge once and keeps it current. Cross-references are already
-there, contradictions have already been flagged, and synthesis reflects
+wiki compiles knowledge once and keeps it current. Cross-references already
+exist, contradictions are already flagged, and synthesis reflects
 everything ingested.
 
 **Division of labor:** The human curates sources and directs analysis. The
@@ -36,8 +36,8 @@ Use `WIKI_PATH` when set. Otherwise default to `~/wiki`.
 WIKI="${WIKI_PATH:-$HOME/wiki}"
 ```
 
-The wiki is just a directory of Markdown files. It can be opened in Obsidian, VS
-Code, or any editor. No database or special tooling is required.
+The wiki is just a directory of Markdown files. No database or special tooling
+is required.
 
 ## Architecture
 
@@ -60,12 +60,10 @@ wiki/
 `-- queries/            # Layer 2: filed query results worth keeping
 ```
 
-- **Raw sources:** Immutable. Originals sit by type under `raw/`; an original
-  that is not Markdown gets a Markdown copy under `raw/converted/`. Every raw
-  Markdown file carries frontmatter and a body hash. Read them, never modify
-  them. The rules live in `raw/AGENTS.md`.
-- **Wiki pages:** Assistant-owned Markdown files created, updated, and
-  cross-referenced by the assistant.
+- **Raw sources:** Immutable. Read them, never modify them. The rules live in
+  `raw/AGENTS.md`.
+- **Wiki pages:** Markdown files the assistant owns, creates, updates, and
+  cross-references.
 - **Schema:** `SCHEMA.md` is the contract. Part 1 holds the domain and the
   project parameters; part 2 holds the general rules: layout, page style,
   reader frame, frontmatter, freshness, thresholds, update policy.
@@ -99,8 +97,6 @@ and repeated work.
 
 ## Initialize A New Wiki
 
-When the user asks to create or start a wiki:
-
 1. Resolve the wiki path from `WIKI_PATH`, the user's explicit path, or
    `~/wiki`.
 2. Create the directory structure above.
@@ -130,7 +126,7 @@ When the user provides a URL, file, or paste:
    - Pasted text: save under the matching `raw/` subdirectory.
    - Name files `<author>-<topic>-<year>.<ext>`. Every raw Markdown file gets
      frontmatter and the body `sha256` from `scripts/body_sha256.sh`.
-   - A paywalled source gets no raw file; its page is built from the abstract
+   - A paywalled source gets no raw file; build its page from the abstract
      with `confidence: low`.
 2. Discuss takeaways with the user: what is interesting and what matters for
    the domain. Skip this only in automated or cron contexts.
@@ -173,8 +169,8 @@ When the user asks a question about the wiki's domain:
 3. Read relevant pages.
 4. Synthesize an answer from the compiled knowledge and cite wiki pages, for
    example "Based on [[page-a]] and [[page-b]]...".
-5. File valuable answers back into `queries/` or `comparisons/` only when the
-   answer is substantial, novel, or painful to rederive.
+5. File an answer back into `queries/` or `comparisons/` only when it is
+   substantial, novel, or painful to rederive.
 6. Update `log.md` with the query and whether it was filed.
 
 ### Lint
@@ -185,7 +181,7 @@ When the user asks to lint, health-check, or audit the wiki, check:
 2. Broken `[[links]]` pointing to pages that do not exist.
 3. Index completeness by comparing wiki files against `index.md`.
 4. Frontmatter completeness by the Frontmatter section of `SCHEMA.md`, and
-   tags that are missing from `tags.json`.
+   tags missing from `tags.json`.
 5. Stale pages whose `updated` date is more than 90 days older than the most
    recent relevant source.
 6. Contradictions, including pages with `contested: true` or `contradictions:`.
@@ -208,8 +204,6 @@ Report findings by severity: broken links, orphans, source drift, contested
 pages, stale content, then style issues. Append a lint entry to `log.md`.
 
 ## Bulk Ingest
-
-When ingesting multiple sources at once:
 
 1. Read all sources first.
 2. Identify entities and concepts across all sources.
@@ -234,7 +228,6 @@ The wiki directory works as an Obsidian vault:
 
 - `[[wikilinks]]` render as clickable links.
 - `[!tldr]` callouts render as collapsible summary boxes.
-- Graph View visualizes the knowledge network.
 - YAML frontmatter powers Dataview queries.
 - `raw/assets/` holds images referenced via `![[image.png]]`.
 
@@ -278,5 +271,5 @@ ob sync --continuous
 
 [llm-wiki-compiler](https://github.com/atomicmemory/llm-wiki-compiler) is a
 Node.js CLI that compiles sources into a concept wiki with the same Karpathy
-inspiration. Use this skill for agent-in-the-loop curation; use llmwiki when
-you want batch compilation of a source directory.
+inspiration. Use this skill for agent-in-the-loop curation; use llmwiki to
+batch-compile a source directory.

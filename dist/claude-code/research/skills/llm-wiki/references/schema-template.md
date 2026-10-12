@@ -28,7 +28,7 @@ One base article per core term of the domain, plus the glossary. Terms link here
 
 ## Tag taxonomy
 
-Tags live in [tags.json](tags.json), grouped by key. A new tag is added there first, then used.
+Tags live in [tags.json](tags.json), grouped by key. Add a new tag there before using it.
 
 # Part 2. General rules
 
@@ -37,7 +37,7 @@ Tags live in [tags.json](tags.json), grouped by key. A new tag is added there fi
 | Folder | Holds | File name |
 |---|---|---|
 | `raw/articles/`, `raw/papers/`, `raw/transcripts/` | originals by type, in native format; rules in [raw/AGENTS.md](raw/AGENTS.md) | `<author>-<topic>-<year>.<ext>` |
-| `raw/converted/` | Markdown copies of originals that are not Markdown; conversion changes formatting only, never text | `<author>-<topic>-<year>.md` |
+| `raw/converted/` | Markdown copies of non-Markdown originals | `<author>-<topic>-<year>.md` |
 | `raw/assets/` | images and diagrams referenced by pages | |
 | `entities/` | people, organizations, products, models | `<name>.md` |
 | `concepts/` | topics and concepts; base articles; glossary | `<topic>.md` |
@@ -48,9 +48,7 @@ File names are lowercase with hyphens, no spaces.
 
 ## Conventions
 
-- Every page starts with YAML frontmatter.
 - Links are `[[wikilinks]]`, at least 2 outbound per page.
-- Updating a page bumps `updated`.
 - A new page joins the catalogs from part 1.
 - Every action is appended to [log.md](log.md).
 - Figures and claims come from `raw/`. Verify each by grep over the raw Markdown before saving.
@@ -65,7 +63,7 @@ The reader is entering the domain. Pages are connected prose, not compressed bul
 - **Lead paragraph.** The first sentence defines the subject: "**Term** is…". For an entity: "**Name** is a [what it is], [where and since when]. It…".
 - **Prose.** Sections are paragraphs of 3–6 full sentences. Lists only for enumerations, tables only for numbers and comparisons.
 - **Terms.** Every term and abbreviation is explained at its first mention on the page, then linked to its base article or to `<glossary>`.
-- **Wikipedia links.** The first mention of a term on a page links to its English Wikipedia article. Link only to an article whose existence was checked through the Wikipedia API: `https://en.wikipedia.org/api/rest_v1/page/summary/<Title>` returns 200. A term with a base article links there instead; its Wikipedia link lives only in the base article and the glossary. "See also" and "Sources" get no term links.
+- **Wikipedia links.** The first mention of a term on a page links to its English Wikipedia article. Link only to an article verified through the Wikipedia API: `https://en.wikipedia.org/api/rest_v1/page/summary/<Title>` returns 200. A term with a base article links there instead; its Wikipedia link lives only in the base article and the glossary. "See also" and "Sources" get no term links.
 - **No Wikipedia article.** An entity or concept with a wiki page links to it (`[[slug|name]]`). A dataset, library, or product links to its official source: the publisher's site, the repository, the documentation. A paper links to arXiv or DOI. Check the address before inserting: HTTP 200 and the page title. Inside tables, write the link label separator as `\|`, or the table breaks.
 - **Numbers with meaning.** Next to every metric, say what it measures and whether the value is good.
 - **Entity page structure:** TL;DR → lead → Overview → Key facts and dates → Relationships → Relevance to `<project>` → See also → Sources.
@@ -110,7 +108,7 @@ TL;DR sample:
 
 ## Raw layer
 
-All rules for `raw/` are in [raw/AGENTS.md](raw/AGENTS.md). Read it before writing into `raw/` and before writing a page from a source.
+All rules for `raw/` are in [raw/AGENTS.md](raw/AGENTS.md). Read it before writing into `raw/` or writing a page from a source.
 
 ## Frontmatter
 
