@@ -8,6 +8,8 @@
 > Content catalog. Every page listed under its type with a one-line summary.
 > Read this first to find relevant pages for any query.
 > Last updated: YYYY-MM-DD | Total pages: N
+> When a section exceeds 50 entries, split it by first letter or sub-domain.
+> When the index exceeds 200 entries, create topic-map.md grouping pages by theme.
 
 ## Start here
 
@@ -25,10 +27,6 @@
 
 ## Queries
 ```
-
-When any section exceeds 50 entries, split it by first letter or sub-domain.
-When the index exceeds 200 entries total, create `_meta/topic-map.md` grouping
-pages by theme.
 
 ## `log.md`
 
