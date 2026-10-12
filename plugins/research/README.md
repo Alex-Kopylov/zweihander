@@ -21,6 +21,11 @@ through the harness `call` filter; an optional or situational one is written as
 the plain skill name. `grounded-citations` routes its multi-platform sweeps
 through the `web` plugin's skills.
 
+`llm-wiki` goes beyond the port: its file templates live in
+`skills/llm-wiki/references/`, pages follow a Wikipedia-style layout with an
+ADHD-friendly reader frame, and `scripts/` carries the body-hash and freshness
+helpers.
+
 <details>
 <summary>Skills</summary>
 
@@ -28,7 +33,7 @@ through the `web` plugin's skills.
 |---|---|
 | `arxiv` | Search arXiv by keyword, author, category, or ID; generate BibTeX; look up citations and related papers via Semantic Scholar. |
 | `grounded-citations` | Cite fetched sources inline with a ledger that assigns stable ids, renders Sources blocks, and verifies drafts and verbatim evidence. |
-| `llm-wiki` | Build, query, ingest into, and lint an interlinked Markdown research wiki inspired by Andrej Karpathy's LLM Wiki pattern. |
+| `llm-wiki` | Build, query, ingest into, and lint an interlinked Markdown research wiki inspired by Andrej Karpathy's LLM Wiki pattern, with Wikipedia-style pages and an ADHD-friendly reader frame. |
 | `obsidian` | Read, search, create, append to, and edit notes in a filesystem-first Obsidian vault. |
 
 </details>
