@@ -81,7 +81,6 @@ def detector_status() -> list[dict]:
             "notes": "ok",
         }
         for name in [
-            "redundancy-detector",
             "verbosity-pruner",
             "filler-eliminator",
             "vocab-compressor",
@@ -163,26 +162,26 @@ def test_file_reduction_schema_accepts_valid_reduction(file_reduction_schema: Pa
     assert result.returncode == 0, result.stderr
 
 
-def test_file_reduction_schema_accepts_directory_redundancy_reduction(
+def test_file_reduction_schema_accepts_closure_redundancy_reduction(
     file_reduction_schema: Path, tmp_path: Path
 ) -> None:
     payload = file_reduction(
-        source_specialists=["directory-redundancy-detector"],
+        source_specialists=["redundancy-detector"],
         type="redundancy",
-        rationale="The same instruction appears in an invoked agent prompt.",
+        rationale="The same instruction appears in a reference the entry file loads.",
         action="delete",
         new_text=None,
     )
     payload["detector_status"] = [
         {
-            "specialist": "directory-redundancy-detector",
+            "specialist": "redundancy-detector",
             "status": "included",
-            "output_path": "/tmp/private-run/directory-redundancy.json",
+            "output_path": "/tmp/private-run/example/redundancy-detector.json",
             "findings_included": 1,
             "notes": "ok",
         }
     ]
-    path = write_json(tmp_path / "directory-reduction.json", payload)
+    path = write_json(tmp_path / "closure-reduction.json", payload)
 
     result = run_jsonschema(path, file_reduction_schema)
 
@@ -191,7 +190,7 @@ def test_file_reduction_schema_accepts_directory_redundancy_reduction(
 
 def test_file_reduction_schema_rejects_duplicate_detector_status(file_reduction_schema: Path, tmp_path: Path) -> None:
     payload = file_reduction()
-    payload["detector_status"][1]["specialist"] = "redundancy-detector"
+    payload["detector_status"][1]["specialist"] = "verbosity-pruner"
     path = write_json(tmp_path / "duplicate-status.json", payload)
 
     result = run_jsonschema(path, file_reduction_schema)

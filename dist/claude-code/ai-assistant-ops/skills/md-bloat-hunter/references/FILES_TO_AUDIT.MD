@@ -9,7 +9,8 @@ Default: LLM context-loaded files. Explicit audit: user names skipped path.
 | `**/agents/**/*.md` | include | agent prompt |
 | `**/commands/**/*.md`, `**/.*/commands/**/*.md` | include | command prompt |
 | `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `.github/copilot-instructions.md` | include | assistant instructions |
-| files linked from included files with read/load/preload/inject/LLM/subagent wording | include | referenced context |
+| `reads` edge targets of an included file | include | same context |
+| `dispatches` edge targets of an included file | include | own context |
 | `README.md`, `docs/**`, install/usage/catalog/changelog/example/generated docs | skip | user-facing |
 | `tests/**`, `fixtures/**`, snapshots, eval outputs, specs/design/architecture docs | skip | development |
 | manifests, hooks, scripts, copied/executed assets | skip | not prompt text |

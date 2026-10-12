@@ -488,10 +488,9 @@ session insights, review documentation language, or reduce Markdown bloat.
 | `ai-insights-hunter` | `patterns-hunter` | Finds recurring workflow and implementation patterns. |
 | `ai-insights-hunter` | `preferences-hunter` | Identifies user preferences worth preserving. |
 | `ai-insights-hunter` | `project-context-hunter` | Captures project-specific context and constraints. |
-| `md-bloat-hunter` | `directory-redundancy-detector` | Finds repeated guidance across Markdown directories. |
 | `md-bloat-hunter` | `file-orchestrator` | Coordinates per-file Markdown cleanup. |
 | `md-bloat-hunter` | `filler-eliminator` | Removes low-value filler language. |
-| `md-bloat-hunter` | `redundancy-detector` | Spots repeated content inside files. |
+| `md-bloat-hunter` | `redundancy-detector` | Spots repeated content inside one agent's context, within a file or across the files it loads together. |
 | `md-bloat-hunter` | `size-budget-reporter` | Reports Markdown size and token budget status. |
 | `md-bloat-hunter` | `verbosity-pruner` | Compresses overlong explanations. |
 | `md-bloat-hunter` | `vocab-compressor` | Replaces inflated wording with direct wording. |

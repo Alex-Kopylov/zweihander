@@ -4,16 +4,15 @@ Audit one Markdown file by dispatching file-local md-bloat-hunter detector
 agents, then reduce their outputs into one source-ordered finding list for the
 top orchestrator.
 
-Your job is not to find bloat directly. Your job is to coordinate detector
-coverage, tolerate malformed detector output, resolve overlap, and return the
-best reduced list for this one file.
+You do not find bloat directly. You coordinate detector coverage, tolerate
+malformed detector output, resolve overlap, and return the best reduced list
+for this one file.
 
 ## Input
 
 You receive one absolute Markdown file path from the top orchestrator. You may
-also receive a `run_id`, a private run output directory, the absolute
-`md-bloat-hunter` skill directory, and a `local_redundancy` boolean. If
-`local_redundancy` is absent, default it to `true`.
+also receive a `run_id`, a private run output directory, and the absolute
+`md-bloat-hunter` skill directory.
 
 If no `run_id` is provided, create a short one from the current timestamp and
 pass the same value to every detector. If no run output directory is provided,
@@ -21,19 +20,14 @@ create one with `umask 077` and
 `mktemp -d "${TMPDIR:-/tmp}/md-bloat-hunter.${run_id}.XXXXXX"`. Require the run
 output directory to be mode `700`.
 
-Before dispatching, read:
+Before dispatching, read the target markdown file and, from the absolute
+`md-bloat-hunter` skill directory:
 
-- The target markdown file.
-- `references/detector-output.schema.json`, from the absolute
-  `md-bloat-hunter` skill directory.
-- `references/file-reduction.schema.json`, from the absolute `md-bloat-hunter`
-  skill directory.
-- These file-local detector agent files, resolved from that same absolute
-  directory:
-  - `agents/verbosity-pruner.md`
-  - `agents/filler-eliminator.md`
-  - `agents/vocab-compressor.md`
-- If `local_redundancy=true`, also read `agents/redundancy-detector.md`.
+- `references/detector-output.schema.json`
+- `references/file-reduction.schema.json`
+- `agents/verbosity-pruner.md`
+- `agents/filler-eliminator.md`
+- `agents/vocab-compressor.md`
 
 ## Safety
 
@@ -50,24 +44,30 @@ agent-delegation mechanism. Give each agent the same absolute file path,
 detector agent file path. Instruct each detector to read that agent file path
 instead of inferring a relative location.
 
-When batch delegation is available, issue all dispatch calls in one response and
-wait on the full delegated set. The dispatch requirements are the same: all
-selected detectors run in parallel and all results are collected before
-reduction.
+When batch delegation is available, issue all dispatch calls in one response.
 
-Always dispatch:
+Dispatch so that every detector result returns to you before you continue.
+If the runtime rejects a dispatch because of a concurrency limit, re-dispatch
+that detector after the others return instead of marking it skipped.
+
+After the spawn_agent calls, call wait_agent for
+every spawned detector and stay in the turn until each one returns.
+
+Never end your turn while a detector is still running. Ending with a status
+line such as "waiting for the detectors" instead of the reduced JSON fails the
+audit of this file.
+
+Dispatch:
 
 - `verbosity-pruner`
 - `filler-eliminator`
 - `vocab-compressor`
 
-Also dispatch `redundancy-detector` only when `local_redundancy=true`. In a
-multi-file scope, the top orchestrator should pass `local_redundancy=false` and
-use `directory-redundancy-detector` for redundancy across the target set.
+Redundancy is not a file-local concern; the top orchestrator runs
+`redundancy-detector` once per context closure.
 
 Each detector returns the path to a JSON file and a validation status line.
-Wait for all selected detector agents to finish before reducing findings. Do not
-queue the detectors or run them one after another.
+Do not queue the detectors or run them one after another.
 
 ## Detector Output Intake
 
@@ -89,9 +89,6 @@ For each detector result:
 
    Run from the `md-bloat-hunter` skill directory so the schema path resolves.
    Quote every shell path argument.
-
-Record every detector in `detector_status`, even when it contributes no
-findings.
 
 Malformed output handling:
 
@@ -129,20 +126,17 @@ An accepted occurrence must have `context_before` immediately before the excerpt
 when `context_before` is non-null, and `context_after` immediately after the
 excerpt when `context_after` is non-null. Keep the finding only when there is
 exactly one accepted occurrence, and derive `source_order` from that occurrence.
-If a finding's excerpt cannot be located in the file, drop it from the reduced
-finding list and record the drop in that detector's `detector_status.notes`. If
-more than one accepted occurrence remains, drop the finding as ambiguous and
-record that in `detector_status.notes`. Without a unique located occurrence
-there is no reliable `source_order`, and the top orchestrator must not receive
-findings that cannot be source ordered. Do not silently repair excerpts.
+If a finding's excerpt cannot be located, drop it and record the drop in that
+detector's `detector_status.notes`. If more than one accepted occurrence
+remains, drop the finding as ambiguous and record that in
+`detector_status.notes`. Do not silently repair excerpts.
 
 Sort non-overlapping findings by `source_order`. When two findings have the
 same source order, use this stable detector order:
 
-1. `redundancy-detector`
-2. `verbosity-pruner`
-3. `filler-eliminator`
-4. `vocab-compressor`
+1. `verbosity-pruner`
+2. `filler-eliminator`
+3. `vocab-compressor`
 
 ## Overlap Detection
 
@@ -216,16 +210,10 @@ Do not force a rewrite just to save tokens.
 
 ## Output Shape
 
-Return one JSON object. This object is not a `SpecialistOutput`; it is the
-file-level reduced result consumed by the top orchestrator.
-
-Allowed `detector_status[].status` values are `"included"`, `"partial"`, and
-`"skipped"`. Allowed finding `resolution` values are `"single"`, `"merged"`,
-`"alternatives"`, and `"conflict"`. Allowed `recommendation` values are
-`"apply"`, `"apply-recommended"`, `"ask-user"`, and `"skip"`.
-
-Return exactly one `detector_status` item for each selected detector agent, even
-when a detector was skipped or contributed zero findings.
+Return one JSON object: the file-level reduced result for the top
+orchestrator, not a `SpecialistOutput`. It carries exactly one
+`detector_status` item per selected detector, even when that detector was
+skipped or contributed zero findings.
 
 ```json
 {
@@ -251,13 +239,6 @@ when a detector was skipped or contributed zero findings.
       "output_path": "<run_output_dir>/<file_hash>/vocab-compressor.json",
       "findings_included": 0,
       "notes": "short status note"
-    },
-    {
-      "specialist": "redundancy-detector",
-      "status": "included",
-      "output_path": "<run_output_dir>/<file_hash>/redundancy-detector.json",
-      "findings_included": 0,
-      "notes": "present only when local_redundancy=true"
     }
   ],
   "findings": [
@@ -294,9 +275,6 @@ fields to the top level when present, including `source_order`. If there is no
 safe recommendation, copy the first alternative's edit fields and `source_order`,
 set `recommendation: "ask-user"` or `"skip"`, and explain in
 `resolution_notes`.
-
-Every object in `alternatives` must include the full finding fields plus
-`source_specialist`, `source_index`, and `source_order`.
 
 For every reduced finding, verify that any non-null
 `recommended_alternative_index` is less than `alternatives.length`. This is a
