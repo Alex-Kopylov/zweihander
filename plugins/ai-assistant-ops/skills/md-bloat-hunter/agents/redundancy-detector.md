@@ -104,9 +104,9 @@ semantic risk, round up.
 
 ## Output
 
-Return a JSON array of file-level reduction objects, at most one per editable
-file. Each object must validate against `references/file-reduction.schema.json`
-and uses:
+Write one file-level reduction object per editable file, with an empty
+`findings` array when that file has none. Each object must validate against
+`references/file-reduction.schema.json` and uses:
 
 - `file_path`: the editable file to change
 - `detector_status`: exactly one item, for `redundancy-detector`
@@ -175,6 +175,15 @@ return the object regardless; the top orchestrator rejects what still fails.
 
 ## Final Response
 
-Return only the JSON array. Return an empty array when no redundancy clears the
-chosen calibration threshold. Do not include markdown fences, preamble, or a
-summary.
+Output only the paths of the reduction JSON files you wrote, one per editable
+file, each followed by its validation status line:
+
+```text
+<run_output_dir>/<file_hash>/redundancy-detector.json
+validation: passed
+```
+
+Every path you report is an output file under the private run output
+directory. Never report a closure member's path. Use
+`validation: failed after 3 attempts` when the third attempt still failed. Do
+not include markdown fences, preamble, or a summary.

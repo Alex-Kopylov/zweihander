@@ -152,8 +152,10 @@ Redundancy pass:
 
 - Dispatch one `agents/redundancy-detector.md` worker per closure in
   `closures.json`, passing its `editable` and `read_only` members.
-- It returns file-level reduction objects for editable members only; validate
-  each one like file-local reductions.
+- It writes one file-level reduction object per editable member under the run
+  output directory and returns those paths. Reject a reported path outside
+  the run output directory, then validate each file like a file-local
+  reduction.
 
 Run every worker in parallel when parallel dispatch is available.
 

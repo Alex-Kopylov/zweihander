@@ -53,6 +53,16 @@ wait on the full delegated set. The dispatch requirements are the same: all
 selected detectors run in parallel and all results are collected before
 reduction.
 
+Dispatch so that every detector result returns to you before you continue.
+
+Call Agent with `run_in_background: false` for each
+detector, so the call returns that detector's result instead of a background
+task notification.
+
+Never end your turn while a detector is still running. Ending with a status
+line such as "waiting for the detectors" instead of the reduced JSON fails the
+audit of this file.
+
 Dispatch:
 
 - `verbosity-pruner`
