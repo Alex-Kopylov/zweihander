@@ -138,12 +138,6 @@ When the user provides a URL, file, or paste:
    mentioned entities and concepts.
 4. Write or update wiki pages by the page style and reader frame in
    `SCHEMA.md`:
-   - Use the section structure for the page type. The TL;DR callout comes
-     right after the H1. Sections are connected prose.
-   - Explain every term at its first mention, then link it to the base
-     article, the glossary, or a Wikipedia article whose existence you checked.
-   - Take every figure from the raw Markdown and confirm it there before
-     saving. Footnote claims with `^[raw/<path>.md]`.
    - Check every external link before inserting it: HTTP 200 and the page
      title.
    - Fill the frontmatter by the Frontmatter section of `SCHEMA.md`. Set `freshness` with
