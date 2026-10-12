@@ -297,3 +297,10 @@ Honest uncertainties, not implementation blockers.
    `apply_findings.py` reports the second one as shifted and skips it. No
    corruption, but a silently lost finding. Routing closure findings through
    the reducer would make redundancy finish before local reduction starts.
+   The first dogfood run (2026-10-12, 9 files) lost 4 of 43 approved findings
+   this way.
+
+7. **Harness concurrency caps.** N files fan out to 2N + K top-level workers
+   plus 3N nested detectors; Claude Code rejects dispatches past 20 concurrent
+   subagents. Workers re-dispatch a rejected call after earlier ones return;
+   a rejection that is not retried degrades coverage (`skipped` status).

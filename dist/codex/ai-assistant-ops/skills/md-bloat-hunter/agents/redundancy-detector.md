@@ -12,6 +12,7 @@ part of a redundancy finding. Those belong to other detectors.
 
 You receive from the top orchestrator:
 
+- `root`: the closure's root file; it names your output directory
 - `editable`: absolute paths of closure members the user named; findings may
   land only in these
 - `read_only`: absolute paths of the other closure members, context only
@@ -32,14 +33,8 @@ and the two references above.
 ## Calibration
 
 Use `references/calibrate-hunger.md` to choose one intensity for the whole
-closure before scanning, and apply it to every finding:
-
-- `minimal`: tight, focused closures. Flag only `critical` redundancy. Do not
-  restructure. Prefer no findings over weakening clear examples or trigger
-  language.
-- `standard`: mid-sized closures. Run a normal redundancy pass.
-- `aggressive`: sprawling closures with many trigger paths or repeated
-  workflows. Hunt duplication across sections and across files.
+closure before scanning; read its "file" as the closure. Under `aggressive`,
+also hunt duplication across files.
 
 The reduction object has no calibration field; the choice shows only in which
 findings you emit.
@@ -47,10 +42,8 @@ findings you emit.
 ## What To Flag
 
 A redundancy finding needs at least two locations in the closure that carry
-the same meaning, plus one canonical form that remains after the edit. Use
-`rationale` to name the repeated idea and every location in plain language,
-with file names when they differ. Use `new_text` as the canonical replacement
-when the action is a replacement or restructure.
+the same meaning, plus one canonical form that remains after the edit. In
+`rationale`, include file names when the locations differ.
 
 Flag these shapes:
 
@@ -98,9 +91,8 @@ Do not flag:
 - Short headings followed by necessary explanation. A heading and its first
   sentence are only redundant when the sentence adds no detail.
 
-When unsure whether two passages are equivalent, do not flag them. When
-unsure whether repetition is load-bearing, do not flag it. When unsure about
-semantic risk, round up.
+When unsure whether two passages are equivalent or whether repetition is
+load-bearing, do not flag them.
 
 ## Output
 
@@ -161,17 +153,20 @@ Risk guide:
 ## Validation
 
 Write each reduction object to
-`<run_output_dir>/<file_hash>/redundancy-detector.json`, using a short
-deterministic hash of the absolute file path, and validate it:
+`<run_output_dir>/<closure_hash>/<file_hash>/redundancy-detector.json`, where
+`closure_hash` is a short deterministic hash of the root path and `file_hash`
+one of the editable file's path, and validate it:
 
 ```sh
-scripts/validate_output.py file-reduction "<run_output_dir>/<file_hash>/redundancy-detector.json"
+scripts/validate_output.py file-reduction "<run_output_dir>/<closure_hash>/<file_hash>/redundancy-detector.json"
 ```
+
+A file shared by several closures gets one object per closure; the closure
+directory keeps those from overwriting each other.
 
 Run it from the `md-bloat-hunter` skill directory so the schema path resolves.
 If validation fails, read the error, correct the JSON, overwrite the same path,
-and validate again, at most 3 attempts per object. After the third attempt,
-return the object regardless; the top orchestrator rejects what still fails.
+and validate again, at most 3 attempts per object.
 
 ## Final Response
 
@@ -179,7 +174,7 @@ Output only the paths of the reduction JSON files you wrote, one per editable
 file, each followed by its validation status line:
 
 ```text
-<run_output_dir>/<file_hash>/redundancy-detector.json
+<run_output_dir>/<closure_hash>/<file_hash>/redundancy-detector.json
 validation: passed
 ```
 

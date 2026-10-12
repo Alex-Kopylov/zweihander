@@ -53,8 +53,10 @@ medium/high semantic-risk edit.
 - User approval questions: use Skill(AskUserQuestion) when a structured
   question is useful; otherwise ask in chat and wait.
 - Parallel dispatch: delegate the current fan-out with
-  Skill(Agent) in one batch when your runtime supports it,
-  then wait on the full delegated set before reducing findings.
+  Skill(Agent) in one batch when supported,
+  then wait for all delegated workers before reducing findings.
+- If the runtime rejects a dispatch because of a concurrency limit,
+  re-dispatch that worker after an earlier one returns; do not drop it.
 
 ## Preflight
 
@@ -84,7 +86,7 @@ umask 077
 mktemp -d "${TMPDIR:-/tmp}/md-bloat-hunter.${run_id}.XXXXXX"
 ```
 
-Keep that directory for post-run debugging and include it in the final report.
+Keep that directory for post-run debugging.
 
 ## Context Closures
 
@@ -135,8 +137,6 @@ dispatch.
 Size-budget pass:
 
 - Dispatch one `agents/size-budget-reporter.md` worker per target file.
-- Run it in parallel with file-local orchestrators when parallel dispatch is
-  available.
 - Treat its output as report-only. Never convert size warnings into edit
   findings.
 - Default budgets are `4096` soft-warning tokens and `8192` hard-warning
@@ -151,7 +151,7 @@ File-local pass:
 Redundancy pass:
 
 - Dispatch one `agents/redundancy-detector.md` worker per closure in
-  `closures.json`, passing its `editable` and `read_only` members.
+  `closures.json`, passing its `root`, `editable`, and `read_only` members.
 - It writes one file-level reduction object per editable member under the run
   output directory and returns those paths. Reject a reported path outside
   the run output directory, then validate each file like a file-local
@@ -196,8 +196,8 @@ Collect valid findings into one queue while preserving:
 - `semantic_risk`
 - edit fields: `excerpt`, `context_before`, `context_after`, `action`, `new_text`
 
-Drop a finding whose `file_path`, `excerpt`, and `action` match an earlier
-one: a file read by several agents sits in several closures, and its
+Deduplicate findings on `file_path`, `excerpt`, and `action`, keeping the
+first: a file read by several agents sits in several closures, and its
 within-file findings arrive once per closure.
 
 Rank review by severity (`critical`, `major`, `minor`), then semantic risk
@@ -272,7 +272,7 @@ Reversibility comes from the clean git tree and user-reviewed `git diff`.
 Report concisely:
 
 - mode used
-- number of findings found
+- number of findings
 - number applied, skipped, failed, and requiring approval
 - file paths touched
 - file paths with failed agent outputs or writer failures
