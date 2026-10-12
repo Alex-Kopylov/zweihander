@@ -3,14 +3,16 @@ name: llm-wiki
 description: Use when creating, maintaining, querying, ingesting into, or auditing an interlinked Markdown research wiki or knowledge base
 ---
 
-# Karpathy's LLM Wiki
+# LLM Wiki
 
 Build and maintain a persistent, compounding knowledge base as interlinked
-Markdown files. Based on [Andrej Karpathy's LLM Wiki pattern](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f).
+Markdown files. Based on [Andrej Karpathy's LLM Wiki pattern](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f),
+extended with Wikipedia-style pages and a reader frame for readers with a
+small working memory.
 
 Unlike traditional RAG, which rediscovers knowledge from scratch per query, the
-wiki compiles knowledge once and keeps it current. Cross-references are already
-there, contradictions have already been flagged, and synthesis reflects
+wiki compiles knowledge once and keeps it current. Cross-references already
+exist, contradictions are already flagged, and synthesis reflects
 everything ingested.
 
 **Division of labor:** The human curates sources and directs analysis. The
@@ -34,42 +36,60 @@ Use `WIKI_PATH` when set. Otherwise default to `~/wiki`.
 WIKI="${WIKI_PATH:-$HOME/wiki}"
 ```
 
-The wiki is just a directory of Markdown files. It can be opened in Obsidian, VS
-Code, or any editor. No database or special tooling is required.
+The wiki is just a directory of Markdown files. No database or special tooling
+is required.
 
 ## Architecture
 
 ```text
 wiki/
-|-- SCHEMA.md           # Conventions, structure rules, domain config
-|-- index.md            # Sectioned content catalog with one-line summaries
+|-- SCHEMA.md           # Domain parameters, page style, reader frame, thresholds
+|-- tags.json           # Tag taxonomy, grouped by key
+|-- index.md            # Sectioned content catalog with a "Start here" table
 |-- log.md              # Chronological action log, append-only and rotated yearly
 |-- raw/                # Layer 1: immutable source material
+|   |-- AGENTS.md       # Rules for anyone writing into raw/
 |   |-- articles/       # Web articles and clippings
 |   |-- papers/         # PDFs and arXiv papers
 |   |-- transcripts/    # Meeting notes and interviews
-|   `-- assets/         # Images and diagrams referenced by sources
+|   |-- converted/      # Markdown copies of originals that are not Markdown
+|   `-- assets/         # Images and diagrams referenced by pages
 |-- entities/           # Layer 2: people, orgs, products, models
-|-- concepts/           # Layer 2: topics and concepts
+|-- concepts/           # Layer 2: topics and concepts, base articles, glossary
 |-- comparisons/        # Layer 2: side-by-side analyses
 `-- queries/            # Layer 2: filed query results worth keeping
 ```
 
-- **Raw sources:** Immutable. Read them, but do not modify them.
-- **Wiki pages:** Assistant-owned Markdown files created, updated, and
-  cross-referenced by the assistant.
-- **Schema:** `SCHEMA.md` defines structure, conventions, thresholds, and tag
-  taxonomy.
+- **Raw sources:** Immutable. Read them, never modify them. The rules live in
+  `raw/AGENTS.md`.
+- **Wiki pages:** Markdown files the assistant owns, creates, updates, and
+  cross-references.
+- **Schema:** `SCHEMA.md` is the contract. Part 1 holds the domain and the
+  project parameters; part 2 holds the general rules: layout, page style,
+  reader frame, frontmatter, freshness, thresholds, update policy.
+- **Tags:** `tags.json` is the taxonomy. Every `tags` value on a page comes
+  from it.
+
+## Helper Scripts
+
+- [scripts/body_sha256.sh](scripts/body_sha256.sh) `<file.md>` prints the sha256 of the body below the
+  frontmatter. It fills the `sha256` field of a raw Markdown file and
+  recomputes it at lint to detect source drift.
+- [scripts/freshness.sh](scripts/freshness.sh) `<YYYY-MM-DD>` prints `fresh`, `recent`, or
+  `historical` for a `published` date by today's year. Never pick the label
+  by hand.
 
 ## Orient First
 
 When the user has an existing wiki, orient before ingesting, querying, or
 linting:
 
-1. Read `SCHEMA.md` for the domain, conventions, thresholds, and tags.
-2. Read `index.md` for pages and summaries.
-3. Scan the last 20-30 entries of `log.md` for recent activity.
-4. For large wikis with 100+ pages, search the wiki for the topic before
+1. Read `SCHEMA.md` for the domain, the project parameters, the page style,
+   and the thresholds.
+2. Read `tags.json` for the allowed tags.
+3. Read `index.md` for pages and summaries.
+4. Scan the last 20-30 entries of `log.md` for recent activity.
+5. For large wikis with 100+ pages, search the wiki for the topic before
    creating anything new.
 
 This prevents duplicate pages, missed cross-references, schema contradictions,
@@ -77,150 +97,21 @@ and repeated work.
 
 ## Initialize A New Wiki
 
-When the user asks to create or start a wiki:
-
 1. Resolve the wiki path from `WIKI_PATH`, the user's explicit path, or
    `~/wiki`.
 2. Create the directory structure above.
-3. Ask what domain the wiki covers; be specific.
-4. Write `SCHEMA.md` customized to that domain.
-5. Write initial `index.md`.
-6. Write initial `log.md` with a creation entry.
-7. Confirm the wiki is ready and suggest first sources to ingest.
-
-### `SCHEMA.md` Template
-
-Adapt this to the user's domain:
-
-````markdown
-# Wiki Schema
-
-## Domain
-[What this wiki covers, such as "AI/ML research", "personal health", or
-"startup intelligence".]
-
-## Conventions
-- File names: lowercase, hyphens, no spaces, for example `transformer-architecture.md`.
-- Every wiki page starts with YAML frontmatter.
-- Use `[[wikilinks]]` to link between pages; minimum 2 outbound links per page.
-- When updating a page, bump the `updated` date.
-- Add every new page to `index.md` under the correct section.
-- Append every action to `log.md`.
-- On pages that synthesize 3+ sources, append provenance markers like
-  `^[raw/articles/source-file.md]` to paragraphs whose claims come from a
-  specific source.
-
-## Frontmatter
-```yaml
----
-title: Page Title
-created: YYYY-MM-DD
-updated: YYYY-MM-DD
-type: entity | concept | comparison | query | summary
-tags: [from taxonomy below]
-sources: [raw/articles/source-name.md]
-confidence: high | medium | low
-contested: true
-contradictions: [other-page-slug]
----
-```
-
-`confidence`, `contested`, and `contradictions` are optional but recommended for
-opinion-heavy, single-source, fast-moving, or unresolved claims.
-
-### Raw Source Frontmatter
-
-Raw sources also get frontmatter so re-ingests can detect drift:
-
-```yaml
----
-source_url: https://example.com/article
-ingested: YYYY-MM-DD
-sha256: <hex digest of body content below the frontmatter>
----
-```
-
-Compute `sha256` over the body only. On re-ingest, skip unchanged sources and
-flag changed hashes as source drift.
-
-## Tag Taxonomy
-[Define 10-20 top-level tags. Add new tags here before using them.]
-
-Example for AI/ML:
-- Models: model, architecture, benchmark, training
-- People/Orgs: person, company, lab, open-source
-- Techniques: optimization, fine-tuning, inference, alignment, data
-- Meta: comparison, timeline, controversy, prediction
-
-Every page tag must appear in this taxonomy.
-
-## Page Thresholds
-- Create a page when an entity or concept appears in 2+ sources or is central
-  to one source.
-- Add to an existing page when a source mentions something already covered.
-- Do not create pages for passing mentions, minor details, or out-of-domain
-  items.
-- Split a page when it exceeds about 200 lines.
-- Archive a fully superseded page under `_archive/` and remove it from the
-  index.
-
-## Entity Pages
-Include overview, key facts and dates, relationships, wikilinks, and source
-references.
-
-## Concept Pages
-Include definition, current state of knowledge, open questions or debates, and
-related concepts.
-
-## Comparison Pages
-Include what is being compared, comparison dimensions, verdict or synthesis,
-and sources.
-
-## Update Policy
-When new information conflicts with existing content:
-1. Check dates; newer sources usually supersede older ones.
-2. If genuinely contradictory, record both positions with dates and sources.
-3. Mark the contradiction in frontmatter.
-4. Flag it for user review in the lint report.
-````
-
-### `index.md` Template
-
-```markdown
-# Wiki Index
-
-> Content catalog. Every wiki page listed under its type with a one-line summary.
-> Read this first to find relevant pages for any query.
-> Last updated: YYYY-MM-DD | Total pages: N
-
-## Entities
-<!-- Alphabetical within section -->
-
-## Concepts
-
-## Comparisons
-
-## Queries
-```
-
-When any section exceeds 50 entries, split it by first letter or sub-domain.
-When the index exceeds 200 entries total, create `_meta/topic-map.md` grouping
-pages by theme.
-
-### `log.md` Template
-
-```markdown
-# Wiki Log
-
-> Chronological record of all wiki actions. Append-only.
-> Format: `## [YYYY-MM-DD] action | subject`
-> Actions: ingest, update, query, lint, create, archive, delete
-> When this file exceeds 500 entries, rotate: rename to log-YYYY.md, start fresh.
-
-## [YYYY-MM-DD] create | Wiki initialized
-- Domain: [domain]
-- Structure created with SCHEMA.md, index.md, log.md
-```
+3. Ask the user for the domain and for the project or goal the wiki serves;
+   the latter becomes `<project>` in headings and TL;DRs.
+4. Write `SCHEMA.md` from [references/schema-template.md](references/schema-template.md).
+   Fill part 1 with the answers. Paste the bodies of
+   [references/frontmatter.md](references/frontmatter.md) and
+   [references/freshness.md](references/freshness.md) into their part 2
+   sections; keep the rest of part 2 as it is.
+5. Write `tags.json` with 10-20 tags in 3-6 groups, as a JSON object mapping
+   each group key to a list of tags.
+6. Write `raw/AGENTS.md` from [references/raw-agents-template.md](references/raw-agents-template.md).
+7. Write `index.md` and `log.md` from [references/index-and-log-templates.md](references/index-and-log-templates.md).
+8. Confirm the wiki is ready and suggest first sources to ingest.
 
 ## Core Operations
 
@@ -228,28 +119,35 @@ pages by theme.
 
 When the user provides a URL, file, or paste:
 
-1. Capture the raw source.
+1. Capture the source under `raw/` by the rules in `raw/AGENTS.md`.
    - URL: fetch clean Markdown and save under `raw/articles/`.
-   - PDF: extract text/Markdown and save under `raw/papers/`.
-   - Pasted text: save under the appropriate `raw/` subdirectory.
-   - Name files descriptively, such as `raw/articles/karpathy-llm-wiki-2026.md`.
-   - Add raw frontmatter with `source_url`, `ingested`, and body `sha256`.
+   - PDF: save the original under `raw/papers/` and a Markdown copy under
+     `raw/converted/`. Conversion changes formatting only.
+   - Pasted text: save under the matching `raw/` subdirectory.
+   - Name files `<author>-<topic>-<year>.<ext>`. Every raw Markdown file gets
+     frontmatter and the body `sha256` from `scripts/body_sha256.sh`.
+   - A paywalled source gets no raw file; build its page from the abstract
+     with `confidence: low`.
 2. Discuss takeaways with the user: what is interesting and what matters for
    the domain. Skip this only in automated or cron contexts.
 3. Check what already exists by searching `index.md` and wiki pages for
    mentioned entities and concepts.
-4. Write or update wiki pages.
-   - Create pages only when they meet `SCHEMA.md` thresholds.
-   - Update existing pages, bump `updated`, and follow the update policy for
-     conflicts.
+4. Write or update wiki pages by the page style and reader frame in
+   `SCHEMA.md`:
+   - Check every external link before inserting it: HTTP 200 and the page
+     title.
+   - Fill the frontmatter by the Frontmatter section of `SCHEMA.md`. Set `freshness` with
+     `scripts/freshness.sh <published>`. Use only tags from `tags.json`.
    - Add at least 2 outbound `[[wikilinks]]` and check whether relevant pages
      should link back.
-   - Use only tags from `SCHEMA.md`.
-   - Add provenance markers on pages synthesizing 3+ sources.
-   - Use `confidence: medium` or `confidence: low` for weak, single-source, or
-     fast-moving claims.
+   - End the `<project>` section with a "What to do" list of at most 3
+     actions. Keep "See also" at 5 links or fewer, each with a reason.
+   - Create pages only when they meet the `SCHEMA.md` thresholds. Update
+     existing pages, bump `updated`, and follow the update policy for
+     conflicts.
 5. Update navigation.
    - Add new pages to `index.md`, alphabetically within the right section.
+     Revise "Start here" when the entry pages change.
    - Update "Total pages" and "Last updated".
    - Append a `log.md` entry and list every file created or updated.
 6. Report every wiki file created or updated.
@@ -265,8 +163,8 @@ When the user asks a question about the wiki's domain:
 3. Read relevant pages.
 4. Synthesize an answer from the compiled knowledge and cite wiki pages, for
    example "Based on [[page-a]] and [[page-b]]...".
-5. File valuable answers back into `queries/` or `comparisons/` only when the
-   answer is substantial, novel, or painful to rederive.
+5. File an answer back into `queries/` or `comparisons/` only when it is
+   substantial, novel, or painful to rederive.
 6. Update `log.md` with the query and whether it was filed.
 
 ### Lint
@@ -276,23 +174,30 @@ When the user asks to lint, health-check, or audit the wiki, check:
 1. Orphan pages with no inbound `[[wikilinks]]`.
 2. Broken `[[links]]` pointing to pages that do not exist.
 3. Index completeness by comparing wiki files against `index.md`.
-4. Frontmatter completeness and tag taxonomy compliance.
+4. Frontmatter completeness by the Frontmatter section of `SCHEMA.md`, and
+   tags missing from `tags.json`.
 5. Stale pages whose `updated` date is more than 90 days older than the most
    recent relevant source.
 6. Contradictions, including pages with `contested: true` or `contradictions:`.
 7. Quality signals: `confidence: low`, single-source pages without confidence,
    and unsupported high-confidence claims.
-8. Source drift by recomputing raw source body hashes.
+8. Source drift: `scripts/body_sha256.sh` on every raw Markdown file against
+   its `sha256` field.
 9. Pages over 200 lines.
-10. Tags used but not defined in `SCHEMA.md`.
-11. Whether `log.md` exceeds 500 entries and should be rotated.
+10. Whether `log.md` exceeds 500 entries and should be rotated.
+11. The TL;DR callout right after the H1, 3 or 4 lines.
+12. The `<project>` section ending with a "What to do" list of at most 3 items.
+13. "See also" with at most 5 links, each with a reason.
+14. Figures without a footnote to a raw file.
+15. `freshness` that disagrees with `scripts/freshness.sh <published>`.
+16. External links that no longer return HTTP 200.
+17. Vague quantities ("many", "recently", "significantly") where a number, a
+    date, or a range belongs.
 
 Report findings by severity: broken links, orphans, source drift, contested
 pages, stale content, then style issues. Append a lint entry to `log.md`.
 
 ## Bulk Ingest
-
-When ingesting multiple sources at once:
 
 1. Read all sources first.
 2. Identify entities and concepts across all sources.
@@ -316,13 +221,14 @@ When content is fully superseded or the domain scope changes:
 The wiki directory works as an Obsidian vault:
 
 - `[[wikilinks]]` render as clickable links.
-- Graph View visualizes the knowledge network.
+- `[!tldr]` callouts render as collapsible summary boxes.
 - YAML frontmatter powers Dataview queries.
 - `raw/assets/` holds images referenced via `![[image.png]]`.
 
 For best results, set Obsidian's attachment folder to `raw/assets/`, keep
-Wikilinks enabled, and install Dataview. If using the `research:obsidian` skill alongside
-this one, set `OBSIDIAN_VAULT_PATH` to the same directory as `WIKI_PATH`.
+Wikilinks enabled, and install Dataview. If using the `research:obsidian` skill
+alongside this one, set `OBSIDIAN_VAULT_PATH` to the same directory as
+`WIKI_PATH`.
 
 On headless machines, `obsidian-headless` can sync a wiki via Obsidian Sync
 without a GUI:
@@ -341,17 +247,23 @@ ob sync --continuous
 | Pitfall | Correction |
 |---|---|
 | Modifying `raw/` files | Treat raw sources as immutable; corrections belong in wiki pages. |
-| Skipping orientation | Read schema, index, and recent log before operations. |
+| A summary or rewording inside `raw/` | Conversion changes formatting only; the summary is a wiki page. |
+| Skipping orientation | Read schema, tags, index, and recent log before operations. |
 | Skipping `index.md` or `log.md` updates | Keep navigation and history current every time. |
 | Creating pages for passing mentions | Follow page thresholds. |
 | Creating isolated pages | Add at least 2 outbound links and check backlinks. |
-| Freeform tags | Add tags to the schema taxonomy before using them. |
+| Freeform tags | Add tags to `tags.json` before using them. |
 | Oversized pages | Split pages over about 200 lines into focused pages. |
 | Silent overwrite of contradictions | Record both claims, mark frontmatter, and flag for review. |
+| A page of bullet points | Write connected prose; lists only for enumerations. |
+| A term without a gloss | Explain it at first mention, then link it. |
+| An unverified external link | Check HTTP 200 and the page title before inserting. |
+| A caveat after the claim | Put the caveat before the number or conclusion it changes. |
+| A `freshness` label typed by hand | Run `scripts/freshness.sh`; labels drift with the calendar. |
 
 ## Related Tools
 
 [llm-wiki-compiler](https://github.com/atomicmemory/llm-wiki-compiler) is a
 Node.js CLI that compiles sources into a concept wiki with the same Karpathy
-inspiration. Use this skill for agent-in-the-loop curation; use llmwiki when
-you want batch compilation of a source directory.
+inspiration. Use this skill for agent-in-the-loop curation; use llmwiki to
+batch-compile a source directory.
