@@ -33,9 +33,10 @@
 ```markdown
 # Wiki Log
 
-> Chronological record of all wiki actions. Append-only.
+> Chronological record of high-level changes to wiki content or structure. Append-only.
 > Format: `## [YYYY-MM-DD] action | subject`
-> Actions: ingest, update, query, lint, create, archive, delete
+> Actions: ingest, update, create, archive, delete
+> Read-only queries and checks do not create log entries.
 > When this file exceeds 500 entries, rotate: rename to log-YYYY.md, start fresh.
 
 ## [YYYY-MM-DD] create | Wiki initialized

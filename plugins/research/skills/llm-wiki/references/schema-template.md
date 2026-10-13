@@ -50,7 +50,8 @@ File names are lowercase with hyphens, no spaces.
 
 - Links are `[[wikilinks]]`, at least 2 outbound per page.
 - A new page joins the catalogs from part 1.
-- Every action is appended to [log.md](log.md).
+- [log.md](log.md) records high-level changes to wiki content or structure.
+  Read-only queries and checks do not create log entries.
 - Figures and claims come from `raw/`. Verify each by grep over the raw Markdown before saving.
 - Markdown tables and mermaid diagrams where they fit, in moderation.
 - Reader-friendly text: rules in "Reader frame" below.

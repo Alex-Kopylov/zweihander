@@ -165,7 +165,9 @@ When the user asks a question about the wiki's domain:
    example "Based on [[page-a]] and [[page-b]]...".
 5. File an answer back into `queries/` or `comparisons/` only when it is
    substantial, novel, or painful to rederive.
-6. Update `log.md` with the query and whether it was filed.
+6. If you file the answer or change a wiki page, append one high-level
+   `log.md` entry listing the changed files. Otherwise, leave `log.md`
+   unchanged.
 
 ### Lint
 
@@ -195,7 +197,8 @@ When the user asks to lint, health-check, or audit the wiki, check:
     date, or a range belongs.
 
 Report findings by severity: broken links, orphans, source drift, contested
-pages, stale content, then style issues. Append a lint entry to `log.md`.
+pages, stale content, then style issues. Append a lint entry only when the lint
+changes wiki files.
 
 ## Bulk Ingest
 
@@ -249,7 +252,7 @@ ob sync --continuous
 | Modifying `raw/` files | Treat raw sources as immutable; corrections belong in wiki pages. |
 | A summary or rewording inside `raw/` | Conversion changes formatting only; the summary is a wiki page. |
 | Skipping orientation | Read schema, tags, index, and recent log before operations. |
-| Skipping `index.md` or `log.md` updates | Keep navigation and history current every time. |
+| Logging read-only work | Log only high-level changes to wiki content or structure. |
 | Creating pages for passing mentions | Follow page thresholds. |
 | Creating isolated pages | Add at least 2 outbound links and check backlinks. |
 | Freeform tags | Add tags to `tags.json` before using them. |
