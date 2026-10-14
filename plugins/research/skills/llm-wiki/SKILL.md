@@ -36,8 +36,8 @@ Use `WIKI_PATH` when set. Otherwise default to `~/wiki`.
 WIKI="${WIKI_PATH:-$HOME/wiki}"
 ```
 
-The wiki is just a directory of Markdown files. No database or special tooling
-is required.
+The wiki is a directory of Markdown pages with small JSON metadata files. No
+database or special tooling is required.
 
 ## Architecture
 
@@ -46,7 +46,7 @@ wiki/
 |-- SCHEMA.md           # Domain parameters, page style, reader frame, thresholds
 |-- tags.json           # Tag taxonomy, grouped by key
 |-- index.md            # Sectioned content catalog with a "Start here" table
-|-- log.md              # Chronological action log, append-only and rotated yearly
+|-- log.jsonl           # High-level wiki changes, one JSON object per line
 |-- raw/                # Layer 1: immutable source material
 |   |-- AGENTS.md       # Rules for anyone writing into raw/
 |   |-- articles/       # Web articles and clippings
@@ -88,7 +88,7 @@ linting:
    and the thresholds.
 2. Read `tags.json` for the allowed tags.
 3. Read `index.md` for pages and summaries.
-4. Scan the last 20-30 entries of `log.md` for recent activity.
+4. Read the last 20-30 objects in `log.jsonl` for recent activity.
 5. For large wikis with 100+ pages, search the wiki for the topic before
    creating anything new.
 
@@ -110,7 +110,7 @@ and repeated work.
 5. Write `tags.json` with 10-20 tags in 3-6 groups, as a JSON object mapping
    each group key to a list of tags.
 6. Write `raw/AGENTS.md` from [references/raw-agents-template.md](references/raw-agents-template.md).
-7. Write `index.md` and `log.md` from [references/index-and-log-templates.md](references/index-and-log-templates.md).
+7. Write `index.md` and `log.jsonl` from [references/index-and-log-templates.md](references/index-and-log-templates.md).
 8. Confirm the wiki is ready and suggest first sources to ingest.
 
 ## Core Operations
@@ -149,7 +149,8 @@ When the user provides a URL, file, or paste:
    - Add new pages to `index.md`, alphabetically within the right section.
      Revise "Start here" when the entry pages change.
    - Update "Total pages" and "Last updated".
-   - Append a `log.md` entry and list every file created or updated.
+   - Append one `ingest` object to `log.jsonl` and list every file created or
+     updated.
 6. Report every wiki file created or updated.
 
 Ask before mass-updating if an ingest would touch 10 or more existing pages.
@@ -165,7 +166,9 @@ When the user asks a question about the wiki's domain:
    example "Based on [[page-a]] and [[page-b]]...".
 5. File an answer back into `queries/` or `comparisons/` only when it is
    substantial, novel, or painful to rederive.
-6. Update `log.md` with the query and whether it was filed.
+6. If you file the answer or change a wiki page, append one high-level object
+   to `log.jsonl` listing the changed files. Otherwise, leave `log.jsonl`
+   unchanged.
 
 ### Lint
 
@@ -184,7 +187,8 @@ When the user asks to lint, health-check, or audit the wiki, check:
 8. Source drift: `scripts/body_sha256.sh` on every raw Markdown file against
    its `sha256` field.
 9. Pages over 200 lines.
-10. Whether `log.md` exceeds 500 entries and should be rotated.
+10. Whether every non-empty `log.jsonl` line is a JSON object with the required
+    fields and an allowed action.
 11. The TL;DR callout right after the H1, 3 or 4 lines.
 12. The `<project>` section ending with a "What to do" list of at most 3 items.
 13. "See also" with at most 5 links, each with a reason.
@@ -195,7 +199,8 @@ When the user asks to lint, health-check, or audit the wiki, check:
     date, or a range belongs.
 
 Report findings by severity: broken links, orphans, source drift, contested
-pages, stale content, then style issues. Append a lint entry to `log.md`.
+pages, stale content, then style issues. Append one `update` object to
+`log.jsonl` only when the lint changes wiki files.
 
 ## Bulk Ingest
 
@@ -204,7 +209,7 @@ pages, stale content, then style issues. Append a lint entry to `log.md`.
 3. Check existing pages for all of them in one search pass.
 4. Create or update pages in one pass.
 5. Update `index.md` once at the end.
-6. Write one `log.md` entry covering the batch.
+6. Append one `ingest` object to `log.jsonl` covering the batch.
 
 ## Archiving
 
@@ -214,7 +219,7 @@ When content is fully superseded or the domain scope changes:
 2. Move the page to `_archive/` with its original path.
 3. Remove it from `index.md`.
 4. Replace inbound wikilinks with plain text plus "(archived)".
-5. Log the archive action.
+5. Append one `archive` object to `log.jsonl`.
 
 ## Obsidian Integration
 
@@ -249,7 +254,7 @@ ob sync --continuous
 | Modifying `raw/` files | Treat raw sources as immutable; corrections belong in wiki pages. |
 | A summary or rewording inside `raw/` | Conversion changes formatting only; the summary is a wiki page. |
 | Skipping orientation | Read schema, tags, index, and recent log before operations. |
-| Skipping `index.md` or `log.md` updates | Keep navigation and history current every time. |
+| Logging read-only work | Add `log.jsonl` objects only for high-level changes to wiki content or structure. |
 | Creating pages for passing mentions | Follow page thresholds. |
 | Creating isolated pages | Add at least 2 outbound links and check backlinks. |
 | Freeform tags | Add tags to `tags.json` before using them. |

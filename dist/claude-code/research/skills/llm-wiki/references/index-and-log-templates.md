@@ -28,17 +28,19 @@
 ## Queries
 ```
 
-## `log.md`
+## `log.jsonl`
 
-```markdown
-# Wiki Log
+Each line is one JSON object with exactly these fields:
 
-> Chronological record of all wiki actions. Append-only.
-> Format: `## [YYYY-MM-DD] action | subject`
-> Actions: ingest, update, query, lint, create, archive, delete
-> When this file exceeds 500 entries, rotate: rename to log-YYYY.md, start fresh.
+- `date`: `YYYY-MM-DD`.
+- `action`: `create`, `ingest`, `update`, `archive`, or `delete`.
+- `subject`: short description of the operation.
+- `files`: relative paths for every changed wiki file, in lexicographic order.
+- `summary`: one sentence with the result.
 
-## [YYYY-MM-DD] create | Wiki initialized
-- Domain: [domain]
-- Structure created with SCHEMA.md, tags.json, index.md, log.md, raw/AGENTS.md
+Append one line per high-level change. Never rewrite existing lines. Read-only
+queries and checks do not create objects. The file has no header.
+
+```json
+{"date":"YYYY-MM-DD","action":"create","subject":"Wiki initialized","files":["SCHEMA.md","index.md","log.jsonl","raw/AGENTS.md","tags.json"],"summary":"Initialized a wiki for [domain]."}
 ```
