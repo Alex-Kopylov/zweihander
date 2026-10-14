@@ -149,8 +149,7 @@ When the user provides a URL, file, or paste:
    - Add new pages to `index.md`, alphabetically within the right section.
      Revise "Start here" when the entry pages change.
    - Update "Total pages" and "Last updated".
-   - Append one `ingest` object to `log.jsonl` and list every file created or
-     updated.
+   - Append one `ingest` object to `log.jsonl`.
 6. Report every wiki file created or updated.
 
 Ask before mass-updating if an ingest would touch 10 or more existing pages.
@@ -167,8 +166,7 @@ When the user asks a question about the wiki's domain:
 5. File an answer back into `queries/` or `comparisons/` only when it is
    substantial, novel, or painful to rederive.
 6. If you file the answer or change a wiki page, append one high-level object
-   to `log.jsonl` listing the changed files. Otherwise, leave `log.jsonl`
-   unchanged.
+   to `log.jsonl`. Otherwise, leave `log.jsonl` unchanged.
 
 ### Lint
 

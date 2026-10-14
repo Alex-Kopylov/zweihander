@@ -34,13 +34,18 @@ Each line is one JSON object with exactly these fields:
 
 - `date`: `YYYY-MM-DD`.
 - `action`: `create`, `ingest`, `update`, `archive`, or `delete`.
-- `subject`: short description of the operation.
-- `files`: relative paths for every changed wiki file, in lexicographic order.
 - `summary`: one sentence with the result.
+- `reason`: the user's intent: the outcome they want, their motivation,
+  constraints, and preferences. Quote their wording when it helps. Mark
+  inferred intent as inferred and missing intent as unstated. May be longer
+  than one sentence.
+- `links`: wiki-relative paths to the pages a reader should open. Not a list
+  of every changed file; Git keeps that.
 
-Append one line per high-level change. Never rewrite existing lines. Read-only
-queries and checks do not create objects. The file has no header.
+Append one line per high-level change, not per commit. Never rewrite existing
+lines. Read-only queries and checks do not create objects. The file has no
+header. Escape line breaks inside strings so each object stays on one line.
 
 ```json
-{"date":"YYYY-MM-DD","action":"create","subject":"Wiki initialized","files":["SCHEMA.md","index.md","log.jsonl","raw/AGENTS.md","tags.json"],"summary":"Initialized a wiki for [domain]."}
+{"date":"YYYY-MM-DD","action":"create","summary":"Initialized a wiki for [domain].","reason":"[What the user wants the wiki for.]","links":["SCHEMA.md","index.md"]}
 ```
