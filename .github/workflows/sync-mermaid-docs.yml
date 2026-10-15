@@ -46,7 +46,7 @@ jobs:
         run: uv run python -m plugin_maintenance.build
 
       - name: Open a pull request with the combined changes
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         with:
           commit-message: "docs: sync mermaid syntax and config docs"
           title: "docs: sync mermaid syntax and config docs"

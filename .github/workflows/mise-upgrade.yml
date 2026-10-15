@@ -27,7 +27,7 @@ jobs:
           github_token: ${{ github.token }}
       - run: mise upgrade --bump --local
       - id: pr
-        uses: peter-evans/create-pull-request@v8.1.1
+        uses: peter-evans/create-pull-request@v8
         with:
           branch: mise-upgrade
           commit-message: "chore(deps): bump mise tool pins"
