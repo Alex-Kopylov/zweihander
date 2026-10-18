@@ -83,6 +83,7 @@ kanban
   ai_assistant_ops[ai-assistant-ops]
     aao_agents_md_improver[agents-md-improver]
     aao_ai_setup_audit[ai-setup-audit]
+    aao_harness_overlap_audit[harness-overlap-audit]
     aao_ai_insights_hunter[ai-insights-hunter]
     aao_docs_language_review[docs-language-review]
     aao_md_bloat_hunter[md-bloat-hunter]
@@ -122,6 +123,7 @@ kanban
   python_dev_workflow[python-dev-workflow]
     pdw_tests_manager[tests-manager]
     pdw_celery_expert[celery-expert]
+    pdw_constants_placement[constants-placement]
   openapi_tools[openapi-tools]
     oat_openapi_list[openapi-list]
     oat_openapi_inspect[openapi-inspect]
@@ -277,26 +279,26 @@ reasoning.
 ### `python-dev-workflow`
 
 **Use when:** you are doing TDD or test-first development in Python, deriving
-scenarios from requirements, writing or reviewing Python tests, deciding E2E
-vs integration vs unit coverage, testing Celery or Redis behavior, or
-configuring Celery for production behavior.
+scenarios from requirements, writing, reviewing, or auditing Python tests,
+deciding E2E vs integration vs unit coverage, testing Celery or Redis behavior,
+configuring Celery for production behavior, or sorting out hardcoded constants,
+config values, and secrets.
 
 #### Skills
 
 | Skill | Description |
 | --- | --- |
 | `celery-expert` | Configure Celery tasks, workers, retries, schedules, performance, and security. |
-| `tests-manager` | Own Python test-first development and test craft: red-green-refactor, plan scenarios, and write pytest E2E, integration, and unit tests with focused references. |
+| `constants-placement` | Decide where each hardcoded value belongs (its module, a shared `constants.py`, a pydantic-settings field, or `.env` for secrets) and move it, merging duplicates and keeping `.env` out of git. |
+| `tests-manager` | Write, review, or audit pytest tests: red-green-refactor, scenario planning, E2E, integration, and unit tests, independent review of new tests, and evidence-first pruning of low-value ones. |
 
 #### Agents
 
 | Agent | Description |
 | --- | --- |
-| `integration-test-writer` | Write endpoint and real-wiring integration tests. |
+| `test-assessor` | Judge one lane of tests in review, audit, or recheck mode and return a ledger; read-only. |
 | `test-scenario-planner` | Derive requirement-linked scenarios and corner cases before coverage routing. |
-| `test-runner` | Run focused pytest or `uv run pytest` commands. |
-| `test-unit-reviewer` | Review unit tests for quality, coverage, and patterns. |
-| `unit-test-writer` | Write focused unit tests with mocks, fixtures, and factories. |
+| `test-writer` | Write pytest tests at one assigned level: unit, integration, or E2E. |
 
 ### `dev-workflow`
 
@@ -465,8 +467,9 @@ page that fails to fetch.
 ### `ai-assistant-ops`
 
 **Use when:** you want to audit assistant instructions, improve AGENTS.md files,
-improve existing skills, adapt skills for assistant harnesses, capture useful
-session insights, review documentation language, or reduce Markdown bloat.
+improve existing skills, adapt skills for assistant harnesses, find overlapping
+skills and MCP tools, capture useful session insights, review documentation
+language, or reduce Markdown bloat.
 
 #### Skills
 
@@ -477,6 +480,7 @@ session insights, review documentation language, or reduce Markdown bloat.
 | `ai-insights-hunter` | Extract reusable decisions, patterns, and preferences from a session. |
 | `ai-setup-audit` | Audit assistant configuration files for conflicts and bloat. |
 | `docs-language-review` | Review or rewrite Markdown documentation using plain-language and cognitive-accessibility standards. |
+| `harness-overlap-audit` | Map skills, MCP tools, and skill agents whose scope overlaps, in a Markdown report with Venn diagrams. |
 | `improve-skill` | Improve existing skills through eval feedback, baseline comparison, iteration, and trigger checks. |
 | `md-bloat-hunter` | Trim redundancy, verbosity, and filler in Markdown. |
 

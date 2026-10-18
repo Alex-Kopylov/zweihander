@@ -22,7 +22,7 @@ Superpowers distribution.
 | `dev-workflow:dispatching-parallel-agents` | Copied skill; dispatch example rewritten for each harness's agent tool | https://github.com/obra/superpowers/tree/main/skills/dispatching-parallel-agents |
 | `dev-workflow:requesting-code-review` | Copied skill | https://github.com/obra/superpowers/tree/main/skills/requesting-code-review |
 | `dev-workflow:systematic-debugging` | Copied skill | https://github.com/obra/superpowers/tree/main/skills/systematic-debugging |
-| `python-dev-workflow:tests-manager` | Test-first process absorbed from the formerly separate `dev-workflow:test-driven-development` copied skill | https://github.com/obra/superpowers/tree/main/skills/test-driven-development |
+| `python-dev-workflow:tests-manager` | Test-first process absorbed from the formerly separate `dev-workflow:test-driven-development` copied skill; its testing anti-patterns ported from TypeScript to Python and pytest in `references/rules/mocking.md` | https://github.com/obra/superpowers/tree/main/skills/test-driven-development |
 | `dev-workflow:verification-before-completion` | Copied skill; code-specific checks moved to `references/code-verification.md` | https://github.com/obra/superpowers/tree/main/skills/verification-before-completion |
 
 ### MIT License Notice
@@ -119,6 +119,27 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+## OpenClaw Test Audit
+
+The value bar, junk patterns, retention bar, and audit method in
+`python-dev-workflow:tests-manager` were adapted from OpenClaw's `test-audit`
+skill, rewritten for Python and pytest, with the repository-specific tooling,
+landing flow, and examples removed.
+
+| Local file | Upstream source |
+|---|---|
+| `plugins/python-dev-workflow/skills/tests-manager/references/rules/test-value.md` | https://github.com/openclaw/openclaw/blob/bf636cc1bcdd59e65d5074a1bc309d903bf18e65/.agents/skills/test-audit/SKILL.md |
+| `plugins/python-dev-workflow/skills/tests-manager/references/workflows/audit.md` | https://github.com/openclaw/openclaw/blob/bf636cc1bcdd59e65d5074a1bc309d903bf18e65/.agents/skills/test-audit/CAMPAIGN.md |
+
+- Upstream: https://github.com/openclaw/openclaw
+- Synced commit: `bf636cc1bcdd59e65d5074a1bc309d903bf18e65`
+- Author: OpenClaw Foundation
+- License: MIT
+
+### MIT License Notice
+
+See [openclaw-LICENSE.txt](openclaw-LICENSE.txt).
 
 ## Mermaid Documentation
 
