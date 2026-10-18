@@ -1,0 +1,114 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "tests-manager audit handoff",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "scope",
+    "lanes",
+    "baseline",
+    "removed_categories",
+    "owner_simplifications",
+    "retained_false_positives",
+    "mutation_results",
+    "proof_runs",
+    "loc",
+    "ledger_files",
+    "follow_ups",
+    "proposed_ownership_rules"
+  ],
+  "properties": {
+    "scope": {"$ref": "#/$defs/text"},
+    "lanes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "owners", "test_files"],
+        "properties": {
+          "name": {"$ref": "#/$defs/text"},
+          "owners": {"$ref": "#/$defs/texts"},
+          "test_files": {"$ref": "#/$defs/texts"}
+        }
+      }
+    },
+    "baseline": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["junit_xml", "passed", "failed", "failing_tests"],
+      "properties": {
+        "junit_xml": {"$ref": "#/$defs/text"},
+        "passed": {"$ref": "#/$defs/count"},
+        "failed": {"$ref": "#/$defs/count"},
+        "failing_tests": {"$ref": "#/$defs/texts"}
+      }
+    },
+    "removed_categories": {"$ref": "#/$defs/texts"},
+    "owner_simplifications": {"$ref": "#/$defs/texts"},
+    "retained_false_positives": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["test_id", "reason"],
+        "properties": {
+          "test_id": {"$ref": "#/$defs/text"},
+          "reason": {"$ref": "#/$defs/text"}
+        }
+      }
+    },
+    "mutation_results": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["target", "killed", "survived", "explained_survivors"],
+        "properties": {
+          "target": {"$ref": "#/$defs/text", "description": "The mutmut target pattern."},
+          "killed": {"$ref": "#/$defs/count"},
+          "survived": {"$ref": "#/$defs/count"},
+          "explained_survivors": {"$ref": "#/$defs/texts", "description": "Surviving mutants shown to be equivalent, with the reason."}
+        }
+      }
+    },
+    "proof_runs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["command", "result"],
+        "properties": {
+          "command": {"$ref": "#/$defs/text"},
+          "result": {"$ref": "#/$defs/text"}
+        }
+      }
+    },
+    "loc": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["production", "tests"],
+      "properties": {
+        "production": {"$ref": "#/$defs/line_delta"},
+        "tests": {"$ref": "#/$defs/line_delta"}
+      }
+    },
+    "ledger_files": {"$ref": "#/$defs/texts"},
+    "follow_ups": {"$ref": "#/$defs/texts"},
+    "proposed_ownership_rules": {"$ref": "#/$defs/texts"}
+  },
+  "$defs": {
+    "text": {"type": "string", "minLength": 1},
+    "texts": {"type": "array", "items": {"$ref": "#/$defs/text"}},
+    "count": {"type": "integer", "minimum": 0},
+    "line_delta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["added", "removed"],
+      "properties": {
+        "added": {"$ref": "#/$defs/count"},
+        "removed": {"$ref": "#/$defs/count"}
+      }
+    }
+  }
+}
