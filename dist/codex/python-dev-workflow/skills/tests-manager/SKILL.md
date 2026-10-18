@@ -1,229 +1,132 @@
 ---
 name: tests-manager
-description: Use when doing TDD, test-first development, red-green-refactor, or deriving test scenarios from requirements for Python work, or planning, writing, editing, reviewing, or running Python E2E, integration, or unit tests, including Celery, Redis, mocks, fixtures, pytest structure, or test coverage.
+description: Orchestrates Python pytest work - writing tests test-first, reviewing new tests, and auditing existing suites for low-value tests. Use when doing TDD or red-green-refactor in Python, deriving test scenarios from requirements, choosing E2E, integration, or unit coverage, writing mocks, fixtures, Celery or Redis tests, reviewing pytest tests before they are accepted, or pruning low-value, duplicate, or implementation-coupled tests. Not for running an unchanged suite or for tests in languages other than Python.
 metadata:
   references:
-    "references/e2e-testing.md": "Load when writing, reviewing, or planning externally observable business flows across the real system boundary."
-    "references/integration-testing.md": "Load when writing, reviewing, or planning integration-test behavior, real wiring, or resource isolation."
-    "references/unit-testing.md": "Load when writing, reviewing, or planning unit-test behavior, mocks, or branch coverage."
-    "references/test-structure.md": "Load when choosing pytest directories, file names, or source-to-test mirroring."
-    "references/factory-conventions.md": "Load when tests need reusable deterministic entity builders or persisted domain objects."
-    "references/celery-testing.md": "Load only when tests involve Celery tasks, retries, canvas workflows, workers, brokers, result backends, or Beat schedules."
-    "references/redis-testing.md": "Load only when tests involve Redis, cache services, queues, pub/sub, Lua, locks, or TTLs."
-    "references/testing-anti-patterns.md": "Load when the test needs mocks, test doubles, or test-only helpers."
-    "references/rationalizations.md": "Load when anyone argues for skipping the failing test or writing tests after the code."
+    "references/workflows/write.md": "Load in the write pipeline before writing or changing tests."
+    "references/workflows/review.md": "Load only when no agent can be dispatched and you must review in this session."
+    "references/workflows/audit.md": "Load in the audit pipeline."
+    "references/rules/test-value.md": "Load when judging whether a test is worth adding, keeping, or deleting."
+    "references/rules/conventions.md": "Load before choosing test names, paths, fixtures, or builders."
+    "references/rules/mocking.md": "Load when a test needs mocks, fakes, or other test doubles."
+    "references/rules/rationalizations.md": "Load when anyone argues for skipping the failing test or writing tests after the code."
+    "references/levels/unit.md": "Load when unit tests are selected."
+    "references/levels/integration.md": "Load when integration tests are selected."
+    "references/levels/e2e.md": "Load when E2E tests are selected or run."
+    "references/domains/celery.md": "Load only when tests involve Celery tasks, retries, canvas workflows, workers, brokers, result backends, or Beat schedules."
+    "references/domains/redis.md": "Load only when tests involve Redis, cache services, queues, pub/sub, Lua, locks, or TTLs."
   agents:
-    "../../agents/test-scenario-planner.md": "Use when a task description, specification, or business requirement must be converted into test scenarios and corner cases."
-    "../../agents/unit-test-writer.md": "Use for substantial Python pytest unit-test generation."
-    "../../agents/integration-test-writer.md": "Use for substantial Python pytest integration-test generation."
-    "../../agents/test-unit-reviewer.md": "Use for read-only review of existing unit tests."
-    "../../agents/test-runner.md": "Use for focused pytest execution and failure reporting."
+    "../../agents/test-scenario-planner.md": "Use when requirements need interpretation before tests are written."
+    "../../agents/test-writer.md": "Use to write tests at one assigned level."
+    "../../agents/test-assessor.md": "Use to judge one lane in review, audit, or recheck mode."
 ---
 
 # Tests Manager
 
-## Overview
+The entry point for pytest work. It recognises the intent, runs that intent's
+pipeline, and cuts lanes. Every rule lives in a reference; load one only when
+its condition in `metadata` applies.
 
-Use this skill as the entry point for Python pytest work, including test-first
-development. It defines the shared testing rules, then routes to focused
-references or agents only when the project needs them.
+**Iron Law:** no production code without a failing test first. Ask the user
+with $request_user_input before skipping it for a throwaway
+prototype, generated code, or a configuration file.
 
-Write the test first. Watch it fail. Write minimal code to pass.
+## Intents
 
-**Core principle:** If you did not watch the test fail, you do not know if it
-tests the right thing.
-
-Violating the letter of the rules is violating the spirit of the rules.
-
-## When to Use
-
-Use for new features, bug fixes, refactoring, and behavior changes.
-
-Ask your human partner before skipping TDD for throwaway prototypes, generated
-code, or configuration files.
-
-Thinking "skip TDD just this once"? That is rationalization. Load
-`references/rationalizations.md`.
-
-## Scenario Discovery
-
-When requirements need interpretation, use `test-scenario-planner` before
-coverage routing. It owns what must be proven: requirement-linked scenarios,
-negative paths, corner cases, assumptions, and specification gaps.
-
-Tests Manager owns where and how to prove those scenarios: test-level selection,
-authoring order, references, and writer-agent delegation. The planner does not
-choose levels or write test code.
-
-## The Iron Law
-
-```
-NO PRODUCTION CODE WITHOUT A FAILING TEST FIRST
-```
-
-Wrote code before the test? Delete it and implement fresh from the test. Do not
-keep it as reference, do not adapt it while writing the test, and do not look at
-it. Delete means delete.
-
-## Existing Code Gate
-
-Before choosing a test:
-
-1. Inspect the callers and existing tests for the behavior being changed.
-2. If an existing test owns that contract, update it for the intended behavior.
-   Do not add a parallel ad hoc test just to create RED.
-3. If coverage is missing, add the focused case to the nearest responsible test
-   suite and follow its existing conventions.
-4. For a behavior-preserving refactor with adequate coverage, use the existing
-   tests unchanged: verify the focused suite is green, refactor, then keep it
-   green. Do not invent a failing test for unchanged behavior.
-
-## Test Pyramid
-
-Plan and author selected coverage from the outside in:
-
-```text
-E2E → Integration → Unit
-```
-
-Select only layers that add distinct evidence. Judge completeness by proven
-requirement-linked scenarios and corner cases, not by test count or code
-coverage percentage.
-
-| Level | Owns | Select when |
+| Intent | Recognise by | Pipeline |
 |---|---|---|
-| E2E | Externally observable business behavior across the complete system boundary | A user or external consumer must complete a real journey |
-| Integration | Routes, dependency injection, services, queries, resources, and lifecycle wiring | Correctness depends on components working together |
-| Unit | Local branches, validation, guards, exceptions, edge values, and decisions | Correctness can be isolated from system wiring |
+| Write | a feature, bug fix, or behavior change; TDD; "add tests for" | [write](#write-pipeline) |
+| Review | "review these tests"; a diff of tests awaiting acceptance | [review](#review-pipeline) |
+| Audit | "audit", "prune", or "clean up" tests; low-value, duplicate, or slow tests | [audit](#audit-pipeline) |
 
-For each scenario, work one scenario at a time: first write or adapt E2E
-coverage, then integration coverage, then unit coverage. Keep the
-RED-GREEN-REFACTOR loop for each selected layer; do not implement lower-layer
-behavior before its higher-layer test is written.
+## Run directory
 
-## Red-Green-Refactor
+Create a private run directory for agent outputs:
 
-The cycle applies to one scenario at one level.
+```bash
+run_dir="${ZWEIHANDER_TMP_DIR:-./.tmp/zweihander}/runs/tests-manager/$(date +%Y%m%dT%H%M%S)-$$"
+mkdir -p -m 700 "$run_dir"
+```
 
-### RED - Write A Failing Test
+Write each agent's JSON output there and validate it before acting on it:
 
-Cover one coherent behavior. Name the test after that behavior. Use real code;
-mock only when unavoidable.
+```bash
+uvx check-jsonschema --schemafile <skill-dir>/references/schemas/<name>.schema.json "$run_dir/<file>.json"
+```
 
-### Verify RED - Watch It Fail
+Do not act on output that fails validation; dispatch the agent again with the
+error. Keep the run directory and report its path.
 
-Mandatory. Run the focused test and confirm three things:
+## Write pipeline
 
-- It fails rather than errors.
-- The failure message is the one you expected.
-- It fails because the behavior is missing, not because of a typo.
+1. **Scenarios.** When the requirements need interpretation, dispatch
+   `test-scenario-planner` with the requirements only. Its output follows
+   [scenarios.schema.json](references/schemas/scenarios.schema.json).
+2. **Write.** Follow [write](references/workflows/write.md). The tests are
+   written either in this session or by `test-writer`, one level per dispatch.
+3. **Review.** Cut the diff into [lanes](#lanes) and dispatch one
+   `test-assessor` per lane in `review` mode, in parallel.
+4. **Loop.** Findings — any entry not marked `R`, and any gap — go back to step
+   2 as a task, followed by a fresh review. After three review rounds with
+   findings left, show them and ask the user with $request_user_input
+   how to proceed.
 
-Test passed? You are testing existing behavior. Fix the test.
+## Review pipeline
 
-Test errored? Fix the error and re-run until it fails correctly.
+Cut the diff into [lanes](#lanes) and dispatch one `test-assessor` per lane in
+`review` mode, in parallel. Report the validated ledgers. Edit nothing unless
+the user asks.
 
-### GREEN - Write Minimal Code
+## Audit pipeline
 
-Write the simplest code that passes the test. Do not add options, features, or
-improvements the test does not require.
+Follow [audit](references/workflows/audit.md). This session is the only writer.
 
-### Verify GREEN - Watch It Pass
+1. Record the baseline.
+2. Cut the area into [lanes](#lanes), show the lane plan, and confirm it with
+   $request_user_input before dispatching.
+3. Dispatch one `test-assessor` per lane in `audit` mode, in parallel.
+4. Build the layer plan from the validated ledgers and apply the edits.
+5. If a test was deleted or merged: run the mutation proof, then dispatch a
+   fresh `test-assessor` per changed lane in `recheck` mode. Restore or reject
+   every gap it reports, and recheck again.
+6. Fix product defects, validate, and write the handoff, validated against
+   [handoff.schema.json](references/schemas/handoff.schema.json).
 
-Mandatory. Run the focused test and confirm the test passes, the other tests
-still pass, and the output is clean.
+## Lanes
 
-Test still fails? Fix the code, not the test.
+Partition the review diff or audit area by production owner. Every in-scope
+test file belongs to exactly one lane; an assessor never picks its own.
 
-### REFACTOR - Clean Up
+1. A mirrored path such as `tests/unit/<pkg>/…` or `tests/integration/<pkg>/…`
+   belongs to the owner `<pkg>`, so both suites of one package share a lane.
+2. A test outside a mirrored path belongs to the owner whose code it imports
+   most.
+3. E2E tests belong to their journey.
+4. Split an owner with more than about 1,500 lines of tests into sub-module
+   lanes; merge neighbouring owners with under about 300 lines between them.
+   These thresholds are a first estimate: recalibrate them after the first
+   real audit.
+5. An audit may add one junk-sweep lane that scans the whole area for
+   mechanical patterns only, such as assertion-free tests and source greps.
 
-Only after green. Remove duplication, improve names, extract helpers. Keep the
-tests green and add no behavior.
+## Dispatch contract
 
-## Good Tests
+Dispatch with $spawn_agent. Give each agent only its own
+input, and the run directory path when it must know where its output goes.
+Issue parallel dispatches in one response, and have every result back before
+the next pipeline step.
 
-| Quality | Good | Bad |
+After the spawn_agent calls, call wait_agent for
+every spawned agent and stay in the turn until each one returns.
+
+
+| Role | Receives | Returns |
 |---|---|---|
-| Minimal | One coherent behavior. Split independently meaningful failures. | `test('validates email and domain and whitespace')` |
-| Clear | The name describes the behavior | `test('test1')` |
-| Shows intent | Demonstrates the desired API | Hides what the code should do |
+| `test-scenario-planner` | the requirements | [scenarios](references/schemas/scenarios.schema.json) |
+| `test-writer` | the requirements or scenario catalog, the assigned scenario ids, one level, target paths | changed files and the pytest command it ran |
+| `test-assessor`, `review` | the lane's diff and the requirements or scenario catalog | [ledger](references/schemas/ledger.schema.json) |
+| `test-assessor`, `audit` | the lane's test paths and owners | [ledger](references/schemas/ledger.schema.json) |
+| `test-assessor`, `recheck` | the lane's diff and the mutmut survivors | [ledger](references/schemas/ledger.schema.json) |
 
-## Reference Loading
-
-Use `metadata.references` and `metadata.agents` as the routing table. Load only
-the reference or agent whose value matches the current task, and skip the rest.
-
-## Shared Pytest Rules
-
-- Use `test_*.py`; do not use `.spec.*` or `*_test.py`.
-- Follow existing project placement; otherwise use `tests/e2e/`,
-  `tests/integration/`, and `tests/unit/` for their matching layers.
-- Group tests with `class TestThing:` or `class TestMethodName:` when it helps
-  scan related behavior.
-- Name functions `test_condition_expected_result`; use descriptive snake_case
-  and avoid vague names like `test_works`.
-- Keep each test focused on one behavior. Split tests whose name needs "and".
-- Use `@pytest.mark.parametrize` when cases differ only by input and expected
-  output.
-- Put shared fixtures in the narrowest useful `conftest.py`.
-- Put static payloads under `tests/fixtures/`.
-- Use deterministic helpers for reusable test entities.
-
-## Common Mistake: Mock-Only Pass
-
-Configuring a mock, asserting that it returned the configured value or received
-a call, and claiming the test passed is cheating. It proves the mock
-configuration, not the system behavior. Assert observable behavior from real
-code; assert an interaction only when that interaction is the contract.
-
-## Debugging Integration
-
-Found a bug? Write the failing test that reproduces it, then run the cycle. The
-test proves the fix and prevents the regression. Never fix a bug without a test.
-
-## When Stuck
-
-| Problem | Solution |
-|---|---|
-| Do not know how to test | Write the wished-for API, then the assertion. Ask your human partner. |
-| Test too complicated | The design is too complicated. Simplify the interface. |
-| Must mock everything | The code is too coupled. Use dependency injection. |
-| Test setup is huge | Extract helpers. Still complex? Simplify the design. |
-
-## Delegation
-
-Use `test-scenario-planner` for scenario discovery only. Give its scenario
-catalog to Tests Manager, which selects levels and passes the assigned scope to
-writer agents.
-
-Use the remaining agents under `metadata.agents` for substantial layer-specific test
-generation, read-only review, or focused pytest execution. Keep writer scopes
-separate and do not let them expand the scenario catalog.
-
-## Pre-Finish Checklist
-
-- Watched each test fail before implementing, for the expected reason.
-- Wrote minimal code to pass each test.
-- Every changed behavior has focused proof at the selected layer.
-- Bug fixes have regression coverage that fails on the old behavior.
-- Selected layers were authored E2E → Integration → Unit.
-- E2E tests prove externally observable outcomes without duplicating lower
-  layers.
-- Integration tests prove wiring-sensitive paths without duplicating unit
-  branches.
-- Unit tests cover branches, guard clauses, exceptions, and edge values.
-- Tests use real code, with mocks only where unavoidable.
-- Fixtures and reusable builders are reused instead of duplicated inline data.
-- Task-specific references were loaded only when metadata matched the task.
-- Focused pytest command has been run, or the reason it could not run is
-  reported, and the output is clean.
-
-Cannot check every box? You skipped TDD. Start over.
-
-## Final Rule
-
-```
-Production code → a test exists and failed first
-Otherwise → not TDD
-```
-
-No exceptions without your human partner's permission.
+A reviewing or rechecking assessor never receives this session's plan,
+reasoning, transcript, or earlier ledgers.
