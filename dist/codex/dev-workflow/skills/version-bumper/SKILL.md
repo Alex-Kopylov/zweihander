@@ -29,7 +29,7 @@ On a merge conflict, keep the higher version of the two sides.
 1. **Discover current version** — run `python scripts/find_versions.py .`.
 2. **Load targeted rules** — read only the unique `reference` files reported by discovery.
 3. **Resolve target version** using the rules above.
-4. **Parallelize broad bumps** — if multiple independent version-bearing files must be bumped, delegate with $spawn_agent to parallel background agents using a smaller model. Give each agent only its assigned files and relevant reference files; do not mix unrelated file-type context between prompts.
+4. **Parallelize broad bumps** — if multiple independent version-bearing files must be bumped, delegate with $spawn_agent to parallel background agents using a smaller model, such as Luna. Give each agent only its assigned files and relevant reference files; do not mix unrelated file-type context between prompts.
 5. **Apply changes** — edit each discovered file according to its loaded reference.
 6. **Verify** — re-run the discovery script to confirm the selected files show the new version.
 7. **Report completion** — after verification succeeds, show the old and new versions, bump reason, updated files, and verification result.

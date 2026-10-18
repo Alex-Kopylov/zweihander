@@ -56,6 +56,15 @@ kanban
   research[research]
     research_obsidian[obsidian]
     research_llm_wiki[llm-wiki]
+    research_arxiv[arxiv]
+    research_grounded_citations[grounded-citations]
+  web[web]
+    web_reddit_reading[reddit-reading]
+    web_rss_feeds[rss-feeds]
+    web_blogwatcher[blogwatcher]
+    web_youtube_content[youtube-content]
+    web_xurl[xurl]
+    web_blocked_page_recovery[blocked-page-recovery]
   os_tools[os-tools]
     os_loop_macos[loop_macos]
 ```
@@ -74,6 +83,7 @@ kanban
   ai_assistant_ops[ai-assistant-ops]
     aao_agents_md_improver[agents-md-improver]
     aao_ai_setup_audit[ai-setup-audit]
+    aao_harness_overlap_audit[harness-overlap-audit]
     aao_ai_insights_hunter[ai-insights-hunter]
     aao_docs_language_review[docs-language-review]
     aao_md_bloat_hunter[md-bloat-hunter]
@@ -113,6 +123,7 @@ kanban
   python_dev_workflow[python-dev-workflow]
     pdw_tests_manager[tests-manager]
     pdw_celery_expert[celery-expert]
+    pdw_constants_placement[constants-placement]
   openapi_tools[openapi-tools]
     oat_openapi_list[openapi-list]
     oat_openapi_inspect[openapi-inspect]
@@ -268,26 +279,26 @@ reasoning.
 ### `python-dev-workflow`
 
 **Use when:** you are doing TDD or test-first development in Python, deriving
-scenarios from requirements, writing or reviewing Python tests, deciding E2E
-vs integration vs unit coverage, testing Celery or Redis behavior, or
-configuring Celery for production behavior.
+scenarios from requirements, writing, reviewing, or auditing Python tests,
+deciding E2E vs integration vs unit coverage, testing Celery or Redis behavior,
+configuring Celery for production behavior, or sorting out hardcoded constants,
+config values, and secrets.
 
 #### Skills
 
 | Skill | Description |
 | --- | --- |
 | `celery-expert` | Configure Celery tasks, workers, retries, schedules, performance, and security. |
-| `tests-manager` | Own Python test-first development and test craft: red-green-refactor, plan scenarios, and write pytest E2E, integration, and unit tests with focused references. |
+| `constants-placement` | Decide where each hardcoded value belongs (its module, a shared `constants.py`, a pydantic-settings field, or `.env` for secrets) and move it, merging duplicates and keeping `.env` out of git. |
+| `tests-manager` | Write, review, or audit pytest tests: red-green-refactor, scenario planning, E2E, integration, and unit tests, independent review of new tests, and evidence-first pruning of low-value ones. |
 
 #### Agents
 
 | Agent | Description |
 | --- | --- |
-| `integration-test-writer` | Write endpoint and real-wiring integration tests. |
+| `test-assessor` | Judge one lane of tests in review, audit, or recheck mode and return a ledger; read-only. |
 | `test-scenario-planner` | Derive requirement-linked scenarios and corner cases before coverage routing. |
-| `test-runner` | Run focused pytest or `uv run pytest` commands. |
-| `test-unit-reviewer` | Review unit tests for quality, coverage, and patterns. |
-| `unit-test-writer` | Write focused unit tests with mocks, fixtures, and factories. |
+| `test-writer` | Write pytest tests at one assigned level: unit, integration, or E2E. |
 
 ### `dev-workflow`
 
@@ -399,32 +410,66 @@ session handoffs, or a designed multi-agent team.
 
 <details>
 <summary>
-Research wiki and Obsidian vault workflows for agent-maintained notes.
+arXiv papers, grounded citations, an LLM-maintained wiki, and Obsidian notes.
 </summary>
 
-**Use when:** you want to create or query an interlinked research wiki, ingest
-sources into a knowledge base, lint wiki health, or work with Obsidian notes.
+**Use when:** you want to find arXiv papers, cite fetched sources with
+verifiable inline citations, create or query an interlinked research wiki,
+ingest sources into a knowledge base, lint wiki health, or work with Obsidian
+notes.
 
 **Origin:** ports MIT-licensed skills from
 [NousResearch/hermes-agent](https://github.com/NousResearch/hermes-agent):
-[`llm-wiki`](https://raw.githubusercontent.com/NousResearch/hermes-agent/refs/heads/main/skills/research/llm-wiki/SKILL.md)
+[`arxiv`](https://github.com/NousResearch/hermes-agent/tree/main/skills/research/arxiv),
+[`grounded-citations`](https://github.com/NousResearch/hermes-agent/tree/main/skills/research/grounded-citations),
+[`llm-wiki`](https://github.com/NousResearch/hermes-agent/tree/main/skills/research/llm-wiki),
 and
-[`obsidian`](https://raw.githubusercontent.com/NousResearch/hermes-agent/refs/heads/main/skills/note-taking/obsidian/SKILL.md).
+[`obsidian`](https://github.com/NousResearch/hermes-agent/tree/main/skills/note-taking/obsidian).
 
 #### Skills
 
 | Skill | Description |
 | --- | --- |
-| `llm-wiki` | Build, query, ingest into, and lint an interlinked Markdown research wiki inspired by Andrej Karpathy's LLM Wiki pattern. |
+| `arxiv` | Search arXiv by keyword, author, category, or ID; generate BibTeX; look up citations and related papers via Semantic Scholar. |
+| `grounded-citations` | Cite fetched sources inline with a ledger that assigns stable ids, renders Sources blocks, and verifies drafts and verbatim evidence. |
+| `llm-wiki` | Build, query, ingest into, and lint an interlinked Markdown research wiki inspired by Andrej Karpathy's LLM Wiki pattern, with Wikipedia-style pages and an ADHD-friendly reader frame. |
 | `obsidian` | Read, search, create, append to, and edit notes in a filesystem-first Obsidian vault. |
+
+</details>
+
+### `web`
+
+<details>
+<summary>
+Reddit, RSS/Atom feeds, blogs, YouTube, X, and blocked-page recovery.
+</summary>
+
+**Use when:** you want to read Reddit from a server, read or discover feeds,
+track many blogs, summarize a YouTube video, work with the X API, or recover a
+page that fails to fetch.
+
+**Origin:** ports MIT-licensed skills from
+[NousResearch/hermes-agent](https://github.com/NousResearch/hermes-agent).
+
+#### Skills
+
+| Skill | Description |
+| --- | --- |
+| `reddit-reading` | Read subreddits, search, threads, and user activity without a browser or login. |
+| `rss-feeds` | Read RSS, Atom, and JSON feeds and discover the feed behind a page URL. |
+| `blogwatcher` | Track many blogs and feeds with read/unread state through `blogwatcher-cli`. |
+| `youtube-content` | Turn YouTube transcripts into summaries, chapters, threads, or blog posts. |
+| `xurl` | Post, search, read timelines, send DMs, and call any X API v2 endpoint through the official `xurl` CLI. |
+| `blocked-page-recovery` | Recover pages that fail with 403/429, paywalls, or bot walls from archives and alternate routes. |
 
 </details>
 
 ### `ai-assistant-ops`
 
 **Use when:** you want to audit assistant instructions, improve AGENTS.md files,
-improve existing skills, adapt skills for assistant harnesses, capture useful
-session insights, review documentation language, or reduce Markdown bloat.
+improve existing skills, adapt skills for assistant harnesses, find overlapping
+skills and MCP tools, capture useful session insights, review documentation
+language, or reduce Markdown bloat.
 
 #### Skills
 
@@ -435,8 +480,9 @@ session insights, review documentation language, or reduce Markdown bloat.
 | `ai-insights-hunter` | Extract reusable decisions, patterns, and preferences from a session. |
 | `ai-setup-audit` | Audit assistant configuration files for conflicts and bloat. |
 | `docs-language-review` | Review or rewrite Markdown documentation using plain-language and cognitive-accessibility standards. |
+| `harness-overlap-audit` | Map skills, MCP tools, and skill agents whose scope overlaps, in a Markdown report with Venn diagrams. |
 | `improve-skill` | Improve existing skills through eval feedback, baseline comparison, iteration, and trigger checks. |
-| `md-bloat-hunter` | Trim redundancy, verbosity, and filler in Markdown. |
+| `md-bloat-hunter` | Trim redundancy, verbosity, and filler in Markdown and `.md.j2` templates until the smallest model still passes your evals. |
 
 #### Skill Agents
 
@@ -446,10 +492,9 @@ session insights, review documentation language, or reduce Markdown bloat.
 | `ai-insights-hunter` | `patterns-hunter` | Finds recurring workflow and implementation patterns. |
 | `ai-insights-hunter` | `preferences-hunter` | Identifies user preferences worth preserving. |
 | `ai-insights-hunter` | `project-context-hunter` | Captures project-specific context and constraints. |
-| `md-bloat-hunter` | `directory-redundancy-detector` | Finds repeated guidance across Markdown directories. |
 | `md-bloat-hunter` | `file-orchestrator` | Coordinates per-file Markdown cleanup. |
 | `md-bloat-hunter` | `filler-eliminator` | Removes low-value filler language. |
-| `md-bloat-hunter` | `redundancy-detector` | Spots repeated content inside files. |
+| `md-bloat-hunter` | `redundancy-detector` | Spots repeated content inside one agent's context, within a file or across the files it loads together. |
 | `md-bloat-hunter` | `size-budget-reporter` | Reports Markdown size and token budget status. |
 | `md-bloat-hunter` | `verbosity-pruner` | Compresses overlong explanations. |
 | `md-bloat-hunter` | `vocab-compressor` | Replaces inflated wording with direct wording. |
