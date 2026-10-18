@@ -45,6 +45,7 @@ from plugin_maintenance.errors import (
     PlaceholderNameError,
     PlacementError,
     PlainScalarError,
+    SmallestModelError,
     TemplateConflictError,
     TemplateRenderError,
     UndocumentedFormError,
@@ -125,6 +126,16 @@ class ActionMap(Mapping):
         return len(self._names)
 
 
+def _check_assistant(matrix_path: Path, assistant_key: str, assistant: dict) -> None:
+    """Require one `{name}` invocation wrapper and a named smallest model."""
+    wrapper = assistant.get("invocation_wrapper")
+    if not isinstance(wrapper, str) or wrapper.count("{name}") != 1:
+        raise InvocationWrapperError(matrix_path, assistant_key)
+    model = assistant.get("smallest_model")
+    if not isinstance(model, str) or not model:
+        raise SmallestModelError(matrix_path, assistant_key)
+
+
 def load_matrix(matrix_path: Path) -> dict:
     """Load the harness action matrix and validate its shape."""
     try:
@@ -137,9 +148,7 @@ def load_matrix(matrix_path: Path) -> dict:
     if not isinstance(assistants, dict) or not assistants or not isinstance(actions, dict):
         raise ActionMatrixShapeError(matrix_path)
     for assistant_key, assistant in assistants.items():
-        wrapper = assistant.get("invocation_wrapper")
-        if not isinstance(wrapper, str) or wrapper.count("{name}") != 1:
-            raise InvocationWrapperError(matrix_path, assistant_key)
+        _check_assistant(matrix_path, assistant_key, assistant)
     for action_key, action in actions.items():
         if not isinstance(action.get("callable"), bool):
             raise CallableFlagError(matrix_path, action_key)
@@ -414,6 +423,7 @@ def _render_context(repo_root: Path, harness: str, matrix_file: Path) -> RenderC
         )
     variables = {
         "harness": harness,
+        "smallest_model": matrix["assistants"][harness]["smallest_model"],
         "actions": ActionMap(
             {
                 action_key: action[harness]["name"]

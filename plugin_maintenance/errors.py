@@ -45,6 +45,18 @@ class ActionMatrixShapeError(BuildError):
 
 
 @dataclass(eq=False)
+class SmallestModelError(BuildError):
+    """An assistant's smallest model is missing or not a non-empty string."""
+
+    path: Path
+    assistant: str
+
+    def __str__(self) -> str:
+        """Name the assistant whose model is missing."""
+        return f"malformed action matrix {self.path}: assistant '{self.assistant}' needs a non-empty smallest_model"
+
+
+@dataclass(eq=False)
 class InvocationWrapperError(BuildError):
     """An assistant's invocation wrapper is missing or lacks exactly one `{name}` slot."""
 
