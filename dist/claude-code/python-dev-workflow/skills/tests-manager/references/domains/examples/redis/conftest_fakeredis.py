@@ -1,7 +1,7 @@
 """Example conftest.py for unit tests using fakeredis (no real Redis needed)."""
 
-import pytest
 import fakeredis
+import pytest
 
 
 @pytest.fixture

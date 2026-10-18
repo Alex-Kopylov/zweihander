@@ -5,6 +5,7 @@ from pathlib import Path
 
 import pytest
 from jsonschema import Draft202012Validator
+from jsonschema.protocols import Validator
 
 SCHEMAS = ("scenarios", "ledger", "handoff")
 EVIDENCE = (
@@ -22,7 +23,7 @@ def schemas_dir(rendered: Path) -> Path:
     return rendered / "python-dev-workflow" / "skills" / "tests-manager" / "references" / "schemas"
 
 
-def validator(schemas_dir: Path, name: str) -> Draft202012Validator:
+def validator(schemas_dir: Path, name: str) -> Validator:
     schema = json.loads((schemas_dir / f"{name}.schema.json").read_text(encoding="utf-8"))
     return Draft202012Validator(schema)
 

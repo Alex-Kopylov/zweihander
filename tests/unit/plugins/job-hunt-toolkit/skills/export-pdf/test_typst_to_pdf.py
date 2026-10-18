@@ -13,22 +13,13 @@ from pathlib import Path
 
 import pytest
 
-
-pytestmark = pytest.mark.skipif(
-    shutil.which("typst") is None, reason="typst not installed"
-)
+pytestmark = pytest.mark.skipif(shutil.which("typst") is None, reason="typst not installed")
 
 
 @pytest.fixture
 def script(rendered: Path) -> Path:
-    return (
-        rendered
-        / "job-hunt-toolkit"
-        / "skills"
-        / "export-pdf"
-        / "scripts"
-        / "typst-to-pdf.sh"
-    )
+    return rendered / "job-hunt-toolkit" / "skills" / "export-pdf" / "scripts" / "typst-to-pdf.sh"
+
 
 CV = """\
 #set document(title: "CV", author: "Jane Doe")
@@ -37,9 +28,7 @@ Senior ML Engineer. Shipped ranking models in production.
 """
 
 
-def run(
-    script: Path, typ: Path, pdf: Path, **env_overrides: str
-) -> subprocess.CompletedProcess:
+def run(script: Path, typ: Path, pdf: Path, **env_overrides: str) -> subprocess.CompletedProcess:
     env = {**os.environ, **env_overrides}
     return subprocess.run(
         ["bash", str(script), str(typ), str(pdf)],

@@ -8,26 +8,30 @@ import json
 from pathlib import Path
 from typing import Any
 
+DEFAULT_MATRIX = Path(__file__).resolve().parents[1] / "references" / "harness-action-matrix.json"
 
-DEFAULT_MATRIX = (
-    Path(__file__).resolve().parents[1]
-    / "references"
-    / "harness-action-matrix.json"
-)
+
+class UnknownLookupError(SystemExit):
+    """The action or assistant is not in the matrix; exits naming what is."""
+
+    def __init__(self, action: str, assistant: str, matrix: dict[str, Any]) -> None:
+        """Build the exit message from the matrix's available names."""
+        available_actions = ", ".join(sorted(matrix.get("actions", {})))
+        available_assistants = ", ".join(sorted(matrix.get("assistants", {})))
+        super().__init__(
+            f"Unknown lookup {action!r}/{assistant!r}. "
+            f"Actions: {available_actions}. Assistants: {available_assistants}."
+        )
 
 
 def load_entry(matrix_path: Path, action: str, assistant: str) -> dict[str, Any]:
+    """Return the matrix entry for one action and assistant, with its invocation."""
     matrix = json.loads(matrix_path.read_text(encoding="utf-8"))
     try:
         action_entry = matrix["actions"][action]
         assistant_entry = action_entry[assistant]
     except KeyError as exc:
-        available_actions = ", ".join(sorted(matrix.get("actions", {})))
-        available_assistants = ", ".join(sorted(matrix.get("assistants", {})))
-        raise SystemExit(
-            f"Unknown lookup {action!r}/{assistant!r}. "
-            f"Actions: {available_actions}. Assistants: {available_assistants}."
-        ) from exc
+        raise UnknownLookupError(action, assistant, matrix) from exc
 
     entry = {
         "action": action,
@@ -43,6 +47,7 @@ def load_entry(matrix_path: Path, action: str, assistant: str) -> dict[str, Any]
 
 
 def main() -> None:
+    """Print the requested entry as JSON."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--matrix", type=Path, default=DEFAULT_MATRIX)
     parser.add_argument("--action", required=True)

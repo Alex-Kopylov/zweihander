@@ -13,12 +13,12 @@ import os
 
 import pytest
 
-
 pytest_plugins = ("celery.contrib.pytest",)
 
 
 @pytest.fixture(scope="session")
 def celery_config():
+    """Broker, backend and serialization for the embedded test worker."""
     return {
         "broker_url": os.getenv("CELERY_BROKER_URL", "memory://"),
         "result_backend": os.getenv(
@@ -33,4 +33,5 @@ def celery_config():
 
 @pytest.fixture(scope="session")
 def celery_worker_parameters():
+    """Give the embedded worker time to finish in-flight tasks on shutdown."""
     return {"shutdown_timeout": 15}

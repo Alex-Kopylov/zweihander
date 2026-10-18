@@ -4,7 +4,6 @@ from pathlib import Path
 
 import pytest
 
-
 SLUG_RE = "^[a-z0-9]+(?:_[a-z0-9]+)*$"
 # The reference docs express the same rule as a bash `[[ =~ ]]` test, and bash
 # ERE has no non-capturing group.
@@ -19,6 +18,15 @@ def plugin(rendered: Path) -> Path:
 @pytest.fixture
 def export_pdf_skill(plugin: Path) -> Path:
     return plugin / "skills/export-pdf/SKILL.md"
+
+
+@pytest.mark.parametrize("skill_name", ["resume-tailoring", "cover-letter-writing"])
+def test_tailoring_review_reference_ships_with_each_skill(plugin: Path, skill_name: str) -> None:
+    skill_dir = plugin / "skills" / skill_name
+    review_link = "../../references/tailoring-review.md"
+
+    assert f"]({review_link})" in (skill_dir / "SKILL.md").read_text(encoding="utf-8")
+    assert (skill_dir / review_link).resolve().is_file()
 
 
 def test_canonical_layout_is_jobs_company(plugin: Path) -> None:
@@ -82,7 +90,5 @@ def test_no_browser_pipeline_remains(plugin: Path, export_pdf_skill: Path) -> No
         if not path.is_file() or path in allowed:
             continue
         text = path.read_text(encoding="utf-8", errors="ignore").lower()
-        offenders += [
-            f"{path.relative_to(plugin)}: {term}" for term in banned if term in text
-        ]
+        offenders += [f"{path.relative_to(plugin)}: {term}" for term in banned if term in text]
     assert not offenders, offenders

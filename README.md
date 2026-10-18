@@ -19,10 +19,13 @@ tools.
 
 ## Selected Projects
 
-- [Zweihander](https://github.com/Alex-Kopylov/zweihander) — an agent-plugin marketplace for Codex and Claude Code.
-- [AI-Ready Modern Python Template](https://github.com/Alex-Kopylov/ai-ready-modern-python-template) — a practical starting point for AI-ready Python projects.
-- [GH Babysitter](https://github.com/Alex-Kopylov/gh-babysitter) — GitHub workflow automation for keeping work moving.
-
+- [Zweihander](https://github.com/Alex-Kopylov/zweihander) — an agent-plugin
+  marketplace for Codex and Claude Code.
+- [AI-Ready Modern Python
+  Template](https://github.com/Alex-Kopylov/ai-ready-modern-python-template) — a
+  practical starting point for AI-ready Python projects.
+- [GH Babysitter](https://github.com/Alex-Kopylov/gh-babysitter) — GitHub
+  workflow automation for keeping work moving.
 
 ## Temporary files
 
@@ -53,6 +56,15 @@ kanban
   research[research]
     research_obsidian[obsidian]
     research_llm_wiki[llm-wiki]
+    research_arxiv[arxiv]
+    research_grounded_citations[grounded-citations]
+  web[web]
+    web_reddit_reading[reddit-reading]
+    web_rss_feeds[rss-feeds]
+    web_blogwatcher[blogwatcher]
+    web_youtube_content[youtube-content]
+    web_xurl[xurl]
+    web_blocked_page_recovery[blocked-page-recovery]
   os_tools[os-tools]
     os_loop_macos[loop_macos]
 ```
@@ -98,7 +110,6 @@ kanban
     dw_systematic_debugging[systematic-debugging]
     dw_ticket_branch[ticket-branch]
     dw_ticket_comment_status[ticket-comment-status]
-    dw_using_git_worktrees[using-git-worktrees]
     dw_verification_before_completion[verification-before-completion]
     dw_version_bumper[version-bumper]
     dw_yolo_push[yolo-push]
@@ -133,8 +144,8 @@ Use this README when you want to install the marketplace, install a plugin, or
 choose what each plugin is for. Developer and maintenance notes live in
 `AGENTS.md`.
 
-Third-party provenance and license notices live in
-`third_party/`.
+This repository is licensed under Apache-2.0; see `LICENSE`. Third-party
+provenance and license notices live in `third_party/`.
 
 ## Quick Install
 
@@ -208,16 +219,16 @@ claude plugin marketplace update zweihander
 **Use when:** you need to inspect Langfuse data, create or update evaluation
 assets, compare experiment runs, or manage dashboard widgets.
 
-**Skills**
+#### Skills
 
 | Skill | Description |
-|---|---|
+| --- | --- |
 | `langfuse` | Unified Langfuse skill for data discovery, metrics, datasets, experiment runs, evaluators, dashboard widgets, and dashboard management. Former task-specific workflows are bundled as internal references. |
 
-**Agents**
+#### Agents
 
 | Agent | Description |
-|---|---|
+| --- | --- |
 | `langfuse-data-explorer` | Read-only discovery for scores, traces, models, and metrics. |
 | `langfuse-dataset-expert` | Dataset creation, item management, and schema design. |
 | `langfuse-eval-manager` | Evaluator CRUD, filters, and status management. |
@@ -229,33 +240,36 @@ assets, compare experiment runs, or manage dashboard widgets.
 **Use when:** you have a running API service and want the assistant to discover
 available endpoints or inspect operation details.
 
-**Skills**
+#### Skills
 
 | Skill | Description |
-|---|---|
+| --- | --- |
 | `openapi-list` | List available OpenAPI routes. |
 | `openapi-inspect` | Inspect endpoint inputs, outputs, and schema details. |
 
 ### `llm-application-dev`
 
 <details>
-<summary>LLM application design, agent pattern selection, and schema-guided reasoning patterns.</summary>
+<summary>
+LLM application design, agent pattern selection, and schema-guided reasoning
+patterns.
+</summary>
 
 **Use when:** you need to choose LLM workflow patterns, compare agent
 architecture trade-offs, or design structured schemas that guide model
 reasoning.
 
-**Skills**
+#### Skills
 
 | Skill | Description |
-|---|---|
+| --- | --- |
 | `select-agent-patterns` | Choose LLM workflow and agent design patterns by decomposing a problem into stages and comparing candidates. Based on [A Two-Dimensional Framework for AI Agent Design Patterns](https://arxiv.org/pdf/2605.13850). |
 | `schema-guided-reasoning` | Design structured Pydantic schemas that guide LLM reasoning. |
 
-**Skill Agents**
+#### Skill Agents
 
 | Skill | Agent | Description |
-|---|---|---|
+| --- | --- | --- |
 | `select-agent-patterns` | `pattern-fit-reviewer` | Independently review one candidate pattern for one workflow stage. |
 
 </details>
@@ -267,17 +281,17 @@ scenarios from requirements, writing, reviewing, or auditing Python tests,
 deciding E2E vs integration vs unit coverage, testing Celery or Redis behavior,
 or configuring Celery for production behavior.
 
-**Skills**
+#### Skills
 
 | Skill | Description |
-|---|---|
+| --- | --- |
 | `celery-expert` | Configure Celery tasks, workers, retries, schedules, performance, and security. |
 | `tests-manager` | Write, review, or audit pytest tests: red-green-refactor, scenario planning, E2E, integration, and unit tests, independent review of new tests, and evidence-first pruning of low-value ones. |
 
-**Agents**
+#### Agents
 
 | Agent | Description |
-|---|---|
+| --- | --- |
 | `test-assessor` | Judge one lane of tests in review, audit, or recheck mode and return a ledger; read-only. |
 | `test-scenario-planner` | Derive requirement-linked scenarios and corner cases before coverage routing. |
 | `test-writer` | Write pytest tests at one assigned level: unit, integration, or E2E. |
@@ -293,10 +307,10 @@ MIT-licensed [Superpowers](https://github.com/obra/superpowers) project by
 Jesse Vincent. See `third_party/THIRD_PARTY_NOTICES.md` for skill-by-skill
 provenance.
 
-**Skills**
+#### Skills
 
 | Skill | Description |
-|---|---|
+| --- | --- |
 | `approve-pr` | Approve and merge PRs with current checks and policy gates. |
 | `commit` | Create single-line Conventional Commits. |
 | `create-pr` | Open pull requests from the current branch. |
@@ -311,15 +325,14 @@ provenance.
 | `systematic-debugging` | Investigate bugs through evidence, patterns, hypotheses, and fixes. |
 | `ticket-branch` | Create a git branch from a ticket ID or URL. |
 | `ticket-comment-status` | Post status updates to tickets or work items. |
-| `using-git-worktrees` | Set up isolated workspace branches for feature work. |
 | `verification-before-completion` | Verify claims before reporting work as complete or fixed. |
 | `version-bumper` | Bump versions in plugin and package metadata. |
 | `yolo-push` | Slash-command gated commit, PR, CI, merge, CD, and post-merge cleanup workflow. |
 
-**Agents**
+#### Agents
 
 | Agent | Description |
-|---|---|
+| --- | --- |
 | `ambiguity-contradiction-hunter` | Finds hidden contradictions from vague language. |
 | `release-manager` | Coordinates version bump and commit workflows. |
 | `structural-contradiction-hunter` | Finds deeper logical and scope conflicts. |
@@ -328,7 +341,10 @@ provenance.
 ### `run-and-verify-app`
 
 <details>
-<summary>Runtime app launch, verification, and run-skill generation inspired by Claude Code.</summary>
+<summary>
+Runtime app launch, verification, and run-skill generation inspired by Claude
+Code.
+</summary>
 
 **Use when:** you want to launch an app, verify a change against the
 running app instead of just tests, or record a reusable build and launch
@@ -342,7 +358,7 @@ This is an opinionated adaptation, not a 1-to-1 port. It reflects this
 marketplace's preferences for runtime evidence and reusable project run skills.
 
 | Skill | Purpose |
-|---|---|
+| --- | --- |
 | `run` | Launch and drive your app to see a change working. |
 | `verify` | Build and run your app to confirm a code change does what it should, without falling back to tests or type checks. |
 | `run-skill-generator` | Teach `run` and `verify` how to build and launch your project by recording a verified project-specific recipe. |
@@ -356,25 +372,27 @@ Generate and validate Mermaid diagrams with synced syntax references.
 **Use when:** you want to create Mermaid diagrams from requirements or validate
 Mermaid code blocks with the Mermaid CLI.
 
-**Skills**
+#### Skills
 
 | Skill | Description |
-|---|---|
+| --- | --- |
 | `mermaid` | Generate Mermaid diagrams from user requirements with local syntax references. |
 | `mermaid-lint` | Validate Mermaid code blocks with `mmdc` and report lint status and errors. |
 
 ### `work-session-tools`
 
 <details>
-<summary>Productivity, orchestration, and handoffs within an assistant session.</summary>
+<summary>
+Productivity, orchestration, and handoffs within an assistant session.
+</summary>
 
 **Use when:** you want daily notes, task tracking, structured interviews,
 session handoffs, or a designed multi-agent team.
 
-**Skills**
+#### Skills
 
 | Skill | Description |
-|---|---|
+| --- | --- |
 | `create-team` | Design a multi-agent team and handoff plan. |
 | `daily` | Generate a daily note from project activity. |
 | `handoff` | Compact the current conversation for another agent. |
@@ -387,23 +405,58 @@ session handoffs, or a designed multi-agent team.
 ### `research`
 
 <details>
-<summary>Research wiki and Obsidian vault workflows for agent-maintained notes.</summary>
+<summary>
+arXiv papers, grounded citations, an LLM-maintained wiki, and Obsidian notes.
+</summary>
 
-**Use when:** you want to create or query an interlinked research wiki, ingest
-sources into a knowledge base, lint wiki health, or work with Obsidian notes.
+**Use when:** you want to find arXiv papers, cite fetched sources with
+verifiable inline citations, create or query an interlinked research wiki,
+ingest sources into a knowledge base, lint wiki health, or work with Obsidian
+notes.
 
 **Origin:** ports MIT-licensed skills from
 [NousResearch/hermes-agent](https://github.com/NousResearch/hermes-agent):
-[`llm-wiki`](https://raw.githubusercontent.com/NousResearch/hermes-agent/refs/heads/main/skills/research/llm-wiki/SKILL.md)
+[`arxiv`](https://github.com/NousResearch/hermes-agent/tree/main/skills/research/arxiv),
+[`grounded-citations`](https://github.com/NousResearch/hermes-agent/tree/main/skills/research/grounded-citations),
+[`llm-wiki`](https://github.com/NousResearch/hermes-agent/tree/main/skills/research/llm-wiki),
 and
-[`obsidian`](https://raw.githubusercontent.com/NousResearch/hermes-agent/refs/heads/main/skills/note-taking/obsidian/SKILL.md).
+[`obsidian`](https://github.com/NousResearch/hermes-agent/tree/main/skills/note-taking/obsidian).
 
-**Skills**
+#### Skills
 
 | Skill | Description |
-|---|---|
-| `llm-wiki` | Build, query, ingest into, and lint an interlinked Markdown research wiki inspired by Andrej Karpathy's LLM Wiki pattern. |
+| --- | --- |
+| `arxiv` | Search arXiv by keyword, author, category, or ID; generate BibTeX; look up citations and related papers via Semantic Scholar. |
+| `grounded-citations` | Cite fetched sources inline with a ledger that assigns stable ids, renders Sources blocks, and verifies drafts and verbatim evidence. |
+| `llm-wiki` | Build, query, ingest into, and lint an interlinked Markdown research wiki inspired by Andrej Karpathy's LLM Wiki pattern, with Wikipedia-style pages and an ADHD-friendly reader frame. |
 | `obsidian` | Read, search, create, append to, and edit notes in a filesystem-first Obsidian vault. |
+
+</details>
+
+### `web`
+
+<details>
+<summary>
+Reddit, RSS/Atom feeds, blogs, YouTube, X, and blocked-page recovery.
+</summary>
+
+**Use when:** you want to read Reddit from a server, read or discover feeds,
+track many blogs, summarize a YouTube video, work with the X API, or recover a
+page that fails to fetch.
+
+**Origin:** ports MIT-licensed skills from
+[NousResearch/hermes-agent](https://github.com/NousResearch/hermes-agent).
+
+#### Skills
+
+| Skill | Description |
+| --- | --- |
+| `reddit-reading` | Read subreddits, search, threads, and user activity without a browser or login. |
+| `rss-feeds` | Read RSS, Atom, and JSON feeds and discover the feed behind a page URL. |
+| `blogwatcher` | Track many blogs and feeds with read/unread state through `blogwatcher-cli`. |
+| `youtube-content` | Turn YouTube transcripts into summaries, chapters, threads, or blog posts. |
+| `xurl` | Post, search, read timelines, send DMs, and call any X API v2 endpoint through the official `xurl` CLI. |
+| `blocked-page-recovery` | Recover pages that fail with 403/429, paywalls, or bot walls from archives and alternate routes. |
 
 </details>
 
@@ -413,10 +466,10 @@ and
 improve existing skills, adapt skills for assistant harnesses, capture useful
 session insights, review documentation language, or reduce Markdown bloat.
 
-**Skills**
+#### Skills
 
 | Skill | Description |
-|---|---|
+| --- | --- |
 | `adapt-skill-for-ai-harness` | Adapt explicitly named skills using a JSON assistant action matrix and target-specific harness references. |
 | `agents-md-improver` | Audit and improve repository AGENTS.md files. |
 | `ai-insights-hunter` | Extract reusable decisions, patterns, and preferences from a session. |
@@ -425,18 +478,17 @@ session insights, review documentation language, or reduce Markdown bloat.
 | `improve-skill` | Improve existing skills through eval feedback, baseline comparison, iteration, and trigger checks. |
 | `md-bloat-hunter` | Trim redundancy, verbosity, and filler in Markdown. |
 
-**Skill Agents**
+#### Skill Agents
 
 | Skill | Agent | Description |
-|---|---|---|
+| --- | --- | --- |
 | `ai-insights-hunter` | `decisions-hunter` | Extracts durable decisions from a conversation. |
 | `ai-insights-hunter` | `patterns-hunter` | Finds recurring workflow and implementation patterns. |
 | `ai-insights-hunter` | `preferences-hunter` | Identifies user preferences worth preserving. |
 | `ai-insights-hunter` | `project-context-hunter` | Captures project-specific context and constraints. |
-| `md-bloat-hunter` | `directory-redundancy-detector` | Finds repeated guidance across Markdown directories. |
 | `md-bloat-hunter` | `file-orchestrator` | Coordinates per-file Markdown cleanup. |
 | `md-bloat-hunter` | `filler-eliminator` | Removes low-value filler language. |
-| `md-bloat-hunter` | `redundancy-detector` | Spots repeated content inside files. |
+| `md-bloat-hunter` | `redundancy-detector` | Spots repeated content inside one agent's context, within a file or across the files it loads together. |
 | `md-bloat-hunter` | `size-budget-reporter` | Reports Markdown size and token budget status. |
 | `md-bloat-hunter` | `verbosity-pruner` | Compresses overlong explanations. |
 | `md-bloat-hunter` | `vocab-compressor` | Replaces inflated wording with direct wording. |
@@ -445,20 +497,20 @@ session insights, review documentation language, or reduce Markdown bloat.
 
 Operating-system utilities for local machine automation.
 
-**Skills**
+#### Skills
 
 | Skill | Description |
-|---|---|
+| --- | --- |
 | `loop_macos` | Schedule persistent macOS launchd commands or prompts. |
 
 ### `cloud-storage-tools`
 
 Cloud storage workflows for MEGA-style user-file storage tools.
 
-**Skills**
+#### Skills
 
 | Skill | Description |
-|---|---|
+| --- | --- |
 | `mega-cmd` | Manage encrypted MEGA storage, links, sync, search, and backups. |
 
 ### `job-hunt-toolkit`
@@ -466,10 +518,10 @@ Cloud storage workflows for MEGA-style user-file storage tools.
 **Use when:** you want a structured job application workspace, tailored resumes,
 Typst-to-PDF export, or a final pre-send checklist.
 
-**Skills**
+#### Skills
 
 | Skill | Description |
-|---|---|
+| --- | --- |
 | `cover-letter-writing` | Write an evidence-backed cover letter as Typst and PDF. |
 | `export-pdf` | Compile Typst CVs to PDF with `typst compile`. |
 | `init-workspace` | Scaffold the job application workspace. |
@@ -483,18 +535,26 @@ Typst-to-PDF export, or a final pre-send checklist.
 These are useful companion plugin and skill collections to consider alongside
 this marketplace:
 
-- [browser-harness](https://github.com/browser-use/browser-harness) - direct browser control through CDP.
-- [plannotator](https://github.com/backnotprop/plannotator) - browser-based plan review, annotation, and visual explanation workflows.
-- [destructive_command_guard](https://github.com/Dicklesworthstone/destructive_command_guard) - guardrails for destructive shell commands.
-- [ponytail](https://github.com/DietrichGebert/ponytail/) - lazy senior developer mode that favors the simplest solution that works.
-- [worktrunk](https://github.com/max-sixty/worktrunk) - worktree and branch workflow support.
-- [ralphex](https://github.com/umputun/ralphex) - AI-assisted development planning and project workflow tools.
-- [wshobson/agents](https://github.com/wshobson/agents) - Claude Code workflow skills for Python, LLM applications, debugging, testing, and PR work.
+- [browser-harness](https://github.com/browser-use/browser-harness) - direct
+  browser control through CDP.
+- [plannotator](https://github.com/backnotprop/plannotator) - browser-based plan
+  review, annotation, and visual explanation workflows.
+-
+  [destructive_command_guard](https://github.com/Dicklesworthstone/destructive_command_guard)
+  - guardrails for destructive shell commands.
+- [ponytail](https://github.com/DietrichGebert/ponytail/) - lazy senior
+  developer mode that favors the simplest solution that works.
+- [worktrunk](https://github.com/max-sixty/worktrunk) - worktree and branch
+  workflow support.
+- [ralphex](https://github.com/umputun/ralphex) - AI-assisted development
+  planning and project workflow tools.
+- [wshobson/agents](https://github.com/wshobson/agents) - Claude Code workflow
+  skills for Python, LLM applications, debugging, testing, and PR work.
 
 ## Runtime Support
 
 | Runtime | Marketplace metadata | Installed plugin source |
-|---|---|---|
+| --- | --- | --- |
 | Codex | `.agents/plugins/marketplace.json` | `dist/codex/<plugin-name>` |
 | Claude Code | `.claude-plugin/marketplace.json` | `dist/claude-code/<plugin-name>` |
 
@@ -504,5 +564,7 @@ so every runtime receives content in its own vocabulary.
 
 ## Official References
 
-- [Codex plugin marketplace CLI](https://developers.openai.com/codex/cli/reference#codex-plugin-marketplace)
-- [Claude Code plugin marketplaces](https://code.claude.com/docs/en/plugin-marketplaces)
+- [Codex plugin marketplace
+  CLI](https://developers.openai.com/codex/cli/reference#codex-plugin-marketplace)
+- [Claude Code plugin
+  marketplaces](https://code.claude.com/docs/en/plugin-marketplaces)

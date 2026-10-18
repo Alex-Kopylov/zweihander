@@ -1,0 +1,178 @@
+# prek hooks for code quality enforcement
+#
+# STRATEGY: mise owns fast/full lint task groups, while prek owns commit-time
+# guardrails. Checks that can block commits should also be represented in
+# `mise run lint-full` unless there is a documented exception.
+#
+# All tools are invoked through:
+#  - mise exec -- <tool>  (for system tools)
+#  - mise exec -- uv run <tool>  (for Python tools)
+#  - mise exec -- uv <command>   (for uv itself)
+#  - mise run <task>      (for multi-step tasks defined in mise.toml)
+#
+# This ensures:
+#  1. Tool versions stay managed by mise or uv, not hook-local environments
+#  2. Fast and full lint behavior stays visible in `mise.toml`
+#  3. Commit-time checks stay explicit and easy to audit
+#
+# Install: uv add --dev prek
+#   && uv run prek install --hook-type pre-commit --hook-type pre-push
+# Pre-push only: uv run prek install --hook-type pre-push
+# Run (repo-wide baseline): uv run prek run --all-files
+
+default_stages: [pre-commit, pre-push]
+
+# AI agent working files are not lint targets (gitleaks still covers them
+# via always_run below)
+# dist/ is build output rendered from plugins/; lint the source, not the copy.
+# dist/ is linted once, in CI - see the lint-dist step in .github/workflows/ci.yml.
+exclude: ^(\.claude|\.codex|\.cursor|\.gemini|dist)/|^(CLAUDE|AGENTS|GEMINI)\.md$
+
+repos:
+  - repo: local
+    hooks:
+      - id: gitleaks
+        name: gitleaks (secrets)
+        entry: mise exec -- gitleaks git --pre-commit --staged --redact --no-banner
+        language: system
+        pass_filenames: false
+        always_run: true
+
+      - id: uv-lock-check
+        name: uv (lock check)
+        entry: mise exec -- uv lock --check
+        language: system
+        files: ^(pyproject.toml|uv.lock)$
+        pass_filenames: false
+        stages: [pre-commit]
+
+      - id: ruff-format
+        name: ruff (format)
+        entry: mise exec -- uv run ruff format --force-exclude
+        language: system
+        types: [python]
+
+      - id: ruff-check
+        name: ruff (lint)
+        entry: mise exec -- uv run ruff check --fix --force-exclude
+        language: system
+        types: [python]
+
+      - id: flake8
+        name: flake8 (async + Pydantic patterns)
+        entry: mise exec -- uv run flake8
+        language: system
+        types: [python]
+        exclude: ^(tests/|scripts/|docs/)
+
+      - id: ty-check
+        name: ty (types)
+        entry: mise exec -- uv run ty check
+        language: system
+        types: [python]
+        exclude: ^(scripts/|docs/|plugins/)
+        require_serial: true
+
+      - id: ty-check-plugins
+        name: ty (plugin code, Python 3.11)
+        entry: mise exec -- uv run ty check --python-version 3.11
+        language: system
+        types: [python]
+        files: ^plugins/
+        require_serial: true
+
+  - repo: local
+    hooks:
+      - id: shellcheck
+        name: shellcheck
+        entry: mise exec -- shellcheck
+        language: system
+        types: [shell]
+
+      - id: yamllint
+        name: yamllint
+        entry: mise exec -- uv run yamllint -c .yamllint
+        language: system
+        types: [yaml]
+
+      - id: check-json
+        name: jaq (json syntax)
+        entry: mise exec -- jaq empty
+        language: system
+        types: [json]
+
+      - id: taplo-fmt
+        name: taplo (toml format)
+        entry: mise exec -- taplo fmt
+        language: system
+        types: [toml]
+
+      - id: taplo-lint
+        name: taplo (toml)
+        entry: mise exec -- taplo lint
+        language: system
+        types: [toml]
+
+      - id: check-jsonschema-github-workflows
+        name: check-jsonschema (GitHub Workflows)
+        entry: mise exec -- uv run check-jsonschema --builtin-schema github-workflows
+        language: system
+        files: ^\.github/workflows/.*\.ya?ml$
+
+      - id: check-jsonschema-dependabot
+        name: check-jsonschema (Dependabot)
+        entry: mise exec -- uv run check-jsonschema --builtin-schema vendor.dependabot
+        language: system
+        files: ^\.github/dependabot\.ya?ml$
+
+      - id: actionlint
+        name: actionlint
+        entry: mise exec -- actionlint
+        language: system
+        files: ^\.github/workflows/.*\.ya?ml$
+
+      - id: zizmor
+        name: zizmor (GitHub Actions security)
+        entry: mise exec -- zizmor
+        language: system
+        files: ^\.github/workflows/.*\.ya?ml$
+
+      - id: jscpd
+        name: jscpd (duplicates)
+        entry: mise exec -- jscpd --config .jscpd.json --threshold 5
+        language: system
+        files: \.(py|sh|yaml|yml|ts|tsx|js|jsx|mjs|cjs|css)$
+        pass_filenames: false
+        stages: [pre-commit]
+        verbose: true
+
+  - repo: local
+    hooks:
+      - id: deptry
+        name: deptry (dependency declarations)
+        entry: mise exec -- uv run deptry .
+        language: system
+        files: ^((plugin_maintenance|plugins)/.*\.py|pyproject\.toml|uv\.lock)$
+        pass_filenames: false
+        stages: [pre-commit]
+
+      - id: uv-audit
+        name: uv (audit)
+        entry: mise exec -- uv audit
+        language: system
+        files: ^(pyproject.toml|uv.lock)$
+        pass_filenames: false
+        stages: [pre-commit]
+
+      - id: typos
+        name: typos (spelling)
+        entry: mise exec -- typos
+        language: system
+        pass_filenames: false
+        stages: [pre-commit]
+
+# === INTENTIONAL EXCLUSIONS ===
+# The following tools are useful in editor, agent, or CI workflows but NOT in hook runs:
+# - markdownlint-cli2: pass_filenames=false causes it to scan gitignored docs/plans/
+#   (auto-generated reports that don't conform to style rules); removed to reduce noise
+# - vulture: High false positive rate, advisory-only (needs whitelist)

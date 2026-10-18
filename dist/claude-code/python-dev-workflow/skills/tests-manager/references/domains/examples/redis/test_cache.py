@@ -2,6 +2,7 @@
 
 import threading
 
+
 class TestCacheService:
     def test_set_and_get(self, cache_service):
         cache_service.set("test_key", "test_value")
@@ -47,10 +48,7 @@ class TestCacheConcurrency:
             for _ in range(increments_per_thread):
                 redis_client.incr("concurrent_counter")
 
-        threads = [
-            threading.Thread(target=increment_many)
-            for _ in range(num_threads)
-        ]
+        threads = [threading.Thread(target=increment_many) for _ in range(num_threads)]
         for t in threads:
             t.start()
         for t in threads:

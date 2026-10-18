@@ -37,20 +37,19 @@ Progress:
 - [ ] Step 8: If no CD/deployment is configured, pass the CD gate. Otherwise,
   monitor CD/deployment status until it reaches a terminal state.
 - [ ] Step 9: Once the PR is merged and CD reached a terminal state, resolve
-  PR facts and move to the main worktree, because removing the PR worktree
-  deletes the directory the session may be running in. Examples use GitHub
-  and reuse shell variables across blocks; substitute resolved values if the
-  shell does not persist them. `$PR` is the PR from Step 3.
+  PR facts. Examples use GitHub and reuse shell variables across blocks;
+  substitute resolved values if the shell does not persist them. `$PR` is the
+  PR from Step 3, and `SELF` is the worktree this session runs in.
 
   ```bash
   read -r N BRANCH HEAD STATE < <(gh pr view "$PR" \
     --json number,headRefName,headRefOid,state \
     --jq '[.number,.headRefName,.headRefOid,.state]|@tsv')
   DEFAULT=$(gh repo view --json defaultBranchRef --jq .defaultBranchRef.name)
+  SELF=$(git rev-parse --show-toplevel)
   MAIN=$(git worktree list --porcelain | awk 'NR==1{print substr($0,10)}')
   WT=$(git worktree list --porcelain | awk -v b="branch refs/heads/$BRANCH" \
     '/^worktree /{w=substr($0,10)} $0==b{print w}')
-  cd "$MAIN"
   ```
 
   Skip to Step 13 unless `STATE` is `MERGED` and `BRANCH` is not `DEFAULT`.
@@ -71,6 +70,7 @@ Progress:
   Only ignored files (`!!`) are lost irreversibly on delete. Modified or
   untracked files keep the worktree, missing local commits keep the local
   branch, and missing remote commits or based PRs keep the remote branch.
+  The session's own worktree is always kept, so its files are never lost.
 - [ ] Step 11: Ask the user exactly one question that lists the findings,
   with two options:
 
@@ -79,18 +79,24 @@ Progress:
 
   On keep, touch nothing. Skip the question when nothing is left to delete.
 - [ ] Step 12: On delete, run the guarded deletions. They re-check state, so
-  anything that appeared after the question is kept. `git branch -d` rejects
-  squash and rebase merges; the ancestor check replaces it.
+  anything that appeared after the question is kept. The session's own
+  worktree is detached instead of removed, because the session runs in it.
+  `git branch -d` checks the branch against its upstream, so it runs before
+  the remote branch is deleted.
 
   ```bash
+  cd "$MAIN"
   if [ "$WT" = "$MAIN" ]; then git switch "$DEFAULT"
-  elif [ -n "$WT" ]; then git worktree remove "$WT"; fi
-  git merge-base --is-ancestor "$BRANCH" "$HEAD" 2>/dev/null && git branch -D "$BRANCH"
+  elif [ "$WT" = "$SELF" ]; then git -C "$WT" switch --detach
+  elif [ -n "$WT" ]; then git worktree remove "$WT"; fi &&
+    { git branch -u "origin/$BRANCH" "$BRANCH"; git branch -d "$BRANCH"; }
   [ -z "$(gh pr list --base "$BRANCH" --state open --json number --jq '.[]')" ] &&
     git push origin --delete "$BRANCH" --force-with-lease="refs/heads/$BRANCH:$HEAD"
   ```
 - [ ] Step 13: Report the final CD status, deployment URL or environment when
-  available, any failed stage logs or links, and the cleanup result.
+  available, any failed stage logs or links, and the cleanup result. For a
+  detached session worktree, report its path and that
+  `git worktree remove <path>` removes it once the session has ended.
 
 ## Non-Negotiable Stops
 
@@ -102,7 +108,8 @@ Progress:
   configured; otherwise report CD as not configured.
 - Delete nothing after the merge unless the user picks the Step 11 delete
   option; even then, never pass `--force` to `git worktree remove` or skip a
-  Step 12 guard.
+  Step 12 guard. When git refuses or the harness denies a deletion, keep that
+  item and report the message verbatim; never retry it in another form.
 
 ## Reporting
 

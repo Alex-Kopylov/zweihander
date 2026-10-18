@@ -5,7 +5,7 @@
   "author": {
     "name": "Alex Kopylov"
   },
-  "license": "UNLICENSED",
+  "license": "Apache-2.0",
   "skills": "./skills/",
   "interface": {
     "displayName": "Python Dev Workflow",

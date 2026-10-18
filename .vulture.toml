@@ -1,0 +1,4 @@
+[tool.vulture]
+min_confidence = 80
+paths = ["plugin_maintenance"]
+exclude = ["tests", ".venv"]

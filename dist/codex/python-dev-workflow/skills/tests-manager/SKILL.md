@@ -1,6 +1,6 @@
 ---
 name: tests-manager
-description: Use when writing, changing, reviewing, or auditing Python pytest tests, including TDD or red-green-refactor, deriving test scenarios from requirements, choosing E2E, integration, or unit coverage, mocks, fixtures, Celery or Redis tests, or finding low-value, duplicate, or implementation-coupled tests to prune.
+description: Orchestrates Python pytest work - writing tests test-first, reviewing new tests, and auditing existing suites for low-value tests. Use when doing TDD or red-green-refactor in Python, deriving test scenarios from requirements, choosing E2E, integration, or unit coverage, writing mocks, fixtures, Celery or Redis tests, reviewing pytest tests before they are accepted, or pruning low-value, duplicate, or implementation-coupled tests. Not for running an unchanged suite or for tests in languages other than Python.
 metadata:
   references:
     "references/workflows/write.md": "Load in the write pipeline before writing or changing tests."
@@ -111,6 +111,12 @@ test file belongs to exactly one lane; an assessor never picks its own.
 
 Dispatch with $spawn_agent. Give each agent only its own
 input, and the run directory path when it must know where its output goes.
+Issue parallel dispatches in one response, and have every result back before
+the next pipeline step.
+
+After the spawn_agent calls, call wait_agent for
+every spawned agent and stay in the turn until each one returns.
+
 
 | Role | Receives | Returns |
 |---|---|---|

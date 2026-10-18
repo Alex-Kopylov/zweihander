@@ -109,9 +109,7 @@ def text_files(root: Path) -> list[Path]:
     return files
 
 
-def test_metadata_paths_resolve_from_declaring_file(
-    plugin_root: Path, tests_manager_root: Path
-) -> None:
+def test_metadata_paths_resolve_from_declaring_file(plugin_root: Path, tests_manager_root: Path) -> None:
     """A metadata key names a runtime path, so it resolves in the shipped tree."""
     metadata_files = [
         tests_manager_root / "SKILL.md",
@@ -153,9 +151,7 @@ def test_relative_markdown_links_and_anchors_resolve(plugin_root: Path) -> None:
 def test_ledger_junk_enum_matches_junk_pattern_headings(tests_manager_root: Path) -> None:
     references = tests_manager_root / "references"
     ledger = json.loads((references / "schemas" / "ledger.schema.json").read_text(encoding="utf-8"))
-    junk_patterns = section(
-        (references / "rules" / "test-value.md").read_text(encoding="utf-8"), "Junk patterns"
-    )
+    junk_patterns = section((references / "rules" / "test-value.md").read_text(encoding="utf-8"), "Junk patterns")
 
     headings = re.findall(r"^### (.+)$", junk_patterns, re.M)
 
@@ -226,9 +222,7 @@ def test_tests_manager_owns_celery_testing_assets(tests_manager_root: Path) -> N
     assert not (celery_examples / "conftest.py").exists()
 
 
-def test_celery_expert_routes_test_work_to_tests_manager(
-    plugin_root: Path, tests_manager_root: Path
-) -> None:
+def test_celery_expert_routes_test_work_to_tests_manager(plugin_root: Path, tests_manager_root: Path) -> None:
     celery_skill_path = plugin_root / "skills" / "celery-expert" / "SKILL.md"
     routing_target = "python-dev-workflow:tests-manager"
 
@@ -242,9 +236,7 @@ def test_agent_frontmatter_excludes_examples(plugin_root: Path) -> None:
 
     assert agent_files
     invalid_files = [
-        agent_file.relative_to(plugin_root)
-        for agent_file in agent_files
-        if "<example>" in frontmatter(agent_file)
+        agent_file.relative_to(plugin_root) for agent_file in agent_files if "<example>" in frontmatter(agent_file)
     ]
 
     assert invalid_files == []
@@ -261,9 +253,7 @@ def test_e2e_level_stops_and_asks_when_resources_are_unclear(
 
 
 def test_write_workflow_orders_levels_outside_in(tests_manager_root: Path) -> None:
-    write = (tests_manager_root / "references" / "workflows" / "write.md").read_text(
-        encoding="utf-8"
-    )
+    write = (tests_manager_root / "references" / "workflows" / "write.md").read_text(encoding="utf-8")
 
     assert "E2E → Integration → Unit" in write
 

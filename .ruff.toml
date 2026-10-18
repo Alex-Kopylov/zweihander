@@ -1,0 +1,125 @@
+line-length = 120
+# dist/ is a byte-identical render of plugins/ and would double every finding;
+# dist/ is linted once, in CI - see the lint-dist step in .github/workflows/ci.yml.
+exclude = [".venv", "build", "dist"]
+# Python under plugins/ ships to users and runs on their interpreter, not this
+# repo's 3.14 (requires-python): keep syntax and fixes valid on 3.11 (the oldest
+# CPython still supported once 3.10 reaches end of life in 2026-10), the floor
+# the scripts' PEP 723 metadata declares.
+per-file-target-version = { "{plugins,dist/*}/**" = "py311" }
+
+[format]
+# Python only. Code blocks inside Markdown are skill prose that markdownlint
+# owns; the prek ruff-format hook already runs on Python files alone.
+exclude = ["*.md"]
+
+[lint]
+preview = true # Required for PLR0917, PLR1702, and other preview PLR rules
+select = [
+  "A",    # flake8-builtins - prevent shadowing builtins
+  "D",    # pydocstyle - docstring quality enforcement
+  "E",
+  "W",    # pycodestyle warnings, e.g. W605 invalid escape sequence
+  "F",
+  "I",
+  "B",
+  "C901",
+  "PLR",  # All Pylint Refactor rules (single source of truth for hook)
+  "FAST", # FastAPI best practices
+  # Modernization categories for Python 3.11+ syntax
+  "UP",   # pyupgrade - modern type annotations, syntax upgrades
+  "RUF",  # ruff-specific - ruff's own rules for code quality
+  "FLY",  # flynt - f-string conversions (preventive, 0 current violations)
+  "FURB", # refurb - modern Python idioms
+  # Security and type-checking categories
+  "S",  # flake8-bandit - security vulnerability detection
+  "TC", # flake8-type-checking - optimize type-only imports
+  # Style categories for code clarity
+  "RET", # flake8-return - unnecessary assignments/else
+  "SIM", # flake8-simplify - code simplification
+  "TID", # flake8-tidy-imports - absolute imports
+  "TRY", # tryceratops - exception handling
+  # Naming conventions
+  "N", # pep8-naming - PEP 8 naming convention enforcement
+  # Logging, Performance, and Code Quality categories
+  "LOG",    # flake8-logging - proper logger usage
+  "G",      # flake8-logging-format - f-string and exc_info patterns
+  "ERA",    # eradicate - remove commented-out code
+  "PERF",   # Perflint - performance anti-patterns
+  "ARG",    # flake8-unused-arguments
+  "PLC",    # Pylint Convention
+  "PLE",    # Pylint Error
+  "PGH003", # pygrep-hooks - blanket type: ignore detection
+  "PGH004", # pygrep-hooks - enforce specific rule codes in noqa
+  "PLW",    # Pylint Warning
+  # Testing category
+  "PT", # flake8-pytest-style - pytest best practices
+  # Additional low-false-positive categories
+  "ASYNC", # flake8-async - asyncio best practices
+  "C4",    # flake8-comprehensions - comprehension optimization
+  "DTZ",   # flake8-datetimez - naive datetime detection
+  "T10",   # flake8-debugger - leftover breakpoint() detection
+  "BLE",   # flake8-blind-except - overly broad exception catching
+  "PIE",   # flake8-pie - misc. productivity improvements
+  "PTH",   # flake8-use-pathlib - pathlib usage enforcement
+  "SLF",   # flake8-self - private member access detection
+  "RSE",   # flake8-raise - raise statement improvements
+  "INP",   # flake8-no-pep420 - implicit namespace package detection
+]
+ignore = [
+  "PLC0415", # import-outside-top-level - intentional pattern for:
+  # - Circular import avoidance
+  # - Pydantic validator optimization
+  # - Lazy loading for optional dependencies
+]
+
+[lint.mccabe]
+max-complexity = 10 # Industry standard; functions >10 have exponentially more test paths
+
+[lint.pylint]
+max-args = 5            # PLR0913: too-many-arguments (forces @dataclass usage)
+max-positional-args = 5 # PLR0917: too-many-positional-arguments (preview)
+max-statements = 50     # PLR0915: too-many-statements (~1-2 screens)
+max-branches = 12       # PLR0912: too-many-branches
+max-returns = 6         # PLR0911: too-many-return-statements
+max-nested-blocks = 5   # PLR1702: too-many-nested-blocks (preview)
+
+[lint.isort]
+# app/myapp: the user's own package in the example code skills ship
+known-first-party = ["app", "myapp"]
+
+
+[lint.per-file-ignores]
+# PT (flake8-pytest-style) rules are pytest-specific - only apply to test files
+# and the pytest examples skills ship
+"!{tests/**/*,{plugins,dist/*}/**/examples/**/*}" = ["PT"]
+# Test files: D101-D103 exempt (test class, method and function names ARE documentation)
+"tests/**/test_*.py" = ["D101", "D102", "D103", "E", "F", "B", "C901", "PLR", "S", "TC", "N", "ARG", "RUF029", "ERA001", "PLC", "SIM", "TRY", "RET", "RUF", "PLW", "UP", "PERF", "FURB"]
+"tests/**/conftest.py" = ["S", "N", "ARG", "PLC2701", "PLC0415", "SIM", "TRY", "RET", "RUF", "PLW", "TC", "UP", "PERF", "FURB", "E", "G"]
+"tests/constants.py" = ["D", "ERA001"]
+# pytest runs with --import-mode=importlib and test paths mirror plugin names
+# with hyphens, so test directories are not packages
+"tests/**" = ["INP001"]
+# Skill scripts run by path and examples are copied into a user's project; none
+# is imported as a package, and an __init__.py would ship to users as dead weight
+"{plugins,dist/*}/**" = ["INP001"]
+# Example pytest suites users copy follow the tests/ policy above: test names are
+# the documentation (D101-D103), assert is pytest's assertion (S101), expected
+# values are literals (PLR2004), and test methods grouped in a class do not use
+# self (PLR6301)
+"{plugins,dist/*}/**/examples/**/test_*.py" = ["D101", "D102", "D103", "S101", "PLR2004", "PLR6301"]
+
+
+[lint.flake8-pytest-style]
+# Extend PT011 (pytest-raises-too-broad) to require match= for additional exceptions
+# Default list: BaseException, Exception, ValueError, OSError, IOError, EnvironmentError, socket.error
+raises-extend-require-match-for = [
+  "pydantic.ValidationError",
+  "pydantic_core._pydantic_core.ValidationError", # Pydantic v2 internal
+  "AttributeError",
+  "FileNotFoundError",
+  "asyncio.CancelledError",
+]
+
+[lint.pydocstyle]
+convention = "google" # Matches project docstring style

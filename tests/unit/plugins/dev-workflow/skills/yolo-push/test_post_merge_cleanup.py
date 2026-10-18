@@ -8,7 +8,6 @@ from pathlib import Path
 
 import pytest
 
-
 FAKE_GH = """#!/usr/bin/env bash
 case "$1 $2" in
   "pr view") printf '7\\tfeat\\t%s\\tMERGED\\n' "$PR_HEAD" ;;
@@ -40,10 +39,10 @@ class MergedPr:
     head: str
     based_prs: str = ""
 
-    def run(self, script: str) -> str:
+    def run(self, script: str, cwd: Path | None = None) -> str:
         return subprocess.run(
             ["bash", "-c", "PR=7\n" + script],
-            cwd=self.worktree if self.worktree.exists() else self.main,
+            cwd=cwd or (self.worktree if self.worktree.exists() else self.main),
             env={
                 "PATH": f"{self.root / 'bin'}:/usr/bin:/bin",
                 "HOME": str(self.root),
@@ -142,9 +141,7 @@ class TestLossChecks:
 
         assert finding in merged_pr.run(cleanup[0])
 
-    def test_clean_merge_reports_only_headings(
-        self, merged_pr: MergedPr, cleanup: tuple[str, str]
-    ) -> None:
+    def test_clean_merge_reports_only_headings(self, merged_pr: MergedPr, cleanup: tuple[str, str]) -> None:
         output = merged_pr.run(cleanup[0])
 
         assert output
@@ -161,26 +158,38 @@ class TestLossChecks:
         assert merged_pr.surviving() == EVERYTHING
 
 
+# What survives when the session runs in the main checkout, and when it runs in the PR worktree.
+DELETIONS = [
+    pytest.param(lambda pr: None, set(), {"worktree"}, id="clean"),
+    pytest.param(ignored_file, set(), {"worktree"}, id="ignored-file-is-lost"),
+    pytest.param(untracked_file, {"worktree", "local branch"}, {"worktree"}, id="untracked-file"),
+    pytest.param(local_commit, {"local branch"}, {"worktree", "local branch"}, id="local-commit"),
+    pytest.param(remote_commit, {"remote branch"}, {"worktree", "remote branch"}, id="remote-commit"),
+    pytest.param(open_based_pr, {"remote branch"}, {"worktree", "remote branch"}, id="open-based-pr"),
+]
+
+
 class TestGuardedDeletion:
-    @pytest.mark.parametrize(
-        ("setup", "kept"),
-        [
-            pytest.param(lambda pr: None, set(), id="clean"),
-            pytest.param(ignored_file, set(), id="ignored-file-is-lost"),
-            pytest.param(untracked_file, {"worktree", "local branch"}, id="untracked-file"),
-            pytest.param(local_commit, {"local branch"}, id="local-commit"),
-            pytest.param(remote_commit, {"remote branch"}, id="remote-commit"),
-            pytest.param(open_based_pr, {"remote branch"}, id="open-based-pr"),
-        ],
-    )
+    @pytest.mark.parametrize(("setup", "kept", "_"), DELETIONS)
     def test_deletion_keeps_only_what_holds_unmerged_work(
-        self, merged_pr: MergedPr, cleanup: tuple[str, str], setup: Callable, kept: set[str]
+        self, merged_pr: MergedPr, cleanup: tuple[str, str], setup: Callable, kept: set[str], _: set[str]
     ) -> None:
         setup(merged_pr)
 
-        merged_pr.run(cleanup[1])
+        merged_pr.run(cleanup[1], cwd=merged_pr.main)
 
         assert merged_pr.surviving() == kept
+
+    @pytest.mark.parametrize(("setup", "_", "kept"), DELETIONS)
+    def test_session_worktree_is_detached_not_removed(
+        self, merged_pr: MergedPr, cleanup: tuple[str, str], setup: Callable, _: set[str], kept: set[str]
+    ) -> None:
+        setup(merged_pr)
+
+        merged_pr.run(cleanup[1], cwd=merged_pr.worktree)
+
+        assert merged_pr.surviving() == kept
+        assert git(merged_pr.worktree, "branch", "--show-current") == ""
 
     def test_branch_in_main_worktree_is_switched_away_then_deleted(
         self, merged_pr: MergedPr, cleanup: tuple[str, str]

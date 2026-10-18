@@ -1,0 +1,41 @@
+{
+  // markdownlint-cli2 configuration
+  // Uses .markdownlint.jsonc for rules, this file for CLI options
+  // See: https://github.com/DavidAnson/markdownlint-cli2
+
+  // Suppress verbose discovery output
+  "noBanner": true,
+  "noProgress": true,
+
+  // Paths to lint
+  "globs": [
+    "*.md",
+    ".github/**/*.md",
+    "docs/**/*.md"
+  ],
+
+  // These exclusions are load-bearing. The root glob above reaches every
+  // top-level document, so the entries below are what keep machine-consumed
+  // files out of the linter. Do not delete them as unreachable -- they enforce
+  // the policy set in commit 3db8a2e (AI agent working files are not lint
+  // targets).
+  "ignores": [
+    // AI agent working files -- consumed by agents, not humans
+    "CLAUDE.md",
+    "AGENTS.md",
+    "GEMINI.md",
+    ".claude/**",
+    ".codex/**",
+    ".cursor/**",
+    ".gemini/**",
+    // Legal text -- reformatting can break SPDX and license-scanner detection
+    "LICENSE.md",
+    "THIRD_PARTY_NOTICES.md",
+    // Vendored trees and build output
+    ".venv/**",
+    "goals/**",
+    "node_modules/**",
+    "build/**",
+    "dist/**"
+  ]
+}

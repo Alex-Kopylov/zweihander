@@ -20,11 +20,11 @@ typ="$1"
 pdf="$2"
 
 # Refuse relative paths — typst interprets them relative to CWD, which is unpredictable across tool calls.
-case "$typ" in /*) ;; *) echo "error: typst path must be absolute: $typ" >&2; exit 2 ;; esac
-case "$pdf" in /*) ;; *) echo "error: pdf path must be absolute: $pdf"   >&2; exit 2 ;; esac
+case "${typ}" in /*) ;; *) echo "error: typst path must be absolute: ${typ}" >&2; exit 2 ;; esac
+case "${pdf}" in /*) ;; *) echo "error: pdf path must be absolute: ${pdf}"   >&2; exit 2 ;; esac
 
-[[ -f "$typ" ]] || { echo "error: typst file not found: $typ" >&2; exit 2; }
-[[ -r "$typ" ]] || { echo "error: typst file not readable: $typ" >&2; exit 2; }
+[[ -f "${typ}" ]] || { echo "error: typst file not found: ${typ}" >&2; exit 2; }
+[[ -r "${typ}" ]] || { echo "error: typst file not readable: ${typ}" >&2; exit 2; }
 
 # We do NOT fall back to another engine — cross-application rendering consistency matters.
 if ! command -v typst >/dev/null 2>&1; then
@@ -56,32 +56,32 @@ fi
 export SOURCE_DATE_EPOCH="${SOURCE_DATE_EPOCH:-$(date -u +%s)}"
 
 set +e
-typst_log="$(typst compile "$typ" "$pdf" 2>&1)"
+typst_log="$(typst compile "${typ}" "${pdf}" 2>&1)"
 typst_exit=$?
 set -e
-[[ -n "$typst_log" ]] && printf '%s\n' "$typst_log" | sed 's/^/[typst] /' >&2
+[[ -n "${typst_log}" ]] && printf '%s\n' "${typst_log}" | sed 's/^/[typst] /' >&2
 if (( typst_exit != 0 )); then
-  echo "error: typst exited with status $typst_exit — compilation failed" >&2
+  echo "error: typst exited with status ${typst_exit} — compilation failed" >&2
   exit 6
 fi
 
 # Typst exits 0 on warnings, but every warning it emits for a CV means the
 # output differs from what the master looked like. Treat them as failures.
-if printf '%s\n' "$typst_log" | grep -q '^warning:'; then
+if printf '%s\n' "${typst_log}" | grep -q '^warning:'; then
   echo "error: typst emitted warnings — the PDF does not match the master" >&2
   exit 7
 fi
 
 # Verify output.
-if [[ ! -r "$pdf" ]]; then
-  echo "error: PDF not readable at $pdf" >&2
+if [[ ! -r "${pdf}" ]]; then
+  echo "error: PDF not readable at ${pdf}" >&2
   exit 4
 fi
 
 # No byte-size floor: a Typst document whose content vanished still compiles to
 # a valid ~2KB PDF, so size cannot distinguish it from a real render. The
 # authoritative "did it render" gate is the extracted-text check in export-pdf.
-head -c4 "$pdf" | grep -q '%PDF' || { echo "error: not a PDF: $pdf" >&2; exit 5; }
+head -c4 "${pdf}" | grep -q '%PDF' || { echo "error: not a PDF: ${pdf}" >&2; exit 5; }
 
-size=$(stat -f%z "$pdf" 2>/dev/null || stat -c%s "$pdf")
-echo "ok: $pdf (${size} bytes)"
+size=$(stat -f%z "${pdf}" 2>/dev/null || stat -c%s "${pdf}")
+echo "ok: ${pdf} (${size} bytes)"

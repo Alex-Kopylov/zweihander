@@ -33,13 +33,13 @@ orchestrator input.
 
 @scripts/measure_size.py
 
-Run the referenced script from the `md-bloat-hunter` skill directory with the
-target file, model, and budget inputs. Do not calculate token, word, character,
+Run the referenced script with `uv run` from the `md-bloat-hunter` skill
+directory, passing the target file, model, and budget inputs; `uv run` installs
+`tiktoken` from the script's inline metadata. Without `uv`, run it with
+`python3`: it then uses `tiktoken` if that interpreter has it and its built-in
+deterministic fallback otherwise. Do not calculate token, word, character,
 line, or byte counts yourself. The script owns tokenization, fallback
 estimation, budget status, and warning text.
-
-The script uses `tiktoken` when available and its built-in deterministic
-fallback otherwise.
 
 ## Budget Policy
 

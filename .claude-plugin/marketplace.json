@@ -117,15 +117,33 @@
     {
       "name": "research",
       "source": "./dist/claude-code/research",
-      "description": "Research knowledge-base and Obsidian vault workflows for agent-maintained notes.",
+      "description": "Research workflows: arXiv paper search, grounded citations with a verifiable source ledger, an LLM-maintained Markdown wiki, and Obsidian vault notes.",
       "category": "productivity",
       "tags": [
         "research",
+        "arxiv",
+        "citations",
         "wiki",
         "knowledge-base",
         "obsidian",
         "notes",
         "markdown"
+      ]
+    },
+    {
+      "name": "web",
+      "source": "./dist/claude-code/web",
+      "description": "Web, social, and feed reading workflows: Reddit, RSS/Atom feeds, blog tracking, YouTube transcripts, X via xurl, and blocked-page recovery.",
+      "category": "productivity",
+      "tags": [
+        "web",
+        "reddit",
+        "rss",
+        "feeds",
+        "youtube",
+        "x",
+        "twitter",
+        "archives"
       ]
     },
     {

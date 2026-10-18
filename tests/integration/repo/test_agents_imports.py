@@ -2,16 +2,11 @@
 
 from pathlib import Path
 
-from plugin_maintenance import REPO_ROOT
-
+from plugin_maintenance.paths import REPO_ROOT
 
 
 def test_every_agents_file_has_claude_bridge() -> None:
-    agents_files = sorted(
-        path
-        for path in REPO_ROOT.rglob("AGENTS.md")
-        if ".git" not in path.parts
-    )
+    agents_files = sorted(path for path in REPO_ROOT.rglob("AGENTS.md") if ".git" not in path.parts)
 
     assert agents_files, "expected at least one AGENTS.md file"
 
@@ -26,9 +21,7 @@ def test_every_agents_file_has_claude_bridge() -> None:
             continue
 
         non_empty_lines = [
-            line.strip()
-            for line in claude_file.read_text(encoding="utf-8").splitlines()
-            if line.strip()
+            line.strip() for line in claude_file.read_text(encoding="utf-8").splitlines() if line.strip()
         ]
         if "@AGENTS.md" not in non_empty_lines:
             missing_or_invalid.append(

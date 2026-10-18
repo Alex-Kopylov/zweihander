@@ -8,14 +8,12 @@ Whether the committed trees are current is the build layer's question.
 import json
 from pathlib import Path
 
-from plugin_maintenance import REPO_ROOT
+from plugin_maintenance.paths import REPO_ROOT
 from plugin_maintenance.render import HARNESS_MANIFESTS, Harness, manifest_plugin_names
 
 
 def marketplace_entries(harness: Harness) -> list[dict]:
-    manifest = json.loads(
-        (REPO_ROOT / HARNESS_MANIFESTS[harness]).read_text(encoding="utf-8")
-    )
+    manifest = json.loads((REPO_ROOT / HARNESS_MANIFESTS[harness]).read_text(encoding="utf-8"))
     return manifest["plugins"]
 
 
@@ -26,14 +24,10 @@ def test_claude_manifest_sources_resolve_into_its_dist_tree():
 
 def test_codex_manifest_sources_resolve_into_its_dist_tree():
     for entry in marketplace_entries(Harness.CODEX):
-        assert (
-            entry["source"]["path"] == f"./dist/codex/{entry['name']}"
-        ), entry["name"]
+        assert entry["source"]["path"] == f"./dist/codex/{entry['name']}", entry["name"]
 
 
-def test_rendered_tree_carries_exactly_its_manifest_plugins(
-    rendered: Path, harness: str
-) -> None:
+def test_rendered_tree_carries_exactly_its_manifest_plugins(rendered: Path, harness: Harness) -> None:
     """Membership is the manifest's call, so a tree holds that list and no more."""
     listed = manifest_plugin_names(REPO_ROOT / HARNESS_MANIFESTS[harness])
 
