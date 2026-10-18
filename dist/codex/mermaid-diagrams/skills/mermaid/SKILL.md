@@ -1,6 +1,6 @@
 ---
 name: mermaid
-description: Generate Mermaid diagrams from user requirements. Supports 30 synced Mermaid diagram types including flowcharts, sequence diagrams, class diagrams, ER diagrams, Gantt charts, and 25 more.
+description: Generate Mermaid diagrams from user requirements. Supports 33 synced Mermaid diagram types including flowcharts, sequence diagrams, class diagrams, ER diagrams, Gantt charts, and 28 more.
 ---
 
 # Mermaid Diagram Generator
@@ -25,6 +25,7 @@ Select the appropriate diagram type and read the corresponding documentation. If
 | Type | Documentation | Use Cases |
 | ---- | ------------- | --------- |
 | Flowchart | [flowchart.md](references/flowchart.md) | Flowcharts are composed of nodes (geometric shapes) and edges (arrows or lines). |
+| Swimlanes Diagram | [swimlanes.md](references/swimlanes.md) | A swimlane diagram shows a process divided by responsibility. |
 | Sequence Diagram | [sequenceDiagram.md](references/sequenceDiagram.md) | A Sequence diagram is an interaction diagram that shows how processes operate with one another and in what order. |
 | Class Diagram | [classDiagram.md](references/classDiagram.md) | "In software engineering, a class diagram in the Unified Modeling Language (UML) is a type of static structure diagram that describes the structure of a system by showing the system's classes, their attributes, operat... |
 | State Diagram | [stateDiagram.md](references/stateDiagram.md) | "A state diagram is a type of diagram used in computer science and related fields to describe the behavior of systems. |
@@ -33,6 +34,7 @@ Select the appropriate diagram type and read the corresponding documentation. If
 | Pie Chart | [pie.md](references/pie.md) | A pie chart (or a circle chart) is a circular statistical graphic, which is divided into slices to illustrate numerical proportion. |
 | Quadrant Chart | [quadrantChart.md](references/quadrantChart.md) | A quadrant chart is a visual representation of data that is divided into four quadrants. |
 | Requirement Diagram | [requirementDiagram.md](references/requirementDiagram.md) | A Requirement diagram provides a visualization for requirements and their connections, to each other and other documented elements. |
+| Use Case Diagram | [usecase.md](references/usecase.md) | Use case diagrams show how actors interact with a system and its use cases. |
 | GitGraph (Git) Diagram | [gitgraph.md](references/gitgraph.md) | A Git Graph is a pictorial representation of git commits and git actions(commands) on various branches. |
 | C4 Diagram | [c4.md](references/c4.md) | C4 Diagram: This is an experimental diagram for now. |
 | Mindmaps | [mindmap.md](references/mindmap.md) | Mindmap: This is an experimental diagram for now. |
@@ -51,9 +53,10 @@ Select the appropriate diagram type and read the corresponding documentation. If
 | Ishikawa | [ishikawa.md](references/ishikawa.md) | Ishikawa diagrams are used to represent causes of a specific event (or a problem). |
 | Wardley | [wardley.md](references/wardley.md) | Wardley Maps are visual representations of business strategy that map value chains and component evolution. |
 | Cynefin | [cynefin.md](references/cynefin.md) | The Cynefin framework is a sense-making framework created by Dave Snowden that categorizes problems into five complexity domains. |
-| TreeView | [treeView.md](references/treeView.md) | A TreeView diagram is used to represent hierarchical data in the form of a directory-like structure, with file-type icons, connector lines, and optional annotations. |
+| TreeView | [treeView.md](references/treeView.md) | A TreeView diagram is used to represent hierarchical data in the form of a directory-like structure, with file/folder icons, connector lines, and optional annotations. |
+| Agentflow (v12.0.0+) | [agentflow.md](references/agentflow.md) | An agentflow diagram describes an agentic workflow: the agents that do the work, the flows they run, the tasks and tools inside those flows, and how control and data move between them. |
 | Entity Relationship Diagrams | [entityRelationshipDiagram.md](references/entityRelationshipDiagram.md) | An entity–relationship model (or ER model) describes interrelated things of interest in a specific domain of knowledge. |
-| Railroad Diagrams | [railroad.md](references/railroad.md) | Railroad diagrams (also known as syntax diagrams or grammar diagrams) are a visual representation of context-free grammars using EBNF (Extended Backus-Naur Form) notation. |
+| Railroad Diagrams (v11.16.0+) | [railroad.md](references/railroad.md) | Railroad diagrams (also known as syntax diagrams or grammar diagrams) are a visual representation of context-free grammars. |
 <!-- END GENERATED DIAGRAM TYPES -->
 
 ## Configuration & Themes

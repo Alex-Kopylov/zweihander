@@ -1,0 +1,6 @@
+interface:
+  display_name: "Harness Overlap Audit"
+  short_description: "Map overlapping skills, MCP tools, and skill agents"
+  default_prompt: "Audit my skills and MCP tools for overlapping scope."
+policy:
+  allow_implicit_invocation: false

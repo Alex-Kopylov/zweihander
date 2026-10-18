@@ -38,6 +38,7 @@ Templates render with this context:
 
 - `harness` — the assistant key being rendered (`ClaudeCode` or `Codex`).
 - `actions` — action key → that harness's callable name, from the matrix.
+- `smallest_model` — the cheapest model that harness offers, from the matrix.
 - `call` — a filter that wraps any name in the harness's invocation wrapper.
 
 Reference callables only through these mechanisms:
@@ -178,7 +179,7 @@ metadata:
   references:
     "references/gitlab.md": "Load when the merge request lives on GitLab."
   agents:
-    "../../agents/test-runner.md": "Use for focused pytest execution."
+    "../../agents/test-writer.md": "Use to write tests at one assigned level."
   config:
     output-dir: "${TMPDIR:-/tmp}/skill-output"
 ```
@@ -251,6 +252,7 @@ The action matrix keeps these stable:
 - Each assistant defines exactly one `invocation_wrapper` with a single
   `{name}` slot, stored once in the top-level `assistants` section — never
   per action.
+- Each assistant names its `smallest_model` once, in the same section.
 - Keep `lookup_order: ["action", "assistant"]`.
 - When names are re-verified against official documentation, refresh
   `checked` and the assistant `source_urls`, and land matrix changes in
