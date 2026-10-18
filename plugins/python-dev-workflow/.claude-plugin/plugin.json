@@ -1,7 +1,7 @@
 {
   "name": "python-dev-workflow",
-  "description": "Python TDD, pytest scenario planning, E2E/integration/unit test writing, test review and audit, Celery and Redis references, and production Celery guidance.",
-  "version": "0.19.0",
+  "description": "Python TDD, pytest scenario planning, E2E/integration/unit test writing, test review and audit, Celery and Redis references, production Celery guidance, and constants and config placement.",
+  "version": "0.20.0",
   "author": {
     "name": "Alex Kopylov"
   },

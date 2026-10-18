@@ -113,6 +113,7 @@ def test_metadata_paths_resolve_from_declaring_file(plugin_root: Path, tests_man
     """A metadata key names a runtime path, so it resolves in the shipped tree."""
     metadata_files = [
         tests_manager_root / "SKILL.md",
+        plugin_root / "skills" / "constants-placement" / "SKILL.md",
         plugin_root / "agents" / "test-writer.md",
         plugin_root / "agents" / "test-assessor.md",
     ]

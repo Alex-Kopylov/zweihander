@@ -52,7 +52,7 @@
     {
       "name": "python-dev-workflow",
       "source": "./dist/claude-code/python-dev-workflow",
-      "description": "Python TDD, pytest scenario planning, E2E/integration/unit test writing, test review and audit, Celery and Redis references, and production Celery guidance.",
+      "description": "Python TDD, pytest scenario planning, E2E/integration/unit test writing, test review and audit, Celery and Redis references, production Celery guidance, and constants and config placement.",
       "category": "development",
       "tags": [
         "python",
