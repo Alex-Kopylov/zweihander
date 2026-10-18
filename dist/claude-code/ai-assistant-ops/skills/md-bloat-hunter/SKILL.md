@@ -11,8 +11,7 @@ that preserve meaning.
 
 ## Goal
 
-Cut bloat until the smallest model the harness
-offers (Haiku)
+Cut bloat until the smallest model the harness offers (Haiku)
 still passes the evals and tests that cover the audited files. Size budgets
 are not that bar: a file under budget gets the same full pass.
 
