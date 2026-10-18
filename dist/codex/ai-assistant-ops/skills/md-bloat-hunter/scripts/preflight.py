@@ -17,7 +17,7 @@ class TargetError(ValueError):
     """A target that fails preflight; the message is the reported error."""
 
     GIT_NOT_FOUND = "git executable not found on PATH"
-    NOT_MARKDOWN = "target must have a .md extension"
+    NOT_MARKDOWN = "target must have a .md or .md.j2 extension"
     SYMLINK = "target must not be a symlink"
     NOT_REGULAR_FILE = "target must be a regular file"
     OUTSIDE_WORKTREE = "outside a git worktree"
@@ -63,7 +63,7 @@ def git_root_for(path: Path) -> Path:
 def validate_target(path: Path) -> dict[str, str]:
     """Return the target's identity and hash, or raise TargetError when it is unsafe to rewrite."""
     resolved = path.expanduser().resolve()
-    if path.suffix.lower() != ".md":
+    if not path.name.lower().endswith((".md", ".md.j2")):
         raise TargetError(TargetError.NOT_MARKDOWN)
     if path.is_symlink() or resolved.is_symlink():
         raise TargetError(TargetError.SYMLINK)
@@ -114,7 +114,7 @@ def check_expected(target: dict[str, str], expected: dict[str, str]) -> None:
 def main() -> int:
     """Validate every target and print the JSON report."""
     parser = argparse.ArgumentParser(description="Preflight markdown files before md-bloat-hunter writes.")
-    parser.add_argument("paths", nargs="+", type=Path, help="Markdown files to validate")
+    parser.add_argument("paths", nargs="+", type=Path, help="Markdown files or .md.j2 templates to validate")
     parser.add_argument(
         "--expect-map",
         type=Path,

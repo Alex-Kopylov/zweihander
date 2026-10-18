@@ -92,6 +92,13 @@ def test_single_wrapper_per_assistant(assistants, actions):
                 assert "invocations" not in value, key
 
 
+def test_every_assistant_names_its_smallest_model(assistants):
+    for key, assistant in assistants.items():
+        model = assistant.get("smallest_model")
+        assert isinstance(model, str), key
+        assert model, key
+
+
 def test_action_keys_never_equal_callable_names(actions, assistants):
     callable_names = {
         action[assistant]["name"] for action in actions.values() if action["callable"] for assistant in assistants

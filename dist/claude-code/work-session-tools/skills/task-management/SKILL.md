@@ -130,7 +130,7 @@ Each agent runs in its own context window, consuming no parent context budget.
 | Read-only codebase search | `Explore` |
 | Implementation strategy | `Plan` |
 | Multi-step coding or research | `general-purpose` |
-| Specific domain task | Named subagent (e.g., `test-runner`) |
+| Specific domain task | Named subagent (e.g., `test-writer`) |
 
 Use `Explore`, `Plan`, `general-purpose`, and named subagents only when the
 active environment exposes them.
