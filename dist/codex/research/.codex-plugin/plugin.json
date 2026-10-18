@@ -1,6 +1,6 @@
 {
   "name": "research",
-  "version": "0.3.0",
+  "version": "0.6.0",
   "description": "Research workflows: arXiv paper search, grounded citations with a verifiable source ledger, an LLM-maintained Markdown wiki, and Obsidian vault notes.",
   "author": {
     "name": "Alex Kopylov"

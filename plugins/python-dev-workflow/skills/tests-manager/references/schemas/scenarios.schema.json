@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "tests-manager scenario catalog",
+  "description": "The test-scenario planner's output: requirement-linked scenarios and the gaps that would change an expected result.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["scenarios", "gaps"],
+  "properties": {
+    "scenarios": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "requirement", "actor_preconditions", "action", "expected", "corner_cases"],
+        "properties": {
+          "id": {"$ref": "#/$defs/text", "description": "Stable id, such as S1."},
+          "requirement": {"$ref": "#/$defs/text", "description": "The requirement or acceptance criterion this scenario proves."},
+          "actor_preconditions": {"$ref": "#/$defs/text"},
+          "action": {"$ref": "#/$defs/text"},
+          "expected": {"$ref": "#/$defs/text", "description": "The observable outcome or business invariant."},
+          "corner_cases": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["id", "description", "expected"],
+              "properties": {
+                "id": {"$ref": "#/$defs/text", "description": "Stable id under the scenario, such as S1.1."},
+                "description": {"$ref": "#/$defs/text"},
+                "expected": {"$ref": "#/$defs/text"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "gaps": {
+      "type": "array",
+      "description": "Assumptions, contradictions, and specification gaps that need confirmation.",
+      "items": {"$ref": "#/$defs/text"}
+    }
+  },
+  "$defs": {
+    "text": {"type": "string", "minLength": 1}
+  }
+}
