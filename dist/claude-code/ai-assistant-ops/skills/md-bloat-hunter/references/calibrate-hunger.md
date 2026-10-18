@@ -47,3 +47,7 @@ cross-section repetition.
 - When the output has an `audit_calibration` block, put the characterization
   in `observation`, the intensity in `chosen_intensity`, and the
   observation-to-intensity reasoning in `reasoning`.
+- In a `.md.j2` template, Jinja syntax (`{{ ... }}`, `{% ... %}`,
+  `{# ... #}`) is opaque: no `excerpt` or `new_text` may contain, cut into, or
+  add it; context fields may quote it. Text in different branches of one
+  conditional never renders together, so it is not redundant.

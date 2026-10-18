@@ -3,10 +3,14 @@
 
 import argparse
 import json
+import re
 import sys
 from collections import defaultdict
 from pathlib import Path
 from typing import Any
+
+# Jinja's default delimiters, as whole blocks or unpaired markers, so a block cut in half still counts.
+JINJA_SYNTAX = re.compile(r"\{\{.*?\}\}|\{%.*?%\}|\{#.*?#\}|\{\{|\}\}|\{%|%\}|\{#|#\}", re.DOTALL)
 
 
 class InputError(ValueError):
@@ -28,6 +32,7 @@ class FindingError(ValueError):
     SHIFTED = "excerpt changed by an earlier applied finding; re-run to pick up shifted findings"
     AMBIGUOUS = "excerpt is ambiguous; add context_before / context_after and re-run"
     DELETE_WITH_TEXT = "delete findings must use new_text: null"
+    TOUCHES_JINJA = "edit touches Jinja syntax; Jinja blocks in a template are not editable"
 
     @classmethod
     def text_not_string(cls, action: str) -> "FindingError":
@@ -100,17 +105,32 @@ def locate(content: str, original: str, finding: dict[str, Any]) -> tuple[int, i
     return matches[0]
 
 
+def touches_jinja(content: str, start: int, end: int, updated: str) -> bool:
+    """Return whether the edit of content[start:end] overlaps Jinja syntax or changes the template's Jinja syntax."""
+    overlaps = any(match.start() < end and start < match.end() for match in JINJA_SYNTAX.finditer(content))
+    return overlaps or JINJA_SYNTAX.findall(content) != JINJA_SYNTAX.findall(updated)
+
+
+def edited(content: str, original: str, finding: dict[str, Any], *, template: bool) -> str:
+    """Return the content with the finding applied, refusing a template edit that touches Jinja."""
+    start, end = locate(content, original, finding)
+    updated = content[:start] + replacement_for(finding) + content[end:]
+    if template and touches_jinja(content, start, end, updated):
+        raise FindingError(FindingError.TOUCHES_JINJA)
+    return updated
+
+
 def apply_file_findings(file_path: Path, findings: list[dict[str, Any]]) -> tuple[int, list[dict[str, Any]]]:
     """Apply one file's findings in source order, stopping at the first failure."""
     content = file_path.read_text(encoding="utf-8")
     original = content
     applied = 0
     failures: list[dict[str, Any]] = []
+    is_template = file_path.suffix.lower() == ".j2"
 
     for finding in sorted(findings, key=lambda item: int(item.get("source_order", 0))):
         try:
-            start, end = locate(content, original, finding)
-            content = content[:start] + replacement_for(finding) + content[end:]
+            content = edited(content, original, finding, template=is_template)
             # write_text truncates before it encodes; fail first, or an
             # unencodable replacement leaves the file empty.
             content.encode("utf-8")
