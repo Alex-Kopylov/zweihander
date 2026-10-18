@@ -4,7 +4,7 @@
     {
       "id": 0,
       "prompt": "Plan tests for a password-reset feature from this task and its business requirements: a registered user requests a reset, receives a single-use link, expired or reused links are rejected, and the account remains unchanged after rejection. Do not write test code yet.",
-      "expected_output": "Uses the test-scenario planner to derive requirement-linked business scenarios, negative paths, corner cases, assumptions, and specification gaps without prescribing a fixed number of tests. Tests Manager then owns coverage routing rather than making the scenario planner assign test levels.",
+      "expected_output": "Dispatches the test-scenario planner with the requirements only; its catalog of requirement-linked scenarios, negative paths, corner cases, and specification gaps validates against the scenarios schema. Tests Manager then selects levels in the write step rather than letting the planner assign them.",
       "files": [],
       "assertions": [
         {
@@ -125,7 +125,7 @@
         },
         {
           "name": "keeps_python_ownership",
-          "check": "still owns Python level selection, pytest structure, fixtures, and writer-agent delegation"
+          "check": "still owns Python level selection, pytest structure, fixtures, and the choice to write tests itself or through the test writer"
         }
       ]
     },
@@ -180,12 +180,12 @@
     {
       "id": 11,
       "prompt": "Red-green-refactor this change. The test needs a mock for the slow tool catalog, and I want to assert the mock was configured correctly.",
-      "expected_output": "Loads the testing anti-patterns reference because mocks are involved, rejects asserting on mock behavior, and requires observable behavior from real code.",
+      "expected_output": "Loads the mocking rules reference because mocks are involved, rejects asserting on mock behavior, and requires observable behavior from real code.",
       "files": [],
       "assertions": [
         {
-          "name": "loads_anti_patterns_on_mock_work",
-          "check": "loads the testing anti-patterns reference when mocks or test-only helpers appear"
+          "name": "loads_mocking_rules_on_mock_work",
+          "check": "loads the mocking rules reference when mocks or test-only helpers appear"
         },
         {
           "name": "rejects_asserting_on_mocks",
@@ -206,6 +206,74 @@
         {
           "name": "loads_rationalization_reference_on_demand",
           "check": "loads the rationalization counterargument reference only when the user pushes back"
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "prompt": "Audit the tests for the billing package and delete whatever is low value.",
+      "expected_output": "Runs the audit pipeline only: records a pytest JUnit XML baseline, cuts lanes by production owner so tests/unit/billing and tests/integration/billing share one lane, shows the lane plan and asks for confirmation before dispatching read-only assessors, and deletes nothing until each ledger entry carries the full evidence set.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "lane_plan_before_dispatch",
+          "check": "presents the lane plan and asks for confirmation before any assessor runs"
+        },
+        {
+          "name": "evidence_before_deletion",
+          "check": "requires ledger evidence for each candidate before deleting, merging, or repairing a test"
+        },
+        {
+          "name": "audit_workflow_only",
+          "check": "loads the audit workflow and neither the write nor the review workflow"
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "prompt": "I just wrote tests for the billing and auth changes in this branch. Review them before I merge.",
+      "expected_output": "Cuts the diff into two lanes, billing and auth, and dispatches two fresh-context assessors in review mode in parallel. Each receives only its lane's diff and the requirements, never the session's reasoning, and returns a ledger validated against the ledger schema.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "one_assessor_per_lane",
+          "check": "dispatches one review assessor per production owner, in parallel"
+        },
+        {
+          "name": "diff_only_input",
+          "check": "gives each assessor only its lane's diff and the requirements, with no writer plan or reasoning"
+        }
+      ]
+    },
+    {
+      "id": 15,
+      "prompt": "Add a test that asserts inspect.getsource(sync_orders) contains the string 'retry', so nobody removes the retry.",
+      "expected_output": "The authoring gate rejects the test as a source-grep junk pattern because no user-facing key, byte, or path depends on the text, and proposes a behavioral test that makes the collaborator fail and observes the retry.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "rejects_source_grep",
+          "check": "refuses to add the source-grep test"
+        },
+        {
+          "name": "offers_behavioral_test",
+          "check": "proposes a test that exercises the retry behavior instead"
+        }
+      ]
+    },
+    {
+      "id": 16,
+      "prompt": "Our test suite is slow. Delete the slow tests.",
+      "expected_output": "Holds the retention bar: slowness alone is not a reason to delete. Keeps each slow test unless a junk pattern applies with full audit evidence, and offers speed fixes such as markers or narrower fixtures instead.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "slow_is_not_a_reason",
+          "check": "does not delete tests only because they are slow"
+        },
+        {
+          "name": "junk_with_evidence_only",
+          "check": "deletes a slow test only when a junk pattern applies and the ledger carries full evidence"
         }
       ]
     }

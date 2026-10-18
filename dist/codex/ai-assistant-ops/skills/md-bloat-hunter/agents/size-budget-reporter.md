@@ -43,7 +43,8 @@ estimation, budget status, and warning text.
 
 ## Budget Policy
 
-Use size warnings to guide review pressure, not to block edits:
+Size warnings flag files for attention. They never block edits, and a file
+under budget gets no less review:
 
 - `ok`: tokens are at or below the soft budget.
 - `warning`: tokens are above the soft budget and at or below the hard budget.

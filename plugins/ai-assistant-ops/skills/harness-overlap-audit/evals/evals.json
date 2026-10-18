@@ -1,0 +1,117 @@
+{
+  "skill_name": "harness-overlap-audit",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "Run the audit in Claude Code. Treat this as the full inventory. Built-in skills with no file on disk: `loop` (run a prompt on a recurring interval) and `schedule` (create scheduled cloud agents on a cron). App-added without an install step: `anthropic-skills:schedule` (run a task automatically every day or at a set time). Nothing else matches scheduling.",
+      "expected_output": "Reports no scheduling finding, because every item in the group is built-in. The summary line reads `No overlaps found`.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "built_in_pair_not_flagged",
+          "check": "does not report any overlap among loop, schedule, and anthropic-skills:schedule"
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "prompt": "Run the audit in Codex. `~/.codex/config.toml` enables `superpowers@openai-curated`, whose skill `brainstorming` says \"use before any creative work to explore intent and design\". It also enables `dev-workflow@zweihander`, whose skill `spec-interview` says \"use when the user wants an in-depth requirements interview that produces a detailed implementation spec\".",
+      "expected_output": "Classifies both plugins as user-owned, including the optional OpenAI-curated one, and reports them as competing with a collision prompt such as \"help me design this feature before I build it\".",
+      "files": [],
+      "assertions": [
+        {
+          "name": "optional_provider_plugin_flagged",
+          "check": "treats the openai-curated plugin as user-owned and reports the pair"
+        },
+        {
+          "name": "collision_prompt_given",
+          "check": "the finding quotes one realistic user prompt that both skills claim"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Run the audit in Claude Code. The app-added skill `anthropic-skills:skill-creator` says \"create new skills, modify and improve existing skills, and measure skill performance\". The installed plugin skill `ai-assistant-ops:improve-skill` says \"use when revising an existing skill from eval feedback, trigger misses, output regressions, bloat, or overfitting\".",
+      "expected_output": "Reports the pair, draws skill-creator only as context in the diagram, and aims the fix at improve-skill's description.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "fix_targets_user_owned_side",
+          "check": "the fix changes or removes improve-skill and never asks to change skill-creator"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Run the audit in Claude Code. The built-in skill `run` (no file on disk) says \"launch and drive this project's app to see a change working\". The user also installed `run-and-verify-app`, a port of that built-in, whose skill `run-and-verify-app:run` has the same description.",
+      "expected_output": "Reports a 🔴 port finding, and the fix removes the port from Claude Code while keeping it for Codex, where no built-in run exists.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "port_beside_its_built_in_flagged",
+          "check": "reports run-and-verify-app:run as a 🔴 port finding against the built-in run"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Run the audit in Codex. `~/.codex/config.toml` enables `run-and-verify-app@zweihander`, whose skill `run` says \"launch and drive this project's app to see a change working\". No built-in or other skill launches apps.",
+      "expected_output": "Does not report the port, because Codex has no built-in it duplicates.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "port_without_built_in_not_flagged",
+          "check": "does not report run-and-verify-app in Codex"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Run the audit in Claude Code. Installed plugin skills: `dev-workflow:commit` (commit staged changes), `dev-workflow:create-pr` (create a pull request from the current branch), and `dev-workflow:yolo-push`, whose body invokes commit, then create-pr, then waits for CI.",
+      "expected_output": "Treats yolo-push, commit, and create-pr as one pipeline and reports no finding for them.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "pipeline_not_flagged",
+          "check": "does not report yolo-push against commit or create-pr"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "Run the audit in Claude Code. The installed skill `team:review-pr` lists three agents in `metadata.agents`. `null-guard` checks missing null checks and unhandled exceptions. `error-paths` checks unhandled exceptions and swallowed errors. `naming` checks identifier names.",
+      "expected_output": "Reports an `inside team:review-pr` finding for null-guard and error-paths, which both check unhandled exceptions, and leaves naming out.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "overlapping_skill_agents_flagged",
+          "check": "reports null-guard and error-paths as overlapping agents inside team:review-pr"
+        },
+        {
+          "name": "distinct_agent_not_flagged",
+          "check": "does not report the naming agent"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "Run the audit on a setup that yields one 🔴, three 🟠, and two 🟡 findings.",
+      "expected_output": "Writes harness-overlap-audit-<date>.md with the summary line first, Venn diagrams for the top three findings only, one table row for each other finding, and the footer. The chat reply holds only the summary line and the path.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "summary_line_first",
+          "check": "the line after the title is the 🔴 · 🟠 · 🟡 count"
+        },
+        {
+          "name": "three_diagrams_at_most",
+          "check": "exactly three venn-beta diagrams, each with at most three sets and no :N sizes"
+        },
+        {
+          "name": "short_chat_reply",
+          "check": "the chat reply holds only the summary line and the report path"
+        }
+      ]
+    }
+  ]
+}
