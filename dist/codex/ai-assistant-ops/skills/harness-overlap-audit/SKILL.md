@@ -1,92 +1,70 @@
 ---
 name: harness-overlap-audit
-description: Audit the skills and MCP tools in this AI assistant harness for overlapping scope, and write a Markdown report with Mermaid Venn diagrams of where user-installed items compete with each other or with built-ins, where a port sits beside the built-in it copies, and where one skill's agents duplicate work.
+description: Audit this harness's skills, MCP tools, and skill agents for overlapping scope, and write a Markdown report with Venn diagrams.
 metadata:
   skills:
-    "mermaid-diagrams:mermaid": "Use to draw each Venn diagram from the venn-beta reference."
-    "mermaid-diagrams:mermaid-lint": "Use to validate every diagram before writing the report."
+    "mermaid-diagrams:mermaid": "Use to draw the Venn diagrams."
+    "mermaid-diagrams:mermaid-lint": "Use to validate the diagrams."
 ---
 
 # Harness Overlap Audit
 
-Find tools whose claimed scope overlaps, so the model can pick the wrong one or
-pay twice for the same work. Judge scope and intent, not shared words.
-
-## Rules
-
-1. **Never flag a built-in.** Built-in items ship with the harness, and the
-   provider owns their overlaps. A finding needs at least one user-owned item.
-   A built-in may appear in a diagram for context, but the fix always targets
-   the user-owned side.
-2. **User-owned** means the item exists because the user installed, enabled,
-   connected, or wrote it. That includes optional plugins from the provider's
-   own catalog.
-3. **A finding needs a collision prompt**: one realistic user request for which
-   both descriptions say "use me". If you cannot write one, it is not a finding.
-4. **A pipeline is not a collision.** When one item invokes the other, or they
-   are stages of one workflow (a ship skill that runs commit, then create-pr),
-   do not report it.
-5. **Do not audit agents on their own.** Agents count only inside the
-   skill-agent check below.
+Find skills and MCP tools whose claimed scope overlaps. Judge intent, not shared
+words.
 
 ## Provenance
 
-Classify every item from what you can trace on disk. Treat an item you cannot
-trace as built-in, and count it in the report footer.
+**Never flag a built-in**: the provider owns its overlaps. Every finding needs a
+user-owned item: one the user installed, enabled, connected, or wrote,
+including optional plugins from the provider's catalog. Count an untraceable
+item as built-in, in the footer.
 
-| Built-in: never flag | User-owned |
-| --- | --- |
-| Core tools; system skills in `~/.codex/skills/.system/` | Skills in `~/.agents/skills/`, a repository's `.agents/skills/`, or `~/.codex/skills/` outside `.system/` |
-| Plugins from provider-bundled marketplaces, such as `openai-bundled` and `openai-primary-runtime` | Plugins enabled under `[plugins."<name>@<marketplace>"]` in `~/.codex/config.toml` from any other marketplace, including optional catalogs such as `openai-curated` |
-| | MCP servers under `[mcp_servers.<name>]` in `~/.codex/config.toml` or a project `.codex/config.toml` |
+- **Built-in:** core tools; `~/.codex/skills/.system/`; plugins from bundled
+  marketplaces such as `openai-bundled` and `openai-primary-runtime`.
+- **User-owned:** `~/.agents/skills/`, a repository's `.agents/skills/`,
+  `~/.codex/skills/` outside `.system/`; plugins under
+  `[plugins."<name>@<marketplace>"]` in `~/.codex/config.toml` from other
+  marketplaces, including `openai-curated`; `[mcp_servers.<name>]` there or in
+  a project `.codex/config.toml`.
 
-## Workflow
+## Checks
 
-1. **Inventory.** List each skill and MCP tool the model can pick, from your
-   own context: the skill list and the tool list you route by. Keep only the
-   name and description, because skill bodies do not affect which tool gets
-   picked.
-2. **Provenance.** Classify each item with the table above.
-3. **Group by job**, such as scheduling, code review, debugging, docs, memory,
-   or diagrams. Compare items only inside a group. Skip a group with no
+1. **Inventory** the skills and MCP tools you route by, from your own context:
+   names and descriptions only, since bodies do not affect routing.
+2. **Group by job**, such as scheduling, review, or docs. Skip groups with no
    user-owned item.
-4. **Routing check.** For each pair in a group, write the collision prompt or
-   drop the pair. Read a skill body only to confirm a pipeline.
-5. **Port check.** A port is a user-owned skill that re-creates another
-   harness's built-in. For example, `run-and-verify-app` brings Claude Code's
-   built-in `run` and `verify` skills to Codex. A port belongs only where its
-   built-in is missing, so judge it against this harness's built-ins only:
-   - Beside the built-in it copies: 🔴 Duplicate. Fix: remove the port from
-     this harness, and keep it where the built-in is missing.
-   - Where no such built-in exists: correct. Do not report it.
-6. **Skill-agent check.** For each user-owned skill that starts two or more
-   agents, read those agents' prompts. Find them in the skill's
-   `metadata.agents`, in agent files the body names, or in the skill's
-   `agents/` folder (`openai.yaml` there is not an agent). Flag agents that
-   check the same aspects: every run pays for that work twice.
-7. **Rank** by level, then by how common the collision prompt is.
+3. **Routing.** A pair is a finding only if you can write a **collision
+   prompt**: one realistic request both descriptions claim. A pipeline is not
+   a finding: one item invokes the other, or both are stages of one workflow.
+4. **Port.** A port is a user-owned skill that re-creates another harness's
+   built-in, such as `run-and-verify-app`, which brings Claude Code's `run` and
+   `verify` to Codex. Beside the built-in it copies in this harness, it is 🔴:
+   remove it here, keep it where the built-in is missing. Anywhere else, do not
+   report it.
+5. **Inside a skill.** For a user-owned skill that starts two or more agents
+   (`metadata.agents`, agent files its body names, or its `agents/` folder
+   except `openai.yaml`), read their prompts and flag agents that check the
+   same aspects. Never audit agents on their own.
 
-| Level | Meaning | Typical fix |
-| --- | --- | --- |
-| 🔴 Duplicate | Same scope and triggers, or a port beside its built-in | Remove one |
-| 🟠 Competing | Shared trigger zone, different behavior | Narrow one description, or stop the model from starting it |
-| 🟡 Nested | One scope sits inside the other | Exclude the inner scope from the outer description |
+Levels: 🔴 duplicate (same scope, or a port beside its built-in: remove one) ·
+🟠 competing (shared triggers, different behavior: narrow a description or stop
+the model from starting it) · 🟡 nested (one scope inside the other: exclude it
+from the outer description). Every fix targets the user-owned side; a built-in
+appears only as diagram context. Rank by level, then by how common the
+collision prompt is.
 
 ## Report
 
 Write `harness-overlap-audit-<YYYY-MM-DD>.md` in the working directory, in the
-user's language. The reader has little attention to spare, so the most
-important finding goes first and nothing appears that does not lead to a fix.
-In chat, reply with only the summary line and the report path.
-
-Use this layout:
+user's language. Most important first; nothing without a fix. Reply in chat
+with only the summary line and the path.
 
 ```markdown
 # Harness overlap audit: <harness>, <date>
 
 🔴 <n> duplicate · 🟠 <n> competing · 🟡 <n> nested
 
-## 1. 🔴 routing: <item> vs <item>
+## 1. 🔴 <routing | port | inside <skill>>: <item> vs <item>
 
 <Venn diagram>
 
@@ -101,26 +79,18 @@ Use this layout:
 Checked <n> skills, <n> MCP tools, <n> skills with agents. Untraceable, treated as built-in: <n>.
 ```
 
-- The check in a heading is `routing`, `port`, or `inside <skill>`.
-- Draw a Venn diagram for the top three findings only. Every other finding is
-  one table row.
-- Use at most three circles per diagram. Put the shared claim in the overlap
-  and what is unique in each outer region, four words or fewer per label. Do
-  not set sizes with `:N`, because the audit measures no sizes.
-- With no findings, write only the summary line `No overlaps found` and the
-  footer.
+- Diagrams for the top three findings only; the rest are table rows.
+- At most three circles; shared claim in the overlap, unique scope outside,
+  four words or fewer per label; no `:N` sizes.
+- No findings: the summary line `No overlaps found` and the footer only.
 
-Draw each diagram with $mermaid-diagrams:mermaid using its
-`venn-beta` reference, then validate it with
-$mermaid-diagrams:mermaid-lint. If linting cannot run, still write
-the report, and put a one-line warning above the summary that the diagrams are
-not validated.
-
-Example of one diagram:
+Draw with $mermaid-diagrams:mermaid (`venn-beta`) and validate
+with $mermaid-diagrams:mermaid-lint. If linting cannot run, still
+write the report, with a one-line "diagrams not validated" warning above the
+summary.
 
 ```mermaid
 venn-beta
-  title "routing: skill-creator vs improve-skill"
   set A["skill-creator"]
     text A1["create new skills"]
   set B["improve-skill"]
