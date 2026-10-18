@@ -123,6 +123,7 @@ kanban
   python_dev_workflow[python-dev-workflow]
     pdw_tests_manager[tests-manager]
     pdw_celery_expert[celery-expert]
+    pdw_constants_placement[constants-placement]
   openapi_tools[openapi-tools]
     oat_openapi_list[openapi-list]
     oat_openapi_inspect[openapi-inspect]
@@ -279,14 +280,16 @@ reasoning.
 
 **Use when:** you are doing TDD or test-first development in Python, deriving
 scenarios from requirements, writing or reviewing Python tests, deciding E2E
-vs integration vs unit coverage, testing Celery or Redis behavior, or
-configuring Celery for production behavior.
+vs integration vs unit coverage, testing Celery or Redis behavior,
+configuring Celery for production behavior, or sorting out hardcoded constants,
+config values, and secrets.
 
 #### Skills
 
 | Skill | Description |
 | --- | --- |
 | `celery-expert` | Configure Celery tasks, workers, retries, schedules, performance, and security. |
+| `constants-placement` | Decide where each hardcoded value belongs (its module, a shared `constants.py`, a pydantic-settings field, or `.env` for secrets) and move it, merging duplicates and keeping `.env` out of git. |
 | `tests-manager` | Own Python test-first development and test craft: red-green-refactor, plan scenarios, and write pytest E2E, integration, and unit tests with focused references. |
 
 #### Agents
