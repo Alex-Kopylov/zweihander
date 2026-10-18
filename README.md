@@ -482,7 +482,7 @@ language, or reduce Markdown bloat.
 | `docs-language-review` | Review or rewrite Markdown documentation using plain-language and cognitive-accessibility standards. |
 | `harness-overlap-audit` | Map skills, MCP tools, and skill agents whose scope overlaps, in a Markdown report with Venn diagrams. |
 | `improve-skill` | Improve existing skills through eval feedback, baseline comparison, iteration, and trigger checks. |
-| `md-bloat-hunter` | Trim redundancy, verbosity, and filler in Markdown. |
+| `md-bloat-hunter` | Trim redundancy, verbosity, and filler in Markdown and `.md.j2` templates until the smallest model still passes your evals. |
 
 #### Skill Agents
 

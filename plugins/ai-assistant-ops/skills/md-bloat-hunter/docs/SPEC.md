@@ -38,7 +38,15 @@ audited skill.
 **Why two-level:** the top orchestrator's concern is fan-out + aggregation + gating + writing. The file-orchestrator's concern is producing a reduced finding list for one file. Each level does one thing.
 
 `size-budget-reporter` is deliberately outside the edit-finding path. It emits
-measurement warnings only; it never proposes rewrites.
+measurement warnings only; it never proposes rewrites. Budgets flag files for
+attention; the pass mark is the harness's smallest model still passing the
+evals and tests that cover the edited files, checked after writing.
+
+Targets are `.md` files. A `.md.j2` template is a target too, but the main
+flow speaks only of `.md`: every template rule lives in
+`references/templates.md`, which the orchestrator opens and passes to
+workers only when a template is in scope, so a user with plain `.md` files
+never meets it.
 
 ## Context closures
 

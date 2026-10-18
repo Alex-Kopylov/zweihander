@@ -22,11 +22,13 @@ FIXTURE_MATRIX = {
             "id": "claude-code",
             "display_name": "Claude Code",
             "invocation_wrapper": "Skill({name})",
+            "smallest_model": "Haiku",
         },
         "Codex": {
             "id": "codex",
             "display_name": "Codex",
             "invocation_wrapper": "${name}",
+            "smallest_model": "Luna",
         },
     },
     "actions": {

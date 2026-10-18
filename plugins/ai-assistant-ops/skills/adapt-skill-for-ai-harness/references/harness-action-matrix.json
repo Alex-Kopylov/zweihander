@@ -11,6 +11,7 @@
       "id": "claude-code",
       "display_name": "Claude Code",
       "invocation_wrapper": "Skill({name})",
+      "smallest_model": "Haiku",
       "source_urls": [
         "https://code.claude.com/docs/en/skills",
         "https://code.claude.com/docs/en/tools-reference",
@@ -22,6 +23,7 @@
       "id": "codex",
       "display_name": "Codex",
       "invocation_wrapper": "${name}",
+      "smallest_model": "Luna",
       "source_urls": [
         "https://developers.openai.com/codex/skills",
         "https://developers.openai.com/codex/plugins/build",
