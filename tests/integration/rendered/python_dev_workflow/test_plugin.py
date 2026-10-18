@@ -96,16 +96,15 @@ def section(markdown: str, heading: str) -> str:
     return match[1]
 
 
-def text_files(root: Path) -> list[Path]:
+def text_files(root: Path) -> list[tuple[Path, str]]:
     files = []
     for path in sorted(root.rglob("*")):
         if not path.is_file():
             continue
         try:
-            path.read_text(encoding="utf-8")
+            files.append((path, path.read_text(encoding="utf-8")))
         except UnicodeDecodeError:
             continue
-        files.append(path)
     return files
 
 
@@ -114,8 +113,7 @@ def test_metadata_paths_resolve_from_declaring_file(plugin_root: Path, tests_man
     metadata_files = [
         tests_manager_root / "SKILL.md",
         plugin_root / "skills" / "constants-placement" / "SKILL.md",
-        plugin_root / "agents" / "test-writer.md",
-        plugin_root / "agents" / "test-assessor.md",
+        *sorted((plugin_root / "agents").glob("*.md")),
     ]
 
     missing_paths = []
@@ -173,9 +171,9 @@ def test_no_agent_preloads_tests_manager(plugin_root: Path) -> None:
 def test_tree_names_no_removed_agent(rendered: Path) -> None:
     mentions = [
         f"{path.relative_to(rendered)}: {name}"
-        for path in text_files(rendered)
+        for path, text in text_files(rendered)
         for name in REMOVED_AGENTS
-        if name in path.read_text(encoding="utf-8") or name in path.name
+        if name in text or name in path.name
     ]
 
     assert mentions == []
@@ -184,9 +182,9 @@ def test_tree_names_no_removed_agent(rendered: Path) -> None:
 def test_plugin_carries_no_upstream_repository_specifics(plugin_root: Path) -> None:
     mentions = [
         f"{path.relative_to(plugin_root)}: {token}"
-        for path in text_files(plugin_root)
+        for path, text in text_files(plugin_root)
         for token in UPSTREAM_TOKENS
-        if token in path.read_text(encoding="utf-8").lower()
+        if token in text.lower()
     ]
 
     assert mentions == []
