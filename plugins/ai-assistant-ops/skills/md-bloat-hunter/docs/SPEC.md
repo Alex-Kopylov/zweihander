@@ -42,10 +42,11 @@ measurement warnings only; it never proposes rewrites. Budgets flag files for
 attention; the pass mark is the harness's smallest model still passing the
 evals and tests that cover the edited files, checked after writing.
 
-Targets are `.md` files and the `.md.j2` templates that render them. Jinja
-syntax in a template is opaque: detectors never quote it in an edit, and
-`scripts/apply_findings.py` refuses an edit that overlaps it or changes the
-file's Jinja token sequence.
+Targets are `.md` files. A `.md.j2` template is a target too, but the main
+flow speaks only of `.md`: every template rule lives in
+`references/templates.md`, which the orchestrator opens and passes to
+workers only when a template is in scope, so a user with plain `.md` files
+never meets it.
 
 ## Context closures
 
