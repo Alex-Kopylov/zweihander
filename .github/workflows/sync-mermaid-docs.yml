@@ -54,5 +54,5 @@ jobs:
             Automated weekly Mermaid docs sync: upstream snapshot refresh plus
             the full build re-render of both `dist/` trees.
           branch: bot/sync-mermaid-docs
-          labels: documentation
+          labels: mermaid-tracker
           delete-branch: true
