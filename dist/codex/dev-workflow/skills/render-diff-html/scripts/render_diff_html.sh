@@ -57,7 +57,7 @@ die() {
 need_value() {
   local flag="$1"
   local value="${2:-}"
-  [[ -n "$value" ]] || die "$flag requires a value"
+  [[ -n "${value}" ]] || die "${flag} requires a value"
 }
 
 while (($#)); do
@@ -144,30 +144,30 @@ while (($#)); do
   esac
 done
 
-case "$SOURCE" in
+case "${SOURCE}" in
   working|staged|unstaged|last|range|diff-file|files) ;;
   *) die "--scope must be one of: working, staged, unstaged, last" ;;
 esac
 
-case "$STYLE" in
+case "${STYLE}" in
   line|side) ;;
   *) die "--style must be 'line' or 'side'" ;;
 esac
 
-case "$FORMAT" in
+case "${FORMAT}" in
   html|json) ;;
   *) die "--format must be 'html' or 'json'" ;;
 esac
 
-if [[ "$SOURCE" == "diff-file" || "$SOURCE" == "files" ]]; then
+if [[ "${SOURCE}" == "diff-file" || "${SOURCE}" == "files" ]]; then
   ((${#GIT_ARGS[@]} == 0)) || die "pathspecs after -- only apply to git diff sources"
 fi
 
 scratch_parent="${ZWEIHANDER_TMP_DIR:-./.tmp/zweihander}/runs/render-diff-html"
-mkdir -p "$scratch_parent" || die "failed to create scratch directory"
-tmp_dir="$(mktemp -d "$scratch_parent/XXXXXX")" || die "failed to create run directory"
+mkdir -p "${scratch_parent}" || die "failed to create scratch directory"
+tmp_dir="$(mktemp -d "${scratch_parent}/XXXXXX")" || die "failed to create run directory"
 trap 'rm -rf "$tmp_dir"' EXIT
-raw_diff="$tmp_dir/input.diff"
+raw_diff="${tmp_dir}/input.diff"
 
 require_git_repo() {
   git rev-parse --is-inside-work-tree >/dev/null 2>&1 || die "not inside a git worktree"
@@ -175,12 +175,12 @@ require_git_repo() {
 
 write_git_diff() {
   require_git_repo
-  if ! "$@" >"$raw_diff"; then
+  if ! "$@" >"${raw_diff}"; then
     die "failed to generate raw git diff"
   fi
 }
 
-case "$SOURCE" in
+case "${SOURCE}" in
   working)
     write_git_diff git diff HEAD -- "${GIT_ARGS[@]}"
     ;;
@@ -194,61 +194,64 @@ case "$SOURCE" in
     write_git_diff git show --format= --find-renames HEAD -- "${GIT_ARGS[@]}"
     ;;
   range)
-    [[ -n "$RANGE" ]] || die "--range requires a git revision range"
-    write_git_diff git diff "$RANGE" -- "${GIT_ARGS[@]}"
+    [[ -n "${RANGE}" ]] || die "--range requires a git revision range"
+    write_git_diff git diff "${RANGE}" -- "${GIT_ARGS[@]}"
     ;;
   diff-file)
-    [[ -f "$DIFF_FILE" ]] || die "diff file not found: $DIFF_FILE"
-    cp "$DIFF_FILE" "$raw_diff" || die "failed to read diff file: $DIFF_FILE"
+    [[ -f "${DIFF_FILE}" ]] || die "diff file not found: ${DIFF_FILE}"
+    cp "${DIFF_FILE}" "${raw_diff}" || die "failed to read diff file: ${DIFF_FILE}"
     ;;
   files)
-    [[ -e "$FILE_A" ]] || die "left path not found: $FILE_A"
-    [[ -e "$FILE_B" ]] || die "right path not found: $FILE_B"
+    [[ -e "${FILE_A}" ]] || die "left path not found: ${FILE_A}"
+    [[ -e "${FILE_B}" ]] || die "right path not found: ${FILE_B}"
     status=0
-    git diff --no-index -- "$FILE_A" "$FILE_B" >"$raw_diff" || status=$?
-    if [[ "$status" -gt 1 ]]; then
+    git diff --no-index -- "${FILE_A}" "${FILE_B}" >"${raw_diff}" || status=$?
+    if [[ "${status}" -gt 1 ]]; then
       die "failed to compare files with git diff --no-index"
     fi
     ;;
+  *)
+    die "unknown source: ${SOURCE}"
+    ;;
 esac
 
-if [[ ! -s "$raw_diff" ]]; then
-  printf 'No differences found for source: %s\n' "$SOURCE" >&2
+if [[ ! -s "${raw_diff}" ]]; then
+  printf 'No differences found for source: %s\n' "${SOURCE}" >&2
   exit 3
 fi
 
-if [[ -z "$OUTPUT" ]]; then
+if [[ -z "${OUTPUT}" ]]; then
   tmp_base="${TMPDIR:-/tmp}"
   tmp_base="${tmp_base%/}"
-  safe_pwd_name="$(printf '%s' "$(basename "$PWD")" | tr -c '[:alnum:]_.-' '-')"
+  safe_pwd_name="$(printf '%s' "$(basename "${PWD}")" | tr -c '[:alnum:]_.-' '-')"
   timestamp="$(date -u +%Y%m%dT%H%M%SZ)"
-  extension="$FORMAT"
+  extension="${FORMAT}"
   OUTPUT="${tmp_base}/codex-diff2html/${safe_pwd_name}-${SOURCE}-${timestamp}.${extension}"
-elif [[ "$OUTPUT" != /* ]]; then
-  OUTPUT="$PWD/$OUTPUT"
+elif [[ "${OUTPUT}" != /* ]]; then
+  OUTPUT="${PWD}/${OUTPUT}"
 fi
 
-mkdir -p "$(dirname "$OUTPUT")" || die "failed to create output directory"
+mkdir -p "$(dirname "${OUTPUT}")" || die "failed to create output directory"
 
 declare -a cmd=(
   npx --yes "diff2html-cli@${DIFF2HTML_CLI_VERSION}"
-  --style "$STYLE"
-  --format "$FORMAT"
+  --style "${STYLE}"
+  --format "${FORMAT}"
   --input file
-  --file "$OUTPUT"
+  --file "${OUTPUT}"
 )
 
-if [[ -n "$TITLE" ]]; then
-  cmd+=(--title "$TITLE")
+if [[ -n "${TITLE}" ]]; then
+  cmd+=(--title "${TITLE}")
 fi
 
 cmd+=("${IGNORE_ARGS[@]}")
-cmd+=(-- "$raw_diff")
+cmd+=(-- "${raw_diff}")
 
 if ! "${cmd[@]}"; then
   die "diff2html-cli failed"
 fi
 
-[[ -s "$OUTPUT" ]] || die "diff2html-cli did not create a non-empty output file"
+[[ -s "${OUTPUT}" ]] || die "diff2html-cli did not create a non-empty output file"
 
-printf '%s\n' "$OUTPUT"
+printf '%s\n' "${OUTPUT}"

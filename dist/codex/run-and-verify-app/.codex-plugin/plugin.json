@@ -1,11 +1,11 @@
 {
   "name": "run-and-verify-app",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Launch real app surfaces, verify runtime behavior, and generate project-specific run skills.",
   "author": {
     "name": "Alex Kopylov"
   },
-  "license": "UNLICENSED",
+  "license": "Apache-2.0",
   "skills": "./skills/",
   "interface": {
     "displayName": "Run And Verify App",

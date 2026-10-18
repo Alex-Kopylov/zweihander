@@ -113,6 +113,18 @@
       "category": "Productivity"
     },
     {
+      "name": "web",
+      "source": {
+        "source": "local",
+        "path": "./dist/codex/web"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    },
+    {
       "name": "ai-assistant-ops",
       "source": {
         "source": "local",

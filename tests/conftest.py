@@ -11,11 +11,12 @@ from pathlib import Path
 
 import pytest
 
-from plugin_maintenance import REPO_ROOT
+from plugin_maintenance.paths import REPO_ROOT
 from plugin_maintenance.render import Harness, render_tree
 
 
 def pytest_addoption(parser: pytest.Parser) -> None:
+    """Register the --harness and --llm options."""
     parser.addoption(
         "--harness",
         choices=tuple(Harness),
@@ -30,9 +31,7 @@ def pytest_addoption(parser: pytest.Parser) -> None:
     )
 
 
-def pytest_collection_modifyitems(
-    config: pytest.Config, items: list[pytest.Item]
-) -> None:
+def pytest_collection_modifyitems(config: pytest.Config, items: list[pytest.Item]) -> None:
     """Filter harness cases before fixtures run; keep their parameter indices."""
     chosen = config.getoption("--harness")
     skip_llm = pytest.mark.skip(reason="needs --llm")
@@ -48,9 +47,7 @@ def pytest_collection_modifyitems(
                 )
         callspec = getattr(item, "callspec", None)
         name = callspec.params.get("harness") if callspec else None
-        if name is not None and (
-            (chosen and name != chosen) or (marker and name not in marker.args)
-        ):
+        if name is not None and ((chosen and name != chosen) or (marker and name not in marker.args)):
             deselected.append(item)
             continue
         if not config.getoption("--llm") and item.get_closest_marker("llm"):
@@ -63,13 +60,13 @@ def pytest_collection_modifyitems(
 
 
 @pytest.fixture(scope="session", params=tuple(Harness))
-def harness(request: pytest.FixtureRequest) -> str:
+def harness(request: pytest.FixtureRequest) -> Harness:
     """The harness under test, one parameter per supported harness."""
     return request.param
 
 
 @pytest.fixture(scope="session")
-def rendered(harness: str, tmp_path_factory: pytest.TempPathFactory) -> Path:
+def rendered(harness: Harness, tmp_path_factory: pytest.TempPathFactory) -> Path:
     """Render once per harness; stage 1 belongs to the build, not the tests."""
     tree = tmp_path_factory.mktemp(f"rendered-{harness}")
     render_tree(REPO_ROOT, harness, tree)

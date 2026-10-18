@@ -1,6 +1,9 @@
 ---
 name: create-pr
 description: Create a pull request from the current branch. Activate when user asks to create a PR, open a pull request, submit for review, or says /create-pr.
+metadata:
+  references:
+    "references/github.md": "Load when the pull request is created on GitHub."
 ---
 
 # Create Pull Request
@@ -39,6 +42,9 @@ description: Create a pull request from the current branch. Activate when user a
 
 6. **Create PR**:
    - Use `<platform-cli>` to create the PR with the generated title and generated body
+
+7. **Report**:
+   - In the final message, summarize what was done as a short, nicely formatted bullet list
 
 ## Examples
 

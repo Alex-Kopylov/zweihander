@@ -14,7 +14,6 @@ from pathlib import Path
 
 import pytest
 
-
 DIR_ENV = "INTERVIEW_DECISION_LOG_DIR"
 DIR_NAME = "interview-decision-logs"
 
@@ -72,9 +71,7 @@ def bar(script: Path, taken: int, total: int) -> str:
 
 
 def start(script: Path, total: int = 10, name: str = "pr-68-review") -> Path:
-    return Path(
-        run(script, "start", "--total", str(total), "--name", name).splitlines()[0]
-    )
+    return Path(run(script, "start", "--total", str(total), "--name", name).splitlines()[0])
 
 
 class TestBar:
@@ -125,14 +122,11 @@ class TestStart:
     def test_total_below_one_fails_loudly(self, script):
         assert "items" in fails(script, "start", "--total", "0", "--name", "x")
 
-    def test_default_directory_falls_back_to_the_temp_directory(
-        self, tmp_path, monkeypatch
-    , script):
+    def test_default_directory_falls_back_to_the_temp_directory(self, tmp_path, monkeypatch, script):
         monkeypatch.delenv(DIR_ENV)
         monkeypatch.setenv("TMPDIR", str(tmp_path / "systmp"))
 
         assert start(script).parent == tmp_path / "systmp" / DIR_NAME
-
 
     def test_a_new_log_is_private_to_its_owner(self, log_dir, script):
         log = start(script)
@@ -164,13 +158,9 @@ class TestRecord:
             "add null check with default",
         )
 
-        assert printed == (
-            "#3 HIGH — Missing null check: **Fix now** (add null check with default)\n"
-            "▰▱▱▱▱▱▱▱▱▱  1/10"
-        )
-        assert (
-            "| #3 HIGH — Missing null check | Fix now | add null check with default |"
-            in log.read_text(encoding="utf-8")
+        assert printed == ("#3 HIGH — Missing null check: **Fix now** (add null check with default)\n▰▱▱▱▱▱▱▱▱▱  1/10")
+        assert "| #3 HIGH — Missing null check | Fix now | add null check with default |" in log.read_text(
+            encoding="utf-8"
         )
 
     def test_grouped_items_share_one_decision_and_move_the_bar_once_per_item(self, script):
@@ -243,9 +233,7 @@ class TestExtend:
         assert printed == "▰▱▱▱▱  1/5"
         assert "total: 5" in log.read_text(encoding="utf-8")
 
-    def test_a_planted_temp_file_is_neither_followed_nor_left_behind(
-        self, tmp_path, script
-    ):
+    def test_a_planted_temp_file_is_neither_followed_nor_left_behind(self, tmp_path, script):
         log = start(script, total=3)
         target = tmp_path / "target"
         target.write_text("untouched", encoding="utf-8")

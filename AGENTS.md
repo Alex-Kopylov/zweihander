@@ -32,6 +32,24 @@ The marketplace install identifier is `zweihander`; the display name is
 - `dist/claude-code/` and `dist/codex/` are the committed rendered trees the
   marketplace manifests install from.
 
+## Developer Setup
+
+Install [mise](https://mise.en.dev/getting-started.html) before setting up a clone.
+Run the commands below from the repository root.
+Review `mise.toml` before trusting it because it defines executable tasks.
+
+```shell
+mise trust ./mise.toml
+mise install
+mise run install
+mise run install-hooks
+```
+
+`mise install` installs the pinned tools; `mise run install` installs the Python
+dependencies. Trust is stored locally on each contributor's machine.
+If mise reports `Config files ... are not trusted`, complete the trust step before
+retrying the command. See [mise trust](https://mise.en.dev/cli/trust.html).
+
 ## Build Pipeline
 
 Plugins are authored once under `plugins/` and rendered per harness into
@@ -111,10 +129,13 @@ jq empty .agents/plugins/marketplace.json .claude-plugin/marketplace.json
 find plugins dist -path '*/plugin.json' -print0 | xargs -0 jq empty
 ```
 
-8. Run Markdown whitespace checks before finishing:
+8. Run Markdown whitespace checks and the lint suite before finishing. CI's
+   `gate` job runs the same `mise run lint`; `mise.toml` pins every linter and
+   `mise run install-hooks` installs the prek commit hooks.
 
 ```shell
 git diff --check
+mise run lint
 ```
 
 ## Tests
@@ -226,12 +247,16 @@ convention stays as it is.
 
 When adding a plugin:
 
-- Add `plugins/<plugin-name>/.codex-plugin/plugin.json`.
-- Add `plugins/<plugin-name>/.claude-plugin/plugin.json`.
-- Add the plugin to `.agents/plugins/marketplace.json`.
-- Add the plugin to `.claude-plugin/marketplace.json`.
+- For each harness the plugin targets, add its plugin metadata
+  (`plugins/<plugin-name>/.codex-plugin/plugin.json`,
+  `plugins/<plugin-name>/.claude-plugin/plugin.json`) and list it in that
+  harness's marketplace (`.agents/plugins/marketplace.json`,
+  `.claude-plugin/marketplace.json`).
 - Each manifest is the inclusion list for its own `dist/` tree; a plugin
-  listed in only one manifest ships to only that harness.
+  listed in only one manifest ships to only that harness. Single-harness
+  plugins are intentional: `run-and-verify-app` ports a Claude Code built-in
+  to Codex, so it has no `.claude-plugin/`. Scripts that walk plugin metadata
+  must not assume both directories exist.
 - Run the full build so both `dist/` trees include the plugin.
 - Add a user-facing section to `README.md`.
 - If the plugin has more than one skill, put the README plugin details inside a

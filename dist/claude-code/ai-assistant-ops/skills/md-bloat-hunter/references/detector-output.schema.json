@@ -8,24 +8,6 @@
   "allOf": [
     {
       "if": {
-        "properties": { "specialist": { "const": "redundancy-detector" } },
-        "required": ["specialist"]
-      },
-      "then": {
-        "properties": {
-          "findings": {
-            "items": {
-              "properties": {
-                "type": { "const": "redundancy" },
-                "action": { "enum": ["delete", "replace", "restructure"] }
-              }
-            }
-          }
-        }
-      }
-    },
-    {
-      "if": {
         "properties": { "specialist": { "const": "verbosity-pruner" } },
         "required": ["specialist"]
       },
@@ -83,7 +65,6 @@
     "specialist": {
       "type": "string",
       "enum": [
-        "redundancy-detector",
         "verbosity-pruner",
         "filler-eliminator",
         "vocab-compressor"
@@ -189,7 +170,7 @@
         },
         "type": {
           "type": "string",
-          "enum": ["redundancy", "verbosity", "filler", "vocab"],
+          "enum": ["verbosity", "filler", "vocab"],
           "description": "identified_problem (SGR phase 2)"
         },
         "rationale": {

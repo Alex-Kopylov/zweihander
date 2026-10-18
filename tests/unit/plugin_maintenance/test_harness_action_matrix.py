@@ -10,7 +10,7 @@ from pathlib import Path
 
 import pytest
 
-from plugin_maintenance import REPO_ROOT
+from plugin_maintenance.paths import REPO_ROOT
 from plugin_maintenance.render import (
     DIST_DIRS,
     FOREIGN_SKILL_FILES,
@@ -70,7 +70,8 @@ def test_callable_actions_map_one_name_per_assistant(actions, assistants):
             continue
         for assistant in assistants:
             name = action[assistant].get("name")
-            assert isinstance(name, str) and name, f"{key}/{assistant}"
+            assert isinstance(name, str), f"{key}/{assistant}"
+            assert name, f"{key}/{assistant}"
 
 
 def test_reference_actions_are_non_callable(actions):
@@ -81,7 +82,8 @@ def test_reference_actions_are_non_callable(actions):
 def test_single_wrapper_per_assistant(assistants, actions):
     for key, assistant in assistants.items():
         wrapper = assistant.get("invocation_wrapper")
-        assert isinstance(wrapper, str) and wrapper.count("{name}") == 1, key
+        assert isinstance(wrapper, str), key
+        assert wrapper.count("{name}") == 1, key
 
     for key, action in actions.items():
         for value in action.values():
@@ -92,10 +94,7 @@ def test_single_wrapper_per_assistant(assistants, actions):
 
 def test_action_keys_never_equal_callable_names(actions, assistants):
     callable_names = {
-        action[assistant]["name"]
-        for action in actions.values()
-        if action["callable"]
-        for assistant in assistants
+        action[assistant]["name"] for action in actions.values() if action["callable"] for assistant in assistants
     }
 
     assert not callable_names & set(actions)

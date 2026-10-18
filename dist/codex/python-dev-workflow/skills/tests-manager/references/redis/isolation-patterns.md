@@ -109,7 +109,6 @@ def redis_client(redis_container):
 @pytest.fixture(autouse=True)
 def clean_redis(redis_client):
     redis_client.flushall()
-    yield
 ```
 
 This gives full isolation (dedicated container) plus clean state per test (autouse flush).

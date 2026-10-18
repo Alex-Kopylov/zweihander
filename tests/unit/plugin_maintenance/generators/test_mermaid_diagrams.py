@@ -8,12 +8,12 @@ among the rendered-content tests.
 import inspect
 import re
 
-from plugin_maintenance import REPO_ROOT
 from plugin_maintenance.generators import mermaid_diagrams
 from plugin_maintenance.generators.mermaid_diagrams.generated_docs import (
+    PLUGIN_NAME,
     load_navigation_metadata,
 )
-
+from plugin_maintenance.paths import REPO_ROOT
 
 PLUGIN_ROOT = REPO_ROOT / "plugins" / "mermaid-diagrams"
 TOOLING_ROOT = REPO_ROOT / "plugin_maintenance" / "generators" / "mermaid_diagrams"
@@ -31,7 +31,7 @@ def test_generator_package_follows_stage_one_convention() -> None:
     signature = inspect.signature(mermaid_diagrams.generate)
 
     assert not signature.parameters
-    assert mermaid_diagrams.PLUGIN_NAME == "mermaid-diagrams"
+    assert PLUGIN_NAME == "mermaid-diagrams"
 
 
 def test_bundled_navigation_metadata_is_used_without_source_checkout(monkeypatch) -> None:
@@ -87,9 +87,7 @@ def test_python_sync_preserves_first_port_safety_gates() -> None:
 
 
 def test_sync_workflow_uses_root_project_and_full_build() -> None:
-    workflow = (REPO_ROOT / ".github" / "workflows" / "sync-mermaid-docs.yml").read_text(
-        encoding="utf-8"
-    )
+    workflow = (REPO_ROOT / ".github" / "workflows" / "sync-mermaid-docs.yml").read_text(encoding="utf-8")
 
     assert "workflow_dispatch:" in workflow
     assert "astral-sh/setup-uv" in workflow

@@ -7,17 +7,18 @@ import argparse
 import tempfile
 from pathlib import Path
 
-from plugin_maintenance import REPO_ROOT
+from plugin_maintenance.errors import BuildError
 from plugin_maintenance.generate import run_generators
+from plugin_maintenance.paths import REPO_ROOT
 from plugin_maintenance.render import (
     DIST_DIRS,
-    BuildError,
     render_tree,
     tree_snapshot,
 )
 
 
 def build() -> None:
+    """Run every stage-1 generator, then render each harness into its `dist/` tree."""
     run_generators()
     for harness, dist_dir in DIST_DIRS.items():
         render_tree(REPO_ROOT, harness, REPO_ROOT / dist_dir)
@@ -38,17 +39,14 @@ def stale_paths() -> list[str]:
             rendered = tree_snapshot(fresh)
             stale += [f"{dist_dir}/{name}" for name in committed.keys() ^ rendered.keys()]
             stale += [
-                f"{dist_dir}/{name}"
-                for name in committed.keys() & rendered.keys()
-                if committed[name] != rendered[name]
+                f"{dist_dir}/{name}" for name in committed.keys() & rendered.keys() if committed[name] != rendered[name]
             ]
     return sorted(stale)
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(
-        description="Run generators and render marketplace distributions."
-    )
+    """Build `dist/`, or with `--check` report the paths that drifted from `plugins/`."""
+    parser = argparse.ArgumentParser(description="Run generators and render marketplace distributions.")
     parser.add_argument(
         "--check",
         action="store_true",
@@ -57,19 +55,17 @@ def main() -> None:
     args = parser.parse_args()
 
     try:
-        if args.check:
-            stale = stale_paths()
-            if stale:
-                raise SystemExit(
-                    "dist is stale:\n  "
-                    + "\n  ".join(stale)
-                    + "\n\nrun `uv run python -m plugin_maintenance.build`"
-                )
-            print("dist matches plugins/")
-            return
-        build()
+        stale = stale_paths() if args.check else build()
     except BuildError as error:
-        raise SystemExit(f"error: {error}") from error
+        # SystemExit prints its argument as the process's last word; that is the CLI's contract, not a reusable message.
+        raise SystemExit(f"error: {error}") from error  # ruff: ignore[raise-vanilla-args]
+    if args.check:
+        if stale:
+            raise SystemExit(
+                "dist is stale:\n  " + "\n  ".join(stale) + "\n\nrun `uv run python -m plugin_maintenance.build`"
+            )
+        print("dist matches plugins/")
+        return
     for harness, dist_dir in DIST_DIRS.items():
         print(f"rendered {harness} -> {dist_dir}")
 
