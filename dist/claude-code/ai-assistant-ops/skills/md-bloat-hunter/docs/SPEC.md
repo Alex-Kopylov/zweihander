@@ -23,35 +23,63 @@ This skill audits MD files and produces concrete atomic rewrites that reduce tok
 SKILL.md (top orchestrator)
    ├── size-budget-reporter (one per file, parallel, report-only)
    ├── file-orchestrator (one per file, parallel)
-   │     ├── redundancy-detector
    │     ├── verbosity-pruner
    │     ├── filler-eliminator
    │     └── vocab-compressor
-   ⋮  one size-budget-reporter and one file-orchestrator per file, all parallel
+   ├── redundancy-detector (one per context closure, parallel)
+   ⋮
 ```
 
-For N files at runtime: 1 top orchestrator + N size reporters + N
-file-orchestrators + 4N detectors, all in parallel. No queueing.
+For N files and K closures at runtime: 1 top orchestrator + N size reporters
++ N file-orchestrators + 3N local detectors + K redundancy detectors, all in
+parallel. No queueing. K is typically close to the number of agents in the
+audited skill.
 
 **Why two-level:** the top orchestrator's concern is fan-out + aggregation + gating + writing. The file-orchestrator's concern is producing a reduced finding list for one file. Each level does one thing.
 
 `size-budget-reporter` is deliberately outside the edit-finding path. It emits
 measurement warnings only; it never proposes rewrites.
 
+## Context closures
+
+Redundancy is tokens one agent reads twice in one run, so its unit is the
+**context closure**: the files one agent loads into one context. Duplication
+inside a closure is bloat; duplication across closures is free and usually
+load-bearing, because each agent must be self-contained.
+
+The graph has Markdown files as nodes and two edge kinds. `reads` edges
+(`@file` includes, read/load/preload wording) land in the same context;
+`dispatches` edges (run a subagent from a file) land in a different one. Edge
+extraction is an LLM judgment in Preflight, guided by
+`references/FILES_TO_AUDIT.MD`; when unsure, the edge is `dispatches`, because
+over-inclusion invites deleting a rule an independent agent needs.
+
+`scripts/build_closures.py` owns the graph arithmetic. It tries every file as
+a root, follows `reads` edges, and stops at dispatch targets: an orchestrator
+that reads an agent prompt reads it as data. It drops a closure that holds no
+editable file or is a subset of another closure, since every pair it could
+check is already checked. The editable set is what the user pointed at; other
+closure members are read-only context, and a finding whose right fix lives in
+a read-only file comes back as `ask-user`.
+
+A shared reference read by several agents sits in several closures, so the
+top orchestrator dedups aggregated findings by `file_path` + `excerpt` +
+`action`. Cross-skill drift detection is out of scope: one skill at a time.
+
 ## Detector taxonomy
 
 | Specialist | Hunts | Finding shape |
 |---|---|---|
-| `redundancy-detector` | Within-file duplication; restated content (rule → example → summary saying the same thing) | 2+ locations + canonical form |
+| `redundancy-detector` | Duplication inside one context closure, within a file or across the files one agent loads together | 2+ locations + canonical form; returns file-level reduction objects, one per editable file |
 | `verbosity-pruner` | Wordiness in a span: preambles, passive voice, hedging, "it is important to note that" | 1 span, before → after |
 | `filler-eliminator` | Pure deletes: empty connectives, restated headings, "designed to help you" intros | 1 span, delete-only |
 | `vocab-compressor` | Multi-word phrase → precise term ("can be run multiple times safely with the same result" → "idempotent") | 1 phrase, before → after + equivalence justification |
 
 The verbosity/vocab split is deliberate. Verbosity is mechanical ("fewer words for the same idea"). Vocab is semantic ("you used the definition; the term for it exists"). Different risk profile, different scrutiny.
 
-Cross-file redundancy is handled by a directory-level redundancy detector when
-the target scope has more than one file. File-local detectors should stay
-focused on one file.
+The three local detectors run per file under `file-orchestrator`; wordiness,
+filler and vocabulary are local to a span. `redundancy-detector` runs per
+closure and bypasses `file-orchestrator`.
 
 Size reporting is handled separately by `size-budget-reporter`. Default
 guardrails are 4,096 soft-warning tokens and 8,192 hard-warning tokens.
@@ -68,7 +96,7 @@ Schema-Guided Reasoning order: `preliminary_analysis → identified_problem → 
 
 ```yaml
 SpecialistOutput:
-  specialist: enum                  # "redundancy-detector" | "verbosity-pruner" | "filler-eliminator" | "vocab-compressor"
+  specialist: enum                  # "verbosity-pruner" | "filler-eliminator" | "vocab-compressor"
   file_path: str
 
   audit_calibration:                # outer SGR: characterize file before scanning
@@ -86,7 +114,7 @@ Finding:
   context_after: str | null         # exact adjacent text after, same condition
 
   # --- SGR phase 2: identified_problem (classify the observation) ---
-  type: enum                        # "redundancy" | "verbosity" | "filler" | "vocab"
+  type: enum                        # "verbosity" | "filler" | "vocab"
   rationale: str                    # one-line WHY
   severity: enum                    # "critical" | "major" | "minor"
 
@@ -142,7 +170,7 @@ Trust the agent's characterization. No frontmatter opt-ins, no auto-detection he
 
 ## File-orchestrator: per-file reducer
 
-After collecting four `SpecialistOutput` blocks for one file, the file-orchestrator resolves overlapping findings. Two specialists may flag overlapping spans. Three resolution shapes:
+After collecting three `SpecialistOutput` blocks for one file, the file-orchestrator resolves overlapping findings. Two specialists may flag overlapping spans. Three resolution shapes:
 
 | Overlap shape | Resolution |
 |---|---|
@@ -205,13 +233,14 @@ unfindable excerpt is a hallucination, not a recoverable state.
 │   └── SPEC.md                       # this file
 ├── scripts/
 │   ├── apply_findings.py
+│   ├── build_closures.py
 │   ├── measure_size.py
 │   ├── preflight.py
 │   └── validate_output.py
 ├── agents/
 │   ├── file-orchestrator.md          # per-file fan-out + reducer
 │   ├── size-budget-reporter.md       # per-file size warning report
-│   ├── redundancy-detector.md
+│   ├── redundancy-detector.md        # per-closure redundancy, bypasses the reducer
 │   ├── verbosity-pruner.md
 │   ├── filler-eliminator.md
 │   └── vocab-compressor.md
@@ -242,7 +271,6 @@ v1 hook points are designed so these slot in cleanly without rework:
 | Separate semantic-preservation-validator agent | Between reducer aggregation and user gate; routes by `semantic_risk` |
 | Trigger-preservation test for skill `description:` rewrites | Pre-commit guard in the writer; fires only when target has a `description:` frontmatter field |
 | MUST/NEVER-rule extractor | Pre-commit guard in the writer; checks no hard rules were softened |
-| Cross-file redundancy detection | Promote from per-file to top-orchestrator step; new top-level pass after per-file reduction |
 | Token-delta computation | Top orchestrator tokenizes pre- and post-rewrite using a real tokenizer; reports actual savings |
 
 None of these are in v1. Listed here so v1 architecture does not paint itself into a corner.
@@ -263,3 +291,16 @@ Honest uncertainties, not implementation blockers.
 4. **The 4-detector taxonomy may be incomplete.** Real audits will surface patterns that don't fit. New specialists drop in as new agent files — the architectural payoff for DOTADIW.
 
 5. **Calibration discipline determines the entire safety surface.** Gating only on `high` means everything else auto-applies. The system inherits the honesty of its specialists.
+
+6. **Closure findings bypass the file-orchestrator reducer.** A redundancy
+   finding and a local-detector finding on the same span are never reconciled;
+   `apply_findings.py` reports the second one as shifted and skips it. No
+   corruption, but a silently lost finding. Routing closure findings through
+   the reducer would make redundancy finish before local reduction starts.
+   The first dogfood run (2026-10-12, 9 files) lost 4 of 43 approved findings
+   this way.
+
+7. **Harness concurrency caps.** N files fan out to 2N + K top-level workers
+   plus 3N nested detectors; Claude Code rejects dispatches past 20 concurrent
+   subagents. Workers re-dispatch a rejected call after earlier ones return;
+   a rejection that is not retried degrades coverage (`skipped` status).

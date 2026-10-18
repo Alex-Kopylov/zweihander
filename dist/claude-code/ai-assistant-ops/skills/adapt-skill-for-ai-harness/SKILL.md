@@ -178,7 +178,7 @@ metadata:
   references:
     "references/gitlab.md": "Load when the merge request lives on GitLab."
   agents:
-    "../../agents/test-runner.md": "Use for focused pytest execution."
+    "../../agents/test-writer.md": "Use to write tests at one assigned level."
   config:
     output-dir: "${TMPDIR:-/tmp}/skill-output"
 ```

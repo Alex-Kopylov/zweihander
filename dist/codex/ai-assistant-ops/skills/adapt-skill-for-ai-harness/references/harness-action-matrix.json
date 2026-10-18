@@ -52,6 +52,17 @@
         "name": "spawn_agent"
       }
     },
+    "WaitAgent": {
+      "callable": true,
+      "intent": "Block until a delegated agent returns its result.",
+      "ClaudeCode": {
+        "name": "Agent",
+        "note": "Real counterpart. There is no separate wait tool: a blocking delegation (`run_in_background: false`) returns the result from the same call, so waiting is the delegation call itself."
+      },
+      "Codex": {
+        "name": "wait_agent"
+      }
+    },
     "CreateTask": {
       "callable": true,
       "intent": "Create a tracked task in the session task list.",

@@ -52,7 +52,7 @@
     {
       "name": "python-dev-workflow",
       "source": "./dist/claude-code/python-dev-workflow",
-      "description": "Python TDD and pytest scenario planning, E2E/integration/unit testing, Celery and Redis references, production Celery guidance, and test agents.",
+      "description": "Python TDD, pytest scenario planning, E2E/integration/unit test writing, test review and audit, Celery and Redis references, production Celery guidance, and constants and config placement.",
       "category": "development",
       "tags": [
         "python",
@@ -117,15 +117,33 @@
     {
       "name": "research",
       "source": "./dist/claude-code/research",
-      "description": "Research knowledge-base and Obsidian vault workflows for agent-maintained notes.",
+      "description": "Research workflows: arXiv paper search, grounded citations with a verifiable source ledger, an LLM-maintained Markdown wiki, and Obsidian vault notes.",
       "category": "productivity",
       "tags": [
         "research",
+        "arxiv",
+        "citations",
         "wiki",
         "knowledge-base",
         "obsidian",
         "notes",
         "markdown"
+      ]
+    },
+    {
+      "name": "web",
+      "source": "./dist/claude-code/web",
+      "description": "Web, social, and feed reading workflows: Reddit, RSS/Atom feeds, blog tracking, YouTube transcripts, X via xurl, and blocked-page recovery.",
+      "category": "productivity",
+      "tags": [
+        "web",
+        "reddit",
+        "rss",
+        "feeds",
+        "youtube",
+        "x",
+        "twitter",
+        "archives"
       ]
     },
     {

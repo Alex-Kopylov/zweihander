@@ -12,7 +12,7 @@
     "detector_status": {
       "type": "array",
       "minItems": 1,
-      "maxItems": 5,
+      "maxItems": 4,
       "allOf": [
         {
           "contains": {
@@ -53,17 +53,6 @@
             "required": ["specialist"],
             "properties": {
               "specialist": { "const": "vocab-compressor" }
-            }
-          },
-          "minContains": 0,
-          "maxContains": 1
-        },
-        {
-          "contains": {
-            "type": "object",
-            "required": ["specialist"],
-            "properties": {
-              "specialist": { "const": "directory-redundancy-detector" }
             }
           },
           "minContains": 0,
@@ -485,23 +474,6 @@
               "action": { "enum": ["replace", "restructure"] }
             }
           }
-        },
-        {
-          "if": {
-            "properties": {
-              "source_specialists": {
-                "maxItems": 1,
-                "contains": { "const": "directory-redundancy-detector" }
-              }
-            },
-            "required": ["source_specialists"]
-          },
-          "then": {
-            "properties": {
-              "type": { "const": "redundancy" },
-              "action": { "enum": ["delete", "replace", "restructure"] }
-            }
-          }
         }
       ]
     },
@@ -554,18 +526,6 @@
               "action": { "enum": ["replace", "restructure"] }
             }
           }
-        },
-        {
-          "if": {
-            "properties": { "source_specialist": { "const": "directory-redundancy-detector" } },
-            "required": ["source_specialist"]
-          },
-          "then": {
-            "properties": {
-              "type": { "const": "redundancy" },
-              "action": { "enum": ["delete", "replace", "restructure"] }
-            }
-          }
         }
       ]
     },
@@ -575,8 +535,7 @@
         "redundancy-detector",
         "verbosity-pruner",
         "filler-eliminator",
-        "vocab-compressor",
-        "directory-redundancy-detector"
+        "vocab-compressor"
       ]
     },
     "findingType": {
