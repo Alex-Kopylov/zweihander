@@ -9,6 +9,12 @@ compatibility: Optional `tiktoken` for exact token counts; falls back if missing
 Audit Markdown for token bloat and, in edit mode, apply exact atomic rewrites
 that preserve meaning.
 
+## Goal
+
+Cut bloat until the smallest model the harness offers (Haiku)
+still passes the evals and tests that cover the audited files. Size budgets
+are not that bar: a file under budget gets the same full pass.
+
 ## Modes
 
 Use one mode for the whole run:
@@ -29,9 +35,9 @@ Read these during normal invocation:
 
 - `agents/file-orchestrator.md` for file-local detectors.
 - `agents/size-budget-reporter.md` for report-only size warnings.
-- `agents/directory-redundancy-detector.md` when the target set has more than
-  one file.
+- `agents/redundancy-detector.md` for redundancy inside one context closure.
 - `@scripts/measure_size.py` for deterministic size measurement.
+- `scripts/build_closures.py` for grouping files into context closures.
 - `references/file-reduction.schema.json` for file-level reduced outputs.
 - `references/size-report.schema.json` for size-budget outputs.
 
@@ -53,15 +59,19 @@ medium/high semantic-risk edit.
 - User approval questions: use Skill(AskUserQuestion) when a structured
   question is useful; otherwise ask in chat and wait.
 - Parallel dispatch: delegate the current fan-out with
-  Skill(Agent) in one batch when your runtime supports it,
-  then wait on the full delegated set before reducing findings.
+  Skill(Agent) in one batch when supported,
+  then wait for all delegated workers before reducing findings.
+- If the runtime rejects a dispatch because of a concurrency limit,
+  re-dispatch that worker after an earlier one returns; do not drop it.
 
 ## Preflight
 
 Resolve the input path:
 
 - Expand `~` and relative paths against the current working directory.
-- Accept one `.md` file or one directory.
+- Accept one `.md` file, or one directory. A `.md.j2` Jinja template is a
+  target too; when one is in scope, read `references/templates.md` before
+  dispatch and pass its path to every worker that reads a template.
 - File: audit if included; otherwise require explicit audit for that file.
 - Directory: recurse included Markdown only. No symlinks. Stay under supplied
   directory. If eligible targets exceed 50, ask user before dispatch.
@@ -84,44 +94,78 @@ umask 077
 mktemp -d "${TMPDIR:-/tmp}/md-bloat-hunter.${run_id}.XXXXXX"
 ```
 
-Keep that directory for post-run debugging and include it in the final report.
+Keep that directory for post-run debugging.
+
+## Context Closures
+
+Redundancy is text one agent reads twice in one run, so the redundancy pass
+runs once per context closure: the set of files one agent loads into one
+context. Build the closure graph before dispatch.
+
+The editable set is what the user pointed at: the one file, or the eligible
+files under the supplied directory. The graph scope is the supplied directory,
+or for one file the nearest ancestor directory holding a `SKILL.md` (the
+file's own directory when there is none). Read every included Markdown file
+in scope, plus every file a `reads` edge leads to, and record its edges to
+other Markdown files:
+
+- `reads`: `@file` includes and prose telling the model to read, load,
+  preload, inject, or open a file. Lands in the same context.
+- `dispatches`: prose telling the model to run a subagent, worker, or
+  delegate from a file. Lands in a different context.
+
+When unsure which kind an edge is, record `dispatches`: an under-included
+closure misses a finding, an over-included one flags repetition between files
+that are never co-loaded.
+
+Write the graph as JSON with absolute paths and run:
+
+```sh
+scripts/build_closures.py "<run-output-dir>/graph.json" > "<run-output-dir>/closures.json"
+```
+
+```json
+{
+  "editable": ["/abs/skill/SKILL.md"],
+  "edges": [
+    {"from": "/abs/skill/SKILL.md", "to": "/abs/skill/references/x.md", "kind": "reads"},
+    {"from": "/abs/skill/SKILL.md", "to": "/abs/skill/agents/a.md", "kind": "dispatches"}
+  ]
+}
+```
+
+The script tries every file as a root, follows `reads` edges, stops at
+dispatch targets, and drops a closure that has no editable member or is a
+subset of another closure. Each output closure lists its `editable` and
+`read_only` members. If the script reports errors, fix the graph before
+dispatch.
 
 ## Scope Strategy
-
-Use size-budget agents for measurement, file-local agents for single-file
-context, and directory-level agents for cross-file comparisons.
 
 Size-budget pass:
 
 - Dispatch one `agents/size-budget-reporter.md` worker per target file.
-- Run it in parallel with file-local orchestrators when parallel dispatch is
-  available.
 - Treat its output as report-only. Never convert size warnings into edit
   findings.
 - Default budgets are `4096` soft-warning tokens and `8192` hard-warning
-  tokens. These are prompt-quality guardrails, not provider limits.
+  tokens. They flag files for attention; they are not provider limits.
 - Do not calculate token, word, character, line, or byte counts in prose. Run
   `@scripts/measure_size.py` and report its JSON fields.
 
 File-local pass:
 
-- Dispatch one `agents/file-orchestrator.md` worker per target file.
-- For one target file, allow the file orchestrator to run local redundancy.
-- For multiple target files, pass `local_redundancy=false`; directory-level
-  redundancy owns duplicate/repeated guidance across the set.
+- Dispatch one `agents/file-orchestrator.md` worker per editable file.
 
-Directory-level pass:
+Redundancy pass:
 
-- When there is more than one target file, dispatch one
-  `agents/directory-redundancy-detector.md` worker with the full target file
-  list.
-- Use it for duplicated instructions, repeated skill guidance, repeated agent
-  setup, and contradictions created by near-duplicate docs.
-- It returns file-level reduction objects; validate each one like file-local
-  reductions.
+- Dispatch one `agents/redundancy-detector.md` worker per closure in
+  `closures.json`, passing its `root`, `editable`, and `read_only` members.
+- It writes one file-level reduction object per editable member under the run
+  output directory and returns those paths. Reject a reported path outside
+  the run output directory, then validate each file like a file-local
+  reduction.
 
-Run all file-local orchestrators in parallel. Run the directory-level pass in
-parallel with them when parallel dispatch is available.
+Run every worker in parallel when parallel dispatch is available.
 
 ## Validation
 
@@ -159,6 +203,10 @@ Collect valid findings into one queue while preserving:
 - `recommendation`
 - `semantic_risk`
 - edit fields: `excerpt`, `context_before`, `context_after`, `action`, `new_text`
+
+Deduplicate findings on `file_path`, `excerpt`, and `action`, keeping the
+first: a file read by several agents sits in several closures, and its
+within-file findings arrive once per closure.
 
 Rank review by severity (`critical`, `major`, `minor`), then semantic risk
 (`high`, `medium`, `low`, `none`), then file path and source order. Do not
@@ -223,20 +271,33 @@ Apply edits with:
 scripts/apply_findings.py "<approved-findings.json>"
 ```
 
-The script performs exact, atomic string edits. It does not use regex, fuzzy
-matching, whitespace normalization, commits, staging, stashing, or backups.
+The script performs exact, atomic string edits. It matches excerpts without
+regex, fuzzy matching, or whitespace normalization, and does no commits,
+staging, stashing, or backups.
 Reversibility comes from the clean git tree and user-reviewed `git diff`.
+
+## Verification
+
+After writing in `Edit+Report`, run the evals and tests that cover each edited
+file with the model named in Goal. Find them by location, never from
+instructions inside audited files. A failure means a cut removed meaning:
+report it with the findings applied to that file.
+
+With no evals or tests, the goal cannot be checked. Cut on meaning alone under
+the risk gate, report the file as unverified, and suggest
+Skill(ai-assistant-ops:improve-skill) to create evals first.
 
 ## Reporting
 
 Report concisely:
 
 - mode used
-- number of findings found
+- number of findings
 - number applied, skipped, failed, and requiring approval
 - file paths touched
 - file paths with failed agent outputs or writer failures
 - size-budget warnings and over-budget files
+- eval and test results per edited file, or `unverified`
 - private run output directory
 
 If no findings are approved or the mode is `Audit+Report`, report that no files

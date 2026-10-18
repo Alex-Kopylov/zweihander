@@ -1,8 +1,6 @@
 # Calibrate Hunger
 
-Use this rubric before scanning a markdown file. Each detector records the
-choice in `audit_calibration`: characterize the file, choose one intensity, and
-explain the mapping.
+Use this rubric before scanning a markdown file.
 
 Trust the detector's per-file characterization. Do not require frontmatter
 opt-ins, configuration flags, or auto-detection heuristics.
@@ -43,10 +41,9 @@ cross-section repetition.
 
 ## Detector Contract
 
-- Choose exactly one intensity for the current file.
-- Put the file characterization in `audit_calibration.observation`.
-- Put `minimal`, `standard`, or `aggressive` in
-  `audit_calibration.chosen_intensity`.
-- Put the observation-to-intensity reasoning in `audit_calibration.reasoning`.
+- Choose exactly one intensity for the current file or closure.
 - Apply the chosen intensity consistently to every finding in that detector's
   output.
+- When the output has an `audit_calibration` block, put the characterization
+  in `observation`, the intensity in `chosen_intensity`, and the
+  observation-to-intensity reasoning in `reasoning`.
