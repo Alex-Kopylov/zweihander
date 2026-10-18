@@ -107,8 +107,9 @@ def locate(content: str, original: str, finding: dict[str, Any]) -> tuple[int, i
 
 def touches_jinja(content: str, start: int, end: int, updated: str) -> bool:
     """Return whether the edit of content[start:end] overlaps Jinja syntax or changes the template's Jinja syntax."""
-    overlaps = any(match.start() < end and start < match.end() for match in JINJA_SYNTAX.finditer(content))
-    return overlaps or JINJA_SYNTAX.findall(content) != JINJA_SYNTAX.findall(updated)
+    tokens = list(JINJA_SYNTAX.finditer(content))
+    overlaps = any(match.start() < end and start < match.end() for match in tokens)
+    return overlaps or [match.group() for match in tokens] != JINJA_SYNTAX.findall(updated)
 
 
 def edited(content: str, original: str, finding: dict[str, Any], *, template: bool) -> str:

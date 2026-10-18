@@ -195,12 +195,14 @@ def test_apply_findings_cli_reports_failures(scripts_dir: Path, tmp_path: Path) 
 TEMPLATE = 'Ask with {{ actions.AskUser | call }} now.\n{% if harness == "Codex" %}\nWait here.\n{% endif %}\n'
 
 
-def replace_finding(excerpt: str, new_text: str, source_order: int = 0, **context: str) -> dict:
+def replace_finding(
+    excerpt: str, new_text: str, source_order: int = 0, before: str | None = None, after: str | None = None
+) -> dict:
     return {
         "source_order": source_order,
         "excerpt": excerpt,
-        "context_before": context.get("before"),
-        "context_after": context.get("after"),
+        "context_before": before,
+        "context_after": after,
         "action": "replace",
         "new_text": new_text,
     }
@@ -227,7 +229,7 @@ def test_apply_findings_refuses_template_edits_that_touch_jinja(
     applied, failures = apply_findings.apply_file_findings(target, [replace_finding(excerpt, new_text)])
 
     assert applied == 0
-    assert failures[0]["reason"] == "edit touches Jinja syntax; Jinja blocks in a template are not editable"
+    assert failures[0]["reason"] == apply_findings.FindingError.TOUCHES_JINJA
     assert target.read_text(encoding="utf-8") == TEMPLATE
 
 

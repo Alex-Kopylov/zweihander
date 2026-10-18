@@ -50,6 +50,9 @@ under budget gets no less review:
 - `warning`: tokens are above the soft budget and at or below the hard budget.
 - `over_budget`: tokens are above the hard budget.
 
+A `.md.j2` count includes Jinja syntax and every template branch, so it is an
+upper bound on any file it renders.
+
 These defaults are rule-of-thumb guardrails for agent prompt files, not provider
 limits. Provider guidance favors clear, direct, specific prompts and warns that
 very large prompts with complex instructions need evaluation.
