@@ -27,7 +27,9 @@ The entry point for pytest work. It recognises the intent, runs that intent's
 pipeline, and cuts lanes. Every rule lives in a reference; load one only when
 its condition in `metadata` applies.
 
-**Iron Law:** no production code without a failing test first.
+**Iron Law:** no production code without a failing test first. Ask the user
+with {{ actions.AskUser | call }} before skipping it for a throwaway
+prototype, generated code, or a configuration file.
 
 ## Intents
 
@@ -124,7 +126,7 @@ every spawned agent and stay in the turn until each one returns.
 | Role | Receives | Returns |
 |---|---|---|
 | `test-scenario-planner` | the requirements | [scenarios](references/schemas/scenarios.schema.json) |
-| `test-writer` | scenario ids, one level, target paths | changed files and the pytest command it ran |
+| `test-writer` | the requirements or scenario catalog, the assigned scenario ids, one level, target paths | changed files and the pytest command it ran |
 | `test-assessor`, `review` | the lane's diff and the requirements or scenario catalog | [ledger](references/schemas/ledger.schema.json) |
 | `test-assessor`, `audit` | the lane's test paths and owners | [ledger](references/schemas/ledger.schema.json) |
 | `test-assessor`, `recheck` | the lane's diff and the mutmut survivors | [ledger](references/schemas/ledger.schema.json) |

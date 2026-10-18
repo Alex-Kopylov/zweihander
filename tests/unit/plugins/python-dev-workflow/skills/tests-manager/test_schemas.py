@@ -141,6 +141,14 @@ def test_repair_without_repair_fails(schemas_dir: Path, mode: str) -> None:
     assert not validator(schemas_dir, "ledger").is_valid(ledger(mode, repair))
 
 
+def test_recheck_retain_without_remaining_proof_fails(schemas_dir: Path) -> None:
+    unproven = entry(mark="R", junk_patterns=[])
+    del unproven["remaining_proof"]
+
+    assert not validator(schemas_dir, "ledger").is_valid(ledger("recheck", unproven))
+    assert validator(schemas_dir, "ledger").is_valid(ledger("review", unproven))
+
+
 def test_unknown_junk_pattern_fails(schemas_dir: Path) -> None:
     unknown = entry(junk_patterns=["looks-odd"])
 

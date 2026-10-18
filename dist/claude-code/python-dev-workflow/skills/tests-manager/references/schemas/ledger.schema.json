@@ -15,8 +15,16 @@
       "items": {"$ref": "#/$defs/text"}
     }
   },
-  "if": {"properties": {"mode": {"const": "audit"}}},
-  "then": {"properties": {"entries": {"items": {"$ref": "#/$defs/audit_evidence"}}}},
+  "allOf": [
+    {
+      "if": {"properties": {"mode": {"const": "audit"}}},
+      "then": {"properties": {"entries": {"items": {"$ref": "#/$defs/audit_evidence"}}}}
+    },
+    {
+      "if": {"properties": {"mode": {"const": "recheck"}}},
+      "then": {"properties": {"entries": {"items": {"required": ["remaining_proof"]}}}}
+    }
+  ],
   "$defs": {
     "text": {"type": "string", "minLength": 1},
     "junk_pattern": {
