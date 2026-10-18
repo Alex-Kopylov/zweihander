@@ -66,6 +66,129 @@ classDiagram
     }
 ```
 
+## Default theme, look and layout (v12.0.0+)
+
+Class diagrams use the `redux-color` theme and the `neo` look by default, and are laid out by [ELK](https://www.eclipse.org/elk/) rather than Dagre. Not every diagram type
+does — see [Per-diagram defaults](../config/theming.md#per-diagram-defaults) for the list and
+for the order in which Mermaid decides.
+
+The same diagram, drawn both ways:
+
+### With the defaults
+
+```mermaid-example
+classDiagram
+  class Customer {
+    +String name
+    +String email
+  }
+  class Order {
+    +String id
+    +Date placedAt
+    +total() Money
+  }
+  class LineItem {
+    +int quantity
+  }
+  class Payment {
+    <<interface>>
+    +authorise() bool
+  }
+  Customer "1" --> "*" Order : places
+  Order "1" *-- "*" LineItem : contains
+  Order --> Payment : settled by
+```
+
+```mermaid
+classDiagram
+  class Customer {
+    +String name
+    +String email
+  }
+  class Order {
+    +String id
+    +Date placedAt
+    +total() Money
+  }
+  class LineItem {
+    +int quantity
+  }
+  class Payment {
+    <<interface>>
+    +authorise() bool
+  }
+  Customer "1" --> "*" Order : places
+  Order "1" *-- "*" LineItem : contains
+  Order --> Payment : settled by
+```
+
+### The previous appearance
+
+Both are only defaults, so anything you set yourself wins. Naming the previous theme and look
+in a diagram's front matter draws it the way Mermaid did before:
+
+```mermaid-example
+---
+config:
+  theme: default
+  look: classic
+  layout: dagre
+---
+classDiagram
+  class Customer {
+    +String name
+    +String email
+  }
+  class Order {
+    +String id
+    +Date placedAt
+    +total() Money
+  }
+  class LineItem {
+    +int quantity
+  }
+  class Payment {
+    <<interface>>
+    +authorise() bool
+  }
+  Customer "1" --> "*" Order : places
+  Order "1" *-- "*" LineItem : contains
+  Order --> Payment : settled by
+```
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  layout: dagre
+---
+classDiagram
+  class Customer {
+    +String name
+    +String email
+  }
+  class Order {
+    +String id
+    +Date placedAt
+    +total() Money
+  }
+  class LineItem {
+    +int quantity
+  }
+  class Payment {
+    <<interface>>
+    +authorise() bool
+  }
+  Customer "1" --> "*" Order : places
+  Order "1" *-- "*" LineItem : contains
+  Order --> Payment : settled by
+```
+
+Passing the same three keys to `mermaid.initialize()` does it for every diagram on the page,
+and scoping the theme and look to one diagram type — `mermaid.initialize({ layout: 'dagre', class: { theme: 'default', look: 'classic' } })` —
+does it for that type alone. `layout` is a top-level option, so it applies to every diagram.
+
 ## Syntax
 
 ### Class
@@ -1158,6 +1281,12 @@ classDiagram
 It is possible to hide the empty members box of a class node.
 
 This is done by changing the **hideEmptyMembersBox** value of the class diagram configuration. For more information on how to edit the Mermaid configuration see the [configuration page.](https://mermaid.js.org/config/configuration.html)
+
+### Possible configuration parameters:
+
+| Parameter           | Description                                                  | Default value |
+| ------------------- | ------------------------------------------------------------ | ------------- |
+| hideEmptyMembersBox | Hides the empty members box of a class node when set to true | false         |
 
 ```mermaid-example
 ---

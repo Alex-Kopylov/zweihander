@@ -1,0 +1,33 @@
+# E2E Level
+
+## Owns
+
+Externally observable business journeys through the public entry point and the
+real system-owned stack. An E2E test proves the outcome a user or external
+consumer can observe, not internal implementation details. It does not repeat
+integration wiring cases or unit branch matrices.
+
+## Safe resources
+
+Use only local, test, or development resources; never point E2E tests at
+production data or services. Follow the project's established E2E flow.
+
+If that flow or its safe resource boundary is unclear, stop immediately.
+Do not write or run E2E tests; ask the user with Skill(AskUserQuestion)
+to confirm both before proceeding.
+
+## Rules
+
+- Place journeys under `tests/e2e/<journey>/`; see
+  [placement](../rules/conventions.md#placement).
+- Use the real application, public interface, and system-owned dependencies.
+- Replace only uncontrollable external systems at their boundary, using an
+  existing sandbox or deterministic substitute, and report that boundary.
+- Use isolated, uniquely addressable test data with reliable cleanup or
+  rollback.
+- Wait for observable conditions instead of sleeping for fixed durations.
+- Assert public responses, persisted outcomes, emitted events, or other
+  externally visible state, never internal mock calls.
+- Mark the module with `pytestmark = pytest.mark.e2e` when the project uses
+  markers, and reuse the project's runner and fixtures instead of adding a new
+  test stack.
