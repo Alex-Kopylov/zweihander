@@ -33,6 +33,7 @@ jobs:
           commit-message: "chore(deps): bump mise tool pins"
           title: "chore(deps): bump mise tool pins"
           body: Automated `mise upgrade --bump`.
+          labels: dependencies
       - if: >-
           steps.pr.outputs.pull-request-operation == 'created' ||
           steps.pr.outputs.pull-request-operation == 'updated'
