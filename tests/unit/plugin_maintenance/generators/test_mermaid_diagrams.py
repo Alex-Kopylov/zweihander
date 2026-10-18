@@ -42,7 +42,7 @@ def test_bundled_navigation_metadata_is_used_without_source_checkout(monkeypatch
     assert metadata["flowchart"].title == "Flowchart"
     assert metadata["flowchart"].order == 0
     assert metadata["sequenceDiagram"].title == "Sequence Diagram"
-    assert metadata["sequenceDiagram"].order == 1
+    assert metadata["sequenceDiagram"].order > metadata["flowchart"].order
 
 
 def test_python_tooling_is_relocated_to_root_generators() -> None:

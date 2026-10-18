@@ -2,12 +2,15 @@
 
 import importlib.util
 import json
+import re
 import subprocess
 import sys
 from pathlib import Path
 from types import ModuleType
 
 import pytest
+
+from plugin_maintenance.render import TEMPLATE_SUFFIX
 
 
 @pytest.fixture
@@ -189,6 +192,77 @@ def test_apply_findings_cli_reports_failures(scripts_dir: Path, tmp_path: Path) 
     assert summary["failed"] == 1
 
 
+TEMPLATE = 'Ask with {{ actions.AskUser | call }} now.\n{% if harness == "Codex" %}\nWait here.\n{% endif %}\n'
+
+
+def replace_finding(
+    excerpt: str, new_text: str, source_order: int = 0, before: str | None = None, after: str | None = None
+) -> dict:
+    return {
+        "source_order": source_order,
+        "excerpt": excerpt,
+        "context_before": before,
+        "context_after": after,
+        "action": "replace",
+        "new_text": new_text,
+    }
+
+
+@pytest.mark.parametrize(
+    ("excerpt", "new_text"),
+    [
+        pytest.param("{{ actions.AskUser | call }}", "the ask tool", id="excerpt-is-expression"),
+        pytest.param("AskUser", "Ask", id="excerpt-inside-expression"),
+        pytest.param("Wait here.\n{% endif %}", "Wait.", id="excerpt-spans-tag"),
+        pytest.param("now.", "{{ now }}.", id="new-text-adds-expression"),
+        pytest.param("now.", "now {%", id="new-text-adds-stray-marker"),
+        pytest.param("Ask with ", "{", id="edit-joins-into-marker"),
+    ],
+)
+def test_apply_findings_refuses_template_edits_that_touch_jinja(
+    scripts_dir: Path, tmp_path: Path, excerpt: str, new_text: str
+) -> None:
+    apply_findings = load_script(scripts_dir, "apply_findings")
+    target = tmp_path / f"SKILL.md{TEMPLATE_SUFFIX}"
+    target.write_text(TEMPLATE, encoding="utf-8")
+
+    applied, failures = apply_findings.apply_file_findings(target, [replace_finding(excerpt, new_text)])
+
+    assert applied == 0
+    assert failures[0]["reason"] == apply_findings.FindingError.TOUCHES_JINJA
+    assert target.read_text(encoding="utf-8") == TEMPLATE
+
+
+def test_apply_findings_edits_template_text_around_jinja(scripts_dir: Path, tmp_path: Path) -> None:
+    apply_findings = load_script(scripts_dir, "apply_findings")
+    target = tmp_path / f"SKILL.md{TEMPLATE_SUFFIX}"
+    target.write_text(TEMPLATE, encoding="utf-8")
+
+    applied, failures = apply_findings.apply_file_findings(
+        target,
+        [
+            replace_finding("Ask with ", "Use ", after="{{ actions"),
+            replace_finding("Wait here.", "Wait.", source_order=1),
+        ],
+    )
+
+    assert (applied, failures) == (2, [])
+    assert target.read_text(encoding="utf-8") == (
+        'Use {{ actions.AskUser | call }} now.\n{% if harness == "Codex" %}\nWait.\n{% endif %}\n'
+    )
+
+
+def test_apply_findings_edits_literal_braces_in_plain_markdown(scripts_dir: Path, tmp_path: Path) -> None:
+    apply_findings = load_script(scripts_dir, "apply_findings")
+    target = tmp_path / "doc.md"
+    target.write_text("Render {{ name }} literally.\n", encoding="utf-8")
+
+    applied, failures = apply_findings.apply_file_findings(target, [replace_finding("{{ name }}", "`{{ name }}`")])
+
+    assert (applied, failures) == (1, [])
+    assert target.read_text(encoding="utf-8") == "Render `{{ name }}` literally.\n"
+
+
 def test_validate_output_invariants_reject_invalid_recommended_indexes(scripts_dir: Path) -> None:
     validate_output = load_script(scripts_dir, "validate_output")
 
@@ -319,6 +393,25 @@ def test_preflight_validate_target_accepts_uppercase_markdown_extension(scripts_
     assert result["file_path"] == str(target.resolve())
     assert result["repo_root"] == str(repo.resolve())
     assert result["git_relative_path"] == "doc.MD"
+
+
+@pytest.mark.parametrize("name", [f"SKILL.md{TEMPLATE_SUFFIX}", f"agent.MD{TEMPLATE_SUFFIX.upper()}"])
+def test_preflight_validate_target_accepts_markdown_template(scripts_dir: Path, tmp_path: Path, name: str) -> None:
+    preflight = load_script(scripts_dir, "preflight")
+    _repo, target = clean_git_repo(tmp_path, name)
+
+    result = preflight.validate_target(target)
+
+    assert result["git_relative_path"] == name
+
+
+@pytest.mark.parametrize("name", ["notes.txt", f"config.yaml{TEMPLATE_SUFFIX}", f"doc{TEMPLATE_SUFFIX}"])
+def test_preflight_rejects_non_markdown_target(scripts_dir: Path, tmp_path: Path, name: str) -> None:
+    preflight = load_script(scripts_dir, "preflight")
+    _repo, target = clean_git_repo(tmp_path, name)
+
+    with pytest.raises(ValueError, match=f"^{re.escape(preflight.TargetError.NOT_MARKDOWN)}$"):
+        preflight.validate_target(target)
 
 
 def test_preflight_rejects_dirty_target(scripts_dir: Path, tmp_path: Path) -> None:
