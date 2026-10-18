@@ -83,6 +83,7 @@ kanban
   ai_assistant_ops[ai-assistant-ops]
     aao_agents_md_improver[agents-md-improver]
     aao_ai_setup_audit[ai-setup-audit]
+    aao_harness_overlap_audit[harness-overlap-audit]
     aao_ai_insights_hunter[ai-insights-hunter]
     aao_docs_language_review[docs-language-review]
     aao_md_bloat_hunter[md-bloat-hunter]
@@ -465,8 +466,9 @@ page that fails to fetch.
 ### `ai-assistant-ops`
 
 **Use when:** you want to audit assistant instructions, improve AGENTS.md files,
-improve existing skills, adapt skills for assistant harnesses, capture useful
-session insights, review documentation language, or reduce Markdown bloat.
+improve existing skills, adapt skills for assistant harnesses, find overlapping
+skills and MCP tools, capture useful session insights, review documentation
+language, or reduce Markdown bloat.
 
 #### Skills
 
@@ -477,6 +479,7 @@ session insights, review documentation language, or reduce Markdown bloat.
 | `ai-insights-hunter` | Extract reusable decisions, patterns, and preferences from a session. |
 | `ai-setup-audit` | Audit assistant configuration files for conflicts and bloat. |
 | `docs-language-review` | Review or rewrite Markdown documentation using plain-language and cognitive-accessibility standards. |
+| `harness-overlap-audit` | Map skills, MCP tools, and skill agents whose scope overlaps, in a Markdown report with Venn diagrams. |
 | `improve-skill` | Improve existing skills through eval feedback, baseline comparison, iteration, and trigger checks. |
 | `md-bloat-hunter` | Trim redundancy, verbosity, and filler in Markdown. |
 
