@@ -14,12 +14,12 @@ jobs:
 
     steps:
       - name: Checkout current repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           persist-credentials: false
 
       - name: Checkout mermaid docs
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: mermaid-js/mermaid
           path: plugins/mermaid-diagrams/mermaid-source
@@ -31,7 +31,7 @@ jobs:
           persist-credentials: false
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v8.1.0
+        uses: astral-sh/setup-uv@v10.3.0
         with:
           version: latest
           enable-cache: true
@@ -46,7 +46,7 @@ jobs:
         run: uv run python -m plugin_maintenance.build
 
       - name: Open a pull request with the combined changes
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         with:
           commit-message: "docs: sync mermaid syntax and config docs"
           title: "docs: sync mermaid syntax and config docs"
@@ -54,4 +54,5 @@ jobs:
             Automated weekly Mermaid docs sync: upstream snapshot refresh plus
             the full build re-render of both `dist/` trees.
           branch: bot/sync-mermaid-docs
+          labels: mermaid-tracker
           delete-branch: true
