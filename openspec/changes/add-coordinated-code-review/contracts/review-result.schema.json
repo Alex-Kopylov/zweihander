@@ -1,0 +1,28 @@
+{
+  "type": "object",
+  "required": ["issues"],
+  "properties": {
+    "issues": {
+      "type": "array",
+      "minItems": 0,
+      "items": {
+        "type": "object",
+        "required": ["location", "issue", "impact", "fix"],
+        "properties": {
+          "location": {
+            "type": "object",
+            "required": ["file", "line", "column"],
+            "properties": {
+              "file": {"type": "string"},
+              "line": {"type": "integer"},
+              "column": {"type": "integer"}
+            }
+          },
+          "issue": {"type": "string"},
+          "impact": {"type": "string"},
+          "fix": {"type": "string"}
+        }
+      }
+    }
+  }
+}
