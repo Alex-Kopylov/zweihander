@@ -4,11 +4,11 @@
 # aqua backend: mise's core uv plugin extracts current uv tarballs incorrectly
 # (binary stays under uv-<target>/ with no bin/), silently falling back to
 # any system uv.
-"aqua:astral-sh/uv" = "0.13.1"
-node = "26.12.0"
-"npm:jscpd" = "5.4.1"
-"npm:markdownlint-cli2" = "0.23.3"
-"aqua:01mf02/jaq" = "3.1.1"
+"aqua:astral-sh/uv" = "0.13.5"
+node = "26.12.1"
+"npm:jscpd" = "5.4.2"
+"npm:markdownlint-cli2" = "0.24.0"
+"aqua:01mf02/jaq" = "3.1.2"
 "aqua:gitleaks/gitleaks" = "8.30.1"
 "aqua:koalaman/shellcheck" = "0.11.0"
 "aqua:rhysd/actionlint" = "1.7.12"
