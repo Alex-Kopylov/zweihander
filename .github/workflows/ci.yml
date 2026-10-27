@@ -22,7 +22,7 @@ jobs:
 
       # mise.toml pins uv and every linter binary; uv reads Python from .python-version
       - name: Install toolchain
-        uses: jdx/mise-action@v5.1.1
+        uses: jdx/mise-action@v5.2.3
         with:
           github_token: ${{ github.token }}
 
