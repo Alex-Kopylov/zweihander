@@ -4,7 +4,7 @@
 
 Mermaid can render user journey diagrams:
 
-```mermaid-example
+```mermaid
 journey
     title My working day
     section Go to work
@@ -16,7 +16,7 @@ journey
       Sit down: 5: Me
 ```
 
-```mermaid
+```mermaid-example
 journey
     title My working day
     section Go to work

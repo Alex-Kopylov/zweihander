@@ -1,5 +1,8 @@
 # Radar Diagram (v11.6.0+)
 
+> **Warning**
+> Radar diagrams are in beta. Diagrams start with the `radar-beta` keyword, and the syntax may still change in a backwards-incompatible way before it is declared stable.
+
 ## Introduction
 
 A radar diagram is a simple way to plot low-dimensional data in a circular format.
@@ -24,20 +27,6 @@ curve c2{5,4,3,2,1}
 
 ## Examples
 
-```mermaid-example
----
-title: "Grades"
----
-radar-beta
-  axis m["Math"], s["Science"], e["English"]
-  axis h["History"], g["Geography"], a["Art"]
-  curve a["Alice"]{85, 90, 80, 70, 75, 90}
-  curve b["Bob"]{70, 75, 85, 80, 90, 85}
-
-  max 100
-  min 0
-```
-
 ```mermaid
 ---
 title: "Grades"
@@ -53,6 +42,20 @@ radar-beta
 ```
 
 ```mermaid-example
+---
+title: "Grades"
+---
+radar-beta
+  axis m["Math"], s["Science"], e["English"]
+  axis h["History"], g["Geography"], a["Art"]
+  curve a["Alice"]{85, 90, 80, 70, 75, 90}
+  curve b["Bob"]{70, 75, 85, 80, 90, 85}
+
+  max 100
+  min 0
+```
+
+```mermaid
 radar-beta
   title Restaurant Comparison
   axis food["Food Quality"], service["Service"], price["Price"]
@@ -68,7 +71,7 @@ radar-beta
 
 ```
 
-```mermaid
+```mermaid-example
 radar-beta
   title Restaurant Comparison
   axis food["Food Quality"], service["Service"], price["Price"]
@@ -218,7 +221,7 @@ Radar charts support the color scales `cScale${i}` where `i` is a number from `0
 
 ## Example on config and theme
 
-```mermaid-example
+```mermaid
 ---
 config:
   radar:
@@ -239,7 +242,7 @@ radar-beta
   curve c3{3,3,3,3,3}
 ```
 
-```mermaid
+```mermaid-example
 ---
 config:
   radar:

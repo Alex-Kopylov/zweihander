@@ -47,7 +47,7 @@ Since `elk` is the default, a diagram needs no configuration to use it. To pick
 a different layout, set it in your diagram's YAML config or initialization
 options. For example:
 
-```mermaid-example
+```mermaid
 ---
 config:
   layout: dagre
@@ -57,7 +57,7 @@ graph TD;
   B-->C;
 ```
 
-```mermaid
+```mermaid-example
 ---
 config:
   layout: dagre

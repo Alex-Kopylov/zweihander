@@ -124,7 +124,7 @@ To customize the theme of an individual diagram, use frontmatter config.
 
 Example of frontmatter config setting the `theme` to `forest`:
 
-```mermaid-example
+```mermaid
 ---
 config:
   theme: 'forest'
@@ -133,7 +133,7 @@ config:
     a --> b
 ```
 
-```mermaid
+```mermaid-example
 ---
 config:
   theme: 'forest'
@@ -156,7 +156,7 @@ You will need to use the [base](#available-themes) theme as it is the only modif
 
 Example of modifying `themeVariables` using frontmatter config:
 
-```mermaid-example
+```mermaid
 ---
 config:
   theme: 'base'
@@ -184,7 +184,7 @@ config:
           end
 ```
 
-```mermaid
+```mermaid-example
 ---
 config:
   theme: 'base'
