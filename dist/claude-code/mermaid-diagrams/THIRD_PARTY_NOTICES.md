@@ -6,8 +6,8 @@ The Markdown files in `skills/mermaid/references` are synced from the
 `mermaid-js/mermaid` repository.
 
 - Source: https://github.com/mermaid-js/mermaid
-- Synced commit: `e28fbd9ded0a07ba9569e51be4764c1ad4daa8f6`
-- Synced date: 2026-10-18T03:19:47.045Z
+- Synced commit: `370c4af57f43cb0bda05f4a9fe2d99c912ba16dd`
+- Synced date: 2026-11-01T04:43:04.880Z
 - License: MIT
 
 The generated warning banners from the upstream documentation build are removed

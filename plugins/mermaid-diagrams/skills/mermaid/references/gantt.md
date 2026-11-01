@@ -16,7 +16,7 @@ A Gantt chart is useful for tracking the amount of time it would take before a p
 
 Mermaid can render Gantt diagrams as SVG, PNG or a MarkDown link that can be pasted into docs.
 
-```mermaid-example
+```mermaid
 gantt
     title A Gantt Diagram
     dateFormat YYYY-MM-DD
@@ -28,7 +28,7 @@ gantt
         another task    :24d
 ```
 
-```mermaid
+```mermaid-example
 gantt
     title A Gantt Diagram
     dateFormat YYYY-MM-DD
@@ -42,7 +42,7 @@ gantt
 
 ## Syntax
 
-```mermaid-example
+```mermaid
 gantt
     dateFormat  YYYY-MM-DD
     title       Adding GANTT diagram functionality to mermaid
@@ -75,7 +75,7 @@ gantt
     Add another diagram to demo page    :48h
 ```
 
-```mermaid
+```mermaid-example
 gantt
     dateFormat  YYYY-MM-DD
     title       Adding GANTT diagram functionality to mermaid
@@ -158,7 +158,7 @@ Decimal values are also supported (e.g., `1.5d`). Invalid duration tokens (e.g.,
 
 For simplicity, the table does not show the use of multiple tasks listed with the `after` keyword. Here is an example of how to use it and how it's interpreted:
 
-```mermaid-example
+```mermaid
 gantt
     apple :a, 2017-07-20, 1w
     banana :crit, b, 2017-07-23, 1d
@@ -166,7 +166,7 @@ gantt
     kiwi   :d, 2017-07-20, until b c
 ```
 
-```mermaid
+```mermaid-example
 gantt
     apple :a, 2017-07-20, 1w
     banana :crit, b, 2017-07-23, 1d
@@ -200,7 +200,7 @@ gantt
 When excluding weekends, it is possible to configure the weekends to be either Friday and Saturday or Saturday and Sunday. By default weekends are Saturday and Sunday.
 To define the weekend start day, there is an _optional_ attribute `weekend` that can be added in a new line followed by either `friday` or `saturday`.
 
-```mermaid-example
+```mermaid
 gantt
     title A Gantt Diagram Excluding Fri - Sat weekends
     dateFormat YYYY-MM-DD
@@ -211,7 +211,7 @@ gantt
         Another task    :after a1, 20d
 ```
 
-```mermaid
+```mermaid-example
 gantt
     title A Gantt Diagram Excluding Fri - Sat weekends
     dateFormat YYYY-MM-DD
@@ -232,7 +232,7 @@ To do so, start a line with the `section` keyword and give it a name. (Note that
 
 You can add milestones to the diagrams. Milestones differ from tasks as they represent a single instant in time and are identified by the keyword `milestone`. Below is an example on how to use milestones. As you may notice, the exact location of the milestone is determined by the initial date for the milestone and the "duration" of the task this way: _initial date_+_duration_/2.
 
-```mermaid-example
+```mermaid
 gantt
     dateFormat HH:mm
     axisFormat %H:%M
@@ -242,7 +242,7 @@ gantt
     Final milestone : milestone, m2, 18:08, 4m
 ```
 
-```mermaid
+```mermaid-example
 gantt
     dateFormat HH:mm
     axisFormat %H:%M
@@ -256,7 +256,7 @@ gantt
 
 The `vert` keyword lets you add vertical lines to your Gantt chart, making it easy to highlight important dates like deadlines, events, or checkpoints. These markers extend across the entire chart and are positioned based on the date you provide. Unlike milestones, vertical markers don’t take up a row. They’re purely visual reference points that help break up the timeline and make important moments easier to spot.
 
-```mermaid-example
+```mermaid
 gantt
     dateFormat HH:mm
     axisFormat %H:%M
@@ -266,7 +266,7 @@ gantt
     Final vert : vert, v2, 17:58, 4m
 ```
 
-```mermaid
+```mermaid-example
 gantt
     dateFormat HH:mm
     axisFormat %H:%M
@@ -371,13 +371,13 @@ More info in: <https://github.com/d3/d3-time#interval_every>
 
 Week-based `tickInterval`s start the week on sunday by default. If you wish to specify another weekday on which the `tickInterval` should start, use the `weekday` option:
 
-```mermaid-example
+```mermaid
 gantt
   tickInterval 1week
   weekday monday
 ```
 
-```mermaid
+```mermaid-example
 gantt
   tickInterval 1week
   weekday monday
@@ -390,7 +390,7 @@ gantt
 
 The compact mode allows you to display multiple tasks in the same row. Compact mode can be enabled for a gantt chart by setting the display mode of the graph via preceding YAML settings.
 
-```mermaid-example
+```mermaid
 ---
 displayMode: compact
 ---
@@ -404,7 +404,7 @@ gantt
     Another one      :a3, 2014-02-10, 20d
 ```
 
-```mermaid
+```mermaid-example
 ---
 displayMode: compact
 ---
@@ -422,7 +422,7 @@ gantt
 
 Comments can be entered within a gantt chart, which will be ignored by the parser. Comments need to be on their own line and must be prefaced with `%%` (double percent signs). Any text after the start of the comment to the next newline will be treated as a comment, including any diagram syntax.
 
-```mermaid-example
+```mermaid
 gantt
     title A Gantt Diagram
     %% This is a comment
@@ -435,7 +435,7 @@ gantt
         another task    :24d
 ```
 
-```mermaid
+```mermaid-example
 gantt
     title A Gantt Diagram
     %% This is a comment
@@ -612,7 +612,7 @@ Beginner's tip—a full example using interactive links in an HTML context:
 
 ### Bar chart (using gantt chart)
 
-```mermaid-example
+```mermaid
 gantt
     title Git Issues - days since last update
     dateFormat X
@@ -629,7 +629,7 @@ gantt
     5    : 0, 5
 ```
 
-```mermaid
+```mermaid-example
 gantt
     title Git Issues - days since last update
     dateFormat X
@@ -648,7 +648,7 @@ gantt
 
 ### Timeline (with comments, CSS, config in frontmatter)
 
-```mermaid-example
+```mermaid
 ---
     # Frontmatter config, YAML comments
     title: Ignored if specified in chart
@@ -688,7 +688,7 @@ gantt
     64   : workaround,        1923, 1s   %% custom CSS object https://github.com/mermaid-js/mermaid/issues/3250
 ```
 
-```mermaid
+```mermaid-example
 ---
     # Frontmatter config, YAML comments
     title: Ignored if specified in chart

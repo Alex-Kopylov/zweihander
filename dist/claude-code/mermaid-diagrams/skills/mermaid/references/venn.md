@@ -1,9 +1,9 @@
 # Venn diagrams (v11.12.3+)
 
-Venn diagrams show relationships between sets using overlapping circles.
-
 > **Warning**
-> This is a new diagram type in Mermaid. Its syntax may evolve in future versions.
+> Venn diagrams are in beta. Diagrams start with the `venn-beta` keyword, and the syntax may still change in a backwards-incompatible way before it is declared stable.
+
+Venn diagrams show relationships between sets using overlapping circles.
 
 ## Default theme and look (v12.0.0+)
 
@@ -15,7 +15,7 @@ The same diagram, drawn both ways:
 
 ### With the defaults
 
-```mermaid-example
+```mermaid
 venn-beta
   title What makes a good feature
   set Desirable
@@ -27,7 +27,7 @@ venn-beta
   union Desirable,Feasible,Viable["Ship it"]
 ```
 
-```mermaid
+```mermaid-example
 venn-beta
   title What makes a good feature
   set Desirable
@@ -44,7 +44,7 @@ venn-beta
 Both are only defaults, so anything you set yourself wins. Naming the previous theme and look
 in a diagram's front matter draws it the way Mermaid did before:
 
-```mermaid-example
+```mermaid
 ---
 config:
   theme: default
@@ -61,7 +61,7 @@ venn-beta
   union Desirable,Feasible,Viable["Ship it"]
 ```
 
-```mermaid
+```mermaid-example
 ---
 config:
   theme: default
@@ -90,7 +90,7 @@ does it for that type alone.
 - Identifiers in `union` must be defined by earlier `set` lines.
 - Set identifiers can be bare words (`A`, `Set_1`) or quoted strings (`"Foo Bar"`).
 
-```mermaid-example
+```mermaid
 venn-beta
   title "Team overlap"
   set Frontend
@@ -98,7 +98,7 @@ venn-beta
   union Frontend,Backend["APIs"]
 ```
 
-```mermaid
+```mermaid-example
 venn-beta
   title "Team overlap"
   set Frontend
@@ -110,14 +110,14 @@ venn-beta
 
 Use bracket syntax `["..."]` to set a display label while keeping the identifier short:
 
-```mermaid-example
+```mermaid
 venn-beta
   set A["Alpha"]
   set B["Beta"]
   union A,B["AB"]
 ```
 
-```mermaid
+```mermaid-example
 venn-beta
   set A["Alpha"]
   set B["Beta"]
@@ -130,7 +130,7 @@ venn-beta
 pairwise overlaps automatically, so the label on the higher-arity union has a
 visible region to sit in:
 
-```mermaid-example
+```mermaid
 venn-beta
   set Desirable
   set Feasible
@@ -138,7 +138,7 @@ venn-beta
   union Desirable,Feasible,Viable["Innovation"]
 ```
 
-```mermaid
+```mermaid-example
 venn-beta
   set Desirable
   set Feasible
@@ -150,14 +150,14 @@ venn-beta
 
 Use `:N` suffix to set the size of a set or union:
 
-```mermaid-example
+```mermaid
 venn-beta
   set A["Alpha"]:20
   set B["Beta"]:12
   union A,B["AB"]:3
 ```
 
-```mermaid
+```mermaid-example
 venn-beta
   set A["Alpha"]:20
   set B["Beta"]:12
@@ -170,7 +170,7 @@ venn-beta
 - Indented `text` lines attach to the most recent `set` or `union`.
 - Use bracket syntax `["..."]` to set a display label for text nodes.
 
-```mermaid-example
+```mermaid
 venn-beta
   set A["Frontend"]
     text A1["React"]
@@ -181,7 +181,7 @@ venn-beta
     text AB1["OpenAPI"]
 ```
 
-```mermaid
+```mermaid-example
 venn-beta
   set A["Frontend"]
     text A1["React"]
@@ -202,7 +202,7 @@ Use `style` statements to apply visual styles to sets, unions, and text nodes:
 - `stroke-width`: change the stroke width
 - `fill-opacity`: change the fill opacity
 
-```mermaid-example
+```mermaid
 venn-beta
   set A["Alpha"]:20
     text A1["React"]
@@ -214,7 +214,7 @@ venn-beta
   style A1 color:red
 ```
 
-```mermaid
+```mermaid-example
 venn-beta
   set A["Alpha"]:20
     text A1["React"]

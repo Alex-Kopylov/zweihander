@@ -13,7 +13,7 @@ When mermaid starts, configuration is extracted to determine a configuration to 
 
 The entire mermaid configuration (except the secure configs) can be overridden by the diagram author in the frontmatter of the diagram. The frontmatter is a YAML block at the top of the diagram.
 
-```mermaid-example
+```mermaid
 ---
 title: Hello Title
 config:
@@ -26,7 +26,7 @@ flowchart
 
 ```
 
-```mermaid
+```mermaid-example
 ---
 title: Hello Title
 config:
@@ -43,14 +43,14 @@ flowchart
 
 ## Starting mermaid
 
-```mermaid-example
+```mermaid
 sequenceDiagram
 	Site->>mermaid: initialize
 	Site->>mermaid: content loaded
 	mermaid->>mermaidAPI: init
 ```
 
-```mermaid
+```mermaid-example
 sequenceDiagram
 	Site->>mermaid: initialize
 	Site->>mermaid: content loaded

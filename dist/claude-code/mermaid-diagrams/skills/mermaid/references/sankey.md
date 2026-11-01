@@ -2,16 +2,13 @@
 
 > A sankey diagram is a visualization used to depict a flow from one set of values to another.
 
-> **Warning**
-> This is an experimental diagram. Its syntax are very close to plain CSV, but it is to be extended in the nearest future.
-
 The things being connected are called nodes and the connections are called links.
 
 ## Example
 
 This example taken from [observable](https://observablehq.com/@d3/sankey/2?collection=@d3/d3-sankey). It may be rendered a little bit differently, though, in terms of size and colors.
 
-```mermaid-example
+```mermaid
 ---
 config:
   sankey:
@@ -89,7 +86,7 @@ Wave,Electricity grid,19.013
 Wind,Electricity grid,289.366
 ```
 
-```mermaid
+```mermaid-example
 ---
 config:
   sankey:
@@ -180,7 +177,7 @@ It implements CSV standard as [described here](https://www.ietf.org/rfc/rfc4180.
 
 It is implied that 3 columns inside CSV should represent `source`, `target` and `value` accordingly:
 
-```mermaid-example
+```mermaid
 sankey
 
 %% source,target,value
@@ -189,7 +186,7 @@ Electricity grid,Heating and cooling - homes,113.726
 Electricity grid,H2 conversion,27.14
 ```
 
-```mermaid
+```mermaid-example
 sankey
 
 %% source,target,value
@@ -202,7 +199,7 @@ Electricity grid,H2 conversion,27.14
 
 CSV does not support empty lines without comma delimiters by default. But you can add them if needed:
 
-```mermaid-example
+```mermaid
 sankey
 
 Bio-conversion,Losses,26.862
@@ -212,7 +209,7 @@ Bio-conversion,Solid,280.322
 Bio-conversion,Gas,81.144
 ```
 
-```mermaid
+```mermaid-example
 sankey
 
 Bio-conversion,Losses,26.862
@@ -226,14 +223,14 @@ Bio-conversion,Gas,81.144
 
 If you need to have a comma, wrap it in double quotes:
 
-```mermaid-example
+```mermaid
 sankey
 
 Pumped heat,"Heating and cooling, homes",193.026
 Pumped heat,"Heating and cooling, commercial",70.672
 ```
 
-```mermaid
+```mermaid-example
 sankey
 
 Pumped heat,"Heating and cooling, homes",193.026
@@ -244,14 +241,14 @@ Pumped heat,"Heating and cooling, commercial",70.672
 
 If you need to have double quote, put a pair of them inside quoted string:
 
-```mermaid-example
+```mermaid
 sankey
 
 Pumped heat,"Heating and cooling, ""homes""",193.026
 Pumped heat,"Heating and cooling, ""commercial""",70.672
 ```
 
-```mermaid
+```mermaid-example
 sankey
 
 Pumped heat,"Heating and cooling, ""homes""",193.026
@@ -303,7 +300,7 @@ You can change how node labels are rendered by setting `labelStyle`:
 - `legacy` (default) - plain text labels, positioned based on node x-coordinate
 - `outlined` - labels with a background stroke for improved readability, positioned based on node layer relative to the central node
 
-```mermaid-example
+```mermaid
 ---
 config:
   sankey:
@@ -317,7 +314,7 @@ Electricity grid,Industry,342.165
 Electricity grid,Losses,56.691
 ```
 
-```mermaid
+```mermaid-example
 ---
 config:
   sankey:
@@ -338,7 +335,7 @@ You can customize the node dimensions:
 - `nodeWidth` - width of the node rectangles in pixels (default: `10`)
 - `nodePadding` - vertical padding between nodes in pixels (default: `12`)
 
-```mermaid-example
+```mermaid
 ---
 config:
   sankey:
@@ -353,7 +350,7 @@ Electricity grid,Industry,342.165
 Electricity grid,Losses,56.691
 ```
 
-```mermaid
+```mermaid-example
 ---
 config:
   sankey:
@@ -372,7 +369,7 @@ Electricity grid,Losses,56.691
 
 You can assign specific colors to nodes using the `nodeColors` map. Nodes not listed will use the default color scheme. Values must be valid CSS colors (hex, `rgb()`, `hsl()`, or named colors).
 
-```mermaid-example
+```mermaid
 ---
 config:
   sankey:
@@ -389,7 +386,7 @@ Electricity grid,Industry,342.165
 Electricity grid,Losses,56.691
 ```
 
-```mermaid
+```mermaid-example
 ---
 config:
   sankey:

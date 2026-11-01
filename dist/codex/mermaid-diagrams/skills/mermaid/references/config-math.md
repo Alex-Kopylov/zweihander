@@ -10,7 +10,7 @@ Note that at the moment, the only supported diagrams are below:
 
 ### Flowcharts
 
-```mermaid-example
+```mermaid
  graph LR
       A["$$x^2$$"] -->|"$$\sqrt{x+3}$$"| B("$$\frac{1}{2}$$")
       A -->|"$$\overbrace{a+b+c}^{\text{note}}$$"| C("$$\pi r^2$$")
@@ -18,7 +18,7 @@ Note that at the moment, the only supported diagrams are below:
       C --> E("$$x(t)=c_1\begin{bmatrix}-\cos{t}+\sin{t}\\ 2\cos{t} \end{bmatrix}e^{2t}$$")
 ```
 
-```mermaid
+```mermaid-example
  graph LR
       A["$$x^2$$"] -->|"$$\sqrt{x+3}$$"| B("$$\frac{1}{2}$$")
       A -->|"$$\overbrace{a+b+c}^{\text{note}}$$"| C("$$\pi r^2$$")
@@ -28,7 +28,7 @@ Note that at the moment, the only supported diagrams are below:
 
 ### Sequence
 
-```mermaid-example
+```mermaid
 sequenceDiagram
     autonumber
     participant 1 as $$\alpha$$
@@ -38,7 +38,7 @@ sequenceDiagram
     Note right of 2: $$\sqrt{2+2}=\sqrt{4}=2$$
 ```
 
-```mermaid
+```mermaid-example
 sequenceDiagram
     autonumber
     participant 1 as $$\alpha$$
