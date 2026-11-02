@@ -1,7 +1,3 @@
 # dev-workflow
 
-Git, PRs, tickets, releases, TDD, debugging, and review workflows.
-
-Includes MIT-licensed Superpowers-derived methodology skills for TDD, debugging,
-code review, verification, and parallel-agent dispatch. See the
-repository root `ACKNOWLEDGEMENTS.md` for provenance.
+Git, PRs, tickets, releases, visual diffs, and review workflows.

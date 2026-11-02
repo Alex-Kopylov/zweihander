@@ -110,18 +110,14 @@ To stop a background agent that is no longer needed:
 {{ actions.StopTask }}(task_id: "<agent-id>")
 ```
 
-### Parallel-Agent Pattern
+### Parallel fan-out
 
-Launch multiple independent agents simultaneously:
-
-```
-# In a single message, launch all independent agents:
-{{ actions.CreateAgent }}(description: "Run tests",     prompt: "...", run_in_background: true)
-{{ actions.CreateAgent }}(description: "Lint codebase", prompt: "...", run_in_background: true)
-{{ actions.CreateAgent }}(description: "Check types",   prompt: "...", run_in_background: true)
-```
-
-Each agent runs in its own context window, consuming no parent context budget.
+For parallel workers across slices or races, follow the **dev-workflow:swarm**
+skill; for design or code bakeoffs, the **dev-workflow:arena** skill. Both are
+user-only: read the `SKILL.md` by path and follow it. Keep bulk output in the
+workers and summaries in this thread, per the **guard-the-context-window**
+principle (`references/principles/guard-the-context-window.md` beside the
+`giant-armor:fire` skill).
 
 ### Agent-Type Selection
 
