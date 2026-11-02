@@ -69,10 +69,6 @@ feat(auth): add oauth2 support
 6. **Never** include a body, footer, or `Co-Authored-By` trailer
 7. **Never** mention the AI agent in the commit message
 
-## After Commit
-
-Ask the user whether to push, using {{ actions.AskUser | call }}, and include the push preview. Preview = actual output of `git log @{u}..HEAD --oneline`. If no upstream, show only the new commit and note that push will require `--set-upstream`.
-
 ## Examples
 
 ```
