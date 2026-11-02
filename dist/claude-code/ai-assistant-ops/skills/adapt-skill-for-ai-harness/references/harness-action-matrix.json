@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "checked": "2026-08-25",
+  "checked": "2026-11-02",
   "note": "Codex has no queryable task store. `update_plan` overwrites the whole plan and carries no ids, no dependencies, and no read-back, so it covers creating and updating a plan item but nothing else. The `collaboration` tools (`spawn_agent`, `list_agents`, `wait_agent`, `interrupt_agent`) act on running agents, which are live processes rather than task records, so they are not counterparts either. An action with no Codex counterpart therefore falls back to the Claude Code name. That is safe: the rendered text keeps naming one real concept instead of asserting a Codex tool that does not exist, and it reads as the vocabulary it is. Revisit when Codex ships a task store.",
   "lookup_order": [
     "action",
@@ -42,6 +42,18 @@
       },
       "Codex": {
         "name": "request_user_input"
+      }
+    },
+    "CreateSkill": {
+      "callable": true,
+      "intent": "Author or revise a SKILL.md with the harness's skill-authoring skill.",
+      "ClaudeCode": {
+        "name": "skill-creator",
+        "note": "Not a built-in: the `skill-creator` plugin from the official marketplace (`/plugin install skill-creator@claude-plugins-official`). The bare name resolves when one installed plugin provides it."
+      },
+      "Codex": {
+        "name": "skill-creator",
+        "note": "A system skill bundled with Codex, under `~/.codex/skills/.system/skill-creator`."
       }
     },
     "CreateAgent": {
@@ -155,6 +167,22 @@
           "/status",
           "/diff"
         ]
+      }
+    },
+    "ReadSkill": {
+      "callable": false,
+      "intent": "Follow a user-only skill, a playbook, or a reference the harness never offers the model: read its file by path, then follow it. A user-only skill carries `disable-model-invocation: true` (Claude Code) and `policy.allow_implicit_invocation: false` (Codex), so neither harness lets the model invoke it by name.",
+      "ClaudeCode": {
+        "tool": "Read",
+        "plugin_root": "${CLAUDE_PLUGIN_ROOT}",
+        "install_root": "~/.claude/plugins/cache/<marketplace>/<plugin>/<version>/",
+        "note": "`${CLAUDE_PLUGIN_ROOT}` is substituted in skill, command and agent content, so a plugin's own files are `${CLAUDE_PLUGIN_ROOT}/skills/<name>/...`. A sibling plugin of the same marketplace is `${CLAUDE_PLUGIN_ROOT}/../../<plugin>/<version>/`; list that directory to find the version."
+      },
+      "Codex": {
+        "tool": "shell",
+        "plugin_root": "the directory two levels above the skill file the skill list shows",
+        "install_root": "~/.codex/plugins/cache/<marketplace>/<plugin>/<version>/",
+        "note": "Codex has no file-reading tool and no plugin-root variable: the model reads a file through its shell tool, and the skill list shows each skill's file path. A sibling plugin of the same marketplace is `../../<plugin>/<version>/` from the plugin root; list that directory to find the version."
       }
     }
   }

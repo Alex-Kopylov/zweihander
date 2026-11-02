@@ -1,0 +1,26 @@
+{
+  "name": "formal-verification",
+  "version": "0.1.0",
+  "description": "Formal verification of code: TLA+ models drawn as Mermaid statecharts, and skills that create and maintain a project's formal checks.",
+  "author": {
+    "name": "Alex Kopylov"
+  },
+  "license": "Apache-2.0",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Formal Verification",
+    "shortDescription": "TLA+ statecharts and project-local formal checks",
+    "longDescription": "Formal verification where tests reach the least: statechart checks a TLA+ model with TLC and draws it as a Mermaid statechart with the shortest path to each broken rule; create-formal-verification-skill generates a project-local skill that verifies one property with the tool that fits; maintain-formal-verification-skill brings that verification back in line with the code after it changes.",
+    "developerName": "Alex Kopylov",
+    "category": "Development",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Check this TLA+ model and draw it as a statechart.",
+      "Create a formal verification skill for this state machine."
+    ]
+  }
+}

@@ -3,27 +3,19 @@
 This marketplace includes material copied, ported, or synced from the projects
 listed below. See [README.md](README.md) for the linked inventory.
 
-## Superpowers-Derived Dev Workflow Skills
+## Superpowers-Derived Test-First Process
 
-Several `dev-workflow` skills and supporting files were copied from and adapted
-from Superpowers:
+The test-first process of `python-dev-workflow:tests-manager` was absorbed from
+Superpowers:
 
 - Upstream: https://github.com/obra/superpowers
 - Upstream plugin version: `5.1.3`
 - Author: Jesse Vincent
 - License: MIT
 
-The following copied skills and supporting files come from that upstream
-Superpowers distribution.
-
 | Local plugin/skill | Relationship | Upstream source |
 |---|---|---|
-| `dev-workflow` | Existing plugin integrating copied skills | https://github.com/obra/superpowers |
-| `dev-workflow:dispatching-parallel-agents` | Copied skill; dispatch example rewritten for each harness's agent tool | https://github.com/obra/superpowers/tree/main/skills/dispatching-parallel-agents |
-| `dev-workflow:requesting-code-review` | Copied skill | https://github.com/obra/superpowers/tree/main/skills/requesting-code-review |
-| `dev-workflow:systematic-debugging` | Copied skill | https://github.com/obra/superpowers/tree/main/skills/systematic-debugging |
 | `python-dev-workflow:tests-manager` | Test-first process absorbed from the formerly separate `dev-workflow:test-driven-development` copied skill; its testing anti-patterns ported from TypeScript to Python and pytest in `references/rules/mocking.md` | https://github.com/obra/superpowers/tree/main/skills/test-driven-development |
-| `dev-workflow:verification-before-completion` | Copied skill; code-specific checks moved to `references/code-verification.md` | https://github.com/obra/superpowers/tree/main/skills/verification-before-completion |
 
 ### MIT License Notice
 
@@ -49,15 +41,67 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
+## pstack
+
+The `giant-armor` and `formal-verification` plugins, and the skills listed
+below in `dev-workflow`, `work-session-tools` and `ai-assistant-ops`, were
+ported from pstack (the zstack port, Alex-Kopylov/zweihander#173). Files were
+copied byte-for-byte, then adapted: `poteto-mode` became `fire`, pstack
+became zstack, Bugbot became AI Reviewer, the principle skills became
+reference files, Cursor tool names map through the harness action matrix,
+and user-only invocation is declared for each harness.
+
+| Local plugin/skill | Relationship | Upstream source |
+|---|---|---|
+| `giant-armor:fire` | Router skill `poteto-mode`, renamed; its first paragraph became the Leaf skills rule | https://github.com/cursor/plugins/tree/ae5650febf4320793844c12c4adaa937f417f8da/pstack/skills/poteto-mode/SKILL.md |
+| `giant-armor:fire` `playbooks/` | 15 of 23 playbooks, as-is apart from the rename and vocabulary rules | https://github.com/cursor/plugins/tree/ae5650febf4320793844c12c4adaa937f417f8da/pstack/skills/poteto-mode/playbooks |
+| `giant-armor:fire` `references/ai-reviewer-triage.md` | `bugbot-triage.md`, Bugbot renamed to AI Reviewer | https://github.com/cursor/plugins/tree/ae5650febf4320793844c12c4adaa937f417f8da/pstack/skills/poteto-mode/references/bugbot-triage.md |
+| `giant-armor:fire` `references/principles/` | The 24 `principle-*` skills as reference files | https://github.com/cursor/plugins/tree/ae5650febf4320793844c12c4adaa937f417f8da/pstack/skills |
+| `dev-workflow:how` | Copied skill | https://github.com/cursor/plugins/tree/ae5650febf4320793844c12c4adaa937f417f8da/pstack/skills/how |
+| `dev-workflow:why` | Copied skill | https://github.com/cursor/plugins/tree/ae5650febf4320793844c12c4adaa937f417f8da/pstack/skills/why |
+| `dev-workflow:teach` | Copied skill | https://github.com/cursor/plugins/tree/ae5650febf4320793844c12c4adaa937f417f8da/pstack/skills/teach |
+| `dev-workflow:architect` | Copied skill | https://github.com/cursor/plugins/tree/ae5650febf4320793844c12c4adaa937f417f8da/pstack/skills/architect |
+| `dev-workflow:arena` | Copied skill | https://github.com/cursor/plugins/tree/ae5650febf4320793844c12c4adaa937f417f8da/pstack/skills/arena |
+| `dev-workflow:swarm` | Copied skill | https://github.com/cursor/plugins/tree/ae5650febf4320793844c12c4adaa937f417f8da/pstack/skills/swarm |
+| `dev-workflow:interrogate` | Copied skill | https://github.com/cursor/plugins/tree/ae5650febf4320793844c12c4adaa937f417f8da/pstack/skills/interrogate |
+| `dev-workflow:blast-radius` | Copied skill | https://github.com/cursor/plugins/tree/ae5650febf4320793844c12c4adaa937f417f8da/pstack/skills/blast-radius |
+| `dev-workflow:benchmark-checklist` | Copied skill | https://github.com/cursor/plugins/tree/ae5650febf4320793844c12c4adaa937f417f8da/pstack/skills/benchmark-checklist |
+| `dev-workflow:no-comments` | Copied skill | https://github.com/cursor/plugins/tree/ae5650febf4320793844c12c4adaa937f417f8da/pstack/skills/no-comments |
+| `dev-workflow:typescript-best-practices` | Copied skill | https://github.com/cursor/plugins/tree/ae5650febf4320793844c12c4adaa937f417f8da/pstack/skills/typescript-best-practices |
+| `work-session-tools:recall` | Copied skill | https://github.com/cursor/plugins/tree/ae5650febf4320793844c12c4adaa937f417f8da/pstack/skills/recall |
+| `work-session-tools:ketchup` | Copied skill | https://github.com/cursor/plugins/tree/ae5650febf4320793844c12c4adaa937f417f8da/pstack/skills/ketchup |
+| `work-session-tools:bro` | Copied skill | https://github.com/cursor/plugins/tree/ae5650febf4320793844c12c4adaa937f417f8da/pstack/skills/bro |
+| `work-session-tools:in-your-own-words` | Copied skill | https://github.com/cursor/plugins/tree/ae5650febf4320793844c12c4adaa937f417f8da/pstack/skills/in-your-own-words |
+| `work-session-tools:sharpen` | Copied skill | https://github.com/cursor/plugins/tree/ae5650febf4320793844c12c4adaa937f417f8da/pstack/skills/sharpen |
+| `work-session-tools:show-me-your-work` | Copied skill | https://github.com/cursor/plugins/tree/ae5650febf4320793844c12c4adaa937f417f8da/pstack/skills/show-me-your-work |
+| `ai-assistant-ops:reflect` | Copied skill | https://github.com/cursor/plugins/tree/ae5650febf4320793844c12c4adaa937f417f8da/pstack/skills/reflect |
+| `ai-assistant-ops:correct` | Copied skill | https://github.com/cursor/plugins/tree/ae5650febf4320793844c12c4adaa937f417f8da/pstack/skills/correct |
+| `ai-assistant-ops:unslop` | Copied skill | https://github.com/cursor/plugins/tree/ae5650febf4320793844c12c4adaa937f417f8da/pstack/skills/unslop |
+| `ai-assistant-ops:technical-writing` | Copied skill | https://github.com/cursor/plugins/tree/ae5650febf4320793844c12c4adaa937f417f8da/pstack/skills/technical-writing |
+| `formal-verification:create-formal-verification-skill` | Copied skill | https://github.com/cursor/plugins/tree/ae5650febf4320793844c12c4adaa937f417f8da/pstack/skills/create-formal-verification-skill |
+| `formal-verification:maintain-formal-verification-skill` | Copied skill | https://github.com/cursor/plugins/tree/ae5650febf4320793844c12c4adaa937f417f8da/pstack/skills/maintain-formal-verification-skill |
+| `formal-verification:statechart` | Copied skill without `scripts/test/` (#176) | https://github.com/cursor/plugins/tree/ae5650febf4320793844c12c4adaa937f417f8da/pstack/skills/statechart |
+| `giant-armor:figure-it-out` | Copied skill | https://github.com/cursor/plugins/tree/ae5650febf4320793844c12c4adaa937f417f8da/pstack/skills/figure-it-out |
+| `dev-workflow` agent `comment-sicko` | Copied agent | https://github.com/cursor/plugins/tree/ae5650febf4320793844c12c4adaa937f417f8da/pstack/agents/comment-sicko.md |
+| `giant-armor` agent `poteto-agent` | Copied agent | https://github.com/cursor/plugins/tree/ae5650febf4320793844c12c4adaa937f417f8da/pstack/agents/poteto-agent.md |
+
+- Upstream: https://github.com/cursor/plugins/tree/main/pstack
+- Synced commit: `ae5650febf4320793844c12c4adaa937f417f8da` (pstack v0.15.36)
+- Author: Lauren Tan
+- License: MIT
+
+### MIT License Notice
+
+See [pstack-LICENSE.txt](pstack-LICENSE.txt).
+
 ## Matt Pocock Skills
 
-The following `work-session-tools` skills were copied from Matt Pocock's skills
+The following `work-session-tools` skill was copied from Matt Pocock's skills
 repository and adapted for this marketplace.
 
 | Local skill | Upstream source |
 |---|---|
 | `work-session-tools:handoff` | https://github.com/mattpocock/skills/tree/main/skills/productivity/handoff |
-| `work-session-tools:wait-what` | https://github.com/mattpocock/skills/tree/main/skills/productivity/wait-what |
 
 - Upstream: https://github.com/mattpocock/skills
 - Synced commit: `84fdeffd12f2ee307994d1eb6feb48173b6e0502`

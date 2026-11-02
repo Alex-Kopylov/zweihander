@@ -1,0 +1,9 @@
+{
+  "name": "giant-armor",
+  "description": "The zstack agent style: the fire router with its playbooks and principles, and figure-it-out for a bespoke playbook.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Alex Kopylov"
+  },
+  "skills": "./skills/"
+}

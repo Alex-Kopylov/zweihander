@@ -1,0 +1,9 @@
+{
+  "name": "formal-verification",
+  "description": "Formal verification of code: TLA+ models drawn as Mermaid statecharts, and skills that create and maintain a project's formal checks.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Alex Kopylov"
+  },
+  "skills": "./skills/"
+}

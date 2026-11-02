@@ -4,9 +4,9 @@ Simple, robust, and versatile marketplace for agent plugins,
 forged for the chaos of the AI world.
 
 It collects practical tools for Codex and Claude Code across LLM observability,
-API exploration, development workflows, assistant operations, research notes,
-cloud storage, local automation, runtime app verification, and job-search
-workflows.
+API exploration, development workflows, rigorous agent workflows, formal
+verification, assistant operations, research notes, cloud storage, local
+automation, runtime app verification, and job-search workflows.
 
 ## About
 
@@ -78,17 +78,25 @@ kanban
     wst_task_management[task-management]
     wst_interview[interview]
     wst_create_team[create-team]
-    wst_wait_what[wait-what]
     wst_handoff[handoff]
+    wst_recall[recall]
+    wst_ketchup[ketchup]
+    wst_bro[bro]
+    wst_in_your_own_words[in-your-own-words]
+    wst_sharpen[sharpen]
+    wst_show_me_your_work[show-me-your-work]
   ai_assistant_ops[ai-assistant-ops]
     aao_agents_md_improver[agents-md-improver]
     aao_ai_setup_audit[ai-setup-audit]
     aao_harness_overlap_audit[harness-overlap-audit]
     aao_ai_insights_hunter[ai-insights-hunter]
-    aao_docs_language_review[docs-language-review]
     aao_md_bloat_hunter[md-bloat-hunter]
     aao_improve_skill[improve-skill]
     aao_adapt_skill_for_ai_harness[adapt-skill-for-ai-harness]
+    aao_reflect[reflect]
+    aao_correct[correct]
+    aao_unslop[unslop]
+    aao_technical_writing[technical-writing]
   mermaid_diagrams[mermaid-diagrams]
     md_mermaid[mermaid]
     md_mermaid_lint[mermaid-lint]
@@ -98,24 +106,38 @@ kanban
 
 ```mermaid
 kanban
+  giant_armor[giant-armor]
+    ga_fire[fire]
+    ga_figure_it_out[figure-it-out]
   dev_workflow[dev-workflow]
     dw_approve_pr[approve-pr]
     dw_commit[commit]
     dw_create_pr[create-pr]
-    dw_dispatching_parallel_agents[dispatching-parallel-agents]
     dw_pr_checkout[pr-checkout]
     dw_pr_comment[pr-comment]
     dw_pr_address_comments[pr-address-comments]
     dw_render_diff_html[render-diff-html]
-    dw_requesting_code_review[requesting-code-review]
-    dw_systematic_debugging[systematic-debugging]
     dw_ticket_branch[ticket-branch]
     dw_ticket_comment_status[ticket-comment-status]
-    dw_verification_before_completion[verification-before-completion]
     dw_version_bumper[version-bumper]
     dw_yolo_push[yolo-push]
     dw_spec_interview[spec-interview]
     dw_spec_contradiction_hunter[spec-contradiction-hunter]
+    dw_how[how]
+    dw_why[why]
+    dw_teach[teach]
+    dw_architect[architect]
+    dw_arena[arena]
+    dw_swarm[swarm]
+    dw_interrogate[interrogate]
+    dw_blast_radius[blast-radius]
+    dw_benchmark_checklist[benchmark-checklist]
+    dw_no_comments[no-comments]
+    dw_typescript_best_practices[typescript-best-practices]
+  formal_verification[formal-verification]
+    fv_statechart[statechart]
+    fv_create_formal_verification_skill[create-formal-verification-skill]
+    fv_maintain_formal_verification_skill[maintain-formal-verification-skill]
   run_and_verify_app[run-and-verify-app]
     rva_run[run]
     rva_verify[verify]
@@ -302,35 +324,44 @@ config values, and secrets.
 
 ### `dev-workflow`
 
-**Use when:** you need structured development workflow support: debugging,
-visual diff reports, review, commits, PRs, ticket branches, status updates,
-version bumps, or spec checks.
+**Use when:** you need structured development workflow support: code
+walkthroughs, design before code, parallel workers, adversarial review, visual
+diff reports, commits, PRs, ticket branches, status updates, version bumps, or
+spec checks.
 
-**Origin note:** several methodology skills in this plugin were copied from the
-MIT-licensed [Superpowers](https://github.com/obra/superpowers) project by
-Jesse Vincent. See `third_party/THIRD_PARTY_NOTICES.md` for skill-by-skill
-provenance.
+**Origin note:** `how`, `why`, `teach`, `architect`, `arena`, `swarm`,
+`interrogate`, `blast-radius`, `benchmark-checklist`, `no-comments`,
+`typescript-best-practices` and the `comment-sicko` agent were ported from the
+MIT-licensed [pstack](https://github.com/cursor/plugins/tree/main/pstack)
+plugin by Lauren Tan. See `third_party/THIRD_PARTY_NOTICES.md` for provenance.
 
 #### Skills
 
 | Skill | Description |
 | --- | --- |
 | `approve-pr` | Approve and merge PRs with current checks and policy gates. |
+| `architect` | Sketch types and module structure before writing code. |
+| `arena` | Race parallel candidates, pick a base, graft the best parts. |
+| `benchmark-checklist` | Vet a perf measurement before reporting or acting on it. |
+| `blast-radius` | Find what a change breaks elsewhere and prove the safety fact. |
 | `commit` | Create single-line Conventional Commits. |
-| `create-pr` | Open pull requests from the current branch. |
-| `dispatching-parallel-agents` | Coordinate independent subagent tasks that can run concurrently. |
+| `create-pr` | Open pull requests from the current branch; push is the default, preview is a mode. |
+| `how` | Explain how a subsystem works and where things live. |
+| `interrogate` | Adversarial multi-model review that keeps only proven findings. |
+| `no-comments` | Remove comments from a diff and encode claimed constraints. |
 | `pr-address-comments` | Fetch, fix, reply to, and resolve PR feedback. |
 | `pr-checkout` | Switch to a PR branch for review or changes. |
 | `pr-comment` | Post general or inline PR comments. |
 | `render-diff-html` | Render git diffs and file comparisons as HTML reports. |
-| `requesting-code-review` | Request focused review before task completion or merge. |
 | `spec-contradiction-hunter` | Find contradictions and inconsistencies in specs. |
 | `spec-interview` | Interview the user and produce an implementation spec. |
-| `systematic-debugging` | Investigate bugs through evidence, patterns, hypotheses, and fixes. |
+| `swarm` | Fan out parallel workers and return one report. |
+| `teach` | Explain a change or subsystem so a person understands it. |
 | `ticket-branch` | Create a git branch from a ticket ID or URL. |
 | `ticket-comment-status` | Post status updates to tickets or work items. |
-| `verification-before-completion` | Verify claims before reporting work as complete or fixed. |
+| `typescript-best-practices` | Apply TypeScript rules for types, boundaries, and tests. |
 | `version-bumper` | Bump versions in plugin and package metadata. |
+| `why` | Investigate why code was built this way, with citations. |
 | `yolo-push` | Slash-command gated commit, PR, CI, merge, CD, and post-merge cleanup workflow. |
 
 #### Agents
@@ -338,9 +369,71 @@ provenance.
 | Agent | Description |
 | --- | --- |
 | `ambiguity-contradiction-hunter` | Finds hidden contradictions from vague language. |
+| `comment-sicko` | Hunts comments to delete and flags workaround code; report only. |
 | `release-manager` | Coordinates version bump and commit workflows. |
 | `structural-contradiction-hunter` | Finds deeper logical and scope conflicts. |
 | `surface-contradiction-hunter` | Finds direct, explicit contradictions. |
+
+### `giant-armor`
+
+<details>
+<summary>
+The zstack agent style: the fire router with its playbooks and principles,
+and figure-it-out for a bespoke playbook.
+</summary>
+
+**Use when:** you want one entry point for any non-trivial task: `fire` restates
+the goal, matches the task to a playbook, grounds decisions in 24 principles,
+and delegates to leaf skills; `figure-it-out` designs a playbook when none fits.
+
+**Origin note:** ported from the MIT-licensed
+[pstack](https://github.com/cursor/plugins/tree/main/pstack) plugin by Lauren
+Tan (`poteto-mode` is `fire` here). See `third_party/THIRD_PARTY_NOTICES.md`.
+
+The leaf skills `fire` routes to live in `dev-workflow`, `work-session-tools`,
+`ai-assistant-ops` and `formal-verification`; install those plugins too. Every
+skill here is user-only: you type it, the assistant never starts it on its own.
+
+#### Skills
+
+| Skill | Description |
+| --- | --- |
+| `figure-it-out` | Design an auditable playbook when no bundled one fits. |
+| `fire` | Run tasks by playbook with routed skills and verified work. |
+
+#### Agents
+
+| Agent | Description |
+| --- | --- |
+| `poteto-agent` | Delegate for code-writing and helper tasks inside a `fire` run; reads `fire` in full first. |
+
+</details>
+
+### `formal-verification`
+
+<details>
+<summary>
+Formal verification of code: TLA+ models drawn as Mermaid statecharts, and
+skills that create and maintain a project's formal checks.
+</summary>
+
+**Use when:** tests cannot reach the case that breaks a race, retry, state
+machine, parser, or protocol, and you want a model checked and drawn as a
+statechart, or a project-local skill that keeps that check alive.
+
+**Origin note:** ported from the MIT-licensed
+[pstack](https://github.com/cursor/plugins/tree/main/pstack) plugin by Lauren
+Tan. See `third_party/THIRD_PARTY_NOTICES.md`.
+
+#### Skills
+
+| Skill | Description |
+| --- | --- |
+| `create-formal-verification-skill` | Generate a project skill that formally verifies risky code. |
+| `maintain-formal-verification-skill` | Bring formal verification back in line with changed code. |
+| `statechart` | Check a TLA+ model and draw it as a Mermaid statechart. |
+
+</details>
 
 ### `run-and-verify-app`
 
@@ -391,18 +484,30 @@ Productivity, orchestration, and handoffs within an assistant session.
 </summary>
 
 **Use when:** you want daily notes, task tracking, structured interviews,
-session handoffs, or a designed multi-agent team.
+session handoffs, a designed multi-agent team, a catch-up on what changed, your
+recent context rebuilt, a plain-language restatement, a sharper prompt, or a
+decision log for unattended work.
+
+**Origin note:** `recall`, `ketchup`, `bro`, `in-your-own-words`, `sharpen` and
+`show-me-your-work` were ported from the MIT-licensed
+[pstack](https://github.com/cursor/plugins/tree/main/pstack) plugin by Lauren
+Tan. See `third_party/THIRD_PARTY_NOTICES.md`.
 
 #### Skills
 
 | Skill | Description |
 | --- | --- |
+| `bro` | Restate the last message in plain language, no jargon. |
 | `create-team` | Design a multi-agent team and handoff plan. |
 | `daily` | Generate a daily note from project activity. |
 | `handoff` | Compact the current conversation for another agent. |
+| `in-your-own-words` | Restate the user's goals and the problem they are solving. |
 | `interview` | Walk through a list of items one by one, logging every decision before anything runs. |
+| `ketchup` | Catch up on what changed in this chat and what waits on you. |
+| `recall` | Rebuild recent working context into a current-state brief. |
+| `sharpen` | Make a task deeper, not bigger, then rewrite the prompt. |
+| `show-me-your-work` | Keep a reviewable decision log for long or unattended work. |
 | `task-management` | Track, split, and orchestrate session tasks. |
-| `wait-what` | Ask for a clearer re-pitch when the last message did not land. |
 
 </details>
 
@@ -468,8 +573,14 @@ page that fails to fetch.
 
 **Use when:** you want to audit assistant instructions, improve AGENTS.md files,
 improve existing skills, adapt skills for assistant harnesses, find overlapping
-skills and MCP tools, capture useful session insights, review documentation
-language, or reduce Markdown bloat.
+skills and MCP tools, capture useful session insights, write or review
+technical docs, cut AI tells from prose, turn a session's learnings into skill
+edits, make repeated agent mistakes impossible, or reduce Markdown bloat.
+
+**Origin note:** `reflect`, `correct`, `unslop` and `technical-writing` were
+ported from the MIT-licensed
+[pstack](https://github.com/cursor/plugins/tree/main/pstack) plugin by Lauren
+Tan. See `third_party/THIRD_PARTY_NOTICES.md`.
 
 #### Skills
 
@@ -479,10 +590,13 @@ language, or reduce Markdown bloat.
 | `agents-md-improver` | Audit and improve repository AGENTS.md files. |
 | `ai-insights-hunter` | Extract reusable decisions, patterns, and preferences from a session. |
 | `ai-setup-audit` | Audit assistant configuration files for conflicts and bloat. |
-| `docs-language-review` | Review or rewrite Markdown documentation using plain-language and cognitive-accessibility standards. |
+| `correct` | Make each repeated agent mistake in a repo impossible. |
 | `harness-overlap-audit` | Map skills, MCP tools, and skill agents whose scope overlaps, in a Markdown report with Venn diagrams. |
 | `improve-skill` | Improve existing skills through eval feedback, baseline comparison, iteration, and trigger checks. |
 | `md-bloat-hunter` | Trim redundancy, verbosity, and filler in Markdown and `.md.j2` templates until the smallest model still passes your evals. |
+| `reflect` | Turn this conversation's learnings into skill edits. |
+| `technical-writing` | Write docs, RFCs, and PR text to a layered style standard. |
+| `unslop` | Cut AI tells and filler from any writing. |
 
 #### Skill Agents
 

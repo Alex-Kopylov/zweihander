@@ -1,0 +1,5 @@
+interface:
+  display_name: "Maintain Formal Verification Skill"
+  short_description: "Bring formal verification back in line with changed code"
+policy:
+  allow_implicit_invocation: false

@@ -65,6 +65,30 @@
       "category": "Development"
     },
     {
+      "name": "giant-armor",
+      "source": {
+        "source": "local",
+        "path": "./dist/codex/giant-armor"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Development"
+    },
+    {
+      "name": "formal-verification",
+      "source": {
+        "source": "local",
+        "path": "./dist/codex/formal-verification"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Development"
+    },
+    {
       "name": "run-and-verify-app",
       "source": {
         "source": "local",

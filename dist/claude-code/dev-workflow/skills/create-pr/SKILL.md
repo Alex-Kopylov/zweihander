@@ -8,6 +8,13 @@ metadata:
 
 # Create Pull Request
 
+## Modes
+
+- **push** (default): push the branch, then create the PR. Applies unless
+  the user explicitly says otherwise.
+- **preview**: when the user asks to preview, show the generated title and
+  body and stop. Push nothing and create nothing.
+
 ## Instructions
 
 1. **Detect optional ticket ID** from current branch name:
@@ -22,28 +29,36 @@ metadata:
    - Use `<platform-cli>` to fetch ticket details as secondary context when a ticket was detected or explicitly requested
    - Code changes take priority for the title
 
-3. **Analyze code changes** (primary source for PR title):
-   - Commits: `git log develop..HEAD --oneline`
-   - Diff summary: `git diff develop...HEAD --stat`
-   - Full diff: `git diff develop...HEAD`
+3. **Resolve the base branch**: the branch the PR targets. Use the branch
+   the user names; otherwise the repository's default branch
+   (`gh repo view --json defaultBranchRef --jq .defaultBranchRef.name` on
+   GitHub). Never hard-code a name.
+
+4. **Analyze code changes** (primary source for PR title):
+   - Commits: `git log <base>..HEAD --oneline`
+   - Diff summary: `git diff <base>...HEAD --stat`
+   - Full diff: `git diff <base>...HEAD`
    - Focus on what changed in code
 
-4. **Generate PR title**:
+5. **Generate PR title**:
    - Prioritize actual code changes over ticket description
    - Handles follow-up/leftover work after main ticket work already merged
    - With ticket: `<TICKET-ID>: <concise summary>` (e.g. `1234: bump dependency to 2.0.33`)
    - No ticket: just `<concise summary>`
    - Keep it short and descriptive
 
-5. **Generate PR body**:
+6. **Generate PR body**:
    - Use these `##` headers, in this order: What Problem This Solves, Why This Change Was Made, User Impact, Evidence
    - Write Evidence as a Markdown checklist of validations, where `- [x]` is done and `- [ ]` is still to do
    - Keep the body factual and scoped to observed changes; do not invent product impact or ticket details
 
-6. **Create PR**:
-   - Use `<platform-cli>` to create the PR with the generated title and generated body
+7. **Push** (push mode only): `git push -u origin HEAD`. In preview mode,
+   show the title and body and stop here.
 
-7. **Report**:
+8. **Create PR** (push mode only):
+   - Use `<platform-cli>` to create the PR against `<base>` with the generated title and generated body
+
+9. **Report**:
    - In the final message, summarize what was done as a short, nicely formatted bullet list
 
 ## Examples

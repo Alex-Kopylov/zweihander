@@ -1,0 +1,26 @@
+{
+  "name": "giant-armor",
+  "version": "0.1.0",
+  "description": "The zstack agent style: the fire router with its playbooks and principles, and figure-it-out for a bespoke playbook.",
+  "author": {
+    "name": "Alex Kopylov"
+  },
+  "license": "Apache-2.0",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Giant Armor",
+    "shortDescription": "Rigorous agent workflows routed by fire",
+    "longDescription": "The zstack agent style, ported from pstack: the fire router matches a task to a playbook (investigation, bug fix, feature, refactoring, perf, forensics, prototype, eval, session pickup, opening a PR), grounds every decision in 24 principles, and delegates to leaf skills across the marketplace; figure-it-out designs a bespoke playbook when none fits.",
+    "developerName": "Alex Kopylov",
+    "category": "Development",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Work in the fire style on this task.",
+      "Figure out a rigorous playbook for this migration."
+    ]
+  }
+}
