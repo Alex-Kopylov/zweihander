@@ -1,0 +1,5 @@
+interface:
+  display_name: "Technical Writing"
+  short_description: "Write docs, RFCs, and PR text to a layered style standard"
+policy:
+  allow_implicit_invocation: false

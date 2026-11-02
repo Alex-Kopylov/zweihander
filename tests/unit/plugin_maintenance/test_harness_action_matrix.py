@@ -77,6 +77,22 @@ def test_callable_actions_map_one_name_per_assistant(actions, assistants):
 def test_reference_actions_are_non_callable(actions):
     assert actions["PluginManifest"]["callable"] is False
     assert actions["SlashCommand"]["callable"] is False
+    assert actions["ReadSkill"]["callable"] is False
+
+
+def test_read_skill_names_a_tool_and_an_install_root_per_harness(actions):
+    """A user-only skill is reached by path, so each harness records how.
+
+    The entry is not callable: `Read` is an English word in every template,
+    and Codex reads files through its shell, so neither name can be rendered
+    as a callable. The tool, the plugin root and the install root travel in
+    the matrix for the adaptation skill and the router templates instead.
+    """
+    for harness in Harness:
+        entry = actions["ReadSkill"][harness]
+        for field in ("tool", "plugin_root", "install_root", "note"):
+            assert entry.get(field), f"ReadSkill/{harness}/{field}"
+        assert "<plugin>/<version>/" in entry["install_root"], harness
 
 
 def test_single_wrapper_per_assistant(assistants, actions):
@@ -147,6 +163,7 @@ def test_codex_task_fallbacks_record_why(actions):
     [
         ("AskUser", "AskUserQuestion", "request_user_input"),
         ("CreateAgent", "Agent", "spawn_agent"),
+        ("CreateSkill", "skill-creator", "skill-creator"),
     ],
 )
 def test_mapped_mechanism_names(actions, action_key, claude_name, codex_name):

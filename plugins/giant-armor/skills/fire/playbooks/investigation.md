@@ -4,10 +4,10 @@
 
 Investigation requests are read-only. They produce a cited explanation or a recommendation, not a code change.
 
-1. Route through the **how** skill. For motivation questions, also route through the **why** skill.
+1. Route through the **dev-workflow:how** skill. For motivation questions, also route through the **dev-workflow:why** skill.
 2. Throughput checkpoint stays one line: `throughput checkpoint: n/a, read-only investigation`.
 3. Produce the `how`-shaped output (Overview / Key Concepts / How It Works / Where Things Live / Gotchas), or a recommendation with a tradeoffs table if the request is a decision between alternatives.
-4. Apply the **unslop** skill to the reply.
+4. Apply the **ai-assistant-ops:unslop** skill to the reply.
 
 No PR, no babysit, no `architect` unless the investigation precedes a code change. If it does, hand back to the user and re-route to Bug fix or Feature.
 
