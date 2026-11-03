@@ -41,42 +41,6 @@
       "category": "Development"
     },
     {
-      "name": "python-dev-workflow",
-      "source": {
-        "source": "local",
-        "path": "./dist/codex/python-dev-workflow"
-      },
-      "policy": {
-        "installation": "AVAILABLE",
-        "authentication": "ON_INSTALL"
-      },
-      "category": "Development"
-    },
-    {
-      "name": "dev-workflow",
-      "source": {
-        "source": "local",
-        "path": "./dist/codex/dev-workflow"
-      },
-      "policy": {
-        "installation": "AVAILABLE",
-        "authentication": "ON_INSTALL"
-      },
-      "category": "Development"
-    },
-    {
-      "name": "run-and-verify-app",
-      "source": {
-        "source": "local",
-        "path": "./dist/codex/run-and-verify-app"
-      },
-      "policy": {
-        "installation": "AVAILABLE",
-        "authentication": "ON_INSTALL"
-      },
-      "category": "Development"
-    },
-    {
       "name": "mermaid-diagrams",
       "source": {
         "source": "local",
@@ -89,16 +53,16 @@
       "category": "Development"
     },
     {
-      "name": "work-session-tools",
+      "name": "giant-armor",
       "source": {
         "source": "local",
-        "path": "./dist/codex/work-session-tools"
+        "path": "./dist/codex/giant-armor"
       },
       "policy": {
         "installation": "AVAILABLE",
         "authentication": "ON_INSTALL"
       },
-      "category": "Productivity"
+      "category": "Development"
     },
     {
       "name": "research",
@@ -123,18 +87,6 @@
         "authentication": "ON_INSTALL"
       },
       "category": "Productivity"
-    },
-    {
-      "name": "ai-assistant-ops",
-      "source": {
-        "source": "local",
-        "path": "./dist/codex/ai-assistant-ops"
-      },
-      "policy": {
-        "installation": "AVAILABLE",
-        "authentication": "ON_INSTALL"
-      },
-      "category": "Utilities"
     },
     {
       "name": "os-tools",

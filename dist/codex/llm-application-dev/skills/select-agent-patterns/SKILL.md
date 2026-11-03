@@ -30,7 +30,7 @@ Keep reusable decision variables:
 
 ## Workflow
 
-Use $work-session-tools:task-management when the selection task needs tracked stages, parallel reviewer passes, or explicit synthesis status.
+Use $giant-armor:task-management when the selection task needs tracked stages, parallel reviewer passes, or explicit synthesis status.
 
 ### 1. Understand The Problem
 

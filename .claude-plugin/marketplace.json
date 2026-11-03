@@ -4,7 +4,7 @@
     "name": "Alex Kopylov"
   },
   "metadata": {
-    "description": "\ud83d\udde1\ufe0f Zweihander is a simple, robust, and versatile marketplace for agent plugins, forged for the chaos of the AI world."
+    "description": "🗡️ Zweihander is a simple, robust, and versatile marketplace for agent plugins, forged for the chaos of the AI world."
   },
   "plugins": [
     {
@@ -50,42 +50,6 @@
       ]
     },
     {
-      "name": "python-dev-workflow",
-      "source": "./dist/claude-code/python-dev-workflow",
-      "description": "Python TDD, pytest scenario planning, E2E/integration/unit test writing, test review and audit, Celery and Redis references, production Celery guidance, and constants and config placement.",
-      "category": "development",
-      "tags": [
-        "python",
-        "pytest",
-        "testing",
-        "tdd",
-        "celery",
-        "redis",
-        "agents"
-      ]
-    },
-    {
-      "name": "dev-workflow",
-      "source": "./dist/claude-code/dev-workflow",
-      "description": "Git, PRs, tickets, releases, visual diffs, debugging, and review workflows.",
-      "category": "development",
-      "tags": [
-        "git",
-        "workflow",
-        "commits",
-        "pull-requests",
-        "tickets",
-        "release",
-        "diff",
-        "diff2html",
-        "review",
-        "spec",
-        "requirements",
-        "debugging",
-        "code-review"
-      ]
-    },
-    {
       "name": "mermaid-diagrams",
       "source": "./dist/claude-code/mermaid-diagrams",
       "description": "Generate and validate Mermaid diagrams with synced syntax references.",
@@ -99,19 +63,48 @@
       ]
     },
     {
-      "name": "work-session-tools",
-      "source": "./dist/claude-code/work-session-tools",
-      "description": "Productivity, orchestration, and handoffs within an assistant session.",
-      "category": "productivity",
+      "name": "giant-armor",
+      "source": "./dist/claude-code/giant-armor",
+      "description": "Development, session and assistant-operations workflows in one plugin: git, PRs, tickets, releases, Python testing, run-and-verify, session tooling, and skill improvement.",
+      "category": "development",
       "tags": [
-        "productivity",
+        "agents",
+        "agents-md",
+        "audit",
+        "celery",
+        "code-review",
+        "commits",
         "daily",
+        "debugging",
+        "diff",
+        "diff2html",
+        "git",
         "handoff",
+        "harness-adaptation",
         "interview",
-        "team",
-        "tasks",
+        "markdown",
+        "memory",
         "orchestration",
-        "wait-what"
+        "plain-language",
+        "productivity",
+        "prompts",
+        "pull-requests",
+        "pytest",
+        "python",
+        "redis",
+        "release",
+        "requirements",
+        "review",
+        "setup",
+        "skill-improvement",
+        "spec",
+        "tasks",
+        "tdd",
+        "team",
+        "testing",
+        "tickets",
+        "wait-what",
+        "workflow"
       ]
     },
     {
@@ -144,23 +137,6 @@
         "x",
         "twitter",
         "archives"
-      ]
-    },
-    {
-      "name": "ai-assistant-ops",
-      "source": "./dist/claude-code/ai-assistant-ops",
-      "description": "Assistant setup, instruction hygiene, documentation review, memory capture, skill improvement, harness adaptation, and markdown/prompt maintenance.",
-      "category": "utilities",
-      "tags": [
-        "agents-md",
-        "setup",
-        "audit",
-        "memory",
-        "markdown",
-        "plain-language",
-        "prompts",
-        "harness-adaptation",
-        "skill-improvement"
       ]
     },
     {

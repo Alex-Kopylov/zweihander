@@ -5,7 +5,7 @@ listed below. See [README.md](README.md) for the linked inventory.
 
 ## Superpowers-Derived Dev Workflow Skills
 
-Several `dev-workflow` skills and supporting files were copied from and adapted
+Several `giant-armor` skills and supporting files were copied from and adapted
 from Superpowers:
 
 - Upstream: https://github.com/obra/superpowers
@@ -18,12 +18,12 @@ Superpowers distribution.
 
 | Local plugin/skill | Relationship | Upstream source |
 |---|---|---|
-| `dev-workflow` | Existing plugin integrating copied skills | https://github.com/obra/superpowers |
-| `dev-workflow:dispatching-parallel-agents` | Copied skill; dispatch example rewritten for each harness's agent tool | https://github.com/obra/superpowers/tree/main/skills/dispatching-parallel-agents |
-| `dev-workflow:requesting-code-review` | Copied skill | https://github.com/obra/superpowers/tree/main/skills/requesting-code-review |
-| `dev-workflow:systematic-debugging` | Copied skill | https://github.com/obra/superpowers/tree/main/skills/systematic-debugging |
-| `python-dev-workflow:tests-manager` | Test-first process absorbed from the formerly separate `dev-workflow:test-driven-development` copied skill; its testing anti-patterns ported from TypeScript to Python and pytest in `references/rules/mocking.md` | https://github.com/obra/superpowers/tree/main/skills/test-driven-development |
-| `dev-workflow:verification-before-completion` | Copied skill; code-specific checks moved to `references/code-verification.md` | https://github.com/obra/superpowers/tree/main/skills/verification-before-completion |
+| `giant-armor` | Existing plugin integrating copied skills | https://github.com/obra/superpowers |
+| `giant-armor:dispatching-parallel-agents` | Copied skill; dispatch example rewritten for each harness's agent tool | https://github.com/obra/superpowers/tree/main/skills/dispatching-parallel-agents |
+| `giant-armor:requesting-code-review` | Copied skill | https://github.com/obra/superpowers/tree/main/skills/requesting-code-review |
+| `giant-armor:systematic-debugging` | Copied skill | https://github.com/obra/superpowers/tree/main/skills/systematic-debugging |
+| `giant-armor:tests-manager` | Test-first process absorbed from the formerly separate `giant-armor:test-driven-development` copied skill; its testing anti-patterns ported from TypeScript to Python and pytest in `references/rules/mocking.md` | https://github.com/obra/superpowers/tree/main/skills/test-driven-development |
+| `giant-armor:verification-before-completion` | Copied skill; code-specific checks moved to `references/code-verification.md` | https://github.com/obra/superpowers/tree/main/skills/verification-before-completion |
 
 ### MIT License Notice
 
@@ -51,13 +51,13 @@ SOFTWARE.
 
 ## Matt Pocock Skills
 
-The following `work-session-tools` skills were copied from Matt Pocock's skills
+The following `giant-armor` skills were copied from Matt Pocock's skills
 repository and adapted for this marketplace.
 
 | Local skill | Upstream source |
 |---|---|
-| `work-session-tools:handoff` | https://github.com/mattpocock/skills/tree/main/skills/productivity/handoff |
-| `work-session-tools:wait-what` | https://github.com/mattpocock/skills/tree/main/skills/productivity/wait-what |
+| `giant-armor:handoff` | https://github.com/mattpocock/skills/tree/main/skills/productivity/handoff |
+| `giant-armor:wait-what` | https://github.com/mattpocock/skills/tree/main/skills/productivity/wait-what |
 
 - Upstream: https://github.com/mattpocock/skills
 - Synced commit: `84fdeffd12f2ee307994d1eb6feb48173b6e0502`
@@ -123,14 +123,14 @@ SOFTWARE.
 ## OpenClaw Test Audit
 
 The value bar, junk patterns, retention bar, and audit method in
-`python-dev-workflow:tests-manager` were adapted from OpenClaw's `test-audit`
+`giant-armor:tests-manager` were adapted from OpenClaw's `test-audit`
 skill, rewritten for Python and pytest, with the repository-specific tooling,
 landing flow, and examples removed.
 
 | Local file | Upstream source |
 |---|---|
-| `plugins/python-dev-workflow/skills/tests-manager/references/rules/test-value.md` | https://github.com/openclaw/openclaw/blob/bf636cc1bcdd59e65d5074a1bc309d903bf18e65/.agents/skills/test-audit/SKILL.md |
-| `plugins/python-dev-workflow/skills/tests-manager/references/workflows/audit.md` | https://github.com/openclaw/openclaw/blob/bf636cc1bcdd59e65d5074a1bc309d903bf18e65/.agents/skills/test-audit/CAMPAIGN.md |
+| `plugins/giant-armor/skills/tests-manager/references/rules/test-value.md` | https://github.com/openclaw/openclaw/blob/bf636cc1bcdd59e65d5074a1bc309d903bf18e65/.agents/skills/test-audit/SKILL.md |
+| `plugins/giant-armor/skills/tests-manager/references/workflows/audit.md` | https://github.com/openclaw/openclaw/blob/bf636cc1bcdd59e65d5074a1bc309d903bf18e65/.agents/skills/test-audit/CAMPAIGN.md |
 
 - Upstream: https://github.com/openclaw/openclaw
 - Synced commit: `bf636cc1bcdd59e65d5074a1bc309d903bf18e65`
@@ -178,7 +178,7 @@ SOFTWARE.
 ## Agent Skills Specification
 
 The file
-`plugins/ai-assistant-ops/skills/adapt-skill-for-ai-harness/references/agent-skills-specification.md`
+`plugins/giant-armor/skills/adapt-skill-for-ai-harness/references/agent-skills-specification.md`
 is a copy of the Agent Skills format specification, kept locally so the
 adaptation skill reads the specification it renders against instead of the
 network.

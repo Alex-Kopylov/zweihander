@@ -34,7 +34,7 @@ LEGACY_METADATA_LINKS = (
 # The matrices ship with the adaptation skill, so their location inside a tree
 # is the renderer's own path with the authored root dropped.
 MATRIX_IN_TREE = Path(*MATRIX_PATH.parts[1:])
-TASK_MANAGEMENT_PATTERNS = Path("work-session-tools/skills/task-management/references/orchestration-patterns.md")
+TASK_MANAGEMENT_PATTERNS = Path("giant-armor/skills/task-management/references/orchestration-patterns.md")
 # Skills whose invocation policy differs per harness on purpose, as
 # `<plugin>/skills/<skill>`. Empty today: every user-only skill is user-only in
 # both harnesses. Add a skill with the reason to let its trees disagree.

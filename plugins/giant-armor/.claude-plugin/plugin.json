@@ -1,0 +1,9 @@
+{
+  "name": "giant-armor",
+  "description": "Development, session and assistant-operations workflows in one plugin: git, PRs, tickets, releases, Python testing, run-and-verify, session tooling, and skill improvement.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Alex Kopylov"
+  },
+  "skills": "./skills/"
+}

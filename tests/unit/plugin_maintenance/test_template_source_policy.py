@@ -58,7 +58,7 @@ PLACED_KEYS = {key for key, entry in FRONTMATTER_MATRIX["keys"].items() if entry
 # just as much as the content namespaces the matrix declares for authors.
 METADATA_NAMESPACES = set(FRONTMATTER_MATRIX["metadata_namespaces"]) | PLACED_KEYS
 TASK_MANAGEMENT_PATTERNS_TEMPLATE = (
-    PLUGINS_ROOT / "work-session-tools" / "skills" / "task-management" / "references" / "orchestration-patterns.md.j2"
+    PLUGINS_ROOT / "giant-armor" / "skills" / "task-management" / "references" / "orchestration-patterns.md.j2"
 )
 
 HARNESS_CONDITIONAL_BLOCK = re.compile(r"\{%-?\s*if\s+harness[\s\S]*?\{%-?\s*endif\s*-?%\}")

@@ -100,7 +100,7 @@ covers stage-1 output; this flag is the quick local answer, not a second gate.
 
 Harness-specific wording in skills lives in `.j2` templates that resolve every
 harness fact from a matrix under
-`plugins/ai-assistant-ops/skills/adapt-skill-for-ai-harness/references/`:
+`plugins/giant-armor/skills/adapt-skill-for-ai-harness/references/`:
 `harness-action-matrix.json` for callable names, and
 `harness-frontmatter-matrix.json` for where each frontmatter key goes. Use the
 `adapt-skill-for-ai-harness` skill when converting a skill's harness-specific
@@ -201,7 +201,7 @@ When changing plugin or marketplace content, bump the relevant versions accordin
 to the official Claude Code and Codex plugin marketplace documentation.
 
 Use this repo's `version-bumper` skill at
-`plugins/dev-workflow/skills/version-bumper/SKILL.md` to update
+`plugins/giant-armor/skills/version-bumper/SKILL.md` to update
 version-bearing files such as `plugin.json`, `marketplace.json`, and package
 metadata.
 
@@ -253,10 +253,9 @@ When adding a plugin:
   harness's marketplace (`.agents/plugins/marketplace.json`,
   `.claude-plugin/marketplace.json`).
 - Each manifest is the inclusion list for its own `dist/` tree; a plugin
-  listed in only one manifest ships to only that harness. Single-harness
-  plugins are intentional: `run-and-verify-app` ports a Claude Code built-in
-  to Codex, so it has no `.claude-plugin/`. Scripts that walk plugin metadata
-  must not assume both directories exist.
+  listed in only one manifest ships to only that harness. A single-harness
+  plugin is allowed, so scripts that walk plugin metadata must not assume
+  both directories exist.
 - Run the full build so both `dist/` trees include the plugin.
 - Add a user-facing section to `README.md`.
 - If the plugin has more than one skill, put the README plugin details inside a

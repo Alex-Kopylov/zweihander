@@ -63,7 +63,7 @@ class Harness(StrEnum):
     CODEX = "Codex"
 
 
-MATRIX_PATH = Path("plugins/ai-assistant-ops/skills/adapt-skill-for-ai-harness/references/harness-action-matrix.json")
+MATRIX_PATH = Path("plugins/giant-armor/skills/adapt-skill-for-ai-harness/references/harness-action-matrix.json")
 # The frontmatter matrix sits beside the action matrix, so overriding one path
 # in a test moves both.
 FRONTMATTER_MATRIX_NAME = "harness-frontmatter-matrix.json"

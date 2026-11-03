@@ -32,11 +32,3 @@ def test_rendered_tree_carries_exactly_its_manifest_plugins(rendered: Path, harn
     listed = manifest_plugin_names(REPO_ROOT / HARNESS_MANIFESTS[harness])
 
     assert sorted(path.name for path in rendered.iterdir()) == sorted(listed)
-
-
-def test_codex_only_plugin_is_a_valid_catalog_divergence():
-    claude_names = {entry["name"] for entry in marketplace_entries(Harness.CLAUDE_CODE)}
-    codex_names = {entry["name"] for entry in marketplace_entries(Harness.CODEX)}
-
-    assert "run-and-verify-app" in codex_names
-    assert "run-and-verify-app" not in claude_names
