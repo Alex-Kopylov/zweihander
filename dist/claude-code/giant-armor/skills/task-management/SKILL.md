@@ -110,18 +110,14 @@ To stop a background agent that is no longer needed:
 TaskStop(task_id: "<agent-id>")
 ```
 
-### Parallel-Agent Pattern
+### Parallel fan-out
 
-Launch multiple independent agents simultaneously:
-
-```
-# In a single message, launch all independent agents:
-Agent(description: "Run tests",     prompt: "...", run_in_background: true)
-Agent(description: "Lint codebase", prompt: "...", run_in_background: true)
-Agent(description: "Check types",   prompt: "...", run_in_background: true)
-```
-
-Each agent runs in its own context window, consuming no parent context budget.
+For parallel workers across slices or races, follow the **swarm** skill
+(`../swarm/SKILL.md`); for design or code bakeoffs, the **arena** skill
+(`../arena/SKILL.md`). Both are user-only: read the file and follow it. Keep
+bulk output in the workers and summaries in this thread, per the
+**guard-the-context-window** principle
+(`../fire/references/principles/guard-the-context-window.md`).
 
 ### Agent-Type Selection
 

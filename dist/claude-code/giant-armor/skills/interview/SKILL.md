@@ -122,7 +122,7 @@ The interview stays responsive, so work that does not need the user runs beside 
 
 - **Previews** — while the user answers one question, a background agent drafts the previews for the questions ahead.
 - **Log prose** — the short name in step 3 and the closing summary in step 6 go to a writer agent on the smallest, cheapest model the harness offers.
-- **Execution** — in step 7, independent decisions fan out one agent each, per Skill(giant-armor:dispatching-parallel-agents). Decisions that touch one file stay in one agent, in order.
+- **Execution** — in step 7, independent decisions fan out one agent each, per the **swarm** skill (user-only: read `../swarm/SKILL.md` and follow it). Decisions that touch one file stay in one agent, in order.
 
 Recording a decision is a script call, never an agent call: a round trip per answer would stall the walk-through.
 

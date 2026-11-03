@@ -58,7 +58,7 @@ Returns threads with:
 Keep only threads where:
 - `status == 1` (Active)
 - `comments[0].commentType == 1` (text comment, not system)
-- Thread is not authored by the current user
+- Thread is not authored by the current user, except AI reviews posted under that login
 
 ## Reading Thread Comments
 
@@ -72,16 +72,12 @@ mcp__azure-devops__repo_list_pull_request_thread_comments(
 
 ## Replying to a Thread
 
-Invoke the `giant-armor:pr-comment` skill with the PR ID and reply text.
-
-Alternatively, use MCP directly:
-
 ```
 mcp__azure-devops__repo_reply_to_comment(
     repositoryId="{repoUUID}",
     pullRequestId={prId},
     threadId={threadId},
-    content="Fixed: {description}"
+    content="Fixed in {sha}: {description}"
 )
 ```
 
@@ -122,10 +118,12 @@ az rest --method get \
 
 ### Reply to a thread
 
+Write the reply as JSON, `{"content": "Fixed in <sha>: <description>", "commentType": 1}`, to a file in the run directory, then send the file:
+
 ```bash
 az rest --method post \
   --uri "https://dev.azure.com/{org}/{project}/_apis/git/repositories/{repoUUID}/pullRequests/{prId}/threads/{threadId}/comments?api-version=7.1" \
-  --body '{"content": "Fixed: {description}", "commentType": 1}'
+  --body @{runDir}/reply.json
 ```
 
 ### Update thread status

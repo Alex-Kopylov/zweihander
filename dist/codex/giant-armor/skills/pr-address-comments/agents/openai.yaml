@@ -1,0 +1,5 @@
+interface:
+  display_name: "PR Address Comments"
+  short_description: "Triage, fix, and resolve unresolved PR review comments"
+policy:
+  allow_implicit_invocation: false
