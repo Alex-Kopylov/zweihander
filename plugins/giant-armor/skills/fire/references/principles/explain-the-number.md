@@ -15,4 +15,4 @@ For a performance number, run the full procedure with the [benchmark-checklist](
 
 You skipped this when a run started without the result that would change a decision, when the evidence behind a number has no run count, no spread, or no named limiter, or when the time saved is larger than the time the changed piece took.
 
-Distinct from [Prove It Works](../principle-prove-it-works/SKILL.md), which checks that an output is real.
+Distinct from [Prove It Works](prove-it-works.md), which checks that an output is real.

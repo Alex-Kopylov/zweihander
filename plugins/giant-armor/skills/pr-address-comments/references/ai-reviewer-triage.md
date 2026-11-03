@@ -1,10 +1,10 @@
-# Bugbot triage
+# AI Reviewer triage
 
-Use this reference when the Babysit playbook (`../playbooks/babysit.md`) handles Bugbot or review-automation comments. The goal is not to ignore Bugbot by default. The goal is to stop treating every comment as a required code change.
+Use this reference when the Babysit playbook (`../playbooks/babysit.md`) handles AI Reviewer or review-automation comments. The goal is not to ignore AI Reviewer by default. The goal is to stop treating every comment as a required code change.
 
 ## Decision rubric
 
-Classify each Bugbot thread before acting:
+Classify each AI Reviewer thread before acting:
 
 - `fix`: The comment identifies a plausible correctness, security, privacy, data loss, auth, billing, migration, idempotency, race, or shipped-behavior issue. Fix it in the lowest owning PR, then reply with the commit SHA and resolve the thread.
 - `dismiss`: The comment matches a documented low-risk noisy pattern, and the current code/context proves the concern does not need a code change. Reply with a short reason and resolve the thread.
@@ -33,14 +33,14 @@ Use `candidate` for one or two examples. Use `recurring` after multiple real dis
 ### Intentional UI or design-system visual changes
 
 - Confidence: candidate
-- Skip when: The PR description, screenshots, design review, or nearby code makes the visual change explicit, and the Bugbot comment is only restating that a shared visual default changed.
+- Skip when: The PR description, screenshots, design review, or nearby code makes the visual change explicit, and the AI Reviewer comment is only restating that a shared visual default changed.
 - Do not skip when: The comment points to accessibility, focus visibility, keyboard navigation, color contrast, or a component API contract that the PR did not intentionally change.
 - Example signal: Comments about focus outlines, button sizes, spacing, or shared component visual defaults where the owner replies "intentional" or "intended".
 
-### Upstack or stack-local usage Bugbot cannot see
+### Upstack or stack-local usage AI Reviewer cannot see
 
 - Confidence: candidate
-- Skip when: Bugbot flags an export, component, helper, or file as unused, and the active forge's PR list and diffs, upper-stack diffs, or PR context show it is used by a later PR in the stack.
+- Skip when: AI Reviewer flags an export, component, helper, or file as unused, and the active forge's PR list and diffs, upper-stack diffs, or PR context show it is used by a later PR in the stack.
 - Do not skip when: The current PR is not part of a stack, the symbol is public API, or the supposed upstack use cannot be verified.
 - Example signal: "Exported component is never used" with a human reply like "used upstack".
 
@@ -68,7 +68,7 @@ Use `candidate` for one or two examples. Use `recurring` after multiple real dis
 ### Self-withdrawn or explicit false-positive rule comments
 
 - Confidence: recurring
-- Skip when: The comment body or a later Bugbot reply explicitly says the finding is withdrawn, compliant, or a false positive, and the agent can verify the relevant rule locally.
+- Skip when: The comment body or a later AI Reviewer reply explicitly says the finding is withdrawn, compliant, or a false positive, and the agent can verify the relevant rule locally.
 - Do not skip when: The only evidence is a human saying "false positive" on a high-risk issue without explanation.
 - Example signal: A file-naming rule comment whose body says the file is already compliant.
 
@@ -90,17 +90,17 @@ Append new candidate learnings here during or after babysitting when they look t
 ### Manual reimplementations of native browser behavior
 
 - Confidence: candidate
-- Skip when: Practically never. When a diff replaces native browser behavior with a manual equivalent (native sticky → JS-positioned clones, native scroll targeting → forwarded wheel/touch events, paint-order occlusion → masks/clip-path), Bugbot's logic-bug findings against that code have been consistently legitimate.
+- Skip when: Practically never. When a diff replaces native browser behavior with a manual equivalent (native sticky → JS-positioned clones, native scroll targeting → forwarded wheel/touch events, paint-order occlusion → masks/clip-path), AI Reviewer's logic-bug findings against that code have been consistently legitimate.
 - Do not skip when: The finding concerns event-forwarding gaps (wheel deltaMode, touch pans, scroll-chaining at edges, tap slop), mask/clip hit-testing divergence, or observer-vs-React state timing races in such code. Default to fix.
 - Example signal: "masks do not affect hit-testing", "overlay blocks wheel scroll", "ignores deltaMode", "runs in the IntersectionObserver callback before React applies state".
-- Source: one sticky-occlusion PR: six Bugbot passes, roughly eighteen findings, every one fixed rather than dismissed.
+- Source: one sticky-occlusion PR: six AI Reviewer passes, roughly eighteen findings, every one fixed rather than dismissed.
 
 ### Contract-test drift claims are cheaply verifiable — run the test first
 
 - Confidence: candidate
 - Skip when: Never skip the verification itself; it costs one command. When a PR
   ships a contract test that pins protocol or documentation prose (regexes over
-  a SKILL.md, snapshot of doc wording), and Bugbot claims "the test no longer
+  a SKILL.md, snapshot of doc wording), and AI Reviewer claims "the test no longer
   matches the doc" (or vice versa), run that test on the PR tip before
   classifying. A red run confirms the claim empirically; a green run is a
   concrete disproof for the dismissal reply.
@@ -110,7 +110,7 @@ Append new candidate learnings here during or after babysitting when they look t
 - Example signal: "Contract test omits the pre-fix wait" on a PR whose earlier
   fix commits reworded the pinned passage; the test run on the tip failed on
   exactly the cited assertion.
-- Source: one prose-pinning PR with eight Bugbot passes; the claim was real on
+- Source: one prose-pinning PR with eight AI Reviewer passes; the claim was real on
   pass 7 despite every earlier pass being fixed-and-resolved.
 
 ### Stale security-review finding already fixed later in the same PR
