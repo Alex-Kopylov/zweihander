@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "checked": "2026-08-26",
-  "note": "The Agent Skills specification defines six frontmatter fields: `name`, `description`, `license`, `compatibility`, `metadata`, and `allowed-tools`. Those six are portable and stay at the top level everywhere. Every other key is one product's extension, so it carries a placement per harness: `top-level` where the harness reads it, `metadata` where it does not, since `metadata` is the map the specification reserves for exactly that. Neither harness rejects an unknown key \u2014 the Codex parser ignores anything outside `name`, `description`, and `metadata.short-description` \u2014 so placement is about writing only what a harness asked for, not about avoiding a crash. Codex UI, invocation policy, and tool dependencies belong in `agents/openai.yaml`, never in frontmatter; the file ships to the Codex tree only. A key the matrix does not list and only Claude Code reads, such as `disable-model-invocation`, sits in a Claude Code harness branch of the template, so the Codex tree carries only the specification's keys. Revisit when either product documents a key it does not read today.",
+  "checked": "2026-11-03",
+  "note": "The Agent Skills specification defines six frontmatter fields: `name`, `description`, `license`, `compatibility`, `metadata`, and `allowed-tools`. Those six are portable and stay at the top level everywhere. Every other key is one product's extension, so it carries a placement per harness: `top-level` where the harness reads it, `metadata` where it does not, since `metadata` is the map the specification reserves for exactly that. Neither harness rejects an unknown key — the Codex parser ignores anything outside `name`, `description`, and `metadata.short-description` — so placement is about writing only what a harness asked for, not about avoiding a crash. Codex UI, invocation policy, and tool dependencies belong in `agents/openai.yaml`, never in frontmatter; the file ships to the Codex tree only. A key the matrix does not list and only Claude Code reads, such as `disable-model-invocation`, sits in a Claude Code harness branch of the template, so the Codex tree carries only the specification's keys. Revisit when either product documents a key it does not read today.",
   "lookup_order": [
     "key",
     "assistant"
@@ -17,7 +17,8 @@
     "verbatim": "Portable key the author writes literally in frontmatter; the renderer places nothing.",
     "plain-scalar": "Space-separated string written unquoted; a list argument joins with spaces and a value that would not survive as a plain YAML scalar fails the build.",
     "quoted-scalar": "Single line written double-quoted with its own quotes escaped; a line break fails the build.",
-    "placeholder-names": "Space-separated names that can each spell a `$name` placeholder; any other name fails the build."
+    "placeholder-names": "Space-separated names that can each spell a `$name` placeholder; any other name fails the build.",
+    "flow-sequence": "Written as a YAML flow sequence of double-quoted strings; an empty list emits no key."
   },
   "keys": {
     "name": {
@@ -105,6 +106,17 @@
       "Codex": {
         "placement": "metadata",
         "note": "The one nested key the Codex parser reads, defined as a `metadata` sub-key rather than a top-level one."
+      }
+    },
+    "paths": {
+      "form": "flow-sequence",
+      "intent": "Glob patterns that limit when the skill loads automatically.",
+      "ClaudeCode": {
+        "placement": "top-level"
+      },
+      "Codex": {
+        "placement": "metadata",
+        "note": "Not a Codex frontmatter control; the parser ignores it. Kept under `metadata` so the pattern list survives the port (owner decision, 2026-11-03)."
       }
     }
   },

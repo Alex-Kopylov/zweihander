@@ -147,6 +147,7 @@ def test_codex_task_fallbacks_record_why(actions):
     [
         ("AskUser", "AskUserQuestion", "request_user_input"),
         ("CreateAgent", "Agent", "spawn_agent"),
+        ("CreateSkill", "skill-creator", "skill-creator"),
     ],
 )
 def test_mapped_mechanism_names(actions, action_key, claude_name, codex_name):

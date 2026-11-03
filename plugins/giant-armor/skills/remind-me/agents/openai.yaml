@@ -1,0 +1,5 @@
+interface:
+  display_name: "Remind Me"
+  short_description: "Catch up on what changed in this chat and what waits on you"
+policy:
+  allow_implicit_invocation: false

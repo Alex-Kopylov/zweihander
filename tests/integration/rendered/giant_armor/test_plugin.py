@@ -139,6 +139,9 @@ def test_relative_markdown_links_and_anchors_resolve(plugin_root: Path) -> None:
         for target in LINK.findall(prose):
             if re.match(r"[a-z]+:", target):
                 continue
+            if not any(ch in target for ch in "/.#"):
+                # A bare word such as `[PR #123](url)` in a prompt template is a placeholder, not a path.
+                continue
             file_part, _, anchor = target.partition("#")
             linked = (path.parent / file_part).resolve() if file_part else path
             where = f"{path.relative_to(plugin_root)} -> {target}"

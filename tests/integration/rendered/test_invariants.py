@@ -148,6 +148,11 @@ def test_claude_code_tree_carries_no_codex_agent_file(rendered: Path) -> None:
     assert not [path.relative_to(rendered) for path in rendered.rglob("openai.yaml")]
 
 
+@pytest.mark.harness(Harness.CLAUDE_CODE)
+def test_claude_code_tree_carries_no_codex_agent_roles(rendered: Path) -> None:
+    assert not [path.relative_to(rendered) for path in rendered.rglob(".codex/agents/*.toml")]
+
+
 def test_user_only_skills_agree_across_harnesses(tmp_path: Path) -> None:
     """A skill the model may not start says so in each harness's own spelling.
 

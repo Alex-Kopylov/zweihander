@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "checked": "2026-08-25",
+  "checked": "2026-11-03",
   "note": "Codex has no queryable task store. `update_plan` overwrites the whole plan and carries no ids, no dependencies, and no read-back, so it covers creating and updating a plan item but nothing else. The `collaboration` tools (`spawn_agent`, `list_agents`, `wait_agent`, `interrupt_agent`) act on running agents, which are live processes rather than task records, so they are not counterparts either. An action with no Codex counterpart therefore falls back to the Claude Code name. That is safe: the rendered text keeps naming one real concept instead of asserting a Codex tool that does not exist, and it reads as the vocabulary it is. Revisit when Codex ships a task store.",
   "lookup_order": [
     "action",
@@ -42,6 +42,18 @@
       },
       "Codex": {
         "name": "request_user_input"
+      }
+    },
+    "CreateSkill": {
+      "callable": true,
+      "intent": "Author or revise a SKILL.md with the harness's skill-authoring skill.",
+      "ClaudeCode": {
+        "name": "skill-creator",
+        "note": "Not a built-in: the `skill-creator` plugin from the official marketplace (`/plugin install skill-creator@claude-plugins-official`). The bare name resolves when one installed plugin provides it."
+      },
+      "Codex": {
+        "name": "skill-creator",
+        "note": "A system skill bundled with Codex, under `~/.codex/skills/.system/skill-creator`."
       }
     },
     "CreateAgent": {

@@ -160,6 +160,8 @@ every form:
   [format]` would otherwise parse as a YAML list; a line break fails the build.
 - `placeholder-names` — names that can each spell a `$name` placeholder, so a
   name with a space, a capital, or a leading digit fails the build.
+- `flow-sequence` — written as a YAML flow sequence of double-quoted strings,
+  the shape a list such as `paths` takes; an empty list emits no key.
 
 Claude Code substitutes `$name` in the body; Codex documents no substitution. So
 spell a placeholder inside a harness conditional and write prose in the Codex
