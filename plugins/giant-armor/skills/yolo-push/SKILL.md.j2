@@ -1,6 +1,6 @@
 ---
 name: yolo-push
-description: Run a guarded commit-to-deploy workflow that verifies branch freshness, invokes commit and create-pr, waits for green CI, invokes approve-pr, monitors CD, offers to clean up the merged branch and worktree, and reports final deployment state.
+description: Run a guarded commit-to-deploy workflow that verifies branch freshness, invokes commit and create-pr, waits for green CI, merges with a head-SHA guard, monitors CD, offers to clean up the merged branch and worktree, and reports final deployment state.
 {% if harness == "ClaudeCode" -%}
 disable-model-invocation: true
 {% endif -%}
@@ -35,7 +35,9 @@ Progress:
 - [ ] Step 5: If no CI is configured, pass the CI gate. Otherwise, wait for CI.
 - [ ] Step 6: If configured CI is not green, stop with the failing stages and
   PR link.
-- [ ] Step 7: Invoke `giant-armor:approve-pr`.
+- [ ] Step 7: Merge with a head-SHA guard and the repository's merge method:
+  `HEAD=$(gh pr view "$PR" --json headRefOid --jq .headRefOid); gh pr merge "$PR" --match-head-commit "$HEAD"`.
+  Stop with the message if the merge is refused.
 - [ ] Step 8: If no CD/deployment is configured, pass the CD gate. Otherwise,
   monitor CD/deployment status until it reaches a terminal state.
 - [ ] Step 9: Once the PR is merged and CD reached a terminal state, resolve
