@@ -34,7 +34,7 @@ LEGACY_METADATA_LINKS = (
 # The matrices ship with the adaptation skill, so their location inside a tree
 # is the renderer's own path with the authored root dropped.
 MATRIX_IN_TREE = Path(*MATRIX_PATH.parts[1:])
-TASK_MANAGEMENT_PATTERNS = Path("work-session-tools/skills/task-management/references/orchestration-patterns.md")
+TASK_MANAGEMENT_PATTERNS = Path("giant-armor/skills/task-management/references/orchestration-patterns.md")
 # Skills whose invocation policy differs per harness on purpose, as
 # `<plugin>/skills/<skill>`. Empty today: every user-only skill is user-only in
 # both harnesses. Add a skill with the reason to let its trees disagree.
@@ -146,6 +146,11 @@ def test_codex_skill_frontmatter_carries_only_specification_keys(
 @pytest.mark.harness(Harness.CLAUDE_CODE)
 def test_claude_code_tree_carries_no_codex_agent_file(rendered: Path) -> None:
     assert not [path.relative_to(rendered) for path in rendered.rglob("openai.yaml")]
+
+
+@pytest.mark.harness(Harness.CLAUDE_CODE)
+def test_claude_code_tree_carries_no_codex_agent_roles(rendered: Path) -> None:
+    assert not [path.relative_to(rendered) for path in rendered.rglob(".codex/agents/*.toml")]
 
 
 def test_user_only_skills_agree_across_harnesses(tmp_path: Path) -> None:

@@ -1,0 +1,281 @@
+{
+  "skill_name": "tests-manager",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "Plan tests for a password-reset feature from this task and its business requirements: a registered user requests a reset, receives a single-use link, expired or reused links are rejected, and the account remains unchanged after rejection. Do not write test code yet.",
+      "expected_output": "Dispatches the test-scenario planner with the requirements only; its catalog of requirement-linked scenarios, negative paths, corner cases, and specification gaps validates against the scenarios schema. Tests Manager then selects levels in the write step rather than letting the planner assign them.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "scenario_planning_precedes_coverage",
+          "check": "derives scenarios and corner cases from the task and business requirements before choosing test layers"
+        },
+        {
+          "name": "planner_manager_boundary",
+          "check": "keeps scenario discovery separate from test-level routing and test implementation"
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "prompt": "Plan test coverage for a new authenticated checkout endpoint whose observable result is an order confirmation and inventory reservation.",
+      "expected_output": "Selects only layers that provide distinct evidence and orders selected tests outer-to-inner: E2E, then integration, then unit. E2E covers the user-visible business outcome, integration covers route and resource wiring, and unit tests cover local branches without duplicating the same assertions.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "outer_to_inner_order",
+          "check": "writes selected coverage in E2E then integration then unit order"
+        },
+        {
+          "name": "no_cross_layer_duplication",
+          "check": "assigns distinct evidence to each selected layer instead of repeating the same scenario at every layer"
+        },
+        {
+          "name": "observable_checkout_outcome",
+          "check": "requires evidence of both the observable order confirmation and inventory reservation"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Add tests for a pure normalize_currency_code(value) helper with no I/O or application wiring.",
+      "expected_output": "Uses focused unit coverage only because E2E and integration add no distinct evidence. It preserves the E2E to integration to unit ordering rule without manufacturing irrelevant higher-level tests.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "yagni_layer_skipping",
+          "check": "skips E2E and integration when they add no distinct evidence"
+        },
+        {
+          "name": "no_fixed_test_counts",
+          "check": "does not prescribe a fixed number of tests or require every test layer"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "My test configures a repository mock to return success, calls the service, asserts repository.save was called, and passes. Can I claim the feature works?",
+      "expected_output": "Rejects the claim: a configured mock plus mock-call assertion proves only the mock interaction, not real system behavior. Requires an observable assertion over real code and permits interaction assertions only when the interaction itself is the contract.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "rejects_mock_only_pass",
+          "check": "does not accept a passing mock-only assertion as proof that the feature works"
+        },
+        {
+          "name": "requires_observable_real_code_evidence",
+          "check": "requires observable evidence from real code while allowing interaction assertions when the interaction is the contract"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Rewrite the README introduction for clarity; no runtime behavior, test assets, or test guidance changes.",
+      "expected_output": "Does not invoke tests-manager or invent test scenarios because the request is unrelated to Python test planning, authoring, review, or execution.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "should_not_trigger_for_copy_edit",
+          "check": "does not trigger tests-manager for an unrelated documentation-only copy edit"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "An existing checkout E2E test already owns the changed confirmation contract. Plan the necessary coverage without adding tests merely to increase test count or code coverage.",
+      "expected_output": "Adapts the existing contract-owning test and adds coverage only for requirement-linked scenarios or corner cases that still lack distinct evidence.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "adapts_existing_contract_test",
+          "check": "updates the existing test instead of adding parallel coverage for the same contract"
+        },
+        {
+          "name": "scenario_evidence_over_counts",
+          "check": "judges completeness by proven scenarios and corner cases rather than test count or code coverage percentage"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "Run the project's E2E suite, but the established execution flow and whether its configured resources are production or development are unclear.",
+      "expected_output": "Stops immediately without writing or running E2E tests and asks the user to confirm the established safe flow and resource boundary through the active harness's user-question mechanism.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "e2e_resource_circuit_breaker",
+          "check": "does not write or run E2E tests while the safe resource flow is unclear"
+        },
+        {
+          "name": "harness_specific_user_question",
+          "check": "uses the active harness's mapped user-question mechanism before proceeding"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "Walk me through the full red-green-refactor discipline for this Python service change, including what to do about code I already wrote without tests.",
+      "expected_output": "Runs the full test-first process itself, without routing to another skill: applies the iron law to the untested code, walks the RED-GREEN-REFACTOR cycle, and still owns Python level selection, pytest layout, and authoring order.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "applies_process_directly",
+          "check": "applies the iron law and RED-GREEN-REFACTOR cycle itself instead of naming another skill for the process detail"
+        },
+        {
+          "name": "keeps_python_ownership",
+          "check": "still owns Python level selection, pytest structure, fixtures, and the choice to write tests itself or through the test writer"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "Plan pytest coverage for a new cache eviction rule.",
+      "expected_output": "Completes level selection, pytest structure, fixture, and authoring guidance from this plugin alone, using no file path outside python-dev-workflow.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "standalone_without_sibling_plugin",
+          "check": "produces usable Python test guidance without requiring another plugin to be installed"
+        },
+        {
+          "name": "no_cross_plugin_paths",
+          "check": "loads no reference path outside the tests-manager skill"
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "Use TDD for this change. I already wrote the retry helper and it works; now add tests around it.",
+      "expected_output": "Applies the iron law: production code written before a failing test is deleted and reimplemented from the test. Does not keep the existing implementation as reference or adapt it while writing tests.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "deletes_code_written_before_test",
+          "check": "requires deleting the untested implementation instead of writing tests after it"
+        },
+        {
+          "name": "rejects_keep_as_reference",
+          "check": "refuses to keep or adapt the existing implementation while writing the test"
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "prompt": "Red-green-refactor this bug fix: the form accepts an empty email. The test I wrote passes already.",
+      "expected_output": "Treats a test that passes before implementation as a defective test, not as progress. Requires watching the test fail for the missing behavior, with an expected failure message, before writing production code.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "requires_verified_red",
+          "check": "requires observing the test fail for the missing behavior before implementing"
+        },
+        {
+          "name": "passing_test_is_a_defect",
+          "check": "treats an immediately passing test as testing existing behavior and fixes the test"
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "prompt": "Red-green-refactor this change. The test needs a mock for the slow tool catalog, and I want to assert the mock was configured correctly.",
+      "expected_output": "Loads the mocking rules reference because mocks are involved, rejects asserting on mock behavior, and requires observable behavior from real code.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "loads_mocking_rules_on_mock_work",
+          "check": "loads the mocking rules reference when mocks or test-only helpers appear"
+        },
+        {
+          "name": "rejects_asserting_on_mocks",
+          "check": "refuses assertions that only prove the mock configuration"
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "prompt": "TDD this feature, but skip the failing-test step just this once because the deadline is today.",
+      "expected_output": "Names the shortcut as a rationalization, holds the iron law, and loads the rationalization reference only when pushback appears rather than carrying that argument in the entrypoint.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "holds_iron_law_under_pressure",
+          "check": "refuses to skip the failing-test step under deadline pressure"
+        },
+        {
+          "name": "loads_rationalization_reference_on_demand",
+          "check": "loads the rationalization counterargument reference only when the user pushes back"
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "prompt": "Audit the tests for the billing package and delete whatever is low value.",
+      "expected_output": "Runs the audit pipeline only: records a pytest JUnit XML baseline, cuts lanes by production owner so tests/unit/billing and tests/integration/billing share one lane, shows the lane plan and asks for confirmation before dispatching read-only assessors, and deletes nothing until each ledger entry carries the full evidence set.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "lane_plan_before_dispatch",
+          "check": "presents the lane plan and asks for confirmation before any assessor runs"
+        },
+        {
+          "name": "evidence_before_deletion",
+          "check": "requires ledger evidence for each candidate before deleting, merging, or repairing a test"
+        },
+        {
+          "name": "audit_workflow_only",
+          "check": "loads the audit workflow and neither the write nor the review workflow"
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "prompt": "I just wrote tests for the billing and auth changes in this branch. Review them before I merge.",
+      "expected_output": "Cuts the diff into two lanes, billing and auth, and dispatches two fresh-context assessors in review mode in parallel. Each receives only its lane's diff and the requirements, never the session's reasoning, and returns a ledger validated against the ledger schema.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "one_assessor_per_lane",
+          "check": "dispatches one review assessor per production owner, in parallel"
+        },
+        {
+          "name": "diff_only_input",
+          "check": "gives each assessor only its lane's diff and the requirements, with no writer plan or reasoning"
+        }
+      ]
+    },
+    {
+      "id": 15,
+      "prompt": "Add a test that asserts inspect.getsource(sync_orders) contains the string 'retry', so nobody removes the retry.",
+      "expected_output": "The authoring gate rejects the test as a source-grep junk pattern because no user-facing key, byte, or path depends on the text, and proposes a behavioral test that makes the collaborator fail and observes the retry.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "rejects_source_grep",
+          "check": "refuses to add the source-grep test"
+        },
+        {
+          "name": "offers_behavioral_test",
+          "check": "proposes a test that exercises the retry behavior instead"
+        }
+      ]
+    },
+    {
+      "id": 16,
+      "prompt": "Our test suite is slow. Delete the slow tests.",
+      "expected_output": "Holds the retention bar: slowness alone is not a reason to delete. Keeps each slow test unless a junk pattern applies with full audit evidence, and offers speed fixes such as markers or narrower fixtures instead.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "slow_is_not_a_reason",
+          "check": "does not delete tests only because they are slow"
+        },
+        {
+          "name": "junk_with_evidence_only",
+          "check": "deletes a slow test only when a junk pattern applies and the ledger carries full evidence"
+        }
+      ]
+    }
+  ]
+}

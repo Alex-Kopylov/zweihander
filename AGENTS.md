@@ -100,7 +100,7 @@ covers stage-1 output; this flag is the quick local answer, not a second gate.
 
 Harness-specific wording in skills lives in `.j2` templates that resolve every
 harness fact from a matrix under
-`plugins/ai-assistant-ops/skills/adapt-skill-for-ai-harness/references/`:
+`plugins/giant-armor/skills/adapt-skill-for-ai-harness/references/`:
 `harness-action-matrix.json` for callable names, and
 `harness-frontmatter-matrix.json` for where each frontmatter key goes. Use the
 `adapt-skill-for-ai-harness` skill when converting a skill's harness-specific
@@ -201,7 +201,7 @@ When changing plugin or marketplace content, bump the relevant versions accordin
 to the official Claude Code and Codex plugin marketplace documentation.
 
 Use this repo's `version-bumper` skill at
-`plugins/dev-workflow/skills/version-bumper/SKILL.md` to update
+`plugins/giant-armor/skills/version-bumper/SKILL.md` to update
 version-bearing files such as `plugin.json`, `marketplace.json`, and package
 metadata.
 
@@ -243,6 +243,29 @@ instructions for this repo, and root `CLAUDE.md` is a symlink to it, so Codex
 and Claude Code read one file. The renderer never copies the root, so this
 convention stays as it is.
 
+## User-only skills and the zstack router
+
+Most skills ported from pstack (the `fire` router, its playbooks and
+principles, and the leaves it routes to) are user-only in both harnesses:
+`disable-model-invocation: true` in the Claude Code frontmatter branch and
+`policy.allow_implicit_invocation: false` in `agents/openai.yaml`. The user
+types them; the model never starts them on its own and never invokes them by
+name, because `Skill(name)` is refused for such a skill in Claude Code and
+Codex keeps it out of the model's skill list.
+
+The router reaches a leaf anyway by reading its file: every leaf is a sibling
+under `giant-armor/skills/<name>/SKILL.md`, playbooks sit under
+`skills/fire/playbooks/`, and the 24 principles are reference files under
+`skills/fire/references/principles/`. The merge of the development plugins
+into `giant-armor` (2026-11-03) exists for this reason: a user-only skill or a
+reference file in another plugin has no path the router could rely on across
+install layouts. Keep every pstack leaf and reference inside `giant-armor`.
+
+Why user-only rather than `Skill(...)`: pstack sets the flag on 57 of 58
+skills on purpose, these skills are expensive runs, and a user-only skill
+costs no context for its description. Decision log: `#173` and the interview
+comments of 2026-11-03 on it.
+
 ## Plugin Catalog Maintenance
 
 When adding a plugin:
@@ -253,10 +276,9 @@ When adding a plugin:
   harness's marketplace (`.agents/plugins/marketplace.json`,
   `.claude-plugin/marketplace.json`).
 - Each manifest is the inclusion list for its own `dist/` tree; a plugin
-  listed in only one manifest ships to only that harness. Single-harness
-  plugins are intentional: `run-and-verify-app` ports a Claude Code built-in
-  to Codex, so it has no `.claude-plugin/`. Scripts that walk plugin metadata
-  must not assume both directories exist.
+  listed in only one manifest ships to only that harness. A single-harness
+  plugin is allowed, so scripts that walk plugin metadata must not assume
+  both directories exist.
 - Run the full build so both `dist/` trees include the plugin.
 - Add a user-facing section to `README.md`.
 - If the plugin has more than one skill, put the README plugin details inside a

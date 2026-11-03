@@ -1,0 +1,5 @@
+interface:
+  display_name: "No Comments"
+  short_description: "Remove comments from a diff and encode claimed constraints"
+policy:
+  allow_implicit_invocation: false

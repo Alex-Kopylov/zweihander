@@ -63,7 +63,7 @@ class Harness(StrEnum):
     CODEX = "Codex"
 
 
-MATRIX_PATH = Path("plugins/ai-assistant-ops/skills/adapt-skill-for-ai-harness/references/harness-action-matrix.json")
+MATRIX_PATH = Path("plugins/giant-armor/skills/adapt-skill-for-ai-harness/references/harness-action-matrix.json")
 # The frontmatter matrix sits beside the action matrix, so overriding one path
 # in a test moves both.
 FRONTMATTER_MATRIX_NAME = "harness-frontmatter-matrix.json"
@@ -96,8 +96,10 @@ DIST_DIRS = {
 }
 # Codex reads a skill's UI and invocation policy from `agents/openai.yaml`;
 # Claude Code never reads it, so its tree never carries it.
+# Codex reads custom agent roles from `.codex/agents/*.toml`; Claude Code never
+# reads them, so its tree never carries them.
 FOREIGN_SKILL_FILES = {
-    Harness.CLAUDE_CODE: ("skills/*/agents/openai.yaml",),
+    Harness.CLAUDE_CODE: ("skills/*/agents/openai.yaml", ".codex/agents/*.toml"),
     Harness.CODEX: (),
 }
 
@@ -266,11 +268,23 @@ def _placeholder_names(key: str, value: str | list[str]) -> str:
     return " ".join(names)
 
 
+def _flow_sequence(key: str, value: str | list[str]) -> str:
+    """Write the value as a YAML flow sequence of double-quoted strings."""
+    items = value.split() if isinstance(value, str) else list(value)
+    if not items:
+        return ""
+    for item in items:
+        if "\n" in item or "\r" in item:
+            raise LineBreakError(key, item)
+    return "[" + ", ".join('"' + item.replace("\\", "\\\\").replace('"', '\\"') + '"' for item in items) + "]"
+
+
 VERBATIM_FORM = "verbatim"
 VALUE_FORMS: dict[str, Callable[[str, str | list[str]], str]] = {
     "plain-scalar": _plain_scalar,
     "quoted-scalar": _quoted_scalar,
     "placeholder-names": _placeholder_names,
+    "flow-sequence": _flow_sequence,
 }
 PLACEMENTS = {"top-level", "metadata"}
 

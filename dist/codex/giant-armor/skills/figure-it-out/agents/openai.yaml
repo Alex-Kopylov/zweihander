@@ -1,0 +1,5 @@
+interface:
+  display_name: "Figure It Out"
+  short_description: "Design an auditable playbook when no bundled one fits"
+policy:
+  allow_implicit_invocation: false

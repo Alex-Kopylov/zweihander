@@ -1,0 +1,5 @@
+interface:
+  display_name: "Show Me Your Work"
+  short_description: "Keep a reviewable decision log for long or unattended work"
+policy:
+  allow_implicit_invocation: false

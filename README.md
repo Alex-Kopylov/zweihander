@@ -73,22 +73,6 @@ kanban
 
 ```mermaid
 kanban
-  work_session_tools[work-session-tools]
-    wst_daily[daily]
-    wst_task_management[task-management]
-    wst_interview[interview]
-    wst_create_team[create-team]
-    wst_wait_what[wait-what]
-    wst_handoff[handoff]
-  ai_assistant_ops[ai-assistant-ops]
-    aao_agents_md_improver[agents-md-improver]
-    aao_ai_setup_audit[ai-setup-audit]
-    aao_harness_overlap_audit[harness-overlap-audit]
-    aao_ai_insights_hunter[ai-insights-hunter]
-    aao_docs_language_review[docs-language-review]
-    aao_md_bloat_hunter[md-bloat-hunter]
-    aao_improve_skill[improve-skill]
-    aao_adapt_skill_for_ai_harness[adapt-skill-for-ai-harness]
   mermaid_diagrams[mermaid-diagrams]
     md_mermaid[mermaid]
     md_mermaid_lint[mermaid-lint]
@@ -98,32 +82,63 @@ kanban
 
 ```mermaid
 kanban
-  dev_workflow[dev-workflow]
-    dw_approve_pr[approve-pr]
+  giant_armor[giant-armor]
+    aao_adapt_skill_for_ai_harness[adapt-skill-for-ai-harness]
+    aao_agents_md_improver[agents-md-improver]
+    aao_ai_insights_hunter[ai-insights-hunter]
+    aao_ai_setup_audit[ai-setup-audit]
+    ga_architect[architect]
+    ga_arena[arena]
+    ga_benchmark_checklist[benchmark-checklist]
+    ga_blast_radius[blast-radius]
+    ga_bro[bro]
+    pdw_celery_expert[celery-expert]
     dw_commit[commit]
+    pdw_constants_placement[constants-placement]
+    ga_correct[correct]
+    ga_create_formal_verification_skill[create-formal-verification-skill]
     dw_create_pr[create-pr]
-    dw_dispatching_parallel_agents[dispatching-parallel-agents]
+    wst_create_team[create-team]
+    wst_daily[daily]
+    ga_figure_it_out[figure-it-out]
+    ga_fire[fire]
+    wst_handoff[handoff]
+    aao_harness_overlap_audit[harness-overlap-audit]
+    ga_how[how]
+    aao_improve_skill[improve-skill]
+    ga_in_your_own_words[in-your-own-words]
+    ga_interrogate[interrogate]
+    wst_interview[interview]
+    ga_maintain_formal_verification_skill[maintain-formal-verification-skill]
+    aao_md_bloat_hunter[md-bloat-hunter]
+    ga_mermaid_statechart[mermaid-statechart]
+    ga_no_comments[no-comments]
+    dw_pr_address_comments[pr-address-comments]
     dw_pr_checkout[pr-checkout]
     dw_pr_comment[pr-comment]
-    dw_pr_address_comments[pr-address-comments]
+    ga_recall[recall]
+    ga_reflect[reflect]
+    ga_remind_me[remind-me]
     dw_render_diff_html[render-diff-html]
-    dw_requesting_code_review[requesting-code-review]
-    dw_systematic_debugging[systematic-debugging]
+    rva_run_skill_generator[run-skill-generator]
+    rva_run[run]
+    ga_sharpen[sharpen]
+    ga_show_me_your_work[show-me-your-work]
+    dw_spec_contradiction_hunter[spec-contradiction-hunter]
+    dw_spec_interview[spec-interview]
+    ga_swarm[swarm]
+    wst_task_management[task-management]
+    ga_teach[teach]
+    ga_technical_writing[technical-writing]
+    pdw_tests_manager[tests-manager]
     dw_ticket_branch[ticket-branch]
     dw_ticket_comment_status[ticket-comment-status]
-    dw_verification_before_completion[verification-before-completion]
-    dw_version_bumper[version-bumper]
-    dw_yolo_push[yolo-push]
-    dw_spec_interview[spec-interview]
-    dw_spec_contradiction_hunter[spec-contradiction-hunter]
-  run_and_verify_app[run-and-verify-app]
-    rva_run[run]
+    ga_typescript_best_practices[typescript-best-practices]
+    ga_unslop[unslop]
     rva_verify[verify]
-    rva_run_skill_generator[run-skill-generator]
-  python_dev_workflow[python-dev-workflow]
-    pdw_tests_manager[tests-manager]
-    pdw_celery_expert[celery-expert]
-    pdw_constants_placement[constants-placement]
+    dw_version_bumper[version-bumper]
+    ga_why[why]
+    dw_yolo_push[yolo-push]
   openapi_tools[openapi-tools]
     oat_openapi_list[openapi-list]
     oat_openapi_inspect[openapi-inspect]
@@ -276,61 +291,84 @@ reasoning.
 
 </details>
 
-### `python-dev-workflow`
+### `giant-armor`
 
-**Use when:** you are doing TDD or test-first development in Python, deriving
-scenarios from requirements, writing, reviewing, or auditing Python tests,
-deciding E2E vs integration vs unit coverage, testing Celery or Redis behavior,
-configuring Celery for production behavior, or sorting out hardcoded constants,
-config values, and secrets.
+<details>
+<summary>
+Development, session and assistant-operations workflows in one plugin: git,
+PRs, tickets, releases, Python testing, run-and-verify, session tooling, and
+skill improvement.
+</summary>
+
+**Use when:** you want development, session or assistant-operations support:
+commits, PRs, tickets, releases, visual diffs, spec checks, Python test-first
+work, running and verifying an app, daily notes, interviews, team design,
+task tracking, handoffs, AGENTS.md audits, skill improvement, harness
+adaptation, overlap audits, insight capture, or Markdown bloat trimming.
+
+**Origin note:** the `fire` router, its playbooks and principles, and 25
+leaf skills were ported from the MIT-licensed
+[pstack](https://github.com/cursor/plugins/tree/main/pstack) plugin by Lauren
+Tan (the zstack port); `handoff` comes from Matt Pocock's skills; the
+test-first process of `tests-manager` from Superpowers. See
+`third_party/THIRD_PARTY_NOTICES.md` for provenance.
 
 #### Skills
 
 | Skill | Description |
 | --- | --- |
+| `adapt-skill-for-ai-harness` | Adapt explicitly named skills using a JSON assistant action matrix and target-specific harness references. |
+| `agents-md-improver` | Audit and improve repository AGENTS.md files. |
+| `ai-insights-hunter` | Extract reusable decisions, patterns, and preferences from a session. |
+| `ai-setup-audit` | Audit assistant configuration files for conflicts and bloat. |
+| `architect` | Sketch types and module structure before writing code. |
+| `arena` | Race parallel candidates, pick a base, graft the best parts. |
+| `benchmark-checklist` | Vet a perf measurement before reporting or acting on it. |
+| `blast-radius` | Find what a change breaks elsewhere and prove the safety fact. |
+| `bro` | Restate the last message in plain language, no jargon. |
 | `celery-expert` | Configure Celery tasks, workers, retries, schedules, performance, and security. |
-| `constants-placement` | Decide where each hardcoded value belongs (its module, a shared `constants.py`, a pydantic-settings field, or `.env` for secrets) and move it, merging duplicates and keeping `.env` out of git. |
-| `tests-manager` | Write, review, or audit pytest tests: red-green-refactor, scenario planning, E2E, integration, and unit tests, independent review of new tests, and evidence-first pruning of low-value ones. |
-
-#### Agents
-
-| Agent | Description |
-| --- | --- |
-| `test-assessor` | Judge one lane of tests in review, audit, or recheck mode and return a ledger; read-only. |
-| `test-scenario-planner` | Derive requirement-linked scenarios and corner cases before coverage routing. |
-| `test-writer` | Write pytest tests at one assigned level: unit, integration, or E2E. |
-
-### `dev-workflow`
-
-**Use when:** you need structured development workflow support: debugging,
-visual diff reports, review, commits, PRs, ticket branches, status updates,
-version bumps, or spec checks.
-
-**Origin note:** several methodology skills in this plugin were copied from the
-MIT-licensed [Superpowers](https://github.com/obra/superpowers) project by
-Jesse Vincent. See `third_party/THIRD_PARTY_NOTICES.md` for skill-by-skill
-provenance.
-
-#### Skills
-
-| Skill | Description |
-| --- | --- |
-| `approve-pr` | Approve and merge PRs with current checks and policy gates. |
 | `commit` | Create single-line Conventional Commits. |
+| `constants-placement` | Decide where each hardcoded value belongs (its module, a shared `constants.py`, a pydantic-settings field, or `.env` for secrets) and move it, merging duplicates and keeping `.env` out of git. |
+| `correct` | Make each repeated agent mistake in a repo impossible. |
+| `create-formal-verification-skill` | Generate a project skill that formally verifies risky code. |
 | `create-pr` | Open pull requests from the current branch. |
-| `dispatching-parallel-agents` | Coordinate independent subagent tasks that can run concurrently. |
+| `create-team` | Design a multi-agent team and handoff plan. |
+| `daily` | Generate a daily note from project activity. |
+| `figure-it-out` | Design an auditable playbook when no bundled one fits. |
+| `fire` | Run tasks by playbook with routed skills and verified work. |
+| `handoff` | Compact the current conversation for another agent. |
+| `harness-overlap-audit` | Map skills, MCP tools, and skill agents whose scope overlaps, in a Markdown report with Venn diagrams. |
+| `how` | Explain how a subsystem works and where things live. |
+| `improve-skill` | Improve existing skills through eval feedback, baseline comparison, iteration, and trigger checks. |
+| `in-your-own-words` | Restate the user's goals and the problem they are solving. |
+| `interrogate` | Adversarial multi-model review that keeps only proven findings. |
+| `interview` | Walk through a list of items one by one, logging every decision before anything runs. |
+| `maintain-formal-verification-skill` | Bring formal verification back in line with changed code. |
+| `md-bloat-hunter` | Trim redundancy, verbosity, and filler in Markdown and `.md.j2` templates until the smallest model still passes your evals. |
+| `mermaid-statechart` | Check a TLA+ model and draw it as a Mermaid statechart. |
+| `no-comments` | Remove comments from a diff and encode claimed constraints. |
 | `pr-address-comments` | Fetch, fix, reply to, and resolve PR feedback. |
 | `pr-checkout` | Switch to a PR branch for review or changes. |
 | `pr-comment` | Post general or inline PR comments. |
+| `recall` | Rebuild recent working context into a current-state brief. |
+| `reflect` | Turn this conversation's learnings into skill edits. |
+| `remind-me` | Catch up on what changed in this chat and what waits on you. |
 | `render-diff-html` | Render git diffs and file comparisons as HTML reports. |
-| `requesting-code-review` | Request focused review before task completion or merge. |
+| `sharpen` | Make a task deeper, not bigger, then rewrite the prompt. |
+| `show-me-your-work` | Keep a reviewable decision log for long or unattended work. |
 | `spec-contradiction-hunter` | Find contradictions and inconsistencies in specs. |
 | `spec-interview` | Interview the user and produce an implementation spec. |
-| `systematic-debugging` | Investigate bugs through evidence, patterns, hypotheses, and fixes. |
+| `swarm` | Fan out parallel workers and return one report. |
+| `task-management` | Track, split, and orchestrate session tasks. |
+| `teach` | Explain a change or subsystem so a person understands it. |
+| `technical-writing` | Write docs, RFCs, and PR text to a layered style standard. |
+| `tests-manager` | Write, review, or audit pytest tests: red-green-refactor, scenario planning, E2E, integration, and unit tests, independent review of new tests, and evidence-first pruning of low-value ones. |
 | `ticket-branch` | Create a git branch from a ticket ID or URL. |
 | `ticket-comment-status` | Post status updates to tickets or work items. |
-| `verification-before-completion` | Verify claims before reporting work as complete or fixed. |
+| `typescript-best-practices` | Apply TypeScript rules for types, boundaries, and tests. |
+| `unslop` | Cut AI tells and filler from any writing. |
 | `version-bumper` | Bump versions in plugin and package metadata. |
+| `why` | Investigate why code was built this way, with citations. |
 | `yolo-push` | Slash-command gated commit, PR, CI, merge, CD, and post-merge cleanup workflow. |
 
 #### Agents
@@ -338,34 +376,29 @@ provenance.
 | Agent | Description |
 | --- | --- |
 | `ambiguity-contradiction-hunter` | Finds hidden contradictions from vague language. |
+| `comment-sicko` | Hunts comments to delete and flags workaround code; report only. |
 | `release-manager` | Coordinates version bump and commit workflows. |
 | `structural-contradiction-hunter` | Finds deeper logical and scope conflicts. |
+| `sub-agent` | Delegate for code-writing and helper tasks inside a `fire` run; reads `fire` in full first. |
 | `surface-contradiction-hunter` | Finds direct, explicit contradictions. |
+| `test-assessor` | Judge one lane of tests in review, audit, or recheck mode and return a ledger; read-only. |
+| `test-scenario-planner` | Derive requirement-linked scenarios and corner cases before coverage routing. |
+| `test-writer` | Write pytest tests at one assigned level: unit, integration, or E2E. |
 
-### `run-and-verify-app`
+#### Skill Agents
 
-<details>
-<summary>
-Runtime app launch, verification, and run-skill generation inspired by Claude
-Code.
-</summary>
-
-**Use when:** you want to launch an app, verify a change against the
-running app instead of just tests, or record a reusable build and launch
-recipe for a project.
-
-Inspired by Claude Code's bundled run and verify app workflow, this plugin
-brings three coordinated skills to Codex. It is Codex-only; Claude Code users
-can use Claude Code's built-in run and verify skills.
-
-This is an opinionated adaptation, not a 1-to-1 port. It reflects this
-marketplace's preferences for runtime evidence and reusable project run skills.
-
-| Skill | Purpose |
-| --- | --- |
-| `run` | Launch and drive your app to see a change working. |
-| `verify` | Build and run your app to confirm a code change does what it should, without falling back to tests or type checks. |
-| `run-skill-generator` | Teach `run` and `verify` how to build and launch your project by recording a verified project-specific recipe. |
+| Skill | Agent | Description |
+| --- | --- | --- |
+| `ai-insights-hunter` | `decisions-hunter` | Extracts durable decisions from a conversation. |
+| `ai-insights-hunter` | `patterns-hunter` | Finds recurring workflow and implementation patterns. |
+| `ai-insights-hunter` | `preferences-hunter` | Identifies user preferences worth preserving. |
+| `ai-insights-hunter` | `project-context-hunter` | Captures project-specific context and constraints. |
+| `md-bloat-hunter` | `file-orchestrator` | Coordinates per-file Markdown cleanup. |
+| `md-bloat-hunter` | `filler-eliminator` | Removes low-value filler language. |
+| `md-bloat-hunter` | `redundancy-detector` | Spots repeated content inside one agent's context, within a file or across the files it loads together. |
+| `md-bloat-hunter` | `size-budget-reporter` | Reports Markdown size and token budget status. |
+| `md-bloat-hunter` | `verbosity-pruner` | Compresses overlong explanations. |
+| `md-bloat-hunter` | `vocab-compressor` | Replaces inflated wording with direct wording. |
 
 </details>
 
@@ -382,29 +415,6 @@ Mermaid code blocks with the Mermaid CLI.
 | --- | --- |
 | `mermaid` | Generate Mermaid diagrams from user requirements with local syntax references. |
 | `mermaid-lint` | Validate Mermaid code blocks with `mmdc` and report lint status and errors. |
-
-### `work-session-tools`
-
-<details>
-<summary>
-Productivity, orchestration, and handoffs within an assistant session.
-</summary>
-
-**Use when:** you want daily notes, task tracking, structured interviews,
-session handoffs, or a designed multi-agent team.
-
-#### Skills
-
-| Skill | Description |
-| --- | --- |
-| `create-team` | Design a multi-agent team and handoff plan. |
-| `daily` | Generate a daily note from project activity. |
-| `handoff` | Compact the current conversation for another agent. |
-| `interview` | Walk through a list of items one by one, logging every decision before anything runs. |
-| `task-management` | Track, split, and orchestrate session tasks. |
-| `wait-what` | Ask for a clearer re-pitch when the last message did not land. |
-
-</details>
 
 ### `research`
 
@@ -463,41 +473,6 @@ page that fails to fetch.
 | `blocked-page-recovery` | Recover pages that fail with 403/429, paywalls, or bot walls from archives and alternate routes. |
 
 </details>
-
-### `ai-assistant-ops`
-
-**Use when:** you want to audit assistant instructions, improve AGENTS.md files,
-improve existing skills, adapt skills for assistant harnesses, find overlapping
-skills and MCP tools, capture useful session insights, review documentation
-language, or reduce Markdown bloat.
-
-#### Skills
-
-| Skill | Description |
-| --- | --- |
-| `adapt-skill-for-ai-harness` | Adapt explicitly named skills using a JSON assistant action matrix and target-specific harness references. |
-| `agents-md-improver` | Audit and improve repository AGENTS.md files. |
-| `ai-insights-hunter` | Extract reusable decisions, patterns, and preferences from a session. |
-| `ai-setup-audit` | Audit assistant configuration files for conflicts and bloat. |
-| `docs-language-review` | Review or rewrite Markdown documentation using plain-language and cognitive-accessibility standards. |
-| `harness-overlap-audit` | Map skills, MCP tools, and skill agents whose scope overlaps, in a Markdown report with Venn diagrams. |
-| `improve-skill` | Improve existing skills through eval feedback, baseline comparison, iteration, and trigger checks. |
-| `md-bloat-hunter` | Trim redundancy, verbosity, and filler in Markdown and `.md.j2` templates until the smallest model still passes your evals. |
-
-#### Skill Agents
-
-| Skill | Agent | Description |
-| --- | --- | --- |
-| `ai-insights-hunter` | `decisions-hunter` | Extracts durable decisions from a conversation. |
-| `ai-insights-hunter` | `patterns-hunter` | Finds recurring workflow and implementation patterns. |
-| `ai-insights-hunter` | `preferences-hunter` | Identifies user preferences worth preserving. |
-| `ai-insights-hunter` | `project-context-hunter` | Captures project-specific context and constraints. |
-| `md-bloat-hunter` | `file-orchestrator` | Coordinates per-file Markdown cleanup. |
-| `md-bloat-hunter` | `filler-eliminator` | Removes low-value filler language. |
-| `md-bloat-hunter` | `redundancy-detector` | Spots repeated content inside one agent's context, within a file or across the files it loads together. |
-| `md-bloat-hunter` | `size-budget-reporter` | Reports Markdown size and token budget status. |
-| `md-bloat-hunter` | `verbosity-pruner` | Compresses overlong explanations. |
-| `md-bloat-hunter` | `vocab-compressor` | Replaces inflated wording with direct wording. |
 
 ### `os-tools`
 

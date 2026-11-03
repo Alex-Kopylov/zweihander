@@ -25,11 +25,11 @@ from plugin_maintenance.render import (
 # Successor of the retired AGNOSTIC_EXEMPT: dist-tree-relative paths whose
 # subject matter is another harness, skipped by the foreign-name scan.
 FOREIGN_NAME_SCAN_EXEMPT = {
-    "dev-workflow/skills/version-bumper/references/claude-code-marketplace-manifests.md",
-    "dev-workflow/skills/version-bumper/references/claude-code-plugin-manifests.md",
-    "dev-workflow/skills/version-bumper/references/codex-marketplace-manifests.md",
-    "dev-workflow/skills/version-bumper/references/codex-plugin-manifests.md",
-    "ai-assistant-ops/skills/adapt-skill-for-ai-harness/references/harness-action-matrix.json",
+    "giant-armor/skills/version-bumper/references/claude-code-marketplace-manifests.md",
+    "giant-armor/skills/version-bumper/references/claude-code-plugin-manifests.md",
+    "giant-armor/skills/version-bumper/references/codex-marketplace-manifests.md",
+    "giant-armor/skills/version-bumper/references/codex-plugin-manifests.md",
+    "giant-armor/skills/adapt-skill-for-ai-harness/references/harness-action-matrix.json",
 }
 
 

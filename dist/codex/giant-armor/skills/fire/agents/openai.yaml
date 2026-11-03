@@ -1,0 +1,5 @@
+interface:
+  display_name: "Fire"
+  short_description: "Run tasks by playbook with routed skills and verified work"
+policy:
+  allow_implicit_invocation: false

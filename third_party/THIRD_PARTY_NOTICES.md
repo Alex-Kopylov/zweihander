@@ -5,25 +5,17 @@ listed below. See [README.md](README.md) for the linked inventory.
 
 ## Superpowers-Derived Dev Workflow Skills
 
-Several `dev-workflow` skills and supporting files were copied from and adapted
-from Superpowers:
+The test-first process of `giant-armor:tests-manager` was absorbed from
+Superpowers:
 
 - Upstream: https://github.com/obra/superpowers
 - Upstream plugin version: `5.1.3`
 - Author: Jesse Vincent
 - License: MIT
 
-The following copied skills and supporting files come from that upstream
-Superpowers distribution.
-
 | Local plugin/skill | Relationship | Upstream source |
 |---|---|---|
-| `dev-workflow` | Existing plugin integrating copied skills | https://github.com/obra/superpowers |
-| `dev-workflow:dispatching-parallel-agents` | Copied skill; dispatch example rewritten for each harness's agent tool | https://github.com/obra/superpowers/tree/main/skills/dispatching-parallel-agents |
-| `dev-workflow:requesting-code-review` | Copied skill | https://github.com/obra/superpowers/tree/main/skills/requesting-code-review |
-| `dev-workflow:systematic-debugging` | Copied skill | https://github.com/obra/superpowers/tree/main/skills/systematic-debugging |
-| `python-dev-workflow:tests-manager` | Test-first process absorbed from the formerly separate `dev-workflow:test-driven-development` copied skill; its testing anti-patterns ported from TypeScript to Python and pytest in `references/rules/mocking.md` | https://github.com/obra/superpowers/tree/main/skills/test-driven-development |
-| `dev-workflow:verification-before-completion` | Copied skill; code-specific checks moved to `references/code-verification.md` | https://github.com/obra/superpowers/tree/main/skills/verification-before-completion |
+| `giant-armor:tests-manager` | Test-first process absorbed from the formerly separate `giant-armor:test-driven-development` copied skill; its testing anti-patterns ported from TypeScript to Python and pytest in `references/rules/mocking.md` | https://github.com/obra/superpowers/tree/main/skills/test-driven-development |
 
 ### MIT License Notice
 
@@ -49,15 +41,69 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
+## pstack
+
+The `fire` router with its playbooks, principles and scripts, 25 leaf skills
+and two agents in `giant-armor` were ported from pstack (the zstack port,
+Alex-Kopylov/zweihander#173). Files were copied byte-for-byte, then adapted:
+`poteto-mode` became `fire`, pstack became zstack, Bugbot became AI Reviewer,
+`ketchup` became `remind-me`, `statechart` became `mermaid-statechart`,
+`poteto-agent` became `sub-agent`, the principle skills became reference
+files, Cursor tool names map through the harness action matrix, and user-only
+invocation is declared for each harness.
+
+| Local plugin/skill | Relationship | Upstream source |
+|---|---|---|
+| `giant-armor:fire` | Router skill `poteto-mode`, renamed | https://github.com/cursor/plugins/tree/ae5650febf4320793844c12c4adaa937f417f8da/pstack/skills/poteto-mode/SKILL.md |
+| `giant-armor:fire` `playbooks/` | 20 of 23 playbooks, as-is apart from the rename and vocabulary rules | https://github.com/cursor/plugins/tree/ae5650febf4320793844c12c4adaa937f417f8da/pstack/skills/poteto-mode/playbooks |
+| `giant-armor:pr-address-comments` `references/ai-reviewer-triage.md` | `bugbot-triage.md` from the router, Bugbot renamed to AI Reviewer | https://github.com/cursor/plugins/tree/ae5650febf4320793844c12c4adaa937f417f8da/pstack/skills/poteto-mode/references/bugbot-triage.md |
+| `giant-armor:fire` `scripts/` | check-plan, worktree-audit, bootstrap and their package files; watch-pr is not ported | https://github.com/cursor/plugins/tree/ae5650febf4320793844c12c4adaa937f417f8da/pstack/skills/poteto-mode/scripts |
+| `giant-armor:fire` `references/principles/` | The 24 `principle-*` skills as reference files | https://github.com/cursor/plugins/tree/ae5650febf4320793844c12c4adaa937f417f8da/pstack/skills |
+| `giant-armor:how` | Copied skill | https://github.com/cursor/plugins/tree/ae5650febf4320793844c12c4adaa937f417f8da/pstack/skills/how |
+| `giant-armor:why` | Copied skill | https://github.com/cursor/plugins/tree/ae5650febf4320793844c12c4adaa937f417f8da/pstack/skills/why |
+| `giant-armor:teach` | Copied skill | https://github.com/cursor/plugins/tree/ae5650febf4320793844c12c4adaa937f417f8da/pstack/skills/teach |
+| `giant-armor:architect` | Copied skill | https://github.com/cursor/plugins/tree/ae5650febf4320793844c12c4adaa937f417f8da/pstack/skills/architect |
+| `giant-armor:arena` | Copied skill | https://github.com/cursor/plugins/tree/ae5650febf4320793844c12c4adaa937f417f8da/pstack/skills/arena |
+| `giant-armor:swarm` | Copied skill | https://github.com/cursor/plugins/tree/ae5650febf4320793844c12c4adaa937f417f8da/pstack/skills/swarm |
+| `giant-armor:interrogate` | Copied skill | https://github.com/cursor/plugins/tree/ae5650febf4320793844c12c4adaa937f417f8da/pstack/skills/interrogate |
+| `giant-armor:blast-radius` | Copied skill | https://github.com/cursor/plugins/tree/ae5650febf4320793844c12c4adaa937f417f8da/pstack/skills/blast-radius |
+| `giant-armor:benchmark-checklist` | Copied skill | https://github.com/cursor/plugins/tree/ae5650febf4320793844c12c4adaa937f417f8da/pstack/skills/benchmark-checklist |
+| `giant-armor:no-comments` | Copied skill | https://github.com/cursor/plugins/tree/ae5650febf4320793844c12c4adaa937f417f8da/pstack/skills/no-comments |
+| `giant-armor:typescript-best-practices` | Copied skill | https://github.com/cursor/plugins/tree/ae5650febf4320793844c12c4adaa937f417f8da/pstack/skills/typescript-best-practices |
+| `giant-armor:recall` | Copied skill | https://github.com/cursor/plugins/tree/ae5650febf4320793844c12c4adaa937f417f8da/pstack/skills/recall |
+| `giant-armor:remind-me` | Copied skill `ketchup`, renamed | https://github.com/cursor/plugins/tree/ae5650febf4320793844c12c4adaa937f417f8da/pstack/skills/ketchup |
+| `giant-armor:bro` | Copied skill | https://github.com/cursor/plugins/tree/ae5650febf4320793844c12c4adaa937f417f8da/pstack/skills/bro |
+| `giant-armor:in-your-own-words` | Copied skill | https://github.com/cursor/plugins/tree/ae5650febf4320793844c12c4adaa937f417f8da/pstack/skills/in-your-own-words |
+| `giant-armor:sharpen` | Copied skill | https://github.com/cursor/plugins/tree/ae5650febf4320793844c12c4adaa937f417f8da/pstack/skills/sharpen |
+| `giant-armor:show-me-your-work` | Copied skill | https://github.com/cursor/plugins/tree/ae5650febf4320793844c12c4adaa937f417f8da/pstack/skills/show-me-your-work |
+| `giant-armor:reflect` | Copied skill | https://github.com/cursor/plugins/tree/ae5650febf4320793844c12c4adaa937f417f8da/pstack/skills/reflect |
+| `giant-armor:correct` | Copied skill | https://github.com/cursor/plugins/tree/ae5650febf4320793844c12c4adaa937f417f8da/pstack/skills/correct |
+| `giant-armor:unslop` | Copied skill | https://github.com/cursor/plugins/tree/ae5650febf4320793844c12c4adaa937f417f8da/pstack/skills/unslop |
+| `giant-armor:technical-writing` | Copied skill | https://github.com/cursor/plugins/tree/ae5650febf4320793844c12c4adaa937f417f8da/pstack/skills/technical-writing |
+| `giant-armor:create-formal-verification-skill` | Copied skill | https://github.com/cursor/plugins/tree/ae5650febf4320793844c12c4adaa937f417f8da/pstack/skills/create-formal-verification-skill |
+| `giant-armor:maintain-formal-verification-skill` | Copied skill | https://github.com/cursor/plugins/tree/ae5650febf4320793844c12c4adaa937f417f8da/pstack/skills/maintain-formal-verification-skill |
+| `giant-armor:mermaid-statechart` | Copied skill `statechart`, renamed without `scripts/test/` | https://github.com/cursor/plugins/tree/ae5650febf4320793844c12c4adaa937f417f8da/pstack/skills/statechart |
+| `giant-armor:figure-it-out` | Copied skill | https://github.com/cursor/plugins/tree/ae5650febf4320793844c12c4adaa937f417f8da/pstack/skills/figure-it-out |
+| `giant-armor` agent `comment-sicko` | Copied agent `comment-sicko` | https://github.com/cursor/plugins/tree/ae5650febf4320793844c12c4adaa937f417f8da/pstack/agents/comment-sicko.md |
+| `giant-armor` agent `sub-agent` | Copied agent `poteto-agent`, renamed | https://github.com/cursor/plugins/tree/ae5650febf4320793844c12c4adaa937f417f8da/pstack/agents/poteto-agent.md |
+
+- Upstream: https://github.com/cursor/plugins/tree/main/pstack
+- Synced commit: `ae5650febf4320793844c12c4adaa937f417f8da` (pstack v0.15.36)
+- Author: Lauren Tan
+- License: MIT
+
+### MIT License Notice
+
+See [pstack-LICENSE.txt](pstack-LICENSE.txt).
+
 ## Matt Pocock Skills
 
-The following `work-session-tools` skills were copied from Matt Pocock's skills
+The following `giant-armor` skill was copied from Matt Pocock's skills
 repository and adapted for this marketplace.
 
 | Local skill | Upstream source |
 |---|---|
-| `work-session-tools:handoff` | https://github.com/mattpocock/skills/tree/main/skills/productivity/handoff |
-| `work-session-tools:wait-what` | https://github.com/mattpocock/skills/tree/main/skills/productivity/wait-what |
+| `giant-armor:handoff` | https://github.com/mattpocock/skills/tree/main/skills/productivity/handoff |
 
 - Upstream: https://github.com/mattpocock/skills
 - Synced commit: `84fdeffd12f2ee307994d1eb6feb48173b6e0502`
@@ -123,14 +169,14 @@ SOFTWARE.
 ## OpenClaw Test Audit
 
 The value bar, junk patterns, retention bar, and audit method in
-`python-dev-workflow:tests-manager` were adapted from OpenClaw's `test-audit`
+`giant-armor:tests-manager` were adapted from OpenClaw's `test-audit`
 skill, rewritten for Python and pytest, with the repository-specific tooling,
 landing flow, and examples removed.
 
 | Local file | Upstream source |
 |---|---|
-| `plugins/python-dev-workflow/skills/tests-manager/references/rules/test-value.md` | https://github.com/openclaw/openclaw/blob/bf636cc1bcdd59e65d5074a1bc309d903bf18e65/.agents/skills/test-audit/SKILL.md |
-| `plugins/python-dev-workflow/skills/tests-manager/references/workflows/audit.md` | https://github.com/openclaw/openclaw/blob/bf636cc1bcdd59e65d5074a1bc309d903bf18e65/.agents/skills/test-audit/CAMPAIGN.md |
+| `plugins/giant-armor/skills/tests-manager/references/rules/test-value.md` | https://github.com/openclaw/openclaw/blob/bf636cc1bcdd59e65d5074a1bc309d903bf18e65/.agents/skills/test-audit/SKILL.md |
+| `plugins/giant-armor/skills/tests-manager/references/workflows/audit.md` | https://github.com/openclaw/openclaw/blob/bf636cc1bcdd59e65d5074a1bc309d903bf18e65/.agents/skills/test-audit/CAMPAIGN.md |
 
 - Upstream: https://github.com/openclaw/openclaw
 - Synced commit: `bf636cc1bcdd59e65d5074a1bc309d903bf18e65`
@@ -178,7 +224,7 @@ SOFTWARE.
 ## Agent Skills Specification
 
 The file
-`plugins/ai-assistant-ops/skills/adapt-skill-for-ai-harness/references/agent-skills-specification.md`
+`plugins/giant-armor/skills/adapt-skill-for-ai-harness/references/agent-skills-specification.md`
 is a copy of the Agent Skills format specification, kept locally so the
 adaptation skill reads the specification it renders against instead of the
 network.

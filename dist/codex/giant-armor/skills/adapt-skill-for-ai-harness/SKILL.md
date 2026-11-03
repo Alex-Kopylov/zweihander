@@ -1,0 +1,278 @@
+---
+name: adapt-skill-for-ai-harness
+description: "Use when adapting skills for AI Assistant Harness Adaptation, using an assistant harness action matrix or frontmatter matrix, or making explicitly named target skills render correctly for every supported harness."
+---
+
+# Adapt Skill For AI Harness
+
+Convert an explicitly named target skill's harness-specific wording into a
+harness-parametric Jinja template. Authored sources under `plugins/` are
+rendered at build time into one complete tree per harness; each rendered tree
+speaks only its own harness's vocabulary.
+
+Adapt only an explicitly named target skill or target skill path. If the user
+did not name one target skill, ask for the target before editing. Only the
+named target changes.
+
+## Source Of Truth
+
+`references/harness-action-matrix.json` is the only source of callable names.
+Lookups are action-first, then assistant:
+
+```python
+matrix = load_json("references/harness-action-matrix.json")
+codex_delegate = matrix["actions"]["CreateAgent"]["Codex"]["name"]  # spawn_agent
+```
+
+Use `scripts/lookup_harness_action.py --action CreateAgent --assistant Codex`
+for scriptable lookup; it also returns the wrapped invocation form.
+
+## Template Contract
+
+For every output path `X`, the build applies exactly one rule: a plain `X` is
+copied byte-for-byte, an `X.j2` template is rendered with the harness context
+and emitted as `X`, and `X` plus `X.j2` together fail the build — keep exactly
+one source per output path.
+
+Templates render with this context:
+
+- `harness` — the assistant key being rendered (`ClaudeCode` or `Codex`).
+- `actions` — action key → that harness's callable name, from the matrix.
+- `smallest_model` — the cheapest model that harness offers, from the matrix.
+- `call` — a filter that wraps any name in the harness's invocation wrapper.
+
+Reference callables only through these mechanisms:
+
+- Mapped mechanism, wrapped for invocation: `{{ actions.AskUser | call }}`.
+- Mapped mechanism, name only (narrative mention): `{{ actions.AskUser }}`.
+- Skill invocation by literal name: `{{ "plugin-name:skill-name" | call }}`
+  for plugin-installed skills, `{{ "skill-name" | call }}` for bare names.
+
+Never write another harness mechanism's callable name as a literal in a
+template; the repository policy test names the offending file. Never select a
+callable name inside a harness conditional — names always come from the
+action map, so they never need branching.
+
+Use harness conditionals only for narrative that genuinely differs between
+harnesses, and name the harness in every branch:
+
+```jinja
+{% if harness == "Codex" %}
+Codex-only guidance in Codex vocabulary.
+{% elif harness == "ClaudeCode" %}
+Claude Code-only guidance in Claude Code vocabulary.
+{% endif %}
+```
+
+Never close a harness conditional with `{% else %}`. Each branch answers
+"which harness is this wording for?", and `else` answers "every harness I did
+not think of" — which reads the same as an explicit branch only while exactly
+two harnesses exist. Adding a third would silently hand it another harness's
+vocabulary; an explicit chain makes the build surface every passage that has
+to choose again. The repository policy test names any file that branches
+implicitly. A `{% else %}` under a non-harness `if` is unaffected.
+
+Use native Jinja escaping for literal template syntax, such as `{% raw %}`
+blocks or string expressions. Plain files are copied byte-for-byte. The
+renderer uses `StrictUndefined` and accepts literal markers in the output.
+
+## Frontmatter Portability Boundary
+
+Frontmatter is the one region where a wrong key is a hard incompatibility
+rather than noise. `references/harness-frontmatter-matrix.json` is the only
+source of frontmatter placement, as the action matrix is the only source of
+callable names. Lookups are key-first, then assistant:
+
+```python
+matrix = load_json("references/harness-frontmatter-matrix.json")
+placement = matrix["keys"]["argument-hint"]["Codex"]["placement"]  # metadata
+```
+
+Use `scripts/lookup_harness_frontmatter.py --key argument-hint --assistant Codex`
+for scriptable lookup; it also returns how to declare the key.
+
+The Agent Skills specification defines six portable fields — `name`,
+`description`, `license`, `compatibility`, `metadata`, and `allowed-tools` —
+and every one of them stays at the top level in every tree. The specification
+is vendored at [references/agent-skills-specification.md](references/agent-skills-specification.md);
+read it there rather than from the network.
+
+A key whose form is `verbatim` needs nothing from the renderer, so write it
+literally. Every other key is declared through the global named after it, which
+places it and writes its value:
+
+```jinja
+{{ allowed_tools("Bash(git:*) Read") }}
+{{ argument_hint("[issue] to work through") }}
+{{ arguments("issue") }}
+```
+
+`allowed-tools` is portable, so both trees carry it at the top level; Codex
+accepts it and does not enforce it. `argument-hint` and `arguments` are Claude
+Code extensions, so Codex takes them under `metadata:`, the map the
+specification reserves for what it does not define. An empty value emits no
+key. Never write a placed key by hand and never wrap the call in a harness
+conditional — the global already carries the harness.
+
+Neither product rejects an unknown key: the Codex parser reads `name`,
+`description`, and `metadata.short-description`, and ignores everything else.
+Placement is therefore about writing only what a harness asked for, not about
+avoiding a crash.
+
+Codex UI, invocation policy, and tool dependencies never belong in
+frontmatter. They belong in `agents/openai.yaml` beside the skill, which ships
+to the Codex tree as written and never to the Claude Code tree:
+
+```yaml
+interface:
+  display_name: "Handoff"
+  short_description: "Compact a conversation into a handoff"
+policy:
+  allow_implicit_invocation: false
+```
+
+A key the matrix does not list and only Claude Code reads, such as
+`disable-model-invocation`, `model`, `context`, or `agent`, goes in a Claude
+Code harness branch at the end of the frontmatter, so the Codex tree carries
+only the specification's keys:
+
+```jinja
+{% if harness == "ClaudeCode" -%}
+disable-model-invocation: true
+{% endif -%}
+---
+```
+
+A skill the model may not start says so in both places:
+`disable-model-invocation: true` in that branch, and
+`policy.allow_implicit_invocation: false` in `agents/openai.yaml`. The build
+never derives one from the other, so a skill may set a different policy per
+harness; the repository's rendered-tree test accepts that only for a skill it
+declares as deliberately divergent.
+
+Each key's `form` decides how the value is written, and the matrix documents
+every form:
+
+- `plain-scalar` — written unquoted, the form the Agent Skills specification
+  shows; a list argument joins with spaces, and a value that would not survive
+  as a plain YAML scalar fails the build.
+- `quoted-scalar` — always double-quoted, because `argument-hint: [file]
+  [format]` would otherwise parse as a YAML list; a line break fails the build.
+- `placeholder-names` — names that can each spell a `$name` placeholder, so a
+  name with a space, a capital, or a leading digit fails the build.
+- `flow-sequence` — written as a YAML flow sequence of double-quoted strings,
+  the shape a list such as `paths` takes; an empty list emits no key.
+
+Claude Code substitutes `$name` in the body; Codex documents no substitution. So
+spell a placeholder inside a harness conditional and write prose in the Codex
+branch. This is the only `$name` that may sit inside a conditional.
+
+A skill may also hand-write `metadata:`. For Codex that would collide with the
+block a global emits, so the renderer folds every frontmatter `metadata:`
+block into the first one. Duplicates of any other key stay a build failure.
+
+Group `metadata` entries one level deep, under a namespace the matrix
+declares — `references`, `agents`, `skills`, `origin`, or `config` — and keep
+entry keys as paths that resolve from the declaring file. `config` is the
+exception: its entries name the skill's own runtime defaults.
+
+```yaml
+metadata:
+  references:
+    "references/gitlab.md": "Load when the merge request lives on GitLab."
+  agents:
+    "../../agents/test-writer.md": "Use to write tests at one assigned level."
+  config:
+    output-dir: "${TMPDIR:-/tmp}/skill-output"
+```
+
+## Workflow
+
+1. Resolve the explicitly named target skill directory or path.
+2. Inspect only files that enter LLM invocation context: the skill file,
+   `references/`, `agents/`, examples, and scripts the skill loads or
+   describes. Ignore README files, tests, and development-only support files.
+3. Find harness-specific wording: mechanism callable names, invocation
+   syntax, frontmatter keys outside the portable set, and harness-specific
+   facts such as context-file locations.
+4. Leave baseline capabilities alone. Every harness reads, searches, creates,
+   edits, and writes files and runs shell commands natively; delete baseline
+   tool coaching instead of templating it.
+5. Replace each mapped-mechanism reference with an action-map lookup or the
+   `call` filter. If a needed action is missing from the matrix, add it there
+   first (see Matrix Contract) rather than hardcoding a name.
+6. Put genuinely divergent narrative into harness conditionals; keep
+   everything harness-shared outside them.
+7. If the file now contains Jinja, rename it with the `.j2` suffix and make
+   sure no plain sibling remains. If nothing harness-specific was found, the
+   file stays plain — a skill without harness-specific wording needs no
+   template at all.
+8. Run the full build, read the rendered target in each harness tree, and
+   run the repository test suite.
+9. Report the exact files changed and the verification commands run.
+
+## Matrix Contract
+
+Both matrices answer one question each — the action matrix "what is this
+mechanism called here", the frontmatter matrix "where does this key go here" —
+so a new harness fact belongs in one of them rather than in a template.
+
+The frontmatter matrix keeps these stable:
+
+- Key names are the frontmatter keys themselves, so the global is the key with
+  hyphens turned into underscores.
+- Every key carries a `form` the matrix documents under `forms`, and every
+  non-`verbatim` form is one the renderer can write.
+- Every key carries a `placement` per assistant: `top-level` for the six
+  specification fields and for any key that harness reads, `metadata` for a
+  key it does not read and for one the product defines as a `metadata`
+  sub-key, such as Codex's `short-description`.
+- A `metadata` placement carries a `note` recording why the key lives there.
+- `specification` names the vendored specification document and the six
+  portable keys, so the two never drift apart.
+- `metadata_namespaces` lists the namespaces authors may write, and never
+  repeats a key name.
+- Keep `lookup_order: ["key", "assistant"]`.
+
+The action matrix keeps these stable:
+
+- Action keys are stable TitleCase (`AskUser`, `CreateAgent`, `CreateTask`)
+  and never equal any callable name.
+- Assistant keys are stable and product-oriented: `ClaudeCode` and `Codex`.
+- Every action carries a boolean `callable` flag.
+- Callable actions map to exactly one callable name per assistant — one
+  `name` string under each assistant key. Several actions may resolve to the
+  same name (`CreateTask` and `UpdateTask` both map to `update_plan` on
+  Codex, which rewrites the whole plan).
+- When a harness has no counterpart for an action, that assistant entry
+  repeats the other harness's name and carries a `note` saying so. `GetTask`,
+  `ListTasks`, and `StopTask` do this for Codex: reading one item, listing
+  the plan, and stopping a tracked task have no Codex tool. Naming a real
+  concept beats naming a tool that cannot do the job.
+- Non-callable actions carry reference material (file paths, command lists)
+  instead of names.
+- Each assistant defines exactly one `invocation_wrapper` with a single
+  `{name}` slot, stored once in the top-level `assistants` section — never
+  per action.
+- Each assistant names its `smallest_model` once, in the same section.
+- Keep `lookup_order: ["action", "assistant"]`.
+- When names are re-verified against official documentation, refresh
+  `checked` and the assistant `source_urls`, and land matrix changes in
+  focused commits together with the tests guarding them.
+
+## Verification
+
+For each adapted target, check that:
+
+- Exactly one source exists per output path (no plain/template collision).
+- Frontmatter hand-writes no key the frontmatter matrix places, and every
+  `metadata` entry sits under a declared namespace.
+- Rendered output for each harness contains only that harness's callable
+  names, with the wrapper applied uniformly.
+- No template hardcodes a matrix-mapped callable name and no conditional
+  selects a callable name.
+- Literal template syntax uses native Jinja escaping.
+- Only the explicitly requested target skill changed.
+
+Run the repository's build, tests, JSON validation, and Markdown whitespace
+checks before finishing.

@@ -1,0 +1,5 @@
+interface:
+  display_name: "Interrogate"
+  short_description: "Adversarial multi-model review that keeps only proven findings"
+policy:
+  allow_implicit_invocation: false

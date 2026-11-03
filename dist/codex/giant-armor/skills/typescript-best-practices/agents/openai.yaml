@@ -1,0 +1,5 @@
+interface:
+  display_name: "TypeScript Best Practices"
+  short_description: "Apply TypeScript rules for types, boundaries, and tests"
+policy:
+  allow_implicit_invocation: false

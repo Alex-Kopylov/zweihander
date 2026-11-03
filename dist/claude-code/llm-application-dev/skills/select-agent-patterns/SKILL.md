@@ -30,7 +30,7 @@ Keep reusable decision variables:
 
 ## Workflow
 
-Use Skill(work-session-tools:task-management) when the selection task needs tracked stages, parallel reviewer passes, or explicit synthesis status.
+Use Skill(giant-armor:task-management) when the selection task needs tracked stages, parallel reviewer passes, or explicit synthesis status.
 
 ### 1. Understand The Problem
 
