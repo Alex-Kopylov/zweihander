@@ -1,8 +1,8 @@
-"""The mermaid-diagrams stage-1 generator package and the job that drives it.
+"""The mermaid stage-1 generator package and the job that drives it.
 
-The plugin README is stage-1 output too, rendered from this package's
-`templates/readme.md`, so the claims about its content belong here rather than
-among the rendered-content tests.
+The Mermaid section of `third_party/THIRD_PARTY_NOTICES.md` is stage-1 output
+too, so the claims about its content belong here rather than among the
+rendered-content tests.
 """
 
 import inspect
@@ -11,11 +11,15 @@ import re
 from plugin_maintenance.generators import mermaid_diagrams
 from plugin_maintenance.generators.mermaid_diagrams.generated_docs import (
     PLUGIN_NAME,
+    THIRD_PARTY_NOTICES_PATH,
+    SyncMetadata,
+    existing_sync_metadata,
     load_navigation_metadata,
+    render_mermaid_notice,
 )
 from plugin_maintenance.paths import REPO_ROOT
 
-PLUGIN_ROOT = REPO_ROOT / "plugins" / "mermaid-diagrams"
+PLUGIN_ROOT = REPO_ROOT / "plugins" / "giant-armor"
 TOOLING_ROOT = REPO_ROOT / "plugin_maintenance" / "generators" / "mermaid_diagrams"
 
 
@@ -23,15 +27,11 @@ def tooling_text(relative_path: str) -> str:
     return (TOOLING_ROOT / relative_path).read_text(encoding="utf-8")
 
 
-def plugin_text(relative_path: str) -> str:
-    return (PLUGIN_ROOT / relative_path).read_text(encoding="utf-8")
-
-
 def test_generator_package_follows_stage_one_convention() -> None:
     signature = inspect.signature(mermaid_diagrams.generate)
 
     assert not signature.parameters
-    assert PLUGIN_NAME == "mermaid-diagrams"
+    assert PLUGIN_NAME == "giant-armor"
 
 
 def test_bundled_navigation_metadata_is_used_without_source_checkout(monkeypatch) -> None:
@@ -50,7 +50,6 @@ def test_python_tooling_is_relocated_to_root_generators() -> None:
     assert (TOOLING_ROOT / "generated_docs.py").is_file()
     assert (TOOLING_ROOT / "sync.py").is_file()
     assert (TOOLING_ROOT / "templates" / "mermaid_skill.md").is_file()
-    assert (TOOLING_ROOT / "templates" / "readme.md").is_file()
     assert not (PLUGIN_ROOT / "plugin_maintenance").exists()
     assert not (PLUGIN_ROOT / "pyproject.toml").exists()
     assert not (PLUGIN_ROOT / "uv.lock").exists()
@@ -74,16 +73,15 @@ def test_python_sync_preserves_first_port_safety_gates() -> None:
     generated_docs = tooling_text("generated_docs.py")
     sync = tooling_text("sync.py")
 
-    assert "existing_sync_status" in generated_docs
+    assert "existing_sync_metadata" in generated_docs
     assert "MERMAID_DOCS_NAVIGATION" in generated_docs
     assert "mermaid_navigation.json" in generated_docs
     assert "Mermaid docs navigation file not found" in generated_docs
     assert "THIRD_PARTY_NOTICES.md" in generated_docs
-    assert "render_third_party_notices" in generated_docs
+    assert "render_mermaid_notice" in generated_docs
     assert "preflight_sync_source" in sync
     assert "write_bundled_navigation_metadata" in sync
-    assert "existing_sync_metadata" in sync
-    assert "existing_sync_metadata.commit == source_commit" in sync
+    assert "recorded.commit == source_commit" in sync
 
 
 def test_sync_workflow_uses_root_project_and_full_build() -> None:
@@ -93,28 +91,27 @@ def test_sync_workflow_uses_root_project_and_full_build() -> None:
     assert "astral-sh/setup-uv" in workflow
     assert "python -m plugin_maintenance.generators.mermaid_diagrams.sync mermaid-source" in workflow
     assert "python -m plugin_maintenance.build" in workflow
-    assert "rm -rf plugins/mermaid-diagrams/mermaid-source" in workflow
-    assert "uv run --project plugins/mermaid-diagrams" not in workflow
+    assert "rm -rf plugins/giant-armor/mermaid-source" in workflow
+    assert "uv run --project plugins/" not in workflow
     assert "validate-generated-files:" not in workflow
     assert "git-auto-commit-action" not in workflow
     assert "create-pull-request" in workflow
     assert "npm run" not in workflow
 
 
-def test_generated_readme_records_the_synced_commit() -> None:
-    """The README's provenance line and the notice name the same commit."""
-    synced = re.search(
-        r"Last synced from Mermaid: mermaid-js/mermaid @ ([0-9a-f]+) on ",
-        plugin_text("README.md"),
-    )
+def test_notice_round_trips_the_recorded_sync() -> None:
+    """The notice the generator writes is the one it reads back on the next build."""
+    recorded = existing_sync_metadata()
 
-    assert synced is not None
-    assert synced.group(1) in plugin_text("THIRD_PARTY_NOTICES.md")
+    assert recorded is not None
+    assert re.fullmatch(r"[0-9a-f]{40}", recorded.commit)
+    assert render_mermaid_notice(recorded) in THIRD_PARTY_NOTICES_PATH.read_text(encoding="utf-8")
 
 
-def test_generated_readme_avoids_claude_specific_source_packaging() -> None:
-    """The skill half of this claim is asserted against the rendered tree."""
-    readme = plugin_text("README.md")
+def test_notice_names_the_shipped_references_directory() -> None:
+    notice = render_mermaid_notice(SyncMetadata("mermaid-js/mermaid", "abc", "2026-01-01T00:00:00.000Z"))
 
-    for phrase in ["Claude", ".claude/skills"]:
-        assert phrase not in readme
+    assert "plugins/giant-armor/skills/mermaid/references/" in notice
+    assert "Synced commit: `abc`" in notice
+    assert "Synced date: 2026-01-01T00:00:00.000Z" in notice
+    assert "Claude" not in notice

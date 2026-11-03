@@ -189,13 +189,18 @@ See [openclaw-LICENSE.txt](openclaw-LICENSE.txt).
 
 ## Mermaid Documentation
 
-The Markdown files in `plugins/mermaid-diagrams/skills/mermaid/references/` are
-synced from Mermaid:
+<!-- BEGIN GENERATED MERMAID SYNC -->
+The Markdown files in `plugins/giant-armor/skills/mermaid/references/` are
+synced from `mermaid-js/mermaid`:
 
 - Upstream: https://github.com/mermaid-js/mermaid
-- Synced commit: `9bae92cd3214f9ec99369ab314ef41ffb283f6b6`
+- Synced commit: `e28fbd9ded0a07ba9569e51be4764c1ad4daa8f6`
+- Synced date: 2026-10-18T03:19:47.045Z
 - License: MIT
-- Sync details: `plugins/mermaid-diagrams/THIRD_PARTY_NOTICES.md`
+
+The generated warning banners from the upstream documentation build are removed
+from the bundled reference files so the skill can use the documentation directly.
+<!-- END GENERATED MERMAID SYNC -->
 
 ### MIT License Notice
 

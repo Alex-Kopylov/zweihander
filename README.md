@@ -69,15 +69,6 @@ kanban
     os_loop_macos[loop_macos]
 ```
 
-### General AI User Productivity
-
-```mermaid
-kanban
-  mermaid_diagrams[mermaid-diagrams]
-    md_mermaid[mermaid]
-    md_mermaid_lint[mermaid-lint]
-```
-
 ### Programming
 
 ```mermaid
@@ -111,6 +102,8 @@ kanban
     wst_interview[interview]
     ga_maintain_formal_verification_skill[maintain-formal-verification-skill]
     aao_md_bloat_hunter[md-bloat-hunter]
+    md_mermaid[mermaid]
+    md_mermaid_lint[mermaid-lint]
     ga_mermaid_statechart[mermaid-statechart]
     ga_no_comments[no-comments]
     dw_pr_address_comments[pr-address-comments]
@@ -296,15 +289,16 @@ reasoning.
 <details>
 <summary>
 Development, session and assistant-operations workflows in one plugin: git,
-PRs, tickets, releases, Python testing, run-and-verify, session tooling, and
-skill improvement.
+PRs, tickets, releases, Python testing, run-and-verify, session tooling,
+Mermaid diagrams, and skill improvement.
 </summary>
 
 **Use when:** you want development, session or assistant-operations support:
 commits, PRs, tickets, releases, visual diffs, spec checks, Python test-first
 work, running and verifying an app, daily notes, interviews, team design,
-task tracking, handoffs, AGENTS.md audits, skill improvement, harness
-adaptation, overlap audits, insight capture, or Markdown bloat trimming.
+task tracking, handoffs, Mermaid diagrams and their linting, AGENTS.md audits,
+skill improvement, harness adaptation, overlap audits, insight capture, or
+Markdown bloat trimming.
 
 **Origin note:** the `fire` router, its playbooks and principles, and 25
 leaf skills were ported from the MIT-licensed
@@ -345,6 +339,8 @@ test-first process of `tests-manager` from Superpowers. See
 | `interview` | Walk through a list of items one by one, logging every decision before anything runs. |
 | `maintain-formal-verification-skill` | Bring formal verification back in line with changed code. |
 | `md-bloat-hunter` | Trim redundancy, verbosity, and filler in Markdown and `.md.j2` templates until the smallest model still passes your evals. |
+| `mermaid` | Generate Mermaid diagrams from requirements with synced syntax references for 33 diagram types. |
+| `mermaid-lint` | Validate Mermaid code blocks with `mmdc` and report lint status and errors. |
 | `mermaid-statechart` | Check a TLA+ model and draw it as a Mermaid statechart. |
 | `no-comments` | Remove comments from a diff and encode claimed constraints. |
 | `pr-address-comments` | Fetch, fix, reply to, and resolve PR feedback. |
@@ -401,20 +397,6 @@ test-first process of `tests-manager` from Superpowers. See
 | `md-bloat-hunter` | `vocab-compressor` | Replaces inflated wording with direct wording. |
 
 </details>
-
-### `mermaid-diagrams`
-
-Generate and validate Mermaid diagrams with synced syntax references.
-
-**Use when:** you want to create Mermaid diagrams from requirements or validate
-Mermaid code blocks with the Mermaid CLI.
-
-#### Skills
-
-| Skill | Description |
-| --- | --- |
-| `mermaid` | Generate Mermaid diagrams from user requirements with local syntax references. |
-| `mermaid-lint` | Validate Mermaid code blocks with `mmdc` and report lint status and errors. |
 
 ### `research`
 

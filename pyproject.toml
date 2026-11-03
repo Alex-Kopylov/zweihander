@@ -82,7 +82,7 @@ allowed-unresolved-imports = ["app.**", "myapp.**"]
 # dist/ is a byte-identical render of plugins/; dist/ is linted once, in CI -
 # see the lint-dist step in .github/workflows/ci.yml. The mermaid references are
 # synced verbatim from upstream, in plugins/ and in their dist/ copies.
-extend-exclude = ["dist/", "**/mermaid-diagrams/skills/mermaid/references/"]
+extend-exclude = ["dist/", "**/giant-armor/skills/mermaid/references/"]
 
 [tool.mutmut]
 paths_to_mutate = ["plugin_maintenance/"]

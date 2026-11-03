@@ -1,4 +1,4 @@
-"""Stage-1 generator for the mermaid-diagrams plugin.
+"""Stage-1 generator for the mermaid skill of giant-armor.
 
 `generate()` rebuilds the generated docs from the bundled references, offline.
 The upstream fetch lives in `sync.py`, invoked by the weekly workflow outside

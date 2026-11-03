@@ -1,6 +1,9 @@
 ---
 name: mermaid-statechart
 description: "Check a TLA+ model of a system that moves between states, such as a product flow, a protocol, or a service, and draw it as a Mermaid statechart. The report gives the shortest path to each state that breaks a rule. Use for /statechart, or to show a bug as a path through states."
+metadata:
+  references:
+    "../mermaid/references/stateDiagram.md": "Load when you edit or extend the chart's stateDiagram-v2 syntax."
 ---
 
 # Statechart
@@ -71,6 +74,8 @@ Aim for about 20 arrows or fewer, because a busier chart is hard to read. First 
 ## Show the chart
 
 Show `chart.mmd` to the user as a `mermaid` code block. The chart has a budget of 500 states, counted by TLC on the config as written. Above that, the chart draws only the paths to the rules that break, and when no rule breaks, the command writes no `chart.mmd`. It still checks each rule, and the report gives the state count and each bug path. To see the whole graph, make the model smaller.
+
+Pick and validate the diagram type the way `../mermaid/SKILL.md` does, under its "Diagram Type Reference": `chart.mmd` is a `stateDiagram-v2`, documented in `../mermaid/references/stateDiagram.md`, and `../mermaid-lint/SKILL.md` checks it.
 
 Render charts with Pele. When the user asks for an image, or a chart is too large to read as text, follow `references/render.md`. Do not use a different renderer unless the user asks for it.
 

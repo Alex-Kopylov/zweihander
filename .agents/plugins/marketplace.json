@@ -41,18 +41,6 @@
       "category": "Development"
     },
     {
-      "name": "mermaid-diagrams",
-      "source": {
-        "source": "local",
-        "path": "./dist/codex/mermaid-diagrams"
-      },
-      "policy": {
-        "installation": "AVAILABLE",
-        "authentication": "ON_INSTALL"
-      },
-      "category": "Development"
-    },
-    {
       "name": "giant-armor",
       "source": {
         "source": "local",
