@@ -69,8 +69,8 @@ def test_body_states_the_audit_rules(body: str) -> None:
 
 
 def test_diagrams_go_through_the_mermaid_skills(body: str) -> None:
-    assert "mermaid-diagrams:mermaid" in body
-    assert "mermaid-diagrams:mermaid-lint" in body
+    assert "giant-armor:mermaid" in body
+    assert "giant-armor:mermaid-lint" in body
 
 
 def test_evals_cover_every_rule(skill_root: Path) -> None:

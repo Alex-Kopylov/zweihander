@@ -8,7 +8,6 @@ from plugin_maintenance.render import HARNESS_MANIFESTS, manifest_plugin_names
 README = REPO_ROOT / "README.md"
 EXPECTED_CATALOG_HEADINGS = [
     "General User Productivity",
-    "General AI User Productivity",
     "Programming",
     "AI Engineer",
 ]

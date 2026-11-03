@@ -22,7 +22,7 @@ jobs:
         uses: actions/checkout@v7
         with:
           repository: mermaid-js/mermaid
-          path: plugins/mermaid-diagrams/mermaid-source
+          path: plugins/giant-armor/mermaid-source
           sparse-checkout: |
             /docs/syntax
             /docs/config
@@ -40,7 +40,7 @@ jobs:
         run: uv run python -m plugin_maintenance.generators.mermaid_diagrams.sync mermaid-source
 
       - name: Cleanup mermaid source checkout
-        run: rm -rf plugins/mermaid-diagrams/mermaid-source
+        run: rm -rf plugins/giant-armor/mermaid-source
 
       - name: Run the full build
         run: uv run python -m plugin_maintenance.build

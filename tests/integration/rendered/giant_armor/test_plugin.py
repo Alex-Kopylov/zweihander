@@ -19,6 +19,7 @@ PYTHON_AGENTS = ("test-assessor", "test-scenario-planner", "test-writer")
 LINK = re.compile(r"\[[^\]]*\]\(([^)\s]+)\)")
 FENCE = re.compile(r"^(```|~~~).*?^\1", re.MULTILINE | re.DOTALL)
 CODE_SPAN = re.compile(r"`[^`\n]*`")
+SYNCED_MERMAID_REFERENCES = "{plugin_root}/skills/mermaid/references"
 
 
 @pytest.fixture
@@ -134,6 +135,9 @@ def test_relative_markdown_links_and_anchors_resolve(plugin_root: Path) -> None:
     broken = []
 
     for path in plugin_root.rglob("*.md"):
+        if path.is_relative_to(SYNCED_MERMAID_REFERENCES.format(plugin_root=plugin_root)):
+            # Upstream Mermaid docs, synced verbatim; their links point into the upstream site.
+            continue
         text = path.read_text(encoding="utf-8")
         prose = CODE_SPAN.sub("", FENCE.sub("", text))
         for target in LINK.findall(prose):

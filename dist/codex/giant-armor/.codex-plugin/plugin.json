@@ -1,7 +1,7 @@
 {
   "name": "giant-armor",
   "version": "1.0.0",
-  "description": "Development, session and assistant-operations workflows in one plugin: git, PRs, tickets, releases, Python testing, run-and-verify, session tooling, and skill improvement.",
+  "description": "Development, session and assistant-operations workflows in one plugin: git, PRs, tickets, releases, Python testing, run-and-verify, session tooling, Mermaid diagrams, and skill improvement.",
   "author": {
     "name": "Alex Kopylov"
   },
@@ -10,7 +10,7 @@
   "interface": {
     "displayName": "Giant Armor",
     "shortDescription": "Development, session and assistant-ops workflows",
-    "longDescription": "One plugin for development work: conventional commits, PR creation and feedback, tickets, releases, HTML diff reports, spec interviews and contradiction checks, Python test-first workflows with pytest planning, review and audit, Celery and Redis references, running and verifying apps through their real runtime surface, daily notes, interviews, team design, task management and handoffs, and assistant operations: AGENTS.md audits, skill improvement, harness adaptation, overlap audits, insight capture and Markdown bloat trimming.",
+    "longDescription": "One plugin for development work: conventional commits, PR creation and feedback, tickets, releases, HTML diff reports, spec interviews and contradiction checks, Python test-first workflows with pytest planning, review and audit, Celery and Redis references, running and verifying apps through their real runtime surface, daily notes, interviews, team design, task management and handoffs, and assistant operations: AGENTS.md audits, skill improvement, harness adaptation, overlap audits, insight capture, Markdown bloat trimming, and Mermaid diagram generation and linting.",
     "developerName": "Alex Kopylov",
     "category": "Development",
     "capabilities": [

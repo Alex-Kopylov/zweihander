@@ -3,18 +3,17 @@
 from __future__ import annotations
 
 import os
-import re
 import shutil
 
 # Reading HEAD without git would mean reimplementing ref resolution (symbolic refs,
 # packed-refs, worktree gitdir files); running git itself is the robust way.
 import subprocess  # ruff: ignore[suspicious-subprocess-import]
 import sys
-from dataclasses import dataclass
 from pathlib import Path
 
 from plugin_maintenance.generators.mermaid_diagrams.generated_docs import (
     PLUGIN_ROOT,
+    existing_sync_metadata,
     js_iso_timestamp,
     load_navigation_metadata_from_path,
     update_generated_docs,
@@ -22,7 +21,6 @@ from plugin_maintenance.generators.mermaid_diagrams.generated_docs import (
 )
 
 REFERENCES_DIR = PLUGIN_ROOT / "skills/mermaid/references"
-README_PATH = PLUGIN_ROOT / "README.md"
 CONFIG_FILES = [
     "configuration.md",
     "directives.md",
@@ -39,14 +37,6 @@ class GitNotFoundError(RuntimeError):
     def __str__(self) -> str:
         """Say what is missing and why the sync needs it."""
         return "git is not on PATH; the Mermaid sync needs it to record the source checkout's commit"
-
-
-@dataclass(frozen=True)
-class ExistingSyncMetadata:
-    """Commit and date recorded by the previous sync."""
-
-    commit: str
-    date: str
 
 
 def plugin_relative_path(path: str | Path) -> Path:
@@ -101,17 +91,6 @@ def preflight_sync_source(source_dir: Path) -> None:
         require_path(config_dir / file, f"config doc {file}")
 
 
-def read_existing_sync_metadata() -> ExistingSyncMetadata | None:
-    """Return the commit and date recorded in the plugin README, or None."""
-    if not README_PATH.exists():
-        return None
-    match = re.search(
-        r"Last synced from Mermaid: [^@]+ @ ([0-9a-f]+|unknown) on ([^\n]+)",
-        README_PATH.read_text(encoding="utf-8"),
-    )
-    return ExistingSyncMetadata(match.group(1), match.group(2).strip()) if match else None
-
-
 def copy_docs(source_dir: Path) -> None:
     """Replace the bundled references with the checkout's syntax and config docs."""
     syntax_dir = source_dir / "docs/syntax"
@@ -133,14 +112,12 @@ def sync_mermaid_docs(source: str | Path = "mermaid-source") -> None:
     source_dir = plugin_relative_path(source)
     docs_navigation_path = source_dir / "packages/mermaid/src/docs/.vitepress/config.ts"
     source_commit = git_commit(source_dir)
-    existing_sync_metadata = read_existing_sync_metadata()
+    recorded = existing_sync_metadata()
 
     os.environ["MERMAID_SYNC_SOURCE"] = "mermaid-js/mermaid"
     os.environ["MERMAID_SOURCE_COMMIT"] = source_commit
     os.environ["MERMAID_SYNC_DATE"] = (
-        existing_sync_metadata.date
-        if existing_sync_metadata and existing_sync_metadata.commit == source_commit
-        else js_iso_timestamp()
+        recorded.date if recorded and recorded.commit == source_commit else js_iso_timestamp()
     )
     os.environ["MERMAID_DOCS_NAVIGATION"] = os.path.relpath(
         docs_navigation_path,

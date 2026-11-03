@@ -11,7 +11,7 @@ logs/
 .upstream
 **/workspaces/
 goals/
-plugins/mermaid-diagrams/mermaid-source/
+plugins/giant-armor/mermaid-source/
 node_modules/
 .ruff_cache/
 *.egg-info/

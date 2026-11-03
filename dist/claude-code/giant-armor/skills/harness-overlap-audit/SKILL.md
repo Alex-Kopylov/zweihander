@@ -4,8 +4,8 @@ description: Audit this harness's skills, MCP tools, and skill agents for overla
 disable-model-invocation: true
 metadata:
   skills:
-    "mermaid-diagrams:mermaid": "Use to draw the Venn diagrams."
-    "mermaid-diagrams:mermaid-lint": "Use to validate the diagrams."
+    "giant-armor:mermaid": "Use to draw the Venn diagrams."
+    "giant-armor:mermaid-lint": "Use to validate the diagrams."
 ---
 
 # Harness Overlap Audit
@@ -87,8 +87,8 @@ Checked <n> skills, <n> MCP tools, <n> skills with agents. Untraceable, treated 
   four words or fewer per label; no `:N` sizes.
 - No findings: the summary line `No overlaps found` and the footer only.
 
-Draw with Skill(mermaid-diagrams:mermaid) (`venn-beta`) and validate
-with Skill(mermaid-diagrams:mermaid-lint). If linting cannot run, still
+Draw with Skill(giant-armor:mermaid) (`venn-beta`) and validate
+with Skill(giant-armor:mermaid-lint). If linting cannot run, still
 write the report, with a one-line "diagrams not validated" warning above the
 summary.
 
